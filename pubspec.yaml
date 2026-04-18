@@ -1,0 +1,69 @@
+name: uniasist
+description: Sistema de asistencia universitaria
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Supabase
+  supabase_flutter: ^2.5.0
+
+  # Manejo de estado
+  flutter_bloc: ^8.1.5
+  equatable: ^2.0.5
+
+  # Navegación
+  go_router: ^14.0.0
+
+  # Inyección de dependencias
+  get_it: ^7.6.7
+
+  # Variables de entorno
+  flutter_dotenv: ^5.1.0
+
+  # QR: escanear y mostrar
+  mobile_scanner: ^5.0.0
+  qr_flutter: ^4.1.0
+
+  # Gráficas para el dashboard
+  fl_chart: ^0.68.0
+
+  # Compartir y exportar
+  share_plus: ^9.0.0
+
+  # UI
+  shimmer: ^3.0.0
+  cached_network_image: ^3.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  bloc_test: ^9.1.7
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+
+  # ─── ASSETS ───────────────────────────────────────────
+  assets:
+    - .env
+    - assets/fonts/ # Importante para que Flutter vea la carpeta
+
+  # ─── FUENTES ──────────────────────────────────────────
+  fonts:
+    - family: Outfit
+      fonts:
+        - asset: assets/fonts/Outfit-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Outfit-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Outfit-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Outfit-ExtraBold.ttf
+          weight: 800
