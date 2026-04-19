@@ -13,7 +13,7 @@ void main() {
     'correo':                'leo@uni.edu',
     'telefono':              '+58123456789',
     'url_avatar':            null,
-    'estatus':               'activo',
+    'estatus':               true,
     'usuarios_roles':        <dynamic>[],
   };
 
@@ -30,7 +30,7 @@ void main() {
       expect(u.numeroIdentificacion, '12345678');
       expect(u.correo,               'leo@uni.edu');
       expect(u.telefono,             '+58123456789');
-      expect(u.estatus,              'activo');
+      expect(u.estatus,              isTrue);
     });
 
     test('usuarios_roles vacío produce roles y permisos vacíos', () {
@@ -50,7 +50,7 @@ void main() {
       expect(u.id,            isNull);
       expect(u.authId,        isNull);
       expect(u.segundoNombre, isNull);
-      expect(u.estatus,       'activo');
+      expect(u.estatus,       isTrue);
     });
 
     test('extrae solo roles con estatus activo', () {

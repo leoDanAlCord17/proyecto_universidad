@@ -11,6 +11,7 @@ import '../configuracion/dependencias.dart';
 import '../funcionalidades/autenticacion/auth_cubit.dart';
 import '../funcionalidades/autenticacion/auth_estado.dart';
 
+import '../dev/vista_fuentes_pantalla.dart';
 import '../dev/vista_widgets_pantalla.dart';
 import '../funcionalidades/autenticacion/login_cubit.dart';
 import '../funcionalidades/autenticacion/login_pantalla.dart';
@@ -20,6 +21,8 @@ import '../funcionalidades/crear_usuario/crear_usuario_cubit.dart';
 import '../funcionalidades/crear_usuario/crear_usuario_pantalla.dart';
 import '../funcionalidades/inicio/inicio_cubit.dart';
 import '../funcionalidades/inicio/inicio_pantalla.dart';
+import '../funcionalidades/perfil/perfil_cubit.dart';
+import '../funcionalidades/perfil/perfil_pantalla.dart';
 
 class RouterApp {
   final AuthCubit authCubit;
@@ -50,7 +53,8 @@ class RouterApp {
       if (estadoAuth is! Autenticado) {
         final esRutaPublica = ubicacion == Rutas.login
             || ubicacion == Rutas.registro
-            || (kDebugMode && ubicacion == Rutas.vistaWidgets);
+            || (kDebugMode && ubicacion == Rutas.vistaWidgets)
+            || (kDebugMode && ubicacion == Rutas.vistaFuentes);
         return esRutaPublica ? null : Rutas.login;
       }
 
@@ -120,11 +124,24 @@ class RouterApp {
         ),
       ),
 
-      // Solo desarrollo — no registrada en release builds
+      GoRoute(
+        path: Rutas.perfil,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<PerfilCubit>(),
+          child: const PerfilPantalla(),
+        ),
+      ),
+
+      // Solo desarrollo — no registradas en release builds
       if (kDebugMode)
         GoRoute(
           path: Rutas.vistaWidgets,
           builder: (context, state) => const VistaWidgetsPantalla(),
+        ),
+      if (kDebugMode)
+        GoRoute(
+          path: Rutas.vistaFuentes,
+          builder: (context, state) => const VistaFuentesPantalla(),
         ),
     ],
 

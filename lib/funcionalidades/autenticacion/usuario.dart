@@ -11,7 +11,8 @@ class Usuario extends Equatable {
   final String correo;
   final String? telefono;
   final String? urlAvatar;
-  final String estatus;
+  final bool estatus;
+  final DateTime? creadoEn;
   final List<String> roles;
   final List<String> permisos;
 
@@ -26,8 +27,9 @@ class Usuario extends Equatable {
     required this.correo,
     this.telefono,
     this.urlAvatar,
-    this.estatus = 'activo',
-    this.roles = const [],
+    this.estatus  = true,
+    this.creadoEn,
+    this.roles    = const [],
     this.permisos = const [],
   });
 
@@ -46,7 +48,10 @@ class Usuario extends Equatable {
       correo:               json['correo'] ?? '',
       telefono:             json['telefono'],
       urlAvatar:            json['url_avatar'],
-      estatus:              json['estatus'] ?? 'activo',
+      estatus:              (json['estatus'] as bool?) ?? true,
+      creadoEn:             json['creado_en'] != null
+                                ? DateTime.parse(json['creado_en'] as String)
+                                : null,
       roles:                _extraerNombresRoles(activos),
       permisos:             _extraerNombresPermisos(activos),
     );
@@ -99,6 +104,6 @@ class Usuario extends Equatable {
   List<Object?> get props => [
     id, authId, primerNombre, segundoNombre,
     primerApellido, segundoApellido, numeroIdentificacion,
-    correo, telefono, urlAvatar, estatus, roles, permisos,
+    correo, telefono, urlAvatar, estatus, creadoEn, roles, permisos,
   ];
 }

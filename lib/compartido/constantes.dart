@@ -1,10 +1,12 @@
 /// Nombres exactos de las tablas en Supabase.
 /// Nunca escribir el nombre de una tabla como string directo en el código.
 class TablasSupabase {
-  static const String usuarios   = 'usuarios';
-  static const String eventos    = 'eventos';
-  static const String asistencia = 'asistencia';
-  static const String roles      = 'roles';
+  static const String usuarios    = 'usuarios';
+  static const String eventos     = 'eventos';
+  static const String asistencia  = 'asistencia';
+  static const String roles       = 'roles';
+  static const String tags        = 'tags';
+  static const String usuariosTags = 'usuarios_tags';
 }
 
 /// Rutas de navegación de la app.
@@ -24,6 +26,10 @@ class Rutas {
   /// Solo para desarrollo — muestra todos los widgets de la app visualmente.
   /// Eliminar esta ruta antes de subir a producción.
   static const String vistaWidgets    = '/dev/widgets';
+
+  /// Solo para desarrollo — muestra el sistema tipográfico con variantes de peso.
+  /// Eliminar esta ruta antes de subir a producción.
+  static const String vistaFuentes    = '/dev/fuentes';
 }
 
 /// Mensajes de error genéricos para mostrar al usuario.
