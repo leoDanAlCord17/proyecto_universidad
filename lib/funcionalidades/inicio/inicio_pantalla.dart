@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -20,42 +21,56 @@ class InicioPantalla extends StatelessWidget {
     return BlocSelector<AuthCubit, AuthEstado, Usuario?>(
       selector: (estado) => estado is Autenticado ? estado.usuario : null,
       builder: (context, usuario) {
-        return Scaffold(
-          backgroundColor: ColoresApp.fondo,
-          body: Column(
-            children: [
-              SafeArea(
-                bottom: false,
-                child: BarraSuperiorApp(
-                  izquierda: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (usuario != null) ...[
-                        AvatarUsuario(iniciales: usuario.iniciales, tamanio: 42),
-                        const SizedBox(width: 12),
-                      ],
-                      _CabeceraTexto(nombre: usuario?.nombreCompleto ?? ''),
-                    ],
-                  ),
-                  derecha: IconButton(
-                    icon:      const Icon(Icons.settings_outlined),
-                    color:     ColoresApp.textoSecundario,
-                    iconSize:  24,
-                    tooltip:   'Configuración',
-                    onPressed: null,
-                  ),
-                ),
-              ),
-              if (kDebugMode)
-                const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: _TarjetaDevWidgets(),
-                ),
-            ],
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: const SystemUiOverlayStyle(
+            statusBarColor:          Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness:     Brightness.light,
           ),
-          bottomNavigationBar: BarraNavegacionApp(
-            indiceActual:    0,
-            alCambiarIndice: (_) {},
+          child: Scaffold(
+            backgroundColor: ColoresApp.fondo,
+            body: Column(
+              children: [
+                SafeArea(
+                  bottom: false,
+                  child: BarraSuperiorApp(
+                    izquierda: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (usuario != null) ...[
+                          AvatarUsuario(iniciales: usuario.iniciales, tamanio: 42),
+                          const SizedBox(width: 12),
+                        ],
+                        _CabeceraTexto(nombre: usuario?.nombreCompleto ?? ''),
+                      ],
+                    ),
+                    derecha: const IconButton(
+                      icon:      Icon(Icons.settings_outlined),
+                      color:     ColoresApp.textoSecundario,
+                      iconSize:  24,
+                      tooltip:   'Configuración',
+                      onPressed: null,
+                    ),
+                  ),
+                ),
+                if (kDebugMode)
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: _TarjetaDevWidgets(),
+                  ),
+                if (kDebugMode)
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(20, 12, 20, 0),
+                    child: _TarjetaDevFuentes(),
+                  ),
+              ],
+            ),
+            bottomNavigationBar: BarraNavegacionApp(
+              indiceActual:    0,
+              alCambiarIndice: (indice) {
+                if (indice == 4) context.go(Rutas.perfil);
+              },
+            ),
           ),
         );
       },
@@ -95,6 +110,39 @@ class _CabeceraTexto extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// TODO: borrar cuando ya no se necesite
+class _TarjetaDevFuentes extends StatelessWidget {
+  const _TarjetaDevFuentes();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color:        ColoresApp.superficiePrimaria,
+        borderRadius: BorderRadius.circular(16),
+        border:       Border.all(color: ColoresApp.bordeMedio),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.text_fields_outlined, color: ColoresApp.acento, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Vista de fuentes',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+          ),
+          TextButton(
+            onPressed: () => context.push(Rutas.vistaFuentes),
+            child: const Text('Ver'),
+          ),
+        ],
+      ),
     );
   }
 }

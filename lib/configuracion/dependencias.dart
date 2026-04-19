@@ -7,6 +7,8 @@ import '../funcionalidades/autenticacion/login_cubit.dart';
 import '../funcionalidades/autenticacion/registro_cubit.dart';
 import '../funcionalidades/crear_usuario/crear_usuario_cubit.dart';
 import '../funcionalidades/inicio/inicio_cubit.dart';
+import '../funcionalidades/perfil/perfil_cubit.dart';
+import '../funcionalidades/perfil/perfil_repositorio.dart';
 
 /// Instancia global de GetIt. Se usa en toda la app como obtenerIt<Tipo>().
 final obtenerIt = GetIt.instance;
@@ -48,5 +50,13 @@ void configurarDependencias() {
 
   obtenerIt.registerFactory<InicioCubit>(
     () => InicioCubit(),
+  );
+
+  obtenerIt.registerLazySingleton<PerfilRepositorio>(
+    () => PerfilRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<PerfilCubit>(
+    () => PerfilCubit(obtenerIt<PerfilRepositorio>()),
   );
 }
