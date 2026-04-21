@@ -72,8 +72,8 @@ class _InicioPantallaState extends State<InicioPantalla> {
                       icono:       Icons.settings_outlined,
                       alPresionar: () => PanelOpciones.mostrar(
                         context,
-                        opciones: const [
-                          OpcionPanel(
+                        opciones: [
+                          const OpcionPanel(
                             icono:       Icons.people_outline_rounded,
                             colorFondo:  ColoresApp.acentoClaro,
                             colorIcono:  ColoresApp.acento,
@@ -86,6 +86,10 @@ class _InicioPantallaState extends State<InicioPantalla> {
                             colorIcono:  ColoresApp.teal,
                             titulo:      'Gestionar Roles',
                             descripcion: 'Asignar o remover roles',
+                            alPresionar: () {
+                              Navigator.of(context, rootNavigator: true).pop();
+                              context.push(Rutas.gestionRoles);
+                            },
                           ),
                           OpcionPanel(
                             icono:       Icons.shield_outlined,
@@ -93,15 +97,19 @@ class _InicioPantallaState extends State<InicioPantalla> {
                             colorIcono:  ColoresApp.verde,
                             titulo:      'Permisos',
                             descripcion: 'Permisos de la app',
+                            alPresionar: () {
+                              Navigator.of(context, rootNavigator: true).pop();
+                              context.push(Rutas.permisosSistema);
+                            },
                           ),
-                          OpcionPanel(
+                          const OpcionPanel(
                             icono:       Icons.label_outline_rounded,
                             colorFondo:  ColoresApp.ambarClaro,
                             colorIcono:  ColoresApp.ambar,
                             titulo:      'Gestionar Tags',
                             descripcion: 'Etiquetas',
                           ),
-                          OpcionPanel(
+                          const OpcionPanel(
                             icono:       Icons.tune_rounded,
                             colorFondo:  ColoresApp.superficieTerciar,
                             colorIcono:  ColoresApp.textoSecundario,

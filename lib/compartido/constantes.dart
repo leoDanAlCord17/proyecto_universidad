@@ -9,6 +9,8 @@ class TablasSupabase {
   static const String usuariosTags = 'usuarios_tags';
   static const String tiposEvento  = 'tipos_evento';
   static const String eventosTags  = 'eventos_tags';
+  static const String permisos      = 'permisos';
+  static const String rolesPermisos = 'roles_permisos';
 }
 
 /// Rutas de navegación de la app.
@@ -23,6 +25,11 @@ class Rutas {
   static const String eventos         = '/eventos';
   static const String crearEvento     = '/crear_evento';
   static const String borradores      = '/borradores';
+  static const String permisosSistema = '/permisos';
+  static const String gestionRoles    = '/gestion_roles';
+  static const String crearRol        = '/crear_rol';
+  static const String editarRol       = '/crear_rol/:rolId';
+  static String       editarRolUrl(String id) => '/crear_rol/$id';
   static const String editarEvento    = '/crear_evento/:eventoId';
   static String       editarEventoUrl(String id) => '/crear_evento/$id';
   static const String escanear        = '/escanear';

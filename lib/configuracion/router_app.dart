@@ -23,6 +23,12 @@ import '../funcionalidades/inicio/inicio_cubit.dart';
 import '../funcionalidades/inicio/inicio_pantalla.dart';
 import '../funcionalidades/borradores/borradores_cubit.dart';
 import '../funcionalidades/borradores/borradores_pantalla.dart';
+import '../funcionalidades/permisos/permisos_cubit.dart';
+import '../funcionalidades/permisos/permisos_pantalla.dart';
+import '../funcionalidades/roles/roles_cubit.dart';
+import '../funcionalidades/roles/roles_pantalla.dart';
+import '../funcionalidades/crear_rol/crear_rol_cubit.dart';
+import '../funcionalidades/crear_rol/crear_rol_pantalla.dart';
 import '../funcionalidades/crear_evento/crear_evento_cubit.dart';
 import '../funcionalidades/crear_evento/crear_evento_pantalla.dart';
 import '../funcionalidades/eventos/eventos_pantalla.dart';
@@ -157,6 +163,40 @@ class RouterApp {
         builder: (context, state) => BlocProvider(
           create: (_) => obtenerIt<BorradoresCubit>(),
           child: const BorradoresPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.permisosSistema,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<PermisosCubit>(),
+          child: const PermisosPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.gestionRoles,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<RolesCubit>(),
+          child: const RolesPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.crearRol,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<CrearRolCubit>(),
+          child: const CrearRolPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.editarRol,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<CrearRolCubit>(),
+          child: CrearRolPantalla(
+            rolId: state.pathParameters['rolId'],
+          ),
         ),
       ),
 
