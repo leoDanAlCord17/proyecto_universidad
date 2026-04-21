@@ -62,6 +62,8 @@ class BarraBusquedaApp extends StatelessWidget {
                 border:        InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
+                filled:         true,
+                fillColor:      Colors.transparent,
                 isDense:        true,
                 contentPadding: EdgeInsets.zero,
               ),
