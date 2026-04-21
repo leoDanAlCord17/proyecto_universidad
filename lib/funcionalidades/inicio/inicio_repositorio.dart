@@ -4,17 +4,17 @@ import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
 import '../../compartido/traductor_errores.dart';
 
-class PerfilRepositorio {
-  final SupabaseClient _supabase;
+class InicioRepositorio {
+  const InicioRepositorio(this._cliente);
 
-  PerfilRepositorio(this._supabase);
+  final SupabaseClient _cliente;
 
-  /// Obtiene el tag principal y los tags secundarios activos del usuario.
+  /// Retorna el tag principal y los tags secundarios activos del usuario.
   Future<({String? tagPrincipal, List<String> tagsSecundarios})> obtenerTags(
     String usuarioId,
   ) async {
     try {
-      final datos = await _supabase
+      final datos = await _cliente
           .from(TablasSupabase.usuariosTags)
           .select('tags(nombre, tipo)')
           .eq('usuario_id', usuarioId)

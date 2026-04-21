@@ -59,9 +59,10 @@ class Usuario extends Equatable {
 
   static List<Map<String, dynamic>> _rolesActivos(List usuariosRoles) =>
       usuariosRoles
-          .where((ur) => ur['estatus'] == 'activo')
+          .where((ur) => ur['estatus'] == true)
           .map((ur) => ur['roles'])
           .whereType<Map<String, dynamic>>()
+          .where((r) => r['estatus'] == true)
           .toList();
 
   static List<String> _extraerNombresRoles(List<Map<String, dynamic>> activos) =>
@@ -70,6 +71,7 @@ class Usuario extends Equatable {
   static List<String> _extraerNombresPermisos(List<Map<String, dynamic>> activos) =>
       activos
           .expand((r) => (r['roles_permisos'] as List? ?? []))
+          .where((rp) => rp['estatus'] == true)
           .map((rp) => rp['permisos'])
           .whereType<Map<String, dynamic>>()
           .map((p) => p['nombre'] as String)

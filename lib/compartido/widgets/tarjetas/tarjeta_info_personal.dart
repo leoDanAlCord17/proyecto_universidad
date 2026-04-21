@@ -45,7 +45,7 @@ class TarjetaInfoPersonal extends StatelessWidget {
             const _Divisor(),
           ],
           if (roles.isNotEmpty) ...[
-            _FilaChips(etiqueta: 'Rol global',        chips: roles),
+            _FilaChips(etiqueta: 'Roles',              chips: roles),
             const _Divisor(),
           ],
           if (tagPrincipal != null) ...[
