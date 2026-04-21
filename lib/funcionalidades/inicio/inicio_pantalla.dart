@@ -5,16 +5,40 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
+import '../../compartido/widgets/botones/boton_contorno_icono.dart';
 import '../../compartido/widgets/navegacion/barra_navegacion_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
+import '../../compartido/widgets/panel/panel_opciones.dart';
+import '../../compartido/widgets/qr/tarjeta_qr_perfil.dart';
 import '../../compartido/constantes.dart';
 import '../../configuracion/colores_app.dart';
 import '../autenticacion/auth_cubit.dart';
 import '../autenticacion/auth_estado.dart';
 import '../autenticacion/usuario.dart';
+import 'inicio_cubit.dart';
+import 'inicio_estado.dart';
 
-class InicioPantalla extends StatelessWidget {
+class InicioPantalla extends StatefulWidget {
   const InicioPantalla({super.key});
+
+  @override
+  State<InicioPantalla> createState() => _InicioPantallaState();
+}
+
+class _InicioPantallaState extends State<InicioPantalla> {
+  bool _tagsCargados = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_tagsCargados) return;
+    _tagsCargados = true;
+
+    final authEstado = context.read<AuthCubit>().state;
+    if (authEstado is Autenticado && authEstado.usuario.id != null) {
+      context.read<InicioCubit>().cargarTags(authEstado.usuario.id!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,30 +68,81 @@ class InicioPantalla extends StatelessWidget {
                         _CabeceraTexto(nombre: usuario?.nombreCompleto ?? ''),
                       ],
                     ),
-                    derecha: const IconButton(
-                      icon:      Icon(Icons.settings_outlined),
-                      color:     ColoresApp.textoSecundario,
-                      iconSize:  24,
-                      tooltip:   'Configuración',
-                      onPressed: null,
+                    derecha: BotonContornoIcono(
+                      icono:       Icons.settings_outlined,
+                      alPresionar: () => PanelOpciones.mostrar(
+                        context,
+                        opciones: const [
+                          OpcionPanel(
+                            icono:       Icons.people_outline_rounded,
+                            colorFondo:  ColoresApp.acentoClaro,
+                            colorIcono:  ColoresApp.acento,
+                            titulo:      'Usuarios',
+                            descripcion: 'Gestionar usuarios',
+                          ),
+                          OpcionPanel(
+                            icono:       Icons.admin_panel_settings_outlined,
+                            colorFondo:  ColoresApp.tealClaro,
+                            colorIcono:  ColoresApp.teal,
+                            titulo:      'Gestionar Roles',
+                            descripcion: 'Asignar o remover roles',
+                          ),
+                          OpcionPanel(
+                            icono:       Icons.shield_outlined,
+                            colorFondo:  ColoresApp.verdeClaro,
+                            colorIcono:  ColoresApp.verde,
+                            titulo:      'Permisos',
+                            descripcion: 'Permisos de la app',
+                          ),
+                          OpcionPanel(
+                            icono:       Icons.label_outline_rounded,
+                            colorFondo:  ColoresApp.ambarClaro,
+                            colorIcono:  ColoresApp.ambar,
+                            titulo:      'Gestionar Tags',
+                            descripcion: 'Etiquetas',
+                          ),
+                          OpcionPanel(
+                            icono:       Icons.tune_rounded,
+                            colorFondo:  ColoresApp.superficieTerciar,
+                            colorIcono:  ColoresApp.textoSecundario,
+                            titulo:      'Configuraciones generales',
+                            descripcion: 'Preferencias y ajustes',
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                if (kDebugMode)
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-                    child: _TarjetaDevWidgets(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                    child: Column(
+                      children: [
+                        if (usuario?.id != null)
+                          BlocBuilder<InicioCubit, InicioEstado>(
+                            builder: (context, estado) => TarjetaQrPerfil(
+                              usuarioId:       usuario!.id!,
+                              roles:           usuario.roles,
+                              tagPrincipal:    estado is InicioTagsCargados ? estado.tagPrincipal    : null,
+                              tagsSecundarios: estado is InicioTagsCargados ? estado.tagsSecundarios : [],
+                            ),
+                          ),
+                        if (kDebugMode) ...[
+                          const SizedBox(height: 12),
+                          const _TarjetaDevWidgets(),
+                          const SizedBox(height: 12),
+                          const _TarjetaDevFuentes(),
+                        ],
+                      ],
+                    ),
                   ),
-                if (kDebugMode)
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(20, 12, 20, 0),
-                    child: _TarjetaDevFuentes(),
-                  ),
+                ),
               ],
             ),
             bottomNavigationBar: BarraNavegacionApp(
               indiceActual:    0,
               alCambiarIndice: (indice) {
+                if (indice == 1) context.go(Rutas.eventos);
                 if (indice == 4) context.go(Rutas.perfil);
               },
             ),

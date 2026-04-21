@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:uniasist/compartido/widgets/avatares/avatar_usuario.dart';
 import 'package:uniasist/compartido/widgets/botones/boton_app.dart';
 import 'package:uniasist/compartido/widgets/botones/boton_icono.dart';
+import 'package:uniasist/compartido/widgets/botones/boton_contorno_icono.dart';
 import 'package:uniasist/compartido/widgets/botones/boton_regresar.dart';
+import 'package:uniasist/compartido/widgets/formularios/barra_busqueda_app.dart';
 import 'package:uniasist/compartido/widgets/formularios/campo_texto_app.dart';
 import 'package:uniasist/compartido/widgets/indicadores/barra_estadistica.dart';
 import 'package:uniasist/compartido/widgets/indicadores/insignia_estado.dart';
 import 'package:uniasist/compartido/widgets/listas/fila_rol.dart';
+import 'package:uniasist/compartido/widgets/avisos/aviso_app.dart';
+import 'package:uniasist/compartido/widgets/listas/fila_togle.dart';
 import 'package:uniasist/compartido/widgets/tarjetas/tarjeta_app.dart';
 import 'package:uniasist/compartido/widgets/tarjetas/tarjeta_asistente.dart';
 import 'package:uniasist/compartido/widgets/tarjetas/tarjeta_evento.dart';
@@ -26,6 +30,8 @@ class VistaWidgetsPantalla extends StatefulWidget {
 class _VistaWidgetsPantallaState extends State<VistaWidgetsPantalla> {
   final _controladorTexto     = TextEditingController(text: 'Texto de ejemplo');
   final _controladorClave     = TextEditingController();
+  final _controladorBusqueda  = TextEditingController();
+  DateTimeRange? _rangoBusqueda;
 
   @override
   void dispose() {
@@ -52,11 +58,18 @@ class _VistaWidgetsPantallaState extends State<VistaWidgetsPantalla> {
               controladorTexto: _controladorTexto,
               controladorClave: _controladorClave,
             ),
+            _SeccionBusqueda(
+              controlador:       _controladorBusqueda,
+              rangoSeleccionado: _rangoBusqueda,
+              alSeleccionarRango: (rango) => setState(() => _rangoBusqueda = rango),
+            ),
             _SeccionIndicadores(),
             _SeccionAvatares(),
             _SeccionTarjetasBase(),
             _SeccionTarjetasContenido(),
             _SeccionListas(),
+            const _SeccionTogle(),
+            const _SeccionAvisos(),
             const SizedBox(height: 40),
           ],
         ),
@@ -200,6 +213,30 @@ class _SeccionBotones extends StatelessWidget {
         ),
 
         _ItemWidget(
+          nombre:      'BotonContornoIcono — tamaños',
+          descripcion: 'Borde gris visible siempre. Fondo gris suave al presionar. Solo ícono.',
+          child: Row(
+            children: [
+              BotonContornoIcono(
+                icono:       Icons.description_outlined,
+                alPresionar: () {},
+              ),
+              const SizedBox(width: 12),
+              BotonContornoIcono(
+                icono:       Icons.filter_list_rounded,
+                alPresionar: () {},
+              ),
+              const SizedBox(width: 12),
+              BotonContornoIcono(
+                icono:       Icons.tune_rounded,
+                tamanio:     48,
+                alPresionar: () {},
+              ),
+            ],
+          ),
+        ),
+
+        _ItemWidget(
           nombre:      'BotonRegresar',
           descripcion: 'Botón de retroceso estándar. Usa context.pop() por defecto.',
           child: BotonRegresar(alPresionar: () {}),
@@ -278,6 +315,51 @@ class _SeccionFormularios extends StatelessWidget {
             hintText:    '',
             controller:  controladorTexto,
             soloLectura: true,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── SECCIÓN: BÚSQUEDA ────────────────────────────────────────────
+
+class _SeccionBusqueda extends StatelessWidget {
+  const _SeccionBusqueda({
+    required this.controlador,
+    required this.alSeleccionarRango,
+    this.rangoSeleccionado,
+  });
+
+  final TextEditingController       controlador;
+  final ValueChanged<DateTimeRange> alSeleccionarRango;
+  final DateTimeRange?              rangoSeleccionado;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _TituloSeccion('Búsqueda'),
+
+        _ItemWidget(
+          nombre:      'BarraBusquedaApp — sin calendario',
+          descripcion: 'Solo texto. alSeleccionarRango: null oculta el botón.',
+          child: BarraBusquedaApp(
+            hintText:  'Buscar evento...',
+            alCambiar: (_) {},
+          ),
+        ),
+
+        _ItemWidget(
+          nombre:      'BarraBusquedaApp — con calendario',
+          descripcion: 'El ícono se vuelve morado cuando hay un rango seleccionado.',
+          child: BarraBusquedaApp(
+            hintText:           'Buscar evento...',
+            controlador:        controlador,
+            alCambiar:          (_) {},
+            alSeleccionarRango: alSeleccionarRango,
+            rangoSeleccionado:  rangoSeleccionado,
           ),
         ),
       ],
@@ -543,6 +625,134 @@ class _SeccionTarjetasContenido extends StatelessWidget {
             estatus:   'salio_anticipado',
             horario:   '08:05 → 09:30',
             motivo:    'Consulta médica',
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── SECCIÓN: TOGLE ──────────────────────────────────────────────
+
+class _SeccionTogle extends StatefulWidget {
+  const _SeccionTogle();
+
+  @override
+  State<_SeccionTogle> createState() => _SeccionTogleState();
+}
+
+class _SeccionTogleState extends State<_SeccionTogle> {
+  bool _conIcono    = true;
+  bool _sinIcono    = false;
+  final bool _desactivado = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _TituloSeccion('Togle'),
+
+        _ItemWidget(
+          nombre:      'FilaTogle — con ícono, activo',
+          descripcion: 'icono opcional a la izquierda. valor: true.',
+          child: FilaTogle(
+            icono:       Icons.search_outlined,
+            titulo:      'Marcado manual',
+            descripcion: 'Admin busca por nombre o cédula',
+            valor:       _conIcono,
+            alCambiar:   (v) => setState(() => _conIcono = v),
+          ),
+        ),
+
+        _ItemWidget(
+          nombre:      'FilaTogle — sin ícono, inactivo',
+          descripcion: 'Sin icono. valor: false.',
+          child: FilaTogle(
+            titulo:      'Registrar salida (ciclo completo)',
+            descripcion: 'Asistente debe marcar entrada Y salida',
+            valor:       _sinIcono,
+            alCambiar:   (v) => setState(() => _sinIcono = v),
+          ),
+        ),
+
+        _ItemWidget(
+          nombre:      'FilaTogle — desactivado (alCambiar: null)',
+          descripcion: 'alCambiar: null deshabilita la interacción.',
+          child: FilaTogle(
+            titulo:      'Función no disponible',
+            descripcion: 'Requiere permiso de administrador',
+            valor:       _desactivado,
+            alCambiar:   null,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── SECCIÓN: AVISOS ─────────────────────────────────────────────
+
+class _SeccionAvisos extends StatelessWidget {
+  const _SeccionAvisos();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _TituloSeccion('Avisos'),
+
+        _ItemWidget(
+          nombre:      'AvisoApp — informativa',
+          descripcion: 'EstiloAviso.informativa. Duración por defecto: 2.5s.',
+          child: BotonApp(
+            texto:       'Mostrar informativa',
+            alPresionar: () => AvisoApp.mostrar(
+              context,
+              texto:  'La información fue actualizada correctamente.',
+              estilo: EstiloAviso.informativa,
+            ),
+          ),
+        ),
+
+        _ItemWidget(
+          nombre:      'AvisoApp — exito',
+          descripcion: 'EstiloAviso.exito.',
+          child: BotonApp(
+            texto:       'Mostrar éxito',
+            alPresionar: () => AvisoApp.mostrar(
+              context,
+              texto:  'Evento publicado exitosamente.',
+              estilo: EstiloAviso.exito,
+            ),
+          ),
+        ),
+
+        _ItemWidget(
+          nombre:      'AvisoApp — error',
+          descripcion: 'EstiloAviso.error.',
+          child: BotonApp(
+            texto:       'Mostrar error',
+            alPresionar: () => AvisoApp.mostrar(
+              context,
+              texto:  'No se pudo guardar. Verifica tu conexión.',
+              estilo: EstiloAviso.error,
+            ),
+          ),
+        ),
+
+        _ItemWidget(
+          nombre:      'AvisoApp — duración personalizada (5s)',
+          descripcion: 'Parámetro duracion: para controlar cuánto tiempo permanece.',
+          child: BotonApp(
+            texto:       'Mostrar 5 segundos',
+            alPresionar: () => AvisoApp.mostrar(
+              context,
+              texto:    'Este aviso dura 5 segundos.',
+              estilo:   EstiloAviso.informativa,
+              duracion: const Duration(seconds: 5),
+            ),
           ),
         ),
       ],

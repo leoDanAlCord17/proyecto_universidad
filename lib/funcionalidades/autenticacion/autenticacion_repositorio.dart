@@ -61,7 +61,7 @@ class AutenticacionRepositorio {
       final datos = await _supabase
           .from(TablasSupabase.usuarios)
           .select(
-            '*, usuarios_roles!usuarios_roles_usuario_id_fkey(estatus, roles(nombre, roles_permisos(permisos(nombre))))',
+            '*, usuarios_roles!usuarios_roles_usuario_id_fkey(estatus, roles(nombre, estatus, roles_permisos(estatus, permisos(nombre))))',
           )
           .eq('auth_id', idAuth)
           .single();

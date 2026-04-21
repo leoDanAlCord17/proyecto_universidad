@@ -21,6 +21,11 @@ import '../funcionalidades/crear_usuario/crear_usuario_cubit.dart';
 import '../funcionalidades/crear_usuario/crear_usuario_pantalla.dart';
 import '../funcionalidades/inicio/inicio_cubit.dart';
 import '../funcionalidades/inicio/inicio_pantalla.dart';
+import '../funcionalidades/borradores/borradores_cubit.dart';
+import '../funcionalidades/borradores/borradores_pantalla.dart';
+import '../funcionalidades/crear_evento/crear_evento_cubit.dart';
+import '../funcionalidades/crear_evento/crear_evento_pantalla.dart';
+import '../funcionalidades/eventos/eventos_pantalla.dart';
 import '../funcionalidades/perfil/perfil_cubit.dart';
 import '../funcionalidades/perfil/perfil_pantalla.dart';
 
@@ -121,6 +126,37 @@ class RouterApp {
         path: Rutas.admin,
         builder: (context, state) => const Scaffold(
           body: Center(child: Text('Panel de Administración')),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.eventos,
+        builder: (context, state) => const EventosPantalla(),
+      ),
+
+      GoRoute(
+        path: Rutas.crearEvento,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<CrearEventoCubit>(),
+          child: const CrearEventoPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.editarEvento,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<CrearEventoCubit>(),
+          child: CrearEventoPantalla(
+            eventoId: state.pathParameters['eventoId'],
+          ),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.borradores,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<BorradoresCubit>(),
+          child: const BorradoresPantalla(),
         ),
       ),
 

@@ -53,7 +53,14 @@ abstract class ColoresApp {
   static const tealClaro   = Color(0xFFE2F3FA);
 
   // ─── SOMBRA ───────────────────────────────────────────
-  static const sombraTarjeta = Color(0x0F5B3FD4);
+  static const sombraTarjeta  = Color(0x0F5B3FD4);
+  static const sombraGeneral  = Color(0x1A000000);
+  static const sombraBarrera  = Color(0x66000000);  // overlay oscuro de modales
+
+  // ─── BORDES SEMÁNTICOS (transparencias) ───────────────
+  static const bordeAviso     = Color(0x400F7EA0);   // teal  40%
+  static const bordeExito     = Color(0x401A9462);   // verde 40%
+  static const bordeError     = Color(0x40C23B3B);   // rojo  40%
 
   static const blanco = Color.fromARGB(255, 255, 255, 255);
 }

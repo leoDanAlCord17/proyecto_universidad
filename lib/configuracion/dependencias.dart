@@ -6,7 +6,12 @@ import '../funcionalidades/autenticacion/autenticacion_repositorio.dart';
 import '../funcionalidades/autenticacion/login_cubit.dart';
 import '../funcionalidades/autenticacion/registro_cubit.dart';
 import '../funcionalidades/crear_usuario/crear_usuario_cubit.dart';
+import '../funcionalidades/borradores/borradores_cubit.dart';
+import '../funcionalidades/borradores/borradores_repositorio.dart';
+import '../funcionalidades/crear_evento/crear_evento_cubit.dart';
+import '../funcionalidades/crear_evento/crear_evento_repositorio.dart';
 import '../funcionalidades/inicio/inicio_cubit.dart';
+import '../funcionalidades/inicio/inicio_repositorio.dart';
 import '../funcionalidades/perfil/perfil_cubit.dart';
 import '../funcionalidades/perfil/perfil_repositorio.dart';
 
@@ -48,8 +53,12 @@ void configurarDependencias() {
     () => CrearUsuarioCubit(obtenerIt<AutenticacionRepositorio>()),
   );
 
+  obtenerIt.registerLazySingleton<InicioRepositorio>(
+    () => InicioRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
   obtenerIt.registerFactory<InicioCubit>(
-    () => InicioCubit(),
+    () => InicioCubit(obtenerIt<InicioRepositorio>()),
   );
 
   obtenerIt.registerLazySingleton<PerfilRepositorio>(
@@ -58,5 +67,21 @@ void configurarDependencias() {
 
   obtenerIt.registerFactory<PerfilCubit>(
     () => PerfilCubit(obtenerIt<PerfilRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<CrearEventoRepositorio>(
+    () => CrearEventoRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<CrearEventoCubit>(
+    () => CrearEventoCubit(obtenerIt<CrearEventoRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<BorradoresRepositorio>(
+    () => BorradoresRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<BorradoresCubit>(
+    () => BorradoresCubit(obtenerIt<BorradoresRepositorio>()),
   );
 }

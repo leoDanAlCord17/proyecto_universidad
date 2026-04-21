@@ -46,7 +46,7 @@ class InsigniaEstado extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colores = _colores[estatus] ??
-        (const Color(0xFFE8E6F2), const Color(0xFF6B6480));
+        (ColoresApp.superficieTerciar, ColoresApp.textoSecundario);
 
     final texto = _textos[estatus] ?? estatus;
 

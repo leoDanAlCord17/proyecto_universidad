@@ -7,6 +7,8 @@ class TablasSupabase {
   static const String roles       = 'roles';
   static const String tags        = 'tags';
   static const String usuariosTags = 'usuarios_tags';
+  static const String tiposEvento  = 'tipos_evento';
+  static const String eventosTags  = 'eventos_tags';
 }
 
 /// Rutas de navegación de la app.
@@ -19,6 +21,10 @@ class Rutas {
   static const String home            = '/home';
   static const String admin           = '/admin';
   static const String eventos         = '/eventos';
+  static const String crearEvento     = '/crear_evento';
+  static const String borradores      = '/borradores';
+  static const String editarEvento    = '/crear_evento/:eventoId';
+  static String       editarEventoUrl(String id) => '/crear_evento/$id';
   static const String escanear        = '/escanear';
   static const String asistencia      = '/asistencia';
   static const String perfil          = '/perfil';
@@ -30,6 +36,15 @@ class Rutas {
   /// Solo para desarrollo — muestra el sistema tipográfico con variantes de peso.
   /// Eliminar esta ruta antes de subir a producción.
   static const String vistaFuentes    = '/dev/fuentes';
+}
+
+/// Valores válidos para eventos.estatus (CHECK constraint en la DB).
+class EstatusEvento {
+  static const String borrador   = 'borrador';
+  static const String programado = 'programado';
+  static const String enCurso    = 'en_curso';
+  static const String finalizado = 'finalizado';
+  static const String cancelado  = 'cancelado';
 }
 
 /// Mensajes de error genéricos para mostrar al usuario.
