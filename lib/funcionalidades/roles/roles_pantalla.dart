@@ -100,7 +100,9 @@ class _BotonCrearRol extends StatelessWidget {
           await context.push(Rutas.crearRol);
           if (context.mounted) context.read<RolesCubit>().cargarRoles();
         },
-        borderRadius: BorderRadius.circular(12),
+        borderRadius:   BorderRadius.circular(12),
+        splashColor:    Colors.white.withValues(alpha: 0.3),
+        highlightColor: Colors.white.withValues(alpha: 0.15),
         child: Ink(
           width:  40,
           height: 40,
@@ -284,8 +286,10 @@ class _BotonEditar extends StatelessWidget {
       color:        Colors.transparent,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap: alPresionar,
-        borderRadius: BorderRadius.circular(10),
+        onTap:          alPresionar,
+        borderRadius:   BorderRadius.circular(10),
+        splashColor:    Colors.white.withValues(alpha: 0.3),
+        highlightColor: Colors.white.withValues(alpha: 0.15),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           decoration: BoxDecoration(
@@ -329,6 +333,11 @@ class _VistaError extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: ColoresApp.textoSecundario,
               ),
+            ),
+            const SizedBox(height: 24),
+            FilledButton(
+              onPressed: () => context.read<RolesCubit>().cargarRoles(),
+              child: const Text('Reintentar'),
             ),
           ],
         ),

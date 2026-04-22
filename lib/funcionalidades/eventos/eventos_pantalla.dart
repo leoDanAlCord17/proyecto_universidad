@@ -103,8 +103,10 @@ class _BotonCrearEvento extends StatelessWidget {
       color:        Colors.transparent,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap:        () => context.push(Rutas.crearEvento),
-        borderRadius: BorderRadius.circular(12),
+        onTap:          () => context.push(Rutas.crearEvento),
+        borderRadius:   BorderRadius.circular(12),
+        splashColor:    Colors.white.withValues(alpha: 0.3),
+        highlightColor: Colors.white.withValues(alpha: 0.15),
         child: Ink(
           width:  40,
           height: 40,

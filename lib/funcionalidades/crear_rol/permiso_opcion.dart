@@ -1,4 +1,6 @@
-class PermisoOpcion {
+import 'package:equatable/equatable.dart';
+
+class PermisoOpcion extends Equatable {
   const PermisoOpcion({
     required this.id,
     required this.nombre,
@@ -14,4 +16,13 @@ class PermisoOpcion {
     nombre:      json['nombre']      as String,
     descripcion: json['descripcion'] as String? ?? '',
   );
+
+  Map<String, dynamic> aJson() => {
+    'id':          id,
+    'nombre':      nombre,
+    'descripcion': descripcion,
+  };
+
+  @override
+  List<Object?> get props => [id, nombre, descripcion];
 }
