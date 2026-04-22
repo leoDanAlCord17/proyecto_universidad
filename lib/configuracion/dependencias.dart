@@ -20,6 +20,10 @@ import '../funcionalidades/roles/roles_cubit.dart';
 import '../funcionalidades/roles/roles_repositorio.dart';
 import '../funcionalidades/crear_rol/crear_rol_cubit.dart';
 import '../funcionalidades/crear_rol/crear_rol_repositorio.dart';
+import '../funcionalidades/tags/tags_cubit.dart';
+import '../funcionalidades/tags/tags_repositorio.dart';
+import '../funcionalidades/crear_tag/crear_tag_cubit.dart';
+import '../funcionalidades/crear_tag/crear_tag_repositorio.dart';
 
 /// Instancia global de GetIt. Se usa en toda la app como obtenerIt<Tipo>().
 final obtenerIt = GetIt.instance;
@@ -113,5 +117,21 @@ void configurarDependencias() {
 
   obtenerIt.registerFactory<CrearRolCubit>(
     () => CrearRolCubit(obtenerIt<CrearRolRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<TagsRepositorio>(
+    () => TagsRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<TagsCubit>(
+    () => TagsCubit(obtenerIt<TagsRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<CrearTagRepositorio>(
+    () => CrearTagRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<CrearTagCubit>(
+    () => CrearTagCubit(obtenerIt<CrearTagRepositorio>()),
   );
 }

@@ -27,6 +27,10 @@ import '../funcionalidades/permisos/permisos_cubit.dart';
 import '../funcionalidades/permisos/permisos_pantalla.dart';
 import '../funcionalidades/roles/roles_cubit.dart';
 import '../funcionalidades/roles/roles_pantalla.dart';
+import '../funcionalidades/tags/tags_cubit.dart';
+import '../funcionalidades/tags/tags_pantalla.dart';
+import '../funcionalidades/crear_tag/crear_tag_cubit.dart';
+import '../funcionalidades/crear_tag/crear_tag_pantalla.dart';
 import '../funcionalidades/crear_rol/crear_rol_cubit.dart';
 import '../funcionalidades/crear_rol/crear_rol_pantalla.dart';
 import '../funcionalidades/crear_evento/crear_evento_cubit.dart';
@@ -196,6 +200,32 @@ class RouterApp {
           create: (_) => obtenerIt<CrearRolCubit>(),
           child: CrearRolPantalla(
             rolId: state.pathParameters['rolId'],
+          ),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.gestionTags,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<TagsCubit>(),
+          child: const TagsPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.crearTag,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<CrearTagCubit>(),
+          child: const CrearTagPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.editarTag,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<CrearTagCubit>(),
+          child: CrearTagPantalla(
+            tagId: state.pathParameters['tagId'],
           ),
         ),
       ),

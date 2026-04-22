@@ -93,17 +93,26 @@ class CrearRolRepositorio {
     }
   }
 
+  /// Sincroniza permisos usando diff: solo elimina los removidos e inserta los nuevos.
+  /// Evita borrar todo y reinsertar, que deja el rol sin permisos si el insert falla.
   Future<void> sincronizarPermisos({
     required String       rolId,
-    required List<String> permisosIds,
+    required List<String> nuevosIds,
+    required List<String> anterioresIds,
   }) async {
     try {
-      await _supabase
-          .from(TablasSupabase.rolesPermisos)
-          .delete()
-          .eq('rol_id', rolId);
-      if (permisosIds.isNotEmpty) {
-        final filas = permisosIds
+      final aEliminar = anterioresIds.where((id) => !nuevosIds.contains(id)).toList();
+      final aInsertar = nuevosIds.where((id) => !anterioresIds.contains(id)).toList();
+
+      if (aEliminar.isNotEmpty) {
+        await _supabase
+            .from(TablasSupabase.rolesPermisos)
+            .delete()
+            .eq('rol_id', rolId)
+            .inFilter('permiso_id', aEliminar);
+      }
+      if (aInsertar.isNotEmpty) {
+        final filas = aInsertar
             .map((pid) => {'rol_id': rolId, 'permiso_id': pid, 'estatus': true})
             .toList();
         await _supabase.from(TablasSupabase.rolesPermisos).insert(filas);

@@ -102,12 +102,16 @@ class _InicioPantallaState extends State<InicioPantalla> {
                               context.push(Rutas.permisosSistema);
                             },
                           ),
-                          const OpcionPanel(
+                          OpcionPanel(
                             icono:       Icons.label_outline_rounded,
                             colorFondo:  ColoresApp.ambarClaro,
                             colorIcono:  ColoresApp.ambar,
                             titulo:      'Gestionar Tags',
                             descripcion: 'Etiquetas',
+                            alPresionar: () {
+                              Navigator.of(context, rootNavigator: true).pop();
+                              context.push(Rutas.gestionTags);
+                            },
                           ),
                           const OpcionPanel(
                             icono:       Icons.tune_rounded,

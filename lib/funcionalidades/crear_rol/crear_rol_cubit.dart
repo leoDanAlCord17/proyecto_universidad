@@ -54,12 +54,13 @@ class CrearRolCubit extends Cubit<CrearRolEstado> {
       final resultado = await _repositorio.obtenerRol(rolId);
       final sel       = resultado.permisosIds;
       emit(CrearRolCargado(
-        rolId:                   rolId,
-        permisos:                permisos,
-        permisosVisibles:        _computarVisibles(permisos, sel, ''),
+        rolId:                    rolId,
+        permisos:                 permisos,
+        permisosVisibles:         _computarVisibles(permisos, sel, ''),
         permisosSeleccionadosIds: sel,
-        nombreInicial:           resultado.rol['nombre']      as String? ?? '',
-        descripcionInicial:      resultado.rol['descripcion'] as String? ?? '',
+        permisosIniciales:        sel,
+        nombreInicial:            resultado.rol['nombre']      as String? ?? '',
+        descripcionInicial:       resultado.rol['descripcion'] as String? ?? '',
       ));
     } on FallaServidor catch (e) {
       emit(CrearRolError(mensaje: e.mensaje));
@@ -79,7 +80,12 @@ class CrearRolCubit extends Cubit<CrearRolEstado> {
           ? e.rolId!
           : await _repositorio.crearRol(datos: datos);
       if (editando) await _repositorio.actualizarRol(id: rolId, datos: datos);
-      await _persistirPermisos(rolId: rolId, editando: editando, ids: e.permisosSeleccionadosIds);
+      await _persistirPermisos(
+        rolId:         rolId,
+        editando:      editando,
+        nuevosIds:     e.permisosSeleccionadosIds,
+        anterioresIds: e.permisosIniciales,
+      );
       emit(const CrearRolGuardado());
     } on FallaServidor catch (e) {
       emit(CrearRolError(mensaje: e.mensaje));
@@ -91,12 +97,17 @@ class CrearRolCubit extends Cubit<CrearRolEstado> {
   Future<void> _persistirPermisos({
     required String       rolId,
     required bool         editando,
-    required List<String> ids,
+    required List<String> nuevosIds,
+    required List<String> anterioresIds,
   }) async {
     if (editando) {
-      await _repositorio.sincronizarPermisos(rolId: rolId, permisosIds: ids);
-    } else if (ids.isNotEmpty) {
-      await _repositorio.asignarPermisos(rolId: rolId, permisosIds: ids);
+      await _repositorio.sincronizarPermisos(
+        rolId:         rolId,
+        nuevosIds:     nuevosIds,
+        anterioresIds: anterioresIds,
+      );
+    } else if (nuevosIds.isNotEmpty) {
+      await _repositorio.asignarPermisos(rolId: rolId, permisosIds: nuevosIds);
     }
   }
 

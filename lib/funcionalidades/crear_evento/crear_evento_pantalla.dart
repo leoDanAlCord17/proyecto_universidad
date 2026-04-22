@@ -537,8 +537,10 @@ class _BotonesAccion extends StatelessWidget {
             color:        Colors.transparent,
             borderRadius: BorderRadius.circular(14),
             child: InkWell(
-              onTap:        estado.estaGuardando ? null : cubit.publicarEvento,
-              borderRadius: BorderRadius.circular(14),
+              onTap:          estado.estaGuardando ? null : cubit.publicarEvento,
+              borderRadius:   BorderRadius.circular(14),
+              splashColor:    Colors.white.withValues(alpha: 0.3),
+              highlightColor: Colors.white.withValues(alpha: 0.15),
               child: Ink(
                 decoration: BoxDecoration(
                   gradient:     ColoresApp.degradadoPrincipal,

@@ -284,8 +284,10 @@ class _BotonAgregar extends StatelessWidget {
       color:        Colors.transparent,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap:        alPresionar,
-        borderRadius: BorderRadius.circular(10),
+        onTap:          alPresionar,
+        borderRadius:   BorderRadius.circular(10),
+        splashColor:    Colors.white.withValues(alpha: 0.3),
+        highlightColor: Colors.white.withValues(alpha: 0.15),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
           decoration: BoxDecoration(
@@ -312,8 +314,10 @@ class _BotonQuitar extends StatelessWidget {
       color:        Colors.transparent,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap:        alPresionar,
-        borderRadius: BorderRadius.circular(10),
+        onTap:          alPresionar,
+        borderRadius:   BorderRadius.circular(10),
+        splashColor:    Colors.white.withValues(alpha: 0.3),
+        highlightColor: Colors.white.withValues(alpha: 0.15),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
           decoration: BoxDecoration(

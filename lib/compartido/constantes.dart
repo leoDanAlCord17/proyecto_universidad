@@ -34,6 +34,10 @@ class Rutas {
   static String       editarEventoUrl(String id) => '/crear_evento/$id';
   static const String escanear        = '/escanear';
   static const String asistencia      = '/asistencia';
+  static const String gestionTags     = '/gestion_tags';
+  static const String crearTag        = '/crear_tag';
+  static const String editarTag       = '/crear_tag/:tagId';
+  static String       editarTagUrl(String id) => '/crear_tag/$id';
   static const String perfil          = '/perfil';
 
   /// Solo para desarrollo — muestra todos los widgets de la app visualmente.

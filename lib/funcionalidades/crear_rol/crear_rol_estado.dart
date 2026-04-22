@@ -26,6 +26,7 @@ final class CrearRolCargado extends CrearRolEstado {
     this.nombreInicial            = '',
     this.descripcionInicial       = '',
     this.permisosSeleccionadosIds = const [],
+    this.permisosIniciales        = const [],
     this.estaGuardando            = false,
   });
 
@@ -35,6 +36,7 @@ final class CrearRolCargado extends CrearRolEstado {
   final String              nombreInicial;
   final String              descripcionInicial;
   final List<String>        permisosSeleccionadosIds;
+  final List<String>        permisosIniciales;
   final bool                estaGuardando;
 
   CrearRolCargado copiarCon({
@@ -48,11 +50,16 @@ final class CrearRolCargado extends CrearRolEstado {
     nombreInicial:            nombreInicial,
     descripcionInicial:       descripcionInicial,
     permisosSeleccionadosIds: permisosSeleccionadosIds ?? this.permisosSeleccionadosIds,
+    permisosIniciales:        permisosIniciales,
     estaGuardando:            estaGuardando            ?? this.estaGuardando,
   );
 
   @override
-  List<Object?> get props => [permisos, permisosVisibles, rolId, nombreInicial, descripcionInicial, permisosSeleccionadosIds, estaGuardando];
+  List<Object?> get props => [
+    permisos, permisosVisibles, rolId,
+    nombreInicial, descripcionInicial,
+    permisosSeleccionadosIds, permisosIniciales, estaGuardando,
+  ];
 }
 
 final class CrearRolGuardado extends CrearRolEstado {
