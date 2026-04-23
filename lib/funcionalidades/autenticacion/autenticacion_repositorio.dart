@@ -75,6 +75,38 @@ class AutenticacionRepositorio {
     }
   }
 
+  /// Envía un correo con enlace para restablecer la contraseña.
+  /// Siempre retorna éxito aunque el correo no exista (por seguridad Supabase no lo revela).
+  Future<void> enviarCorreoRecuperacion(String correo) async {
+    try {
+      await _supabase.auth.resetPasswordForEmail(
+        correo,
+        redirectTo: 'com.uniasist.uniasist://reset-password',
+      );
+    } on AuthException catch (e) {
+      throw FallaAutenticacion(TraductorErrores.deAuth(e));
+    } catch (e) {
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
+    }
+  }
+
+  /// Actualiza la contraseña del usuario autenticado con sesión de recuperación.
+  /// Lanza [FallaAutenticacion] si la sesión expiró o la clave es inválida.
+  Future<void> actualizarContrasena(String nuevaClave) async {
+    try {
+      await _supabase.auth.updateUser(UserAttributes(password: nuevaClave));
+    } on AuthException catch (e) {
+      throw FallaAutenticacion(TraductorErrores.deAuth(e));
+    } catch (e) {
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
+    }
+  }
+
+  /// Stream que emite un evento cuando Supabase detecta una sesión de recuperación de contraseña.
+  Stream<bool> flujoRecuperacionContrasena() => _supabase.auth.onAuthStateChange
+      .where((data) => data.event == AuthChangeEvent.passwordRecovery)
+      .map((_) => true);
+
   /// Crea el perfil de un nuevo usuario en la tabla 'usuarios'.
   /// Lanza [FallaServidor] si hay un error al insertar.
   Future<void> crearPerfilUsuario(Usuario usuario) async {

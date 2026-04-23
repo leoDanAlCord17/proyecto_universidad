@@ -87,7 +87,7 @@ class _CuerpoLogin extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () => context.push(Rutas.recuperarContrasena),
                 child: Text('¿Olvidaste tu contraseña?', style: estiloTexto.labelLarge),
               ),
             ),

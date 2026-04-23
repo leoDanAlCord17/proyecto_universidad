@@ -38,7 +38,9 @@ class Rutas {
   static const String crearTag        = '/crear_tag';
   static const String editarTag       = '/crear_tag/:tagId';
   static String       editarTagUrl(String id) => '/crear_tag/$id';
-  static const String perfil          = '/perfil';
+  static const String recuperarContrasena = '/recuperar_contrasena';
+  static const String nuevaContrasena     = '/nueva_contrasena';
+  static const String perfil              = '/perfil';
 
   /// Solo para desarrollo — muestra todos los widgets de la app visualmente.
   /// Eliminar esta ruta antes de subir a producción.

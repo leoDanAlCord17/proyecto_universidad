@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
@@ -6,9 +8,20 @@ import 'autenticacion_repositorio.dart';
 import 'usuario.dart';
 
 class AuthCubit extends Cubit<AuthEstado> {
-  final AutenticacionRepositorio _repositorio;
+  AuthCubit(this._repositorio) : super(AuthInicial()) {
+    _suscripcionRecuperacion = _repositorio
+        .flujoRecuperacionContrasena()
+        .listen((_) => emit(RecuperandoContrasena()));
+  }
 
-  AuthCubit(this._repositorio) : super(AuthInicial());
+  final AutenticacionRepositorio _repositorio;
+  late final StreamSubscription<bool> _suscripcionRecuperacion;
+
+  @override
+  Future<void> close() {
+    _suscripcionRecuperacion.cancel();
+    return super.close();
+  }
 
   /// Revisa si hay una sesión activa al abrir la app.
   /// Si hay sesión y perfil completo → emite [Autenticado].
@@ -30,7 +43,6 @@ class AuthCubit extends Cubit<AuthEstado> {
         emit(Autenticado(usuario));
       }
     } on FallaServidor {
-      // Error real de DB (permisos, conexión, etc.) — tratar como no autenticado
       emit(NoAutenticado());
     } on FallaInesperada {
       emit(NoAutenticado());
