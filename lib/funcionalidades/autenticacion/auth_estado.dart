@@ -28,3 +28,10 @@ final class PerfilIncompleto extends AuthEstado {
   @override
   List<Object?> get props => [];
 }
+
+// Supabase detectó una sesión de recuperación de contraseña (enlace del correo).
+// El router redirige a /nueva_contrasena para que el usuario establezca la nueva clave.
+final class RecuperandoContrasena extends AuthEstado {
+  @override
+  List<Object?> get props => [];
+}

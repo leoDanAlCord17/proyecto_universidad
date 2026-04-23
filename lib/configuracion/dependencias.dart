@@ -24,6 +24,8 @@ import '../funcionalidades/tags/tags_cubit.dart';
 import '../funcionalidades/tags/tags_repositorio.dart';
 import '../funcionalidades/crear_tag/crear_tag_cubit.dart';
 import '../funcionalidades/crear_tag/crear_tag_repositorio.dart';
+import '../funcionalidades/recuperar_contrasena/recuperar_contrasena_cubit.dart';
+import '../funcionalidades/nueva_contrasena/nueva_contrasena_cubit.dart';
 
 /// Instancia global de GetIt. Se usa en toda la app como obtenerIt<Tipo>().
 final obtenerIt = GetIt.instance;
@@ -133,5 +135,13 @@ void configurarDependencias() {
 
   obtenerIt.registerFactory<CrearTagCubit>(
     () => CrearTagCubit(obtenerIt<CrearTagRepositorio>()),
+  );
+
+  obtenerIt.registerFactory<RecuperarContrasenaCubit>(
+    () => RecuperarContrasenaCubit(obtenerIt<AutenticacionRepositorio>()),
+  );
+
+  obtenerIt.registerFactory<NuevaContrasenaCubit>(
+    () => NuevaContrasenaCubit(obtenerIt<AutenticacionRepositorio>()),
   );
 }

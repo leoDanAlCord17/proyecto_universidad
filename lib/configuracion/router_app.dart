@@ -38,6 +38,10 @@ import '../funcionalidades/crear_evento/crear_evento_pantalla.dart';
 import '../funcionalidades/eventos/eventos_pantalla.dart';
 import '../funcionalidades/perfil/perfil_cubit.dart';
 import '../funcionalidades/perfil/perfil_pantalla.dart';
+import '../funcionalidades/recuperar_contrasena/recuperar_contrasena_cubit.dart';
+import '../funcionalidades/recuperar_contrasena/recuperar_contrasena_pantalla.dart';
+import '../funcionalidades/nueva_contrasena/nueva_contrasena_cubit.dart';
+import '../funcionalidades/nueva_contrasena/nueva_contrasena_pantalla.dart';
 
 class RouterApp {
   final AuthCubit authCubit;
@@ -64,20 +68,28 @@ class RouterApp {
         return ubicacion == Rutas.completarPerfil ? null : Rutas.completarPerfil;
       }
 
-      // Sin autenticación: solo puede estar en /login, /registro o /dev/widgets (solo debug)
+      // Recuperación de contraseña: sesión de recovery activa
+      if (estadoAuth is RecuperandoContrasena) {
+        return ubicacion == Rutas.nuevaContrasena ? null : Rutas.nuevaContrasena;
+      }
+
+      // Sin autenticación: solo puede estar en rutas públicas
       if (estadoAuth is! Autenticado) {
         final esRutaPublica = ubicacion == Rutas.login
             || ubicacion == Rutas.registro
+            || ubicacion == Rutas.recuperarContrasena
             || (kDebugMode && ubicacion == Rutas.vistaWidgets)
             || (kDebugMode && ubicacion == Rutas.vistaFuentes);
         return esRutaPublica ? null : Rutas.login;
       }
 
-      // Autenticado: redirigir fuera de rutas públicas y splash
+      // Autenticado: redirigir fuera de rutas de flujo de auth
       if (ubicacion == Rutas.splash ||
           ubicacion == Rutas.login ||
           ubicacion == Rutas.registro ||
-          ubicacion == Rutas.completarPerfil) {
+          ubicacion == Rutas.completarPerfil ||
+          ubicacion == Rutas.recuperarContrasena ||
+          ubicacion == Rutas.nuevaContrasena) {
         return Rutas.home;
       }
 
@@ -235,6 +247,22 @@ class RouterApp {
         builder: (context, state) => BlocProvider(
           create: (_) => obtenerIt<PerfilCubit>(),
           child: const PerfilPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.recuperarContrasena,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<RecuperarContrasenaCubit>(),
+          child: const RecuperarContrasenaPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.nuevaContrasena,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<NuevaContrasenaCubit>(),
+          child: const NuevaContrasenaPantalla(),
         ),
       ),
 
