@@ -24,6 +24,8 @@ import '../funcionalidades/tags/tags_cubit.dart';
 import '../funcionalidades/tags/tags_repositorio.dart';
 import '../funcionalidades/crear_tag/crear_tag_cubit.dart';
 import '../funcionalidades/crear_tag/crear_tag_repositorio.dart';
+import '../funcionalidades/eventos/eventos_cubit.dart';
+import '../funcionalidades/eventos/eventos_repositorio.dart';
 import '../funcionalidades/recuperar_contrasena/recuperar_contrasena_cubit.dart';
 import '../funcionalidades/nueva_contrasena/nueva_contrasena_cubit.dart';
 
@@ -135,6 +137,14 @@ void configurarDependencias() {
 
   obtenerIt.registerFactory<CrearTagCubit>(
     () => CrearTagCubit(obtenerIt<CrearTagRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<EventosRepositorio>(
+    () => EventosRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<EventosCubit>(
+    () => EventosCubit(obtenerIt<EventosRepositorio>()),
   );
 
   obtenerIt.registerFactory<RecuperarContrasenaCubit>(

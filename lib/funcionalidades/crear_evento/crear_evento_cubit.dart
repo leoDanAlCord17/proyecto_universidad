@@ -5,6 +5,7 @@ import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
 import 'crear_evento_estado.dart';
 import 'crear_evento_repositorio.dart';
+import 'grupo_audiencia.dart';
 import 'tag_opcion.dart';
 import 'tipo_evento.dart';
 
@@ -16,12 +17,14 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
   Future<void> cargarOpciones() async {
     emit(const CrearEventoCargando());
     try {
-      final tiposEvento = await _repositorio.obtenerTiposEvento();
-      final tags        = await _repositorio.obtenerTags();
+      final tiposEvento        = await _repositorio.obtenerTiposEvento();
+      final tags               = await _repositorio.obtenerTags();
+      final maxTagsSecundarios = await _repositorio.obtenerMaxTagsSecundarios();
       emit(CrearEventoCargado(
-        tiposEvento:     tiposEvento,
-        tagsPrincipales: tags.where((t) => t.tipo == 'principal').toList(),
-        tagsSecundarios: tags.where((t) => t.tipo == 'secundario').toList(),
+        tiposEvento:        tiposEvento,
+        tagsPrincipales:    tags.where((t) => t.tipo == 'principal').toList(),
+        tagsSecundarios:    tags.where((t) => t.tipo == 'secundario').toList(),
+        maxTagsSecundarios: maxTagsSecundarios,
       ));
     } on FallaServidor catch (e) {
       emit(CrearEventoError(mensaje: e.mensaje));
@@ -33,10 +36,12 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
   Future<void> cargarEventoParaEditar(String eventoId) async {
     emit(const CrearEventoCargando());
     try {
-      final tiposEvento = await _repositorio.obtenerTiposEvento();
-      final tags        = await _repositorio.obtenerTags();
-      final resultado   = await _repositorio.obtenerEvento(eventoId);
-      emit(_estadoDesdeEvento(eventoId, tiposEvento, tags, resultado));
+      final tiposEvento        = await _repositorio.obtenerTiposEvento();
+      final tags               = await _repositorio.obtenerTags();
+      final maxTagsSecundarios = await _repositorio.obtenerMaxTagsSecundarios();
+      final evento             = await _repositorio.obtenerEvento(eventoId);
+      final grupos             = await _repositorio.obtenerGruposEvento(eventoId);
+      emit(_estadoDesdeEvento(eventoId, tiposEvento, tags, maxTagsSecundarios, evento, grupos));
     } on FallaServidor catch (e) {
       emit(CrearEventoError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
@@ -45,12 +50,13 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
   }
 
   CrearEventoCargado _estadoDesdeEvento(
-    String eventoId,
-    List<TipoEvento> tiposEvento,
-    List<TagOpcion> tags,
-    ({Map<String, dynamic> evento, List<String> tagsPrincipalesIds, List<String> tagsSecundariosIds}) resultado,
+    String               eventoId,
+    List<TipoEvento>     tiposEvento,
+    List<TagOpcion>      tags,
+    int                  maxTagsSecundarios,
+    Map<String, dynamic> e,
+    List<GrupoAudiencia> grupos,
   ) {
-    final e     = resultado.evento;
     final tipo  = _resolverTipoEvento(e['tipo_evento_id'] as String?, tiposEvento);
     final bools = _boolsDesdeEvento(e);
     return CrearEventoCargado(
@@ -58,18 +64,18 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
       tiposEvento:             tiposEvento,
       tagsPrincipales:         tags.where((t) => t.tipo == 'principal').toList(),
       tagsSecundarios:         tags.where((t) => t.tipo == 'secundario').toList(),
+      maxTagsSecundarios:      maxTagsSecundarios,
       tipoEventoSeleccionado:  tipo,
-      tagsPrincipalesIds:      resultado.tagsPrincipalesIds,
-      tagsSecundariosIds:      resultado.tagsSecundariosIds,
+      alcance:                 e['alcance'] as String? ?? AlcanceEvento.general,
+      grupos:                  grupos,
       titulo:                  e['titulo']      as String? ?? '',
       descripcion:             e['descripcion'] as String? ?? '',
       lugar:                   e['lugar']       as String? ?? '',
       fechaInicio:             e['fecha_inicio'] != null ? DateTime.tryParse(e['fecha_inicio'] as String) : null,
       horaInicio:              _parseHora(e['hora_inicio'] as String?),
-      tieneFechaFin:           e['fecha_fin'] != null,
+      tieneFechaFin:           true,
       fechaFin:                e['fecha_fin'] != null ? DateTime.tryParse(e['fecha_fin'] as String) : null,
       horaFin:                 _parseHora(e['hora_fin'] as String?),
-      usarTags:                resultado.tagsPrincipalesIds.isNotEmpty || resultado.tagsSecundariosIds.isNotEmpty,
       permiteManualAdmin:      bools.permiteManualAdmin,
       permiteQrEvento:         bools.permiteQrEvento,
       permiteQrUsuario:        bools.permiteQrUsuario,
@@ -110,11 +116,28 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
   ) {
     final estadoActual = state;
     if (estadoActual is! CrearEventoCargado) return;
-    emit(actualizar(estadoActual));
+    emit(actualizar(estadoActual).copiarCon(limpiarErrorValidacion: true));
   }
 
-  Future<void> publicarEvento() async =>
-      _guardar(estatus: EstatusEvento.programado);
+  void agregarGrupo(GrupoAudiencia grupo) {
+    actualizarCampo((s) => s.copiarCon(grupos: [...s.grupos, grupo]));
+  }
+
+  void eliminarGrupo(int grupoIndex) {
+    actualizarCampo((s) => s.copiarCon(
+      grupos: s.grupos.where((g) => g.grupoIndex != grupoIndex).toList(),
+    ));
+  }
+
+  Future<void> publicarEvento() async {
+    final estadoActual = state;
+    if (estadoActual is! CrearEventoCargado) return;
+    if (estadoActual.horaFin == null) {
+      emit(estadoActual.copiarCon(errorValidacion: 'La hora de cierre es obligatoria para publicar.'));
+      return;
+    }
+    await _guardar(estatus: EstatusEvento.programado);
+  }
 
   Future<void> guardarBorrador() async =>
       _guardar(estatus: EstatusEvento.borrador);
@@ -132,10 +155,12 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
       if (editando) {
         await _repositorio.actualizarEvento(id: eventoId, datos: datos);
       }
-      final tagIds = estadoActual.usarTags
-          ? [...estadoActual.tagsPrincipalesIds, ...estadoActual.tagsSecundariosIds]
-          : <String>[];
-      await _persistirTags(eventoId: eventoId, editando: editando, tagIds: tagIds);
+      await _persistirGrupos(
+        eventoId: eventoId,
+        editando: editando,
+        alcance:  estadoActual.alcance,
+        grupos:   estadoActual.grupos,
+      );
       emit(CrearEventoGuardado(eventoId: eventoId));
     } on FallaServidor catch (e) {
       emit(CrearEventoError(mensaje: e.mensaje));
@@ -144,15 +169,16 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
     }
   }
 
-  Future<void> _persistirTags({
-    required String       eventoId,
-    required bool         editando,
-    required List<String> tagIds,
+  Future<void> _persistirGrupos({
+    required String              eventoId,
+    required bool                editando,
+    required String              alcance,
+    required List<GrupoAudiencia> grupos,
   }) async {
     if (editando) {
-      await _repositorio.actualizarTagsEvento(eventoId: eventoId, tagIds: tagIds);
-    } else if (tagIds.isNotEmpty) {
-      await _repositorio.guardarTagsEvento(eventoId: eventoId, tagIds: tagIds);
+      await _repositorio.actualizarGruposEvento(eventoId: eventoId, grupos: grupos);
+    } else if (alcance == AlcanceEvento.dirigido && grupos.isNotEmpty) {
+      await _repositorio.guardarGruposEvento(eventoId: eventoId, grupos: grupos);
     }
   }
 
@@ -167,8 +193,9 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
       'lugar':                     estado.lugar,
       'fecha_inicio':              _formatearFecha(estado.fechaInicio),
       'hora_inicio':               _formatearHora(estado.horaInicio),
-      'fecha_fin':                 estado.tieneFechaFin ? _formatearFecha(estado.fechaFin) : null,
-      'hora_fin':                  estado.tieneFechaFin ? _formatearHora(estado.horaFin) : null,
+      'fecha_fin':                 _formatearFecha(estado.fechaFin),
+      'hora_fin':                  _formatearHora(estado.horaFin),
+      'alcance':                   estado.alcance,
       'permite_manual_admin':      estado.permiteManualAdmin,
       'permite_qr_evento':         estado.permiteQrEvento,
       'permite_qr_usuario':        estado.permiteQrUsuario,

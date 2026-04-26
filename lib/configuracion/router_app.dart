@@ -35,6 +35,7 @@ import '../funcionalidades/crear_rol/crear_rol_cubit.dart';
 import '../funcionalidades/crear_rol/crear_rol_pantalla.dart';
 import '../funcionalidades/crear_evento/crear_evento_cubit.dart';
 import '../funcionalidades/crear_evento/crear_evento_pantalla.dart';
+import '../funcionalidades/eventos/eventos_cubit.dart';
 import '../funcionalidades/eventos/eventos_pantalla.dart';
 import '../funcionalidades/perfil/perfil_cubit.dart';
 import '../funcionalidades/perfil/perfil_pantalla.dart';
@@ -153,7 +154,10 @@ class RouterApp {
 
       GoRoute(
         path: Rutas.eventos,
-        builder: (context, state) => const EventosPantalla(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<EventosCubit>(),
+          child: const EventosPantalla(),
+        ),
       ),
 
       GoRoute(
