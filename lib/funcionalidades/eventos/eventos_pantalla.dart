@@ -23,15 +23,31 @@ class EventosPantalla extends StatefulWidget {
   State<EventosPantalla> createState() => _EventosPantallaState();
 }
 
-class _EventosPantallaState extends State<EventosPantalla> {
+class _EventosPantallaState extends State<EventosPantalla>
+    with WidgetsBindingObserver {
   final _busquedaCtrl = TextEditingController();
   bool  _cargado      = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_cargado) return;
     _cargado = true;
+    _cargar();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _cargar();
+  }
+
+  void _cargar() {
     final authEstado = context.read<AuthCubit>().state;
     if (authEstado is Autenticado && authEstado.usuario.id != null) {
       context.read<EventosCubit>().cargar(authEstado.usuario.id!);
@@ -40,6 +56,7 @@ class _EventosPantallaState extends State<EventosPantalla> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _busquedaCtrl.dispose();
     super.dispose();
   }
@@ -101,12 +118,7 @@ class _EventosPantallaState extends State<EventosPantalla> {
                   ),
                   EventosError()    => _VistaError(
                     mensaje:      estado.mensaje,
-                    onReintentar: () {
-                      final authEstado = context.read<AuthCubit>().state;
-                      if (authEstado is Autenticado && authEstado.usuario.id != null) {
-                        context.read<EventosCubit>().cargar(authEstado.usuario.id!);
-                      }
-                    },
+                    onReintentar: _cargar,
                   ),
                   EventosCargado()  => _VistaContenido(
                     enCurso:  estado.enCurso,

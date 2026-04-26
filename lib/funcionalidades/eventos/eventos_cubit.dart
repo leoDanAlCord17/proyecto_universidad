@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,18 +16,23 @@ class EventosCubit extends Cubit<EventosEstado> {
 
   List<EventoConGrupos> _enCurso  = [];
   List<EventoConGrupos> _proximos = [];
+  Timer? _timer;
+
+  static const _intervaloRefresh = Duration(seconds: 60);
 
   Future<void> cargar(String usuarioId) async {
+    _timer?.cancel();
     emit(const EventosCargando());
     try {
-      final eventos    = await _repositorio.obtenerEventosConGrupos();
+      final eventos     = await _repositorio.obtenerEventosConGrupos();
       final tagsUsuario = await _repositorio.obtenerTagsUsuario(usuarioId);
-      final visibles   = eventos.where((e) => _esVisible(e, tagsUsuario)).toList();
+      final visibles    = eventos.where((e) => _esVisible(e, tagsUsuario)).toList();
 
       _enCurso  = visibles.where((e) => e.evento.estatus == EstatusEvento.enCurso).toList();
       _proximos = visibles.where((e) => e.evento.estatus == EstatusEvento.programado).toList();
 
       emit(EventosCargado(enCurso: _enCurso, proximos: _proximos));
+      _timer = Timer.periodic(_intervaloRefresh, (_) => _refrescarSilencioso(usuarioId));
     } on FallaServidor catch (e) {
       emit(EventosError(e.mensaje));
     } on FallaInesperada catch (e) {
@@ -44,6 +51,27 @@ class EventosCubit extends Cubit<EventosEstado> {
       rangoFechas:   rango,
       limpiarRango:  rango == null,
     ));
+  }
+
+  Future<void> _refrescarSilencioso(String usuarioId) async {
+    try {
+      final eventos     = await _repositorio.obtenerEventosConGrupos();
+      final tagsUsuario = await _repositorio.obtenerTagsUsuario(usuarioId);
+      final visibles    = eventos.where((e) => _esVisible(e, tagsUsuario)).toList();
+
+      _enCurso  = visibles.where((e) => e.evento.estatus == EstatusEvento.enCurso).toList();
+      _proximos = visibles.where((e) => e.evento.estatus == EstatusEvento.programado).toList();
+
+      final estadoActual = state;
+      if (estadoActual is! EventosCargado) return;
+
+      emit(estadoActual.copiarCon(
+        enCurso:  _aplicarFiltros(_enCurso,  estadoActual.textoBusqueda, estadoActual.rangoFechas),
+        proximos: _aplicarFiltros(_proximos, estadoActual.textoBusqueda, estadoActual.rangoFechas),
+      ));
+    } catch (_) {
+      // Fallo silencioso — no interrumpe al usuario
+    }
   }
 
   List<EventoConGrupos> _aplicarFiltros(
@@ -91,5 +119,11 @@ class EventosCubit extends Cubit<EventosEstado> {
   ) {
     if (tagsUsuario.tagPrincipalId != grupo.tagPrincipalId) return false;
     return grupo.tagsSecundariosIds.every(tagsUsuario.tagsSecundariosIds.contains);
+  }
+
+  @override
+  Future<void> close() {
+    _timer?.cancel();
+    return super.close();
   }
 }
