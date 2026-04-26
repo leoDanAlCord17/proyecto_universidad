@@ -4,10 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
+import '../../compartido/widgets/avisos/aviso_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
 import '../../compartido/widgets/formularios/campo_fecha_app.dart';
 import '../../compartido/widgets/formularios/campo_hora_app.dart';
-import '../../compartido/widgets/formularios/campo_multiselect_app.dart';
 import '../../compartido/widgets/formularios/campo_select_app.dart';
 import '../../compartido/widgets/formularios/campo_texto_app.dart';
 import '../../compartido/widgets/listas/fila_togle.dart';
@@ -15,7 +15,7 @@ import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../configuracion/colores_app.dart';
 import 'crear_evento_cubit.dart';
 import 'crear_evento_estado.dart';
-import 'tag_opcion.dart';
+import 'selector_audiencia.dart';
 import 'tipo_evento.dart';
 
 const _decorTarjeta = BoxDecoration(
@@ -86,10 +86,10 @@ class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
         }
         if (estado is CrearEventoGuardado) context.go(Rutas.eventos);
         if (estado is CrearEventoError) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content:         Text(estado.mensaje),
-            backgroundColor: ColoresApp.rojo,
-          ));
+          AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
+        }
+        if (estado is CrearEventoCargado && estado.errorValidacion != null) {
+          AvisoApp.mostrar(context, texto: estado.errorValidacion!, estilo: EstiloAviso.error);
         }
       },
       builder: (context, estado) => _construirVista(context, estado),
@@ -175,7 +175,7 @@ class _CuerpoFormulario extends StatelessWidget {
                 const SizedBox(height: 16),
                 _TarjetaFechaDuracion(estado: estado),
                 const SizedBox(height: 16),
-                _TarjetaTagsUsuarios(estado: estado),
+                _TarjetaAudiencia(estado: estado),
                 const SizedBox(height: 16),
                 _TarjetaModosRegistro(estado: estado),
                 const SizedBox(height: 16),
@@ -286,7 +286,7 @@ class _TarjetaFechaDuracion extends StatelessWidget {
                   hintText:      'dd/mm/aaaa',
                   fechaActual:   estado.fechaInicio,
                   alSeleccionar: (f) => cubit.actualizarCampo(
-                    (s) => s.copiarCon(fechaInicio: f),
+                    (s) => s.copiarCon(fechaInicio: f, fechaFin: f),
                   ),
                 ),
               ),
@@ -304,101 +304,56 @@ class _TarjetaFechaDuracion extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          FilaTogle(
-            titulo:      'Tiene hora de cierre',
-            descripcion: 'Define cuándo finaliza el evento',
-            valor:       estado.tieneFechaFin,
-            alCambiar:   (v) => cubit.actualizarCampo(
-              (s) => s.copiarCon(tieneFechaFin: v),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: CampoFechaApp(
+                  etiqueta:      'Fecha fin',
+                  hintText:      'dd/mm/aaaa',
+                  fechaActual:   estado.fechaFin,
+                  fechaMinima:   estado.fechaInicio,
+                  alSeleccionar: (f) => cubit.actualizarCampo(
+                    (s) => s.copiarCon(fechaFin: f),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: CampoHoraApp(
+                  etiqueta:      'Hora fin *',
+                  hintText:      '10:00',
+                  horaActual:    estado.horaFin,
+                  alSeleccionar: (h) => cubit.actualizarCampo(
+                    (s) => s.copiarCon(horaFin: h),
+                  ),
+                ),
+              ),
+            ],
           ),
-          if (estado.tieneFechaFin) ...[
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: CampoFechaApp(
-                    etiqueta:      'Fecha fin',
-                    hintText:      'dd/mm/aaaa',
-                    fechaActual:   estado.fechaFin,
-                    fechaMinima:   estado.fechaInicio,
-                    alSeleccionar: (f) => cubit.actualizarCampo(
-                      (s) => s.copiarCon(fechaFin: f),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: CampoHoraApp(
-                    etiqueta:      'Hora fin',
-                    hintText:      '10:00',
-                    horaActual:    estado.horaFin,
-                    alSeleccionar: (h) => cubit.actualizarCampo(
-                      (s) => s.copiarCon(horaFin: h),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ],
       ),
     );
   }
 }
 
-// ─── Tarjeta: tags usuarios ───────────────────────────────────────────────────
+// ─── Tarjeta: audiencia ───────────────────────────────────────────────────────
 
-class _TarjetaTagsUsuarios extends StatelessWidget {
-  const _TarjetaTagsUsuarios({required this.estado});
+class _TarjetaAudiencia extends StatelessWidget {
+  const _TarjetaAudiencia({required this.estado});
 
   final CrearEventoCargado estado;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<CrearEventoCubit>();
     return Container(
       decoration: _decorTarjeta,
       padding:    const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _tituloSeccion('TAGS USUARIOS', context),
+          _tituloSeccion('AUDIENCIA', context),
           const SizedBox(height: 16),
-          FilaTogle(
-            titulo:      'Usar tags?',
-            descripcion: 'Defina grupos para el evento',
-            valor:       estado.usarTags,
-            alCambiar:   (v) => cubit.actualizarCampo(
-              (s) => s.copiarCon(usarTags: v),
-            ),
-          ),
-          if (estado.usarTags) ...[
-            const SizedBox(height: 16),
-            CampoMultiselectApp<TagOpcion>(
-              etiqueta:         'Tags Principales',
-              hintText:         'Selecciona categorías...',
-              opciones:         estado.tagsPrincipales,
-              mostrarTexto:     (t) => t.nombre,
-              obtenerId:        (t) => t.id,
-              idsSeleccionados: estado.tagsPrincipalesIds,
-              alSeleccionar:    (ids) => cubit.actualizarCampo(
-                (s) => s.copiarCon(tagsPrincipalesIds: ids),
-              ),
-            ),
-            const SizedBox(height: 16),
-            CampoMultiselectApp<TagOpcion>(
-              etiqueta:         'Tags secundarios',
-              hintText:         'Selecciona categorías...',
-              opciones:         estado.tagsSecundarios,
-              mostrarTexto:     (t) => t.nombre,
-              obtenerId:        (t) => t.id,
-              idsSeleccionados: estado.tagsSecundariosIds,
-              alSeleccionar:    (ids) => cubit.actualizarCampo(
-                (s) => s.copiarCon(tagsSecundariosIds: ids),
-              ),
-            ),
-          ],
+          SelectorAudiencia(estado: estado),
         ],
       ),
     );

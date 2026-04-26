@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
+import '../../compartido/constantes.dart';
+import 'grupo_audiencia.dart';
 import 'tag_opcion.dart';
 import 'tipo_evento.dart';
 
@@ -27,17 +29,17 @@ final class CrearEventoCargado extends CrearEventoEstado {
     required this.tagsSecundarios,
     this.eventoId,
     this.tipoEventoSeleccionado,
-    this.tagsPrincipalesIds      = const [],
-    this.tagsSecundariosIds      = const [],
+    this.alcance                 = AlcanceEvento.general,
+    this.grupos                  = const [],
+    this.maxTagsSecundarios      = 3,
     this.titulo                  = '',
     this.descripcion             = '',
     this.lugar                   = '',
     this.fechaInicio,
     this.horaInicio,
-    this.tieneFechaFin           = false,
+    this.tieneFechaFin           = true,
     this.fechaFin,
     this.horaFin,
-    this.usarTags                = false,
     this.permiteManualAdmin      = true,
     this.permiteQrEvento         = true,
     this.permiteQrUsuario        = true,
@@ -46,58 +48,62 @@ final class CrearEventoCargado extends CrearEventoEstado {
     this.permiteSalidaAnticipada = false,
     this.marcarAusentesAuto      = false,
     this.estaGuardando           = false,
+    this.errorValidacion,
   });
 
-  final String?          eventoId;
-  final List<TipoEvento> tiposEvento;
-  final List<TagOpcion>  tagsPrincipales;
-  final List<TagOpcion>  tagsSecundarios;
-  final TipoEvento?      tipoEventoSeleccionado;
-  final List<String>     tagsPrincipalesIds;
-  final List<String>     tagsSecundariosIds;
-  final String           titulo;
-  final String           descripcion;
-  final String           lugar;
-  final DateTime?        fechaInicio;
-  final TimeOfDay?       horaInicio;
-  final bool             tieneFechaFin;
-  final DateTime?        fechaFin;
-  final TimeOfDay?       horaFin;
-  final bool             usarTags;
-  final bool             permiteManualAdmin;
-  final bool             permiteQrEvento;
-  final bool             permiteQrUsuario;
-  final bool             permiteForaneos;
-  final bool             requiereCicloCompleto;
-  final bool             permiteSalidaAnticipada;
-  final bool             marcarAusentesAuto;
-  final bool             estaGuardando;
+  final String?            eventoId;
+  final List<TipoEvento>   tiposEvento;
+  final List<TagOpcion>    tagsPrincipales;
+  final List<TagOpcion>    tagsSecundarios;
+  final TipoEvento?        tipoEventoSeleccionado;
+  final String             alcance;
+  final List<GrupoAudiencia> grupos;
+  final int                maxTagsSecundarios;
+  final String             titulo;
+  final String             descripcion;
+  final String             lugar;
+  final DateTime?          fechaInicio;
+  final TimeOfDay?         horaInicio;
+  final bool               tieneFechaFin;
+  final DateTime?          fechaFin;
+  final TimeOfDay?         horaFin;
+  final bool               permiteManualAdmin;
+  final bool               permiteQrEvento;
+  final bool               permiteQrUsuario;
+  final bool               permiteForaneos;
+  final bool               requiereCicloCompleto;
+  final bool               permiteSalidaAnticipada;
+  final bool               marcarAusentesAuto;
+  final bool               estaGuardando;
+  final String?            errorValidacion;
 
   CrearEventoCargado copiarCon({
-    String?           eventoId,
-    List<TipoEvento>? tiposEvento,
-    List<TagOpcion>?  tagsPrincipales,
-    List<TagOpcion>?  tagsSecundarios,
-    TipoEvento?       tipoEventoSeleccionado,
-    List<String>?     tagsPrincipalesIds,
-    List<String>?     tagsSecundariosIds,
-    String?           titulo,
-    String?           descripcion,
-    String?           lugar,
-    DateTime?         fechaInicio,
-    TimeOfDay?        horaInicio,
-    bool?             tieneFechaFin,
-    DateTime?         fechaFin,
-    TimeOfDay?        horaFin,
-    bool?             usarTags,
-    bool?             permiteManualAdmin,
-    bool?             permiteQrEvento,
-    bool?             permiteQrUsuario,
-    bool?             permiteForaneos,
-    bool?             requiereCicloCompleto,
-    bool?             permiteSalidaAnticipada,
-    bool?             marcarAusentesAuto,
-    bool?             estaGuardando,
+    String?              eventoId,
+    List<TipoEvento>?    tiposEvento,
+    List<TagOpcion>?     tagsPrincipales,
+    List<TagOpcion>?     tagsSecundarios,
+    TipoEvento?          tipoEventoSeleccionado,
+    String?              alcance,
+    List<GrupoAudiencia>? grupos,
+    int?                 maxTagsSecundarios,
+    String?              titulo,
+    String?              descripcion,
+    String?              lugar,
+    DateTime?            fechaInicio,
+    TimeOfDay?           horaInicio,
+    bool?                tieneFechaFin,
+    DateTime?            fechaFin,
+    TimeOfDay?           horaFin,
+    bool?                permiteManualAdmin,
+    bool?                permiteQrEvento,
+    bool?                permiteQrUsuario,
+    bool?                permiteForaneos,
+    bool?                requiereCicloCompleto,
+    bool?                permiteSalidaAnticipada,
+    bool?                marcarAusentesAuto,
+    bool?                estaGuardando,
+    String?              errorValidacion,
+    bool                 limpiarErrorValidacion = false,
   }) =>
       CrearEventoCargado(
         eventoId:                eventoId                ?? this.eventoId,
@@ -105,8 +111,9 @@ final class CrearEventoCargado extends CrearEventoEstado {
         tagsPrincipales:         tagsPrincipales         ?? this.tagsPrincipales,
         tagsSecundarios:         tagsSecundarios         ?? this.tagsSecundarios,
         tipoEventoSeleccionado:  tipoEventoSeleccionado  ?? this.tipoEventoSeleccionado,
-        tagsPrincipalesIds:      tagsPrincipalesIds      ?? this.tagsPrincipalesIds,
-        tagsSecundariosIds:      tagsSecundariosIds      ?? this.tagsSecundariosIds,
+        alcance:                 alcance                 ?? this.alcance,
+        grupos:                  grupos                  ?? this.grupos,
+        maxTagsSecundarios:      maxTagsSecundarios      ?? this.maxTagsSecundarios,
         titulo:                  titulo                  ?? this.titulo,
         descripcion:             descripcion             ?? this.descripcion,
         lugar:                   lugar                   ?? this.lugar,
@@ -115,7 +122,6 @@ final class CrearEventoCargado extends CrearEventoEstado {
         tieneFechaFin:           tieneFechaFin           ?? this.tieneFechaFin,
         fechaFin:                fechaFin                ?? this.fechaFin,
         horaFin:                 horaFin                 ?? this.horaFin,
-        usarTags:                usarTags                ?? this.usarTags,
         permiteManualAdmin:      permiteManualAdmin      ?? this.permiteManualAdmin,
         permiteQrEvento:         permiteQrEvento         ?? this.permiteQrEvento,
         permiteQrUsuario:        permiteQrUsuario        ?? this.permiteQrUsuario,
@@ -124,6 +130,9 @@ final class CrearEventoCargado extends CrearEventoEstado {
         permiteSalidaAnticipada: permiteSalidaAnticipada ?? this.permiteSalidaAnticipada,
         marcarAusentesAuto:      marcarAusentesAuto      ?? this.marcarAusentesAuto,
         estaGuardando:           estaGuardando           ?? this.estaGuardando,
+        errorValidacion: limpiarErrorValidacion
+            ? null
+            : (errorValidacion ?? this.errorValidacion),
       );
 
   @override
@@ -133,8 +142,9 @@ final class CrearEventoCargado extends CrearEventoEstado {
         tagsPrincipales,
         tagsSecundarios,
         tipoEventoSeleccionado,
-        tagsPrincipalesIds,
-        tagsSecundariosIds,
+        alcance,
+        grupos,
+        maxTagsSecundarios,
         titulo,
         descripcion,
         lugar,
@@ -143,7 +153,6 @@ final class CrearEventoCargado extends CrearEventoEstado {
         tieneFechaFin,
         fechaFin,
         horaFin,
-        usarTags,
         permiteManualAdmin,
         permiteQrEvento,
         permiteQrUsuario,
@@ -152,6 +161,7 @@ final class CrearEventoCargado extends CrearEventoEstado {
         permiteSalidaAnticipada,
         marcarAusentesAuto,
         estaGuardando,
+        errorValidacion,
       ];
 }
 

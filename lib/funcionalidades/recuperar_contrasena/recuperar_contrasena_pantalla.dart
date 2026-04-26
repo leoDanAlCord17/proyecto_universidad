@@ -71,8 +71,8 @@ class _VistaFormulario extends StatelessWidget {
             const _Cabecera(),
             const SizedBox(height: 40),
             CampoTextoApp(
-              etiqueta:   'Correo institucional',
-              hintText:   'maria.gonzalez@uni.edu',
+              etiqueta:   'Correo',
+              hintText:   'leo.alvarez@gmail.com',
               controller: correoCtrl,
             ),
             const SizedBox(height: 12),

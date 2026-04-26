@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import 'grupo_audiencia.dart';
 import 'tag_opcion.dart';
 import 'tipo_evento.dart';
 
@@ -40,6 +41,22 @@ class CrearEventoRepositorio {
     }
   }
 
+  /// Retorna el valor de max_tags_secundarios_por_usuario desde configuracion_int.
+  Future<int> obtenerMaxTagsSecundarios() async {
+    try {
+      final fila = await _cliente
+          .from(TablasSupabase.configuracionInt)
+          .select('valor')
+          .eq('clave', 'max_tags_secundarios_por_usuario')
+          .maybeSingle();
+      return (fila?['valor'] as int?) ?? 3;
+    } on PostgrestException catch (e) {
+      throw FallaServidor(e.message);
+    } catch (e) {
+      throw FallaInesperada(e.toString());
+    }
+  }
+
   /// Inserta un nuevo evento y retorna su ID generado.
   Future<String> crearEvento({required Map<String, dynamic> datos}) async {
     try {
@@ -70,43 +87,49 @@ class CrearEventoRepositorio {
     }
   }
 
-  /// Retorna los datos de un evento y sus tag IDs separados por tipo.
-  Future<({
-    Map<String, dynamic> evento,
-    List<String> tagsPrincipalesIds,
-    List<String> tagsSecundariosIds,
-  })> obtenerEvento(String id) async {
+  /// Retorna los datos de un evento.
+  Future<Map<String, dynamic>> obtenerEvento(String id) async {
     try {
-      final eventoData = await _cliente
+      return await _cliente
           .from(TablasSupabase.eventos)
           .select()
           .eq('id', id)
           .single();
+    } on PostgrestException catch (e) {
+      throw FallaServidor(e.message);
+    } catch (e) {
+      throw FallaInesperada(e.toString());
+    }
+  }
 
-      final tagsData = await _cliente
-          .from(TablasSupabase.eventosTags)
-          .select('tag_id, tags(tipo)')
-          .eq('evento_id', id)
-          .eq('estatus', true);
+  /// Retorna los grupos de audiencia de un evento con sus tags completos.
+  Future<List<GrupoAudiencia>> obtenerGruposEvento(String eventoId) async {
+    try {
+      final datos = await _cliente
+          .from(TablasSupabase.eventoGruposTags)
+          .select('grupo_index, tag_id, tags(id, nombre, tipo)')
+          .eq('evento_id', eventoId);
 
-      final tagsPrincipalesIds = <String>[];
-      final tagsSecundariosIds = <String>[];
+      final Map<int, TagOpcion>       principalesPorGrupo  = {};
+      final Map<int, List<TagOpcion>> secundariosPorGrupo  = {};
 
-      for (final fila in tagsData as List) {
-        final tagId = fila['tag_id'] as String;
-        final tipo  = (fila['tags'] as Map?)?['tipo'] as String?;
-        if (tipo == 'principal') {
-          tagsPrincipalesIds.add(tagId);
+      for (final fila in datos as List) {
+        final grupoIndex = fila['grupo_index'] as int;
+        final tagData    = fila['tags']         as Map<String, dynamic>?;
+        if (tagData == null) continue;
+        final tag = TagOpcion.desdeJson(tagData);
+        if (tag.tipo == 'principal') {
+          principalesPorGrupo[grupoIndex] = tag;
         } else {
-          tagsSecundariosIds.add(tagId);
+          secundariosPorGrupo.putIfAbsent(grupoIndex, () => []).add(tag);
         }
       }
 
-      return (
-        evento:              eventoData,
-        tagsPrincipalesIds:  tagsPrincipalesIds,
-        tagsSecundariosIds:  tagsSecundariosIds,
-      );
+      return principalesPorGrupo.entries.map((e) => GrupoAudiencia(
+        grupoIndex:      e.key,
+        tagPrincipal:    e.value,
+        tagsSecundarios: secundariosPorGrupo[e.key] ?? [],
+      )).toList();
     } on PostgrestException catch (e) {
       throw FallaServidor(e.message);
     } catch (e) {
@@ -116,7 +139,7 @@ class CrearEventoRepositorio {
 
   /// Actualiza un evento existente.
   Future<void> actualizarEvento({
-    required String             id,
+    required String               id,
     required Map<String, dynamic> datos,
   }) async {
     try {
@@ -128,21 +151,15 @@ class CrearEventoRepositorio {
     }
   }
 
-  /// Reemplaza todos los tags de un evento (borra los existentes e inserta los nuevos).
-  Future<void> actualizarTagsEvento({
-    required String       eventoId,
-    required List<String> tagIds,
+  /// Inserta los grupos de audiencia de un evento nuevo.
+  Future<void> guardarGruposEvento({
+    required String              eventoId,
+    required List<GrupoAudiencia> grupos,
   }) async {
     try {
-      await _cliente
-          .from(TablasSupabase.eventosTags)
-          .delete()
-          .eq('evento_id', eventoId);
-      if (tagIds.isNotEmpty) {
-        final filas = tagIds
-            .map((id) => {'evento_id': eventoId, 'tag_id': id, 'estatus': true})
-            .toList();
-        await _cliente.from(TablasSupabase.eventosTags).insert(filas);
+      final filas = _construirFilasGrupos(eventoId, grupos);
+      if (filas.isNotEmpty) {
+        await _cliente.from(TablasSupabase.eventoGruposTags).insert(filas);
       }
     } on PostgrestException catch (e) {
       throw FallaServidor(e.message);
@@ -151,20 +168,46 @@ class CrearEventoRepositorio {
     }
   }
 
-  /// Asocia una lista de tags a un evento existente.
-  Future<void> guardarTagsEvento({
-    required String       eventoId,
-    required List<String> tagIds,
+  /// Reemplaza todos los grupos de audiencia de un evento existente.
+  Future<void> actualizarGruposEvento({
+    required String              eventoId,
+    required List<GrupoAudiencia> grupos,
   }) async {
     try {
-      final filas = tagIds
-          .map((id) => {'evento_id': eventoId, 'tag_id': id, 'estatus': true})
-          .toList();
-      await _cliente.from(TablasSupabase.eventosTags).insert(filas);
+      await _cliente
+          .from(TablasSupabase.eventoGruposTags)
+          .delete()
+          .eq('evento_id', eventoId);
+      final filas = _construirFilasGrupos(eventoId, grupos);
+      if (filas.isNotEmpty) {
+        await _cliente.from(TablasSupabase.eventoGruposTags).insert(filas);
+      }
     } on PostgrestException catch (e) {
       throw FallaServidor(e.message);
     } catch (e) {
       throw FallaInesperada(e.toString());
     }
+  }
+
+  List<Map<String, dynamic>> _construirFilasGrupos(
+    String               eventoId,
+    List<GrupoAudiencia> grupos,
+  ) {
+    final filas = <Map<String, dynamic>>[];
+    for (final grupo in grupos) {
+      filas.add({
+        'evento_id':   eventoId,
+        'grupo_index': grupo.grupoIndex,
+        'tag_id':      grupo.tagPrincipal.id,
+      });
+      for (final sec in grupo.tagsSecundarios) {
+        filas.add({
+          'evento_id':   eventoId,
+          'grupo_index': grupo.grupoIndex,
+          'tag_id':      sec.id,
+        });
+      }
+    }
+    return filas;
   }
 }

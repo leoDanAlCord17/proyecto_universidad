@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../compartido/constantes.dart';
+
 class Evento extends Equatable {
   const Evento({
     required this.id,
@@ -15,6 +17,7 @@ class Evento extends Equatable {
     required this.permiteSalidaAnticipada,
     required this.marcarAusentesAuto,
     required this.permiteForaneos,
+    this.alcance = AlcanceEvento.general,
     this.descripcion,
     this.lugar,
     this.tipoEventoId,
@@ -27,6 +30,7 @@ class Evento extends Equatable {
 
   final String    id;
   final String    titulo;
+  final String    alcance;
   final String?   descripcion;
   final String?   lugar;
   final String?   tipoEventoId;
@@ -50,6 +54,7 @@ class Evento extends Equatable {
   factory Evento.desdeJson(Map<String, dynamic> json) => Evento(
         id:                      json['id']                         as String,
         titulo:                  json['titulo']                     as String,
+        alcance:                 json['alcance']                    as String? ?? AlcanceEvento.general,
         descripcion:             json['descripcion']                as String?,
         lugar:                   json['lugar']                      as String?,
         tipoEventoId:            json['tipo_evento_id']             as String?,
@@ -104,11 +109,86 @@ class Evento extends Equatable {
 
   @override
   List<Object?> get props => [
-        id, titulo, descripcion, lugar, tipoEventoId,
+        id, titulo, alcance, descripcion, lugar, tipoEventoId,
         fechaInicio, fechaFin, horaInicio, horaFin,
         modoRegistro, estatus, creadoPor, creadoEn, actualizadoEn,
         permiteQrEvento, permiteQrUsuario, permiteManualAdmin,
         requiereCicloCompleto, permiteSalidaAnticipada,
         marcarAusentesAuto, permiteForaneos,
       ];
+}
+
+// ─── Grupo de audiencia (para lógica de visibilidad) ─────────────────────────
+
+class GrupoEvento extends Equatable {
+  const GrupoEvento({
+    required this.grupoIndex,
+    required this.tagPrincipalId,
+    this.tagsSecundariosIds  = const [],
+    this.nombresParaBusqueda = const [],
+  });
+
+  final int          grupoIndex;
+  final String       tagPrincipalId;
+  final List<String> tagsSecundariosIds;
+  final List<String> nombresParaBusqueda;
+
+  @override
+  List<Object?> get props => [grupoIndex, tagPrincipalId, tagsSecundariosIds];
+}
+
+// ─── Evento con sus grupos de audiencia ──────────────────────────────────────
+
+class EventoConGrupos extends Equatable {
+  const EventoConGrupos({
+    required this.evento,
+    required this.grupos,
+  });
+
+  final Evento            evento;
+  final List<GrupoEvento> grupos;
+
+  bool get esGeneral => evento.alcance == AlcanceEvento.general;
+
+  List<String> get nombresParaBusqueda =>
+      grupos.expand((g) => g.nombresParaBusqueda).toList();
+
+  factory EventoConGrupos.desdeJson(Map<String, dynamic> json) {
+    final filas  = json['evento_grupos_tags'] as List? ?? [];
+    final grupos = _construirGrupos(filas);
+    return EventoConGrupos(evento: Evento.desdeJson(json), grupos: grupos);
+  }
+
+  static List<GrupoEvento> _construirGrupos(List<dynamic> filas) {
+    final Map<int, String>         principalesId     = {};
+    final Map<int, List<String>>   secundariosIds    = {};
+    final Map<int, List<String>>   nombresPorGrupo   = {};
+
+    for (final fila in filas) {
+      final grupoIndex = fila['grupo_index'] as int;
+      final tagId      = fila['tag_id']      as String;
+      final tagData    = fila['tags']         as Map<String, dynamic>?;
+      final tipo       = tagData?['tipo']     as String?;
+      final nombre     = tagData?['nombre']   as String?;
+
+      if (tipo == 'principal') {
+        principalesId[grupoIndex] = tagId;
+      } else {
+        secundariosIds.putIfAbsent(grupoIndex, () => []).add(tagId);
+      }
+      if (nombre != null) {
+        nombresPorGrupo.putIfAbsent(grupoIndex, () => []).add(nombre);
+      }
+    }
+
+    return principalesId.entries.map((e) => GrupoEvento(
+      grupoIndex:          e.key,
+      tagPrincipalId:      e.value,
+      tagsSecundariosIds:  secundariosIds[e.key]  ?? [],
+      nombresParaBusqueda: nombresPorGrupo[e.key] ?? [],
+    )).toList();
+  }
+
+  @override
+  List<Object?> get props => [evento, grupos];
 }

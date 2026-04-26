@@ -8,8 +8,9 @@ class TablasSupabase {
   static const String tags        = 'tags';
   static const String usuariosTags = 'usuarios_tags';
   static const String tiposEvento  = 'tipos_evento';
-  static const String eventosTags  = 'eventos_tags';
-  static const String permisos      = 'permisos';
+  static const String eventoGruposTags = 'evento_grupos_tags';
+  static const String configuracionInt = 'configuracion_int';
+  static const String permisos         = 'permisos';
   static const String rolesPermisos = 'roles_permisos';
 }
 
@@ -58,6 +59,12 @@ class EstatusEvento {
   static const String enCurso    = 'en_curso';
   static const String finalizado = 'finalizado';
   static const String cancelado  = 'cancelado';
+}
+
+/// Valores válidos para eventos.alcance (CHECK constraint en la DB).
+class AlcanceEvento {
+  static const String general  = 'general';
+  static const String dirigido = 'dirigido';
 }
 
 /// Mensajes de error genéricos para mostrar al usuario.
