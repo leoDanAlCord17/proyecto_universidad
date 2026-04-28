@@ -22,12 +22,22 @@ import '../funcionalidades/crear_rol/crear_rol_cubit.dart';
 import '../funcionalidades/crear_rol/crear_rol_repositorio.dart';
 import '../funcionalidades/tags/tags_cubit.dart';
 import '../funcionalidades/tags/tags_repositorio.dart';
+import '../funcionalidades/usuarios/usuarios_cubit.dart';
+import '../funcionalidades/usuarios/usuarios_repositorio.dart';
+import '../funcionalidades/gestionar_tags_usuario/gestionar_tags_usuario_cubit.dart';
+import '../funcionalidades/gestionar_tags_usuario/gestionar_tags_usuario_repositorio.dart';
 import '../funcionalidades/crear_tag/crear_tag_cubit.dart';
 import '../funcionalidades/crear_tag/crear_tag_repositorio.dart';
 import '../funcionalidades/eventos/eventos_cubit.dart';
 import '../funcionalidades/eventos/eventos_repositorio.dart';
 import '../funcionalidades/recuperar_contrasena/recuperar_contrasena_cubit.dart';
 import '../funcionalidades/nueva_contrasena/nueva_contrasena_cubit.dart';
+import '../funcionalidades/gestionar_roles_usuario/gestionar_roles_usuario_cubit.dart';
+import '../funcionalidades/gestionar_roles_usuario/gestionar_roles_usuario_repositorio.dart';
+import '../funcionalidades/ver_perfil_usuario/ver_perfil_usuario_cubit.dart';
+import '../funcionalidades/ver_perfil_usuario/ver_perfil_usuario_repositorio.dart';
+import '../funcionalidades/editar_usuario/editar_usuario_cubit.dart';
+import '../funcionalidades/editar_usuario/editar_usuario_repositorio.dart';
 
 /// Instancia global de GetIt. Se usa en toda la app como obtenerIt<Tipo>().
 final obtenerIt = GetIt.instance;
@@ -123,6 +133,22 @@ void configurarDependencias() {
     () => CrearRolCubit(obtenerIt<CrearRolRepositorio>()),
   );
 
+  obtenerIt.registerLazySingleton<UsuariosRepositorio>(
+    () => UsuariosRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<UsuariosCubit>(
+    () => UsuariosCubit(obtenerIt<UsuariosRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<GestionarTagsUsuarioRepositorio>(
+    () => GestionarTagsUsuarioRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<GestionarTagsUsuarioCubit>(
+    () => GestionarTagsUsuarioCubit(obtenerIt<GestionarTagsUsuarioRepositorio>()),
+  );
+
   obtenerIt.registerLazySingleton<TagsRepositorio>(
     () => TagsRepositorio(obtenerIt<SupabaseClient>()),
   );
@@ -153,5 +179,29 @@ void configurarDependencias() {
 
   obtenerIt.registerFactory<NuevaContrasenaCubit>(
     () => NuevaContrasenaCubit(obtenerIt<AutenticacionRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<GestionarRolesUsuarioRepositorio>(
+    () => GestionarRolesUsuarioRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<GestionarRolesUsuarioCubit>(
+    () => GestionarRolesUsuarioCubit(obtenerIt<GestionarRolesUsuarioRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<VerPerfilUsuarioRepositorio>(
+    () => VerPerfilUsuarioRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<VerPerfilUsuarioCubit>(
+    () => VerPerfilUsuarioCubit(obtenerIt<VerPerfilUsuarioRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<EditarUsuarioRepositorio>(
+    () => EditarUsuarioRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<EditarUsuarioCubit>(
+    () => EditarUsuarioCubit(obtenerIt<EditarUsuarioRepositorio>()),
   );
 }

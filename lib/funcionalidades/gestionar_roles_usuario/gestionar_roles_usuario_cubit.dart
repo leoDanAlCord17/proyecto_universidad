@@ -1,0 +1,60 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../compartido/errores.dart';
+import 'gestionar_roles_usuario_estado.dart';
+import 'gestionar_roles_usuario_repositorio.dart';
+
+class GestionarRolesUsuarioCubit extends Cubit<GestionarRolesUsuarioEstado> {
+  GestionarRolesUsuarioCubit(this._repositorio)
+      : super(const GestionarRolesUsuarioInicial());
+
+  final GestionarRolesUsuarioRepositorio _repositorio;
+  String? _usuarioId;
+  String? _adminId;
+
+  Future<void> cargar(String usuarioId, {String? adminId}) async {
+    _usuarioId = usuarioId;
+    _adminId   = adminId;
+    emit(const GestionarRolesUsuarioCargando());
+    try {
+      final info           = await _repositorio.obtenerInfoUsuario(usuarioId);
+      final rolesUsuario   = await _repositorio.obtenerRolesUsuario(usuarioId);
+      final todosLosRoles  = await _repositorio.obtenerRolesActivos();
+
+      final idsActivos = rolesUsuario.map((r) => r.id).toSet();
+
+      emit(GestionarRolesUsuarioCargado(
+        nombreUsuario:   info.nombre,
+        correoUsuario:   info.correo,
+        rolesActivos:    rolesUsuario,
+        rolesDisponibles: todosLosRoles
+            .where((r) => !idsActivos.contains(r.id))
+            .toList(),
+      ));
+    } on FallaServidor catch (e) {
+      emit(GestionarRolesUsuarioError(mensaje: e.mensaje));
+    } on FallaInesperada catch (e) {
+      emit(GestionarRolesUsuarioError(mensaje: e.mensaje));
+    }
+  }
+
+  Future<void> asignarRol(String rolId) =>
+      _ejecutar(() => _repositorio.asignarRol(_usuarioId!, rolId, _adminId));
+
+  Future<void> quitarRol(String rolId) =>
+      _ejecutar(() => _repositorio.quitarRol(_usuarioId!, rolId, _adminId));
+
+  Future<void> _ejecutar(Future<void> Function() operacion) async {
+    if (_usuarioId == null) return;
+    final estadoActual = state;
+    if (estadoActual is! GestionarRolesUsuarioCargado) return;
+    try {
+      await operacion();
+      await cargar(_usuarioId!, adminId: _adminId);
+    } on FallaServidor catch (e) {
+      emit(GestionarRolesUsuarioOperacionFallida(anterior: estadoActual, mensaje: e.mensaje));
+    } on FallaInesperada catch (e) {
+      emit(GestionarRolesUsuarioOperacionFallida(anterior: estadoActual, mensaje: e.mensaje));
+    }
+  }
+}

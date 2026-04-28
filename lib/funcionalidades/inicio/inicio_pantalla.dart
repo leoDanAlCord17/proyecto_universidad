@@ -73,12 +73,16 @@ class _InicioPantallaState extends State<InicioPantalla> {
                       alPresionar: () => PanelOpciones.mostrar(
                         context,
                         opciones: [
-                          const OpcionPanel(
+                          OpcionPanel(
                             icono:       Icons.people_outline_rounded,
                             colorFondo:  ColoresApp.acentoClaro,
                             colorIcono:  ColoresApp.acento,
                             titulo:      'Usuarios',
                             descripcion: 'Gestionar usuarios',
+                            alPresionar: () {
+                              Navigator.of(context, rootNavigator: true).pop();
+                              context.push(Rutas.gestionUsuarios);
+                            },
                           ),
                           OpcionPanel(
                             icono:       Icons.admin_panel_settings_outlined,
