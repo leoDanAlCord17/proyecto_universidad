@@ -11,6 +11,7 @@ class OpcionPanel {
     required this.colorIcono,
     required this.titulo,
     required this.descripcion,
+    this.colorTitulo,
     this.alPresionar,
   });
 
@@ -19,6 +20,7 @@ class OpcionPanel {
   final Color         colorIcono;
   final String        titulo;
   final String        descripcion;
+  final Color?        colorTitulo;
   final VoidCallback? alPresionar;
 }
 
@@ -26,9 +28,11 @@ class OpcionPanel {
 
 class PanelOpciones {
   /// Muestra el panel deslizante desde abajo, sobre la barra de navegación.
+  /// [encabezado] es opcional; si se pasa, se muestra entre el handle y las opciones.
   static void mostrar(
     BuildContext context, {
     required List<OpcionPanel> opciones,
+    Widget? encabezado,
   }) {
     showModalBottomSheet<void>(
       context:            context,
@@ -36,7 +40,7 @@ class PanelOpciones {
       isScrollControlled: true,
       backgroundColor:    Colors.transparent,
       barrierColor:       ColoresApp.sombraBarrera,
-      builder:            (_) => _ContenidoPanel(opciones: opciones),
+      builder:            (_) => _ContenidoPanel(opciones: opciones, encabezado: encabezado),
     );
   }
 }
@@ -44,9 +48,10 @@ class PanelOpciones {
 // ─── Contenido del panel ──────────────────────────────────────────────────────
 
 class _ContenidoPanel extends StatelessWidget {
-  const _ContenidoPanel({required this.opciones});
+  const _ContenidoPanel({required this.opciones, this.encabezado});
 
   final List<OpcionPanel> opciones;
+  final Widget?           encabezado;
 
   @override
   Widget build(BuildContext context) {
@@ -66,12 +71,21 @@ class _ContenidoPanel extends StatelessWidget {
           children: [
             const SizedBox(height: 14),
             const _Handle(),
-            const SizedBox(height: 20),
+            if (encabezado != null) ...[
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: encabezado!,
+              ),
+              const SizedBox(height: 16),
+              const Divider(height: 1, color: ColoresApp.bordesuave),
+            ] else
+              const SizedBox(height: 20),
             Flexible(
               child: ListView.separated(
-                shrinkWrap:      true,
-                padding:         EdgeInsets.fromLTRB(16, 0, 16, bottomPadding + 20),
-                itemCount:       opciones.length,
+                shrinkWrap:       true,
+                padding:          EdgeInsets.fromLTRB(16, 8, 16, bottomPadding + 20),
+                itemCount:        opciones.length,
                 separatorBuilder: (_, __) => const Divider(
                   height: 1,
                   indent: 74,
@@ -141,8 +155,8 @@ class _ItemOpcion extends StatelessWidget {
                   children: [
                     Text(
                       opcion.titulo,
-                      style: const TextStyle(
-                        color:      ColoresApp.textoPrimario,
+                      style: TextStyle(
+                        color:      opcion.colorTitulo ?? ColoresApp.textoPrimario,
                         fontSize:   15,
                         fontWeight: FontWeight.w600,
                       ),

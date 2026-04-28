@@ -6,7 +6,8 @@ class TablasSupabase {
   static const String asistencia  = 'asistencia';
   static const String roles       = 'roles';
   static const String tags        = 'tags';
-  static const String usuariosTags = 'usuarios_tags';
+  static const String usuariosTags  = 'usuarios_tags';
+  static const String usuariosRoles = 'usuarios_roles';
   static const String tiposEvento  = 'tipos_evento';
   static const String eventoGruposTags = 'evento_grupos_tags';
   static const String configuracionInt = 'configuracion_int';
@@ -35,6 +36,15 @@ class Rutas {
   static String       editarEventoUrl(String id) => '/crear_evento/$id';
   static const String escanear        = '/escanear';
   static const String asistencia      = '/asistencia';
+  static const String gestionUsuarios        = '/gestion_usuarios';
+  static const String gestionarTagsUsuario   = '/gestion_usuarios/:usuarioId/tags';
+  static String       gestionarTagsUsuarioUrl(String id) => '/gestion_usuarios/$id/tags';
+  static const String gestionarRolesUsuario  = '/gestion_usuarios/:usuarioId/roles';
+  static String       gestionarRolesUsuarioUrl(String id) => '/gestion_usuarios/$id/roles';
+  static const String verPerfilUsuario       = '/gestion_usuarios/:usuarioId/perfil';
+  static String       verPerfilUsuarioUrl(String id) => '/gestion_usuarios/$id/perfil';
+  static const String editarUsuario          = '/gestion_usuarios/:usuarioId/editar';
+  static String       editarUsuarioUrl(String id) => '/gestion_usuarios/$id/editar';
   static const String gestionTags     = '/gestion_tags';
   static const String crearTag        = '/crear_tag';
   static const String editarTag       = '/crear_tag/:tagId';
