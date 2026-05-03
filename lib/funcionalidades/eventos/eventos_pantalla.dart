@@ -189,7 +189,14 @@ class _BotonCrearEvento extends StatelessWidget {
       color:        Colors.transparent,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap:          () => context.push(Rutas.crearEvento),
+        onTap: () async {
+          await context.push(Rutas.crearEvento);
+          if (!context.mounted) return;
+          final authEstado = context.read<AuthCubit>().state;
+          if (authEstado is Autenticado && authEstado.usuario.id != null) {
+            context.read<EventosCubit>().cargar(authEstado.usuario.id!);
+          }
+        },
         borderRadius:   BorderRadius.circular(12),
         splashColor:    Colors.white.withValues(alpha: 0.3),
         highlightColor: Colors.white.withValues(alpha: 0.15),
@@ -257,11 +264,13 @@ class _VistaContenido extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: TarjetaEvento(
-                titulo:      e.evento.titulo,
-                estatus:     e.evento.estatus,
-                horario:     _horario(e.evento),
-                lugar:       e.evento.lugar,
-                colorTitulo: ColoresApp.acento,
+                titulo:       e.evento.titulo,
+                estatus:      e.evento.estatus,
+                horario:      _horario(e.evento),
+                lugar:        e.evento.lugar,
+                descripcion:  e.evento.descripcion,
+                colorTitulo:  ColoresApp.textoPrimario,
+                alAbrirPanel: () => context.push(Rutas.panelControlUrl(e.evento.id)),
               ),
             ),
           const SizedBox(height: 8),

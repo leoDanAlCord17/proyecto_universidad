@@ -38,6 +38,12 @@ import '../funcionalidades/ver_perfil_usuario/ver_perfil_usuario_cubit.dart';
 import '../funcionalidades/ver_perfil_usuario/ver_perfil_usuario_repositorio.dart';
 import '../funcionalidades/editar_usuario/editar_usuario_cubit.dart';
 import '../funcionalidades/editar_usuario/editar_usuario_repositorio.dart';
+import '../funcionalidades/panel_control_evento/panel_control_cubit.dart';
+import '../funcionalidades/panel_control_evento/panel_control_repositorio.dart';
+import '../funcionalidades/buscar_asistente/buscar_asistente_cubit.dart';
+import '../funcionalidades/buscar_asistente/buscar_asistente_repositorio.dart';
+import '../funcionalidades/escanear_qr/escanear_qr_cubit.dart';
+import '../funcionalidades/escanear_qr/escanear_qr_repositorio.dart';
 
 /// Instancia global de GetIt. Se usa en toda la app como obtenerIt<Tipo>().
 final obtenerIt = GetIt.instance;
@@ -203,5 +209,29 @@ void configurarDependencias() {
 
   obtenerIt.registerFactory<EditarUsuarioCubit>(
     () => EditarUsuarioCubit(obtenerIt<EditarUsuarioRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<PanelControlRepositorio>(
+    () => PanelControlRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<PanelControlCubit>(
+    () => PanelControlCubit(obtenerIt<PanelControlRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<BuscarAsistenteRepositorio>(
+    () => BuscarAsistenteRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<BuscarAsistenteCubit>(
+    () => BuscarAsistenteCubit(obtenerIt<BuscarAsistenteRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<EscanearQrRepositorio>(
+    () => EscanearQrRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<EscanearQrCubit>(
+    () => EscanearQrCubit(obtenerIt<EscanearQrRepositorio>()),
   );
 }

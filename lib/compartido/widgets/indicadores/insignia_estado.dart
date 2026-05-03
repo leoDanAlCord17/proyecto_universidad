@@ -26,6 +26,7 @@ class InsigniaEstado extends StatelessWidget {
     'esperado':         (ColoresApp.superficieTerciar, ColoresApp.textoSecundario),
     'salio_anticipado': (ColoresApp.ambarClaro,  ColoresApp.ambar),
     'anulado':          (ColoresApp.rojoClaro,   ColoresApp.rojo),
+    'no_esperado':      (ColoresApp.rojoClaro,   ColoresApp.rojo),
   };
 
   // Textos legibles en español para cada estatus
@@ -41,6 +42,7 @@ class InsigniaEstado extends StatelessWidget {
     'esperado':         'Esperado',
     'salio_anticipado': 'Anticipado',
     'anulado':          'Anulado',
+    'no_esperado':      'No esperado',
   };
 
   @override

@@ -53,6 +53,15 @@ class Rutas {
   static const String nuevaContrasena     = '/nueva_contrasena';
   static const String perfil              = '/perfil';
 
+  static const String panelControl    = '/eventos/:eventoId/panel';
+  static String       panelControlUrl(String id) => '/eventos/$id/panel';
+
+  static const String buscarAsistente    = '/eventos/:eventoId/panel/buscar';
+  static String       buscarAsistenteUrl(String id) => '/eventos/$id/panel/buscar';
+
+  static const String escanearQrUsuario    = '/eventos/:eventoId/panel/qr_usuario';
+  static String       escanearQrUsuarioUrl(String id) => '/eventos/$id/panel/qr_usuario';
+
   /// Solo para desarrollo — muestra todos los widgets de la app visualmente.
   /// Eliminar esta ruta antes de subir a producción.
   static const String vistaWidgets    = '/dev/widgets';
@@ -75,6 +84,16 @@ class EstatusEvento {
 class AlcanceEvento {
   static const String general  = 'general';
   static const String dirigido = 'dirigido';
+}
+
+/// Valores válidos para asistencia.estatus (CHECK constraint en la DB).
+class EstatusAsistencia {
+  static const String esperado        = 'esperado';
+  static const String presente        = 'presente';
+  static const String completado      = 'completado';
+  static const String ausente         = 'ausente';
+  static const String salioAnticipado = 'salio_anticipado';
+  static const String anulado         = 'anulado';
 }
 
 /// Mensajes de error genéricos para mostrar al usuario.
