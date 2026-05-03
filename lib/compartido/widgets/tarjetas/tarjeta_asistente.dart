@@ -14,8 +14,11 @@ class TarjetaAsistente extends StatelessWidget {
     this.urlFoto,
     this.textoBoton,
     this.alPresionarBoton,
+    this.varianteBoton      = VarianteBoton.primario,
+    this.estaCargandoBoton  = false,
     this.colorNombre,
     this.colorDetalle,
+    this.accionTrailing,
     this.alPresionar,
   });
 
@@ -31,9 +34,16 @@ class TarjetaAsistente extends StatelessWidget {
   /// Texto del botón de acción. Ej: '✓ Registrar entrada'. Si es null no se muestra.
   final String? textoBoton;
   final VoidCallback? alPresionarBoton;
+  final VarianteBoton varianteBoton;
+  final bool estaCargandoBoton;
 
   final Color? colorNombre;
   final Color? colorDetalle;
+
+  /// Widget que reemplaza la insignia de estado en el extremo derecho.
+  /// Úsalo para colocar un botón de acción inline (ej: "Registrar").
+  /// Si es null se muestra InsigniaEstado por defecto.
+  final Widget? accionTrailing;
 
   /// Si se pasa, toda la tarjeta se vuelve presionable
   final VoidCallback? alPresionar;
@@ -56,14 +66,17 @@ class TarjetaAsistente extends StatelessWidget {
                 colorNombre:  colorNombre,
                 colorDetalle: colorDetalle,
               )),
-              InsigniaEstado(estatus: estatus),
+              const SizedBox(width: 8),
+              accionTrailing ?? InsigniaEstado(estatus: estatus),
             ],
           ),
           if (textoBoton != null) ...[
             const SizedBox(height: 12),
             BotonApp(
-              texto:       textoBoton!,
-              alPresionar: alPresionarBoton,
+              texto:        textoBoton!,
+              alPresionar:  estaCargandoBoton ? null : alPresionarBoton,
+              variante:     varianteBoton,
+              estaCargando: estaCargandoBoton,
             ),
           ],
         ],

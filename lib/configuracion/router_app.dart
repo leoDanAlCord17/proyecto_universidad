@@ -53,6 +53,12 @@ import '../funcionalidades/ver_perfil_usuario/ver_perfil_usuario_cubit.dart';
 import '../funcionalidades/ver_perfil_usuario/ver_perfil_usuario_pantalla.dart';
 import '../funcionalidades/editar_usuario/editar_usuario_cubit.dart';
 import '../funcionalidades/editar_usuario/editar_usuario_pantalla.dart';
+import '../funcionalidades/panel_control_evento/panel_control_cubit.dart';
+import '../funcionalidades/panel_control_evento/panel_control_pantalla.dart';
+import '../funcionalidades/buscar_asistente/buscar_asistente_cubit.dart';
+import '../funcionalidades/buscar_asistente/buscar_asistente_pantalla.dart';
+import '../funcionalidades/escanear_qr/escanear_qr_cubit.dart';
+import '../funcionalidades/escanear_qr/escanear_qr_pantalla.dart';
 
 class RouterApp {
   final AuthCubit authCubit;
@@ -274,6 +280,36 @@ class RouterApp {
           create: (_) => obtenerIt<EditarUsuarioCubit>(),
           child: EditarUsuarioPantalla(
             usuarioId: state.pathParameters['usuarioId']!,
+          ),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.panelControl,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<PanelControlCubit>(),
+          child: PanelControlPantalla(
+            eventoId: state.pathParameters['eventoId']!,
+          ),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.buscarAsistente,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<BuscarAsistenteCubit>(),
+          child: BuscarAsistentePantalla(
+            eventoId: state.pathParameters['eventoId']!,
+          ),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.escanearQrUsuario,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<EscanearQrCubit>(),
+          child: EscanearQrPantalla(
+            eventoId: state.pathParameters['eventoId']!,
           ),
         ),
       ),

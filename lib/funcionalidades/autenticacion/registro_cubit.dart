@@ -21,7 +21,8 @@ class RegistroCubit extends Cubit<RegistroEstado> {
     String clave,
     String confirmarClave,
   ) async {
-    if (correo.isEmpty || clave.isEmpty || confirmarClave.isEmpty) {
+    final correoLimpio = correo.trim();
+    if (correoLimpio.isEmpty || clave.isEmpty || confirmarClave.isEmpty) {
       emit(RegistroError('Por favor, llena todos los campos.'));
       return;
     }
@@ -39,7 +40,7 @@ class RegistroCubit extends Cubit<RegistroEstado> {
     emit(RegistroCargando());
 
     try {
-      await _repositorio.registrarse(correo, clave);
+      await _repositorio.registrarse(correoLimpio, clave);
       emit(RegistroExito());
     } on FallaAutenticacion catch (e) {
       emit(RegistroError(e.mensaje));

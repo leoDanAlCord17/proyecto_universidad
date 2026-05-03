@@ -33,6 +33,7 @@ class TraductorErrores {
       '42501'    => MensajesError.permiso,
       // PostgREST
       'PGRST116' => 'No se encontraron resultados.',
+      'PGRST201' => MensajesError.inesperado,
       'PGRST301' => MensajesError.sesion,
       'PGRST204' => 'No se encontraron resultados.',
       _          => MensajesError.inesperado,
