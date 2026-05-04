@@ -54,6 +54,11 @@ class Rutas {
   static const String perfil              = '/perfil';
   static const String notificaciones      = '/notificaciones';
 
+  static const String gestionTiposEvento  = '/gestion_tipos_evento';
+  static const String crearTipoEvento     = '/crear_tipo_evento';
+  static const String editarTipoEvento    = '/crear_tipo_evento/:tipoEventoId';
+  static String       editarTipoEventoUrl(String id) => '/crear_tipo_evento/$id';
+
   static const String panelControl    = '/eventos/:eventoId/panel';
   static String       panelControlUrl(String id) => '/eventos/$id/panel';
 
