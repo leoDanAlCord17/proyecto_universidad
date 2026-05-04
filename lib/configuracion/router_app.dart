@@ -63,6 +63,10 @@ import '../funcionalidades/escanear_evento_qr/escanear_evento_qr_cubit.dart';
 import '../funcionalidades/escanear_evento_qr/escanear_evento_qr_pantalla.dart';
 import '../funcionalidades/notificaciones/notificaciones_cubit.dart';
 import '../funcionalidades/notificaciones/notificaciones_pantalla.dart';
+import '../funcionalidades/tipos_evento/crear_tipo_evento_cubit.dart';
+import '../funcionalidades/tipos_evento/crear_tipo_evento_pantalla.dart';
+import '../funcionalidades/tipos_evento/tipos_evento_cubit.dart';
+import '../funcionalidades/tipos_evento/tipos_evento_pantalla.dart';
 
 class RouterApp {
   final AuthCubit authCubit;
@@ -384,6 +388,32 @@ class RouterApp {
         builder: (context, state) => BlocProvider(
           create: (_) => obtenerIt<NuevaContrasenaCubit>(),
           child: const NuevaContrasenaPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.gestionTiposEvento,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<TiposEventoCubit>(),
+          child: const TiposEventoPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.crearTipoEvento,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<CrearTipoEventoCubit>(),
+          child: const CrearTipoEventoPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.editarTipoEvento,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<CrearTipoEventoCubit>(),
+          child: CrearTipoEventoPantalla(
+            tipoEventoId: state.pathParameters['tipoEventoId'],
+          ),
         ),
       ),
 

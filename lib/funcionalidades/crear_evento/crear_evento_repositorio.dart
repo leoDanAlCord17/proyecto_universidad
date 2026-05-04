@@ -17,7 +17,7 @@ class CrearEventoRepositorio {
       final datos = await _cliente
           .from(TablasSupabase.tiposEvento)
           .select()
-          .eq('estatus', 'activo');
+          .eq('estatus', true);
       return (datos as List).map((e) => TipoEvento.desdeJson(e)).toList();
     } on PostgrestException catch (e) {
       throw FallaServidor(e.message);

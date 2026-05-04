@@ -250,6 +250,17 @@ class _BotonAjustes extends StatelessWidget {
               context.push(Rutas.gestionTags);
             },
           ),
+          OpcionPanel(
+            icono:       Icons.category_outlined,
+            colorFondo:  ColoresApp.tealClaro,
+            colorIcono:  ColoresApp.teal,
+            titulo:      'Tipos de evento',
+            descripcion: 'Gestionar tipos de evento',
+            alPresionar: () {
+              Navigator.of(context, rootNavigator: true).pop();
+              context.push(Rutas.gestionTiposEvento);
+            },
+          ),
           const OpcionPanel(
             icono:       Icons.tune_rounded,
             colorFondo:  ColoresApp.superficieTerciar,
