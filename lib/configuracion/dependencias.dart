@@ -44,6 +44,9 @@ import '../funcionalidades/buscar_asistente/buscar_asistente_cubit.dart';
 import '../funcionalidades/buscar_asistente/buscar_asistente_repositorio.dart';
 import '../funcionalidades/escanear_qr/escanear_qr_cubit.dart';
 import '../funcionalidades/escanear_qr/escanear_qr_repositorio.dart';
+import '../funcionalidades/escanear_evento_qr/escanear_evento_qr_cubit.dart';
+import '../funcionalidades/escanear_evento_qr/escanear_evento_qr_repositorio.dart';
+import '../funcionalidades/notificaciones/notificaciones_cubit.dart';
 
 /// Instancia global de GetIt. Se usa en toda la app como obtenerIt<Tipo>().
 final obtenerIt = GetIt.instance;
@@ -233,5 +236,17 @@ void configurarDependencias() {
 
   obtenerIt.registerFactory<EscanearQrCubit>(
     () => EscanearQrCubit(obtenerIt<EscanearQrRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<EscanearEventoQrRepositorio>(
+    () => EscanearEventoQrRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<EscanearEventoQrCubit>(
+    () => EscanearEventoQrCubit(obtenerIt<EscanearEventoQrRepositorio>()),
+  );
+
+  obtenerIt.registerFactory<NotificacionesCubit>(
+    () => NotificacionesCubit(),
   );
 }

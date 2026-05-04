@@ -35,3 +35,10 @@ final class RecuperandoContrasena extends AuthEstado {
   @override
   List<Object?> get props => [];
 }
+
+// Otro dispositivo inició sesión con la misma cuenta y desplazó esta sesión.
+// El router redirige a /login y se muestra un SnackBar informativo.
+final class SesionDesplazada extends AuthEstado {
+  @override
+  List<Object?> get props => [];
+}

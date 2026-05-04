@@ -233,7 +233,12 @@ class _ChipsInfoEvento extends StatelessWidget {
   String _formatearHora(String? hora) {
     if (hora == null) return '--:--';
     final p = hora.split(':');
-    return p.length >= 2 ? '${p[0]}:${p[1]}' : hora;
+    if (p.length < 2) return hora;
+    final h24  = int.tryParse(p[0]) ?? 0;
+    final min  = p[1].padLeft(2, '0');
+    final h12  = h24 % 12 == 0 ? 12 : h24 % 12;
+    final ampm = h24 < 12 ? 'AM' : 'PM';
+    return '$h12:$min $ampm';
   }
 
   @override

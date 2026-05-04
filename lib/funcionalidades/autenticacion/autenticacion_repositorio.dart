@@ -107,6 +107,28 @@ class AutenticacionRepositorio {
       .where((data) => data.event == AuthChangeEvent.passwordRecovery)
       .map((_) => true);
 
+  /// Actualiza el token de sesión activa del usuario en la base de datos.
+  Future<void> actualizarTokenSesion(String usuarioId, String token) async {
+    try {
+      await _supabase
+          .from(TablasSupabase.usuarios)
+          .update({'sesion_token': token})
+          .eq('id', usuarioId);
+    } on PostgrestException catch (e) {
+      throw FallaServidor(TraductorErrores.dePostgres(e));
+    } catch (e) {
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
+    }
+  }
+
+  /// Stream que emite el token de sesión activo. Detecta inicio de sesión en otro dispositivo.
+  Stream<String?> flujoTokenSesion(String usuarioId) =>
+      _supabase
+          .from(TablasSupabase.usuarios)
+          .stream(primaryKey: ['id'])
+          .eq('id', usuarioId)
+          .map((filas) => filas.isEmpty ? null : filas.first['sesion_token'] as String?);
+
   /// Crea el perfil de un nuevo usuario en la tabla 'usuarios'.
   /// Lanza [FallaServidor] si hay un error al insertar.
   Future<void> crearPerfilUsuario(Usuario usuario) async {
