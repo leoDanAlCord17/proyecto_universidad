@@ -59,6 +59,10 @@ import '../funcionalidades/buscar_asistente/buscar_asistente_cubit.dart';
 import '../funcionalidades/buscar_asistente/buscar_asistente_pantalla.dart';
 import '../funcionalidades/escanear_qr/escanear_qr_cubit.dart';
 import '../funcionalidades/escanear_qr/escanear_qr_pantalla.dart';
+import '../funcionalidades/escanear_evento_qr/escanear_evento_qr_cubit.dart';
+import '../funcionalidades/escanear_evento_qr/escanear_evento_qr_pantalla.dart';
+import '../funcionalidades/notificaciones/notificaciones_cubit.dart';
+import '../funcionalidades/notificaciones/notificaciones_pantalla.dart';
 
 class RouterApp {
   final AuthCubit authCubit;
@@ -155,8 +159,11 @@ class RouterApp {
 
       GoRoute(
         path: Rutas.home,
-        builder: (context, state) => BlocProvider(
-          create: (_) => obtenerIt<InicioCubit>(),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => obtenerIt<InicioCubit>()),
+            BlocProvider(create: (_) => obtenerIt<NotificacionesCubit>()),
+          ],
           child: const InicioPantalla(),
         ),
       ),
@@ -315,6 +322,14 @@ class RouterApp {
       ),
 
       GoRoute(
+        path: Rutas.escanear,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<EscanearEventoQrCubit>(),
+          child: const EscanearEventoQrPantalla(),
+        ),
+      ),
+
+      GoRoute(
         path: Rutas.gestionTags,
         builder: (context, state) => BlocProvider(
           create: (_) => obtenerIt<TagsCubit>(),
@@ -345,6 +360,14 @@ class RouterApp {
         builder: (context, state) => BlocProvider(
           create: (_) => obtenerIt<PerfilCubit>(),
           child: const PerfilPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.notificaciones,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<NotificacionesCubit>(),
+          child: const NotificacionesPantalla(),
         ),
       ),
 

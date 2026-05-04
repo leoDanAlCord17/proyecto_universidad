@@ -85,7 +85,10 @@ class ResultadoBusqueda extends Equatable {
     if (isoString == null) return null;
     final dt = DateTime.tryParse(isoString)?.toLocal();
     if (dt == null) return null;
-    return '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+    final h12  = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+    final min  = dt.minute.toString().padLeft(2, '0');
+    final ampm = dt.hour < 12 ? 'AM' : 'PM';
+    return '$h12:$min $ampm';
   }
 
   @override

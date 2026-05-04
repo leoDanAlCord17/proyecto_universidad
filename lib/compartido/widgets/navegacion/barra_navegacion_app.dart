@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:uniasist/configuracion/colores_app.dart';
+
+import '../../constantes.dart';
 
 class BarraNavegacionApp extends StatelessWidget {
   const BarraNavegacionApp({
@@ -48,7 +51,7 @@ class BarraNavegacionApp extends StatelessWidget {
                 ),
                 _BotonEscanear(
                   estaActivo: indiceActual == 2,
-                  alPresionar: () => alCambiarIndice(2),
+                  alPresionar: () => context.push(Rutas.escanear),
                 ),
                 _ItemNavegacion(
                   icono:        Icons.how_to_reg_rounded,

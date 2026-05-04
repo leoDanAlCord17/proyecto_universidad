@@ -52,6 +52,7 @@ class Rutas {
   static const String recuperarContrasena = '/recuperar_contrasena';
   static const String nuevaContrasena     = '/nueva_contrasena';
   static const String perfil              = '/perfil';
+  static const String notificaciones      = '/notificaciones';
 
   static const String panelControl    = '/eventos/:eventoId/panel';
   static String       panelControlUrl(String id) => '/eventos/$id/panel';

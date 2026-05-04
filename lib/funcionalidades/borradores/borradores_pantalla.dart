@@ -182,10 +182,20 @@ class _Lista extends StatelessWidget {
     final hi = borrador.horaInicio;
     if (hi == null) return base;
     final hf = borrador.horaFin;
-    final hiStr = hi.length >= 5 ? hi.substring(0, 5) : hi;
+    final hiStr = hi.length >= 5 ? _a12h(hi.substring(0, 5)) : hi;
     if (hf == null) return '$base . $hiStr';
-    final hfStr = hf.length >= 5 ? hf.substring(0, 5) : hf;
+    final hfStr = hf.length >= 5 ? _a12h(hf.substring(0, 5)) : hf;
     return '$base . $hiStr → $hfStr';
+  }
+
+  static String _a12h(String hhmm) {
+    final p       = hhmm.split(':');
+    if (p.length < 2) return hhmm;
+    final h24     = int.tryParse(p[0]) ?? 0;
+    final minutos = p[1].padLeft(2, '0');
+    final h12     = h24 % 12 == 0 ? 12 : h24 % 12;
+    final ampm    = h24 < 12 ? 'AM' : 'PM';
+    return '$h12:$minutos $ampm';
   }
 }
 

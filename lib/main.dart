@@ -7,6 +7,7 @@ import 'configuracion/dependencias.dart';
 import 'configuracion/tema_app.dart';
 import 'configuracion/router_app.dart';
 import 'funcionalidades/autenticacion/auth_cubit.dart';
+import 'funcionalidades/autenticacion/auth_estado.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +47,15 @@ class _App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: temaApp,
       routerConfig: routerApp.router,
+      builder: (context, child) => BlocListener<AuthCubit, AuthEstado>(
+        listenWhen: (_, curr) => curr is SesionDesplazada,
+        listener: (ctx, _) => ScaffoldMessenger.of(ctx).showSnackBar(
+          const SnackBar(
+            content: Text('Tu sesión fue iniciada en otro dispositivo.'),
+          ),
+        ),
+        child: child!,
+      ),
     );
   }
 }

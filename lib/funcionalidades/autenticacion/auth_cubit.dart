@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,10 +17,13 @@ class AuthCubit extends Cubit<AuthEstado> {
 
   final AutenticacionRepositorio _repositorio;
   late final StreamSubscription<bool> _suscripcionRecuperacion;
+  StreamSubscription<String?>? _suscripcionSesion;
+  String? _tokenSesionActual;
 
   @override
   Future<void> close() {
     _suscripcionRecuperacion.cancel();
+    _suscripcionSesion?.cancel();
     return super.close();
   }
 
@@ -41,6 +45,7 @@ class AuthCubit extends Cubit<AuthEstado> {
         emit(PerfilIncompleto());
       } else {
         emit(Autenticado(usuario));
+        await _iniciarControlSesionUnica(usuario.id);
       }
     } on FallaServidor {
       emit(NoAutenticado());
@@ -58,5 +63,37 @@ class AuthCubit extends Cubit<AuthEstado> {
   Future<void> cerrarSesion() async {
     await _repositorio.cerrarSesion();
     emit(NoAutenticado());
+  }
+
+  Future<void> _iniciarControlSesionUnica(String? usuarioId) async {
+    if (usuarioId == null) return;
+    try {
+      final nuevoToken = _generarToken();
+      _tokenSesionActual = nuevoToken;
+      await _repositorio.actualizarTokenSesion(usuarioId, nuevoToken);
+      _suscripcionSesion?.cancel();
+      _suscripcionSesion = _repositorio
+          .flujoTokenSesion(usuarioId)
+          .listen(_procesarCambioToken);
+    } on FallaServidor catch (_) {
+      // El fallo en el token no bloquea la sesión
+    } on FallaInesperada catch (_) {
+      // El fallo en el token no bloquea la sesión
+    }
+  }
+
+  void _procesarCambioToken(String? tokenRemoto) {
+    if (tokenRemoto == null || tokenRemoto == _tokenSesionActual) return;
+    _suscripcionSesion?.cancel();
+    _repositorio.cerrarSesion();
+    emit(SesionDesplazada());
+  }
+
+  static String _generarToken() {
+    final r = Random.secure();
+    return List.generate(
+      32,
+      (_) => r.nextInt(256).toRadixString(16).padLeft(2, '0'),
+    ).join();
   }
 }
