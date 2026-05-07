@@ -129,17 +129,34 @@ class AutenticacionRepositorio {
           .eq('id', usuarioId)
           .map((filas) => filas.isEmpty ? null : filas.first['sesion_token'] as String?);
 
-  /// Crea el perfil de un nuevo usuario en la tabla 'usuarios'.
-  /// Lanza [FallaServidor] si hay un error al insertar.
+  /// Crea o actualiza el perfil del usuario en la tabla 'usuarios'.
+  /// Usa upsert con conflicto en auth_id para soportar el reintento de usuarios rechazados.
   Future<void> crearPerfilUsuario(Usuario usuario) async {
     try {
       await _supabase
           .from(TablasSupabase.usuarios)
-          .insert(usuario.aJson());
+          .upsert(usuario.aJson(), onConflict: 'auth_id');
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
       throw FallaInesperada(TraductorErrores.deInesperado(e));
+    }
+  }
+
+  /// Retorna true si la revisión de usuarios al crear cuenta está habilitada.
+  /// Devuelve false ante cualquier error (comportamiento seguro por defecto).
+  Future<bool> verificarRevisionCreacionHabilitada() async {
+    try {
+      final datos = await _supabase
+          .from(TablasSupabase.configuracionBoolean)
+          .select('valor')
+          .eq('clave', 'revision_usuario_creacion')
+          .single();
+      return (datos['valor'] as bool?) ?? false;
+    } on PostgrestException catch (_) {
+      return false;
+    } catch (_) {
+      return false;
     }
   }
 }

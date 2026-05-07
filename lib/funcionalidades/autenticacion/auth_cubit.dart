@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
 import 'auth_estado.dart';
 import 'autenticacion_repositorio.dart';
@@ -43,6 +44,10 @@ class AuthCubit extends Cubit<AuthEstado> {
       final usuario = await _repositorio.obtenerPerfil(sesion.user.id);
       if (usuario == null) {
         emit(PerfilIncompleto());
+      } else if (usuario.estatusAprobacion == EstatusAprobacion.pendiente) {
+        emit(PendienteAprobacion());
+      } else if (usuario.estatusAprobacion == EstatusAprobacion.rechazado) {
+        emit(UsuarioRechazado());
       } else {
         emit(Autenticado(usuario));
         await _iniciarControlSesionUnica(usuario.id);
@@ -53,6 +58,9 @@ class AuthCubit extends Cubit<AuthEstado> {
       emit(NoAutenticado());
     }
   }
+
+  /// Permite a un usuario rechazado volver a la pantalla de completar perfil.
+  void reiniciarParaReintento() => emit(PerfilIncompleto());
 
   /// Actualiza el estado con el usuario autenticado.
   void actualizarUsuario(Usuario usuario) {

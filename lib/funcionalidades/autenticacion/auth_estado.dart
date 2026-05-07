@@ -42,3 +42,17 @@ final class SesionDesplazada extends AuthEstado {
   @override
   List<Object?> get props => [];
 }
+
+// El usuario completó el perfil pero está esperando aprobación del administrador.
+// El router redirige a /pendiente_aprobacion.
+final class PendienteAprobacion extends AuthEstado {
+  @override
+  List<Object?> get props => [];
+}
+
+// El administrador rechazó la solicitud del usuario.
+// El router redirige a /usuario_rechazado.
+final class UsuarioRechazado extends AuthEstado {
+  @override
+  List<Object?> get props => [];
+}

@@ -19,14 +19,16 @@ final class InicioTagsCargando extends InicioEstado {
 final class InicioTagsCargados extends InicioEstado {
   const InicioTagsCargados({
     this.tagPrincipal,
-    this.tagsSecundarios = const [],
+    this.tagsSecundarios    = const [],
+    this.revisionHabilitada = false,
   });
 
-  final String?       tagPrincipal;
-  final List<String>  tagsSecundarios;
+  final String?      tagPrincipal;
+  final List<String> tagsSecundarios;
+  final bool         revisionHabilitada;
 
   @override
-  List<Object?> get props => [tagPrincipal, tagsSecundarios];
+  List<Object?> get props => [tagPrincipal, tagsSecundarios, revisionHabilitada];
 }
 
 final class InicioError extends InicioEstado {
