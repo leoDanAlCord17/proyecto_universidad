@@ -201,6 +201,12 @@ class _BotonAjustes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final revisionHabilitada = context.select<InicioCubit, bool>(
+      (cubit) => cubit.state is InicioTagsCargados
+          ? (cubit.state as InicioTagsCargados).revisionHabilitada
+          : false,
+    );
+
     return BotonContornoIcono(
       icono:       Icons.settings_outlined,
       alPresionar: () => PanelOpciones.mostrar(
@@ -217,6 +223,18 @@ class _BotonAjustes extends StatelessWidget {
               context.push(Rutas.gestionUsuarios);
             },
           ),
+          if (revisionHabilitada)
+            OpcionPanel(
+              icono:       Icons.how_to_reg_outlined,
+              colorFondo:  ColoresApp.ambarClaro,
+              colorIcono:  ColoresApp.ambar,
+              titulo:      'Revisión de usuarios',
+              descripcion: 'Aprobar o rechazar solicitudes',
+              alPresionar: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                context.push(Rutas.revisionUsuarios);
+              },
+            ),
           OpcionPanel(
             icono:       Icons.admin_panel_settings_outlined,
             colorFondo:  ColoresApp.tealClaro,

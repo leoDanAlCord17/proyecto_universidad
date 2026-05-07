@@ -10,7 +10,8 @@ class TablasSupabase {
   static const String usuariosRoles = 'usuarios_roles';
   static const String tiposEvento  = 'tipos_evento';
   static const String eventoGruposTags = 'evento_grupos_tags';
-  static const String configuracionInt = 'configuracion_int';
+  static const String configuracionInt     = 'configuracion_int';
+  static const String configuracionBoolean = 'configuracion_boolean';
   static const String permisos         = 'permisos';
   static const String rolesPermisos = 'roles_permisos';
 }
@@ -54,6 +55,10 @@ class Rutas {
   static const String perfil              = '/perfil';
   static const String notificaciones      = '/notificaciones';
 
+  static const String pendienteAprobacion = '/pendiente_aprobacion';
+  static const String usuarioRechazado    = '/usuario_rechazado';
+  static const String revisionUsuarios    = '/revision_usuarios';
+
   static const String gestionTiposEvento  = '/gestion_tipos_evento';
   static const String crearTipoEvento     = '/crear_tipo_evento';
   static const String editarTipoEvento    = '/crear_tipo_evento/:tipoEventoId';
@@ -75,6 +80,13 @@ class Rutas {
   /// Solo para desarrollo — muestra el sistema tipográfico con variantes de peso.
   /// Eliminar esta ruta antes de subir a producción.
   static const String vistaFuentes    = '/dev/fuentes';
+}
+
+/// Valores válidos para usuarios.estatus_aprobacion (CHECK constraint en la DB).
+class EstatusAprobacion {
+  static const String pendiente = 'pendiente';
+  static const String aprobado  = 'aprobado';
+  static const String rechazado = 'rechazado';
 }
 
 /// Valores válidos para eventos.estatus (CHECK constraint en la DB).

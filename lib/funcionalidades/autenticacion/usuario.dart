@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../compartido/constantes.dart';
+
 class Usuario extends Equatable {
   final String? id;
   final String? authId;
@@ -11,7 +13,8 @@ class Usuario extends Equatable {
   final String correo;
   final String? telefono;
   final String? urlAvatar;
-  final bool estatus;
+  final bool   estatus;
+  final String estatusAprobacion;
   final DateTime? creadoEn;
   final List<String> roles;
   final List<String> permisos;
@@ -27,7 +30,8 @@ class Usuario extends Equatable {
     required this.correo,
     this.telefono,
     this.urlAvatar,
-    this.estatus  = true,
+    this.estatus           = true,
+    this.estatusAprobacion = EstatusAprobacion.aprobado,
     this.creadoEn,
     this.roles    = const [],
     this.permisos = const [],
@@ -48,7 +52,8 @@ class Usuario extends Equatable {
       correo:               json['correo'] ?? '',
       telefono:             json['telefono'],
       urlAvatar:            json['url_avatar'],
-      estatus:              (json['estatus'] as bool?) ?? true,
+      estatus:              (json['estatus']            as bool?)   ?? true,
+      estatusAprobacion:    (json['estatus_aprobacion'] as String?) ?? EstatusAprobacion.aprobado,
       creadoEn:             json['creado_en'] != null
                                 ? DateTime.parse(json['creado_en'] as String)
                                 : null,
@@ -93,6 +98,7 @@ class Usuario extends Equatable {
     'telefono':               telefono,
     'url_avatar':             urlAvatar,
     'estatus':                estatus,
+    'estatus_aprobacion':     estatusAprobacion,
     // roles y permisos viven en usuarios_roles y roles_permisos, no en usuarios
   };
 
@@ -110,6 +116,7 @@ class Usuario extends Equatable {
   List<Object?> get props => [
     id, authId, primerNombre, segundoNombre,
     primerApellido, segundoApellido, numeroIdentificacion,
-    correo, telefono, urlAvatar, estatus, creadoEn, roles, permisos,
+    correo, telefono, urlAvatar, estatus, estatusAprobacion,
+    creadoEn, roles, permisos,
   ];
 }

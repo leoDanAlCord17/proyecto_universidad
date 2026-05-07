@@ -67,6 +67,10 @@ import '../funcionalidades/tipos_evento/crear_tipo_evento_cubit.dart';
 import '../funcionalidades/tipos_evento/crear_tipo_evento_pantalla.dart';
 import '../funcionalidades/tipos_evento/tipos_evento_cubit.dart';
 import '../funcionalidades/tipos_evento/tipos_evento_pantalla.dart';
+import '../funcionalidades/autenticacion/pendiente_aprobacion_pantalla.dart';
+import '../funcionalidades/autenticacion/usuario_rechazado_pantalla.dart';
+import '../funcionalidades/revision_usuarios/revision_usuarios_cubit.dart';
+import '../funcionalidades/revision_usuarios/revision_usuarios_pantalla.dart';
 
 class RouterApp {
   final AuthCubit authCubit;
@@ -93,6 +97,20 @@ class RouterApp {
         return ubicacion == Rutas.completarPerfil ? null : Rutas.completarPerfil;
       }
 
+      // Cuenta pendiente de aprobación por el administrador.
+      if (estadoAuth is PendienteAprobacion) {
+        return ubicacion == Rutas.pendienteAprobacion
+            ? null
+            : Rutas.pendienteAprobacion;
+      }
+
+      // Cuenta rechazada por el administrador.
+      if (estadoAuth is UsuarioRechazado) {
+        return ubicacion == Rutas.usuarioRechazado
+            ? null
+            : Rutas.usuarioRechazado;
+      }
+
       // Recuperación de contraseña: sesión de recovery activa
       if (estadoAuth is RecuperandoContrasena) {
         return ubicacion == Rutas.nuevaContrasena ? null : Rutas.nuevaContrasena;
@@ -113,6 +131,8 @@ class RouterApp {
           ubicacion == Rutas.login ||
           ubicacion == Rutas.registro ||
           ubicacion == Rutas.completarPerfil ||
+          ubicacion == Rutas.pendienteAprobacion ||
+          ubicacion == Rutas.usuarioRechazado ||
           ubicacion == Rutas.recuperarContrasena ||
           ubicacion == Rutas.nuevaContrasena) {
         return Rutas.home;
@@ -388,6 +408,24 @@ class RouterApp {
         builder: (context, state) => BlocProvider(
           create: (_) => obtenerIt<NuevaContrasenaCubit>(),
           child: const NuevaContrasenaPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path:    Rutas.pendienteAprobacion,
+        builder: (context, state) => const PendienteAprobacionPantalla(),
+      ),
+
+      GoRoute(
+        path:    Rutas.usuarioRechazado,
+        builder: (context, state) => const UsuarioRechazadoPantalla(),
+      ),
+
+      GoRoute(
+        path: Rutas.revisionUsuarios,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<RevisionUsuariosCubit>(),
+          child:  const RevisionUsuariosPantalla(),
         ),
       ),
 

@@ -9,19 +9,23 @@ class InicioCubit extends Cubit<InicioEstado> {
 
   final InicioRepositorio _repositorio;
 
-  /// Carga el tag principal y los tags secundarios del usuario autenticado.
+  /// Carga los tags del usuario y el flag de revisión de usuarios.
   Future<void> cargarTags(String usuarioId) async {
     emit(const InicioTagsCargando());
     try {
-      final resultado = await _repositorio.obtenerTags(usuarioId);
+      final tagsF     = _repositorio.obtenerTags(usuarioId);
+      final revisionF = _repositorio.obtenerRevisionHabilitada();
+      final tags      = await tagsF;
+      final revision  = await revisionF;
       emit(InicioTagsCargados(
-        tagPrincipal:    resultado.tagPrincipal,
-        tagsSecundarios: resultado.tagsSecundarios,
+        tagPrincipal:       tags.tagPrincipal,
+        tagsSecundarios:    tags.tagsSecundarios,
+        revisionHabilitada: revision,
       ));
-    } on FallaServidor catch (e) {
-      emit(InicioError(e.mensaje));
-    } on FallaInesperada catch (e) {
-      emit(InicioError(e.mensaje));
+    } on FallaServidor catch (falla) {
+      emit(InicioError(falla.mensaje));
+    } on FallaInesperada catch (falla) {
+      emit(InicioError(falla.mensaje));
     }
   }
 }

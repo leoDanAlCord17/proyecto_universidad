@@ -41,4 +41,20 @@ class InicioRepositorio {
       throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
+
+  /// Retorna true si la revisión de usuarios al crear cuenta está habilitada.
+  Future<bool> obtenerRevisionHabilitada() async {
+    try {
+      final datos = await _cliente
+          .from(TablasSupabase.configuracionBoolean)
+          .select('valor')
+          .eq('clave', 'revision_usuario_creacion')
+          .single();
+      return (datos['valor'] as bool?) ?? false;
+    } on PostgrestException catch (_) {
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
 }

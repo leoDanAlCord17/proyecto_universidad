@@ -50,6 +50,8 @@ import '../funcionalidades/notificaciones/notificaciones_cubit.dart';
 import '../funcionalidades/tipos_evento/crear_tipo_evento_cubit.dart';
 import '../funcionalidades/tipos_evento/tipos_evento_cubit.dart';
 import '../funcionalidades/tipos_evento/tipos_evento_repositorio.dart';
+import '../funcionalidades/revision_usuarios/revision_usuarios_cubit.dart';
+import '../funcionalidades/revision_usuarios/revision_usuarios_repositorio.dart';
 
 /// Instancia global de GetIt. Se usa en toda la app como obtenerIt<Tipo>().
 final obtenerIt = GetIt.instance;
@@ -263,5 +265,13 @@ void configurarDependencias() {
 
   obtenerIt.registerFactory<CrearTipoEventoCubit>(
     () => CrearTipoEventoCubit(obtenerIt<TiposEventoRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<RevisionUsuariosRepositorio>(
+    () => RevisionUsuariosRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<RevisionUsuariosCubit>(
+    () => RevisionUsuariosCubit(obtenerIt<RevisionUsuariosRepositorio>()),
   );
 }
