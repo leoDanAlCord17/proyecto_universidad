@@ -12,8 +12,10 @@ class TablasSupabase {
   static const String eventoGruposTags = 'evento_grupos_tags';
   static const String configuracionInt     = 'configuracion_int';
   static const String configuracionBoolean = 'configuracion_boolean';
-  static const String permisos         = 'permisos';
-  static const String rolesPermisos = 'roles_permisos';
+  static const String permisos             = 'permisos';
+  static const String rolesPermisos        = 'roles_permisos';
+  static const String notificaciones       = 'notificaciones';
+  static const String tokensDispositivo    = 'tokens_dispositivo';
 }
 
 /// Rutas de navegación de la app.
@@ -55,6 +57,7 @@ class Rutas {
   static const String perfil              = '/perfil';
   static const String notificaciones      = '/notificaciones';
 
+  static const String historial            = '/historial';
   static const String pendienteAprobacion = '/pendiente_aprobacion';
   static const String usuarioRechazado    = '/usuario_rechazado';
   static const String revisionUsuarios    = '/revision_usuarios';
@@ -96,6 +99,12 @@ class EstatusEvento {
   static const String enCurso    = 'en_curso';
   static const String finalizado = 'finalizado';
   static const String cancelado  = 'cancelado';
+}
+
+/// Valores válidos para eventos.modo_registro (CHECK constraint en la DB).
+class ModoRegistro {
+  static const String auto          = 'auto';
+  static const String administrador = 'administrador';
 }
 
 /// Valores válidos para eventos.alcance (CHECK constraint en la DB).

@@ -44,5 +44,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+// firebase
+/android/app/google-services.json
+
 # Variables de entorno — nunca subir al repo
 .env

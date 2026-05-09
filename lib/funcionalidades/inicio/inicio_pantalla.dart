@@ -17,8 +17,11 @@ import '../autenticacion/auth_estado.dart';
 import '../autenticacion/usuario.dart';
 import '../notificaciones/notificaciones_cubit.dart';
 import '../notificaciones/notificaciones_estado.dart';
+import 'eventos_en_curso_cubit.dart';
+import 'eventos_en_curso_estado.dart';
 import 'inicio_cubit.dart';
 import 'inicio_estado.dart';
+import '../../compartido/widgets/tarjetas/tarjeta_evento_en_curso.dart';
 
 class InicioPantalla extends StatefulWidget {
   const InicioPantalla({super.key});
@@ -38,7 +41,9 @@ class _InicioPantallaState extends State<InicioPantalla> {
 
     final authEstado = context.read<AuthCubit>().state;
     if (authEstado is Autenticado && authEstado.usuario.id != null) {
-      context.read<InicioCubit>().cargarTags(authEstado.usuario.id!);
+      final id = authEstado.usuario.id!;
+      context.read<InicioCubit>().cargarTags(id);
+      context.read<EventosEnCursoCubit>().cargar(id);
     }
   }
 
@@ -99,6 +104,10 @@ class _InicioPantallaState extends State<InicioPantalla> {
                               tagsSecundarios: estado is InicioTagsCargados ? estado.tagsSecundarios : [],
                             ),
                           ),
+                        BlocBuilder<EventosEnCursoCubit, EventosEnCursoEstado>(
+                          builder: (context, estado) =>
+                              _SeccionEventosEnCurso(estado: estado),
+                        ),
                         if (kDebugMode) ...[
                           const SizedBox(height: 12),
                           const _TarjetaDevWidgets(),
@@ -115,6 +124,7 @@ class _InicioPantallaState extends State<InicioPantalla> {
               indiceActual:    0,
               alCambiarIndice: (indice) {
                 if (indice == 1) context.go(Rutas.eventos);
+                if (indice == 3) context.push(Rutas.historial);
                 if (indice == 4) context.go(Rutas.perfil);
               },
             ),
@@ -156,6 +166,31 @@ class _CabeceraTexto extends StatelessWidget {
             color:      ColoresApp.textoPrimario,
           ),
         ),
+      ],
+    );
+  }
+}
+
+// ─── Sección eventos en curso ─────────────────────────────────────────────────
+
+class _SeccionEventosEnCurso extends StatelessWidget {
+  const _SeccionEventosEnCurso({required this.estado});
+
+  final EventosEnCursoEstado estado;
+
+  @override
+  Widget build(BuildContext context) {
+    if (estado is! EventosEnCursoCargado) return const SizedBox.shrink();
+    final eventos = (estado as EventosEnCursoCargado).eventos;
+    if (eventos.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        for (final evento in eventos) ...[
+          TarjetaEventoEnCurso(eventoEnCurso: evento),
+          const SizedBox(height: 12),
+        ],
       ],
     );
   }

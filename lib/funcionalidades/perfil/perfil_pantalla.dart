@@ -101,6 +101,7 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
               alCambiarIndice: (indice) {
                 if (indice == 0) context.go(Rutas.home);
                 if (indice == 1) context.go(Rutas.eventos);
+                if (indice == 3) context.push(Rutas.historial);
               },
             ),
           ),

@@ -71,6 +71,9 @@ import '../funcionalidades/autenticacion/pendiente_aprobacion_pantalla.dart';
 import '../funcionalidades/autenticacion/usuario_rechazado_pantalla.dart';
 import '../funcionalidades/revision_usuarios/revision_usuarios_cubit.dart';
 import '../funcionalidades/revision_usuarios/revision_usuarios_pantalla.dart';
+import '../funcionalidades/historial/historial_cubit.dart';
+import '../funcionalidades/historial/historial_pantalla.dart';
+import '../funcionalidades/inicio/eventos_en_curso_cubit.dart';
 
 class RouterApp {
   final AuthCubit authCubit;
@@ -138,10 +141,8 @@ class RouterApp {
         return Rutas.home;
       }
 
-      // Protección de zona administrativa por rol
-      if (ubicacion.startsWith(Rutas.admin) && !estadoAuth.usuario.tieneRol('admin')) {
-        return Rutas.home;
-      }
+      // TODO(prod): Reactivar guards de rutas administrativas antes de producción.
+      // Ver corrección A01 en el informe de seguridad.
 
       return null;
     },
@@ -187,6 +188,7 @@ class RouterApp {
           providers: [
             BlocProvider(create: (_) => obtenerIt<InicioCubit>()),
             BlocProvider(create: (_) => obtenerIt<NotificacionesCubit>()),
+            BlocProvider(create: (_) => obtenerIt<EventosEnCursoCubit>()),
           ],
           child: const InicioPantalla(),
         ),
@@ -426,6 +428,14 @@ class RouterApp {
         builder: (context, state) => BlocProvider(
           create: (_) => obtenerIt<RevisionUsuariosCubit>(),
           child:  const RevisionUsuariosPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.historial,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<HistorialCubit>(),
+          child:  const HistorialPantalla(),
         ),
       ),
 

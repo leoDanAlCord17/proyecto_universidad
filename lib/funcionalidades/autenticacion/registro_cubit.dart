@@ -32,8 +32,13 @@ class RegistroCubit extends Cubit<RegistroEstado> {
       return;
     }
 
-    if (clave.length < 6) {
-      emit(RegistroError('La contraseña debe tener al menos 6 caracteres.'));
+    if (clave.length < 8) {
+      emit(RegistroError('La contraseña debe tener al menos 8 caracteres.'));
+      return;
+    }
+
+    if (!RegExp(r'\d').hasMatch(clave)) {
+      emit(RegistroError('La contraseña debe incluir al menos un número.'));
       return;
     }
 

@@ -8,6 +8,7 @@ import '../../compartido/widgets/avisos/aviso_app.dart';
 import '../../compartido/widgets/botones/boton_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
 import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
+import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../configuracion/colores_app.dart';
 import 'revision_usuario_item.dart';
@@ -24,7 +25,8 @@ class RevisionUsuariosPantalla extends StatefulWidget {
 
 class _RevisionUsuariosPantallaState
     extends State<RevisionUsuariosPantalla> {
-  bool _estaIniciado = false;
+  bool   _estaIniciado = false;
+  String _busqueda     = '';
 
   @override
   void didChangeDependencies() {
@@ -32,6 +34,16 @@ class _RevisionUsuariosPantallaState
     if (_estaIniciado) return;
     _estaIniciado = true;
     context.read<RevisionUsuariosCubit>().cargar();
+  }
+
+  List<RevisionUsuarioItem> _aplicarFiltro(List<RevisionUsuarioItem> usuarios) {
+    if (_busqueda.trim().isEmpty) return usuarios;
+    final q = _busqueda.toLowerCase().trim();
+    return usuarios.where((u) =>
+      u.nombreCompleto.toLowerCase().contains(q) ||
+      u.correo.toLowerCase().contains(q) ||
+      (u.numeroIdentificacion?.toLowerCase().contains(q) ?? false),
+    ).toList();
   }
 
   @override
@@ -57,6 +69,10 @@ class _RevisionUsuariosPantallaState
     BuildContext context,
     RevisionUsuariosEstado estado,
   ) {
+    final estadoMostrar = estado is RevisionUsuariosCargados
+        ? estado.copiarCon(usuarios: _aplicarFiltro(estado.usuarios))
+        : estado;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor:          Colors.transparent,
@@ -68,7 +84,16 @@ class _RevisionUsuariosPantallaState
         body: Column(
           children: [
             const _BarraTitulo(),
-            Expanded(child: _Cuerpo(estado: estado)),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: BarraBusquedaApp(
+                hintText:  'Buscar nombre, correo o cédula...',
+                alCambiar: (v) => setState(() => _busqueda = v),
+              ),
+            ),
+            Expanded(
+              child: _Cuerpo(estado: estadoMostrar, busqueda: _busqueda),
+            ),
           ],
         ),
       ),
@@ -109,9 +134,10 @@ class _BarraTitulo extends StatelessWidget {
 // ─── Cuerpo según estado ──────────────────────────────────────────────────────
 
 class _Cuerpo extends StatelessWidget {
-  const _Cuerpo({required this.estado});
+  const _Cuerpo({required this.estado, required this.busqueda});
 
   final RevisionUsuariosEstado estado;
+  final String                 busqueda;
 
   @override
   Widget build(BuildContext context) {
@@ -119,8 +145,10 @@ class _Cuerpo extends StatelessWidget {
       RevisionUsuariosInicial() || RevisionUsuariosCargando() => const Center(
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
-      final RevisionUsuariosCargados cargados => _Lista(estado: cargados),
-      final RevisionUsuariosError error       => _VistaError(mensaje: error.mensaje),
+      final RevisionUsuariosCargados cargados =>
+          _Lista(estado: cargados, busqueda: busqueda),
+      final RevisionUsuariosError error =>
+          _VistaError(mensaje: error.mensaje),
     };
   }
 }
@@ -128,9 +156,10 @@ class _Cuerpo extends StatelessWidget {
 // ─── Lista de usuarios pendientes ─────────────────────────────────────────────
 
 class _Lista extends StatelessWidget {
-  const _Lista({required this.estado});
+  const _Lista({required this.estado, required this.busqueda});
 
   final RevisionUsuariosCargados estado;
+  final String                   busqueda;
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +168,9 @@ class _Lista extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(32),
           child: Text(
-            'No hay usuarios pendientes de aprobación',
+            busqueda.trim().isNotEmpty
+                ? 'Sin resultados para "$busqueda"'
+                : 'No hay usuarios pendientes de aprobación',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: ColoresApp.textoTerciario,

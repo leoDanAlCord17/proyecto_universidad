@@ -57,7 +57,7 @@ class TraductorErrores {
     final m = mensaje.toLowerCase();
     if (m.contains('already registered'))  return 'Este correo ya tiene una cuenta. Inicia sesión.';
     if (m.contains('email not confirmed')) return 'Debes confirmar tu correo antes de ingresar.';
-    if (m.contains('password should be'))  return 'La contraseña debe tener al menos 6 caracteres.';
+    if (m.contains('password should be'))  return 'La contraseña debe tener al menos 8 caracteres e incluir un número.';
     if (m.contains('signup is disabled'))  return 'El registro no está disponible en este momento.';
     if (m.contains('invalid'))             return 'Correo o contraseña incorrectos.';
     return MensajesError.inesperado;

@@ -66,8 +66,10 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
       await _actualizarListaAsistentes(cargado, estaRegistrando: false);
     } on FallaServidor catch (e) {
       _emitirFalloPanel(cargado, e.mensaje);
+      rethrow;
     } on FallaInesperada catch (e) {
       _emitirFalloPanel(cargado, e.mensaje);
+      rethrow;
     }
   }
 
