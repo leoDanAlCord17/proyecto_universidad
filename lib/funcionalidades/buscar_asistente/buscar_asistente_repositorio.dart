@@ -37,11 +37,15 @@ class BuscarAsistenteRepositorio {
   /// Busca usuarios del sistema cuyo nombre o apellido coincida con [query].
   Future<List<Map<String, dynamic>>> buscarUsuarios(String query) async {
     try {
-      final q    = query.trim();
+      final q = query.trim();
+      // Mínimo 2 caracteres para evitar escaneos completos de la tabla.
+      // Máximo 100 caracteres para prevenir abuso de la query.
+      if (q.length < 2) return [];
+      final qSanitizado = q.length > 100 ? q.substring(0, 100) : q;
       final rows = await _supabase
           .from(TablasSupabase.usuarios)
           .select('id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
-          .or('primer_nombre.ilike.%$q%,primer_apellido.ilike.%$q%')
+          .or('primer_nombre.ilike.%$qSanitizado%,primer_apellido.ilike.%$qSanitizado%')
           .order('primer_apellido', ascending: true)
           .limit(30);
       return List<Map<String, dynamic>>.from(rows);

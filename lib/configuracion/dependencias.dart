@@ -47,11 +47,16 @@ import '../funcionalidades/escanear_qr/escanear_qr_repositorio.dart';
 import '../funcionalidades/escanear_evento_qr/escanear_evento_qr_cubit.dart';
 import '../funcionalidades/escanear_evento_qr/escanear_evento_qr_repositorio.dart';
 import '../funcionalidades/notificaciones/notificaciones_cubit.dart';
+import '../funcionalidades/notificaciones/notificaciones_repositorio.dart';
 import '../funcionalidades/tipos_evento/crear_tipo_evento_cubit.dart';
 import '../funcionalidades/tipos_evento/tipos_evento_cubit.dart';
 import '../funcionalidades/tipos_evento/tipos_evento_repositorio.dart';
 import '../funcionalidades/revision_usuarios/revision_usuarios_cubit.dart';
 import '../funcionalidades/revision_usuarios/revision_usuarios_repositorio.dart';
+import '../funcionalidades/historial/historial_cubit.dart';
+import '../funcionalidades/historial/historial_repositorio.dart';
+import '../funcionalidades/inicio/eventos_en_curso_cubit.dart';
+import '../funcionalidades/inicio/eventos_en_curso_repositorio.dart';
 
 /// Instancia global de GetIt. Se usa en toda la app como obtenerIt<Tipo>().
 final obtenerIt = GetIt.instance;
@@ -251,8 +256,12 @@ void configurarDependencias() {
     () => EscanearEventoQrCubit(obtenerIt<EscanearEventoQrRepositorio>()),
   );
 
+  obtenerIt.registerLazySingleton<NotificacionesRepositorio>(
+    () => NotificacionesRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
   obtenerIt.registerFactory<NotificacionesCubit>(
-    () => NotificacionesCubit(),
+    () => NotificacionesCubit(obtenerIt<NotificacionesRepositorio>()),
   );
 
   obtenerIt.registerLazySingleton<TiposEventoRepositorio>(
@@ -273,5 +282,21 @@ void configurarDependencias() {
 
   obtenerIt.registerFactory<RevisionUsuariosCubit>(
     () => RevisionUsuariosCubit(obtenerIt<RevisionUsuariosRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<HistorialRepositorio>(
+    () => HistorialRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<HistorialCubit>(
+    () => HistorialCubit(obtenerIt<HistorialRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<EventosEnCursoRepositorio>(
+    () => EventosEnCursoRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<EventosEnCursoCubit>(
+    () => EventosEnCursoCubit(obtenerIt<EventosEnCursoRepositorio>()),
   );
 }
