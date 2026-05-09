@@ -260,7 +260,7 @@ void configurarDependencias() {
     () => NotificacionesRepositorio(obtenerIt<SupabaseClient>()),
   );
 
-  obtenerIt.registerFactory<NotificacionesCubit>(
+  obtenerIt.registerLazySingleton<NotificacionesCubit>(
     () => NotificacionesCubit(obtenerIt<NotificacionesRepositorio>()),
   );
 
