@@ -74,6 +74,8 @@ import '../funcionalidades/revision_usuarios/revision_usuarios_pantalla.dart';
 import '../funcionalidades/historial/historial_cubit.dart';
 import '../funcionalidades/historial/historial_pantalla.dart';
 import '../funcionalidades/inicio/eventos_en_curso_cubit.dart';
+import '../funcionalidades/estadisticas/estadisticas_cubit.dart';
+import '../funcionalidades/estadisticas/estadisticas_pantalla.dart';
 
 class RouterApp {
   final AuthCubit authCubit;
@@ -436,6 +438,14 @@ class RouterApp {
         builder: (context, state) => BlocProvider(
           create: (_) => obtenerIt<HistorialCubit>(),
           child:  const HistorialPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.estadisticas,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<EstadisticasCubit>(),
+          child:  const EstadisticasPantalla(),
         ),
       ),
 
