@@ -314,6 +314,17 @@ class _BotonAjustes extends StatelessWidget {
               context.push(Rutas.gestionTiposEvento);
             },
           ),
+          OpcionPanel(
+            icono:       Icons.bar_chart_rounded,
+            colorFondo:  ColoresApp.verdeClaro,
+            colorIcono:  ColoresApp.verde,
+            titulo:      'Estadísticas',
+            descripcion: 'Métricas y análisis de eventos',
+            alPresionar: () {
+              Navigator.of(context, rootNavigator: true).pop();
+              context.push(Rutas.estadisticas);
+            },
+          ),
           const OpcionPanel(
             icono:       Icons.tune_rounded,
             colorFondo:  ColoresApp.superficieTerciar,

@@ -57,6 +57,8 @@ import '../funcionalidades/historial/historial_cubit.dart';
 import '../funcionalidades/historial/historial_repositorio.dart';
 import '../funcionalidades/inicio/eventos_en_curso_cubit.dart';
 import '../funcionalidades/inicio/eventos_en_curso_repositorio.dart';
+import '../funcionalidades/estadisticas/estadisticas_cubit.dart';
+import '../funcionalidades/estadisticas/estadisticas_repositorio.dart';
 
 /// Instancia global de GetIt. Se usa en toda la app como obtenerIt<Tipo>().
 final obtenerIt = GetIt.instance;
@@ -298,5 +300,13 @@ void configurarDependencias() {
 
   obtenerIt.registerFactory<EventosEnCursoCubit>(
     () => EventosEnCursoCubit(obtenerIt<EventosEnCursoRepositorio>()),
+  );
+
+  obtenerIt.registerLazySingleton<EstadisticasRepositorio>(
+    () => EstadisticasRepositorio(obtenerIt<SupabaseClient>()),
+  );
+
+  obtenerIt.registerFactory<EstadisticasCubit>(
+    () => EstadisticasCubit(obtenerIt<EstadisticasRepositorio>()),
   );
 }
