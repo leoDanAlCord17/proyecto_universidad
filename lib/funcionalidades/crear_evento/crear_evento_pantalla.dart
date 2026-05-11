@@ -39,17 +39,12 @@ class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
   final _tituloCtrl      = TextEditingController();
   final _descripcionCtrl = TextEditingController();
   final _lugarCtrl       = TextEditingController();
-  bool _estaPrelleno = false;
+  bool _estaPrelleno  = false;
+  bool _estaIniciado  = false;
 
   @override
   void initState() {
     super.initState();
-    final cubit = context.read<CrearEventoCubit>();
-    if (widget.eventoId != null) {
-      cubit.cargarEventoParaEditar(widget.eventoId!);
-    } else {
-      cubit.cargarOpciones();
-    }
     _tituloCtrl.addListener(
       () => _actualizar((s) => s.copiarCon(titulo: _tituloCtrl.text)),
     );
@@ -59,6 +54,19 @@ class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
     _lugarCtrl.addListener(
       () => _actualizar((s) => s.copiarCon(lugar: _lugarCtrl.text)),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_estaIniciado) return;
+    _estaIniciado = true;
+    final cubit = context.read<CrearEventoCubit>();
+    if (widget.eventoId != null) {
+      cubit.cargarEventoParaEditar(widget.eventoId!);
+    } else {
+      cubit.cargarOpciones();
+    }
   }
 
   void _actualizar(CrearEventoCargado Function(CrearEventoCargado) fn) =>

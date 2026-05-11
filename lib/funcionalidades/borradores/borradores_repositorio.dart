@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/traductor_errores.dart';
 import 'borrador_evento.dart';
 
 class BorradoresRepositorio {
@@ -21,9 +22,9 @@ class BorradoresRepositorio {
           .map((e) => BorradorEvento.desdeJson(e as Map<String, dynamic>))
           .toList();
     } on PostgrestException catch (e) {
-      throw FallaServidor(e.message);
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(e.toString());
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
 
@@ -35,9 +36,9 @@ class BorradoresRepositorio {
           .update({'estatus': EstatusEvento.programado, 'actualizado_por': actualizadoPor})
           .eq('id', eventoId);
     } on PostgrestException catch (e) {
-      throw FallaServidor(e.message);
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(e.toString());
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
 
