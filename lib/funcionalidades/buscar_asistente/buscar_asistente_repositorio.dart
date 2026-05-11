@@ -104,7 +104,6 @@ class BuscarAsistenteRepositorio {
       if (esAnticipada) {
         datos['estatus']                  = EstatusAsistencia.salioAnticipado;
         datos['motivo_salida_anticipada'] = motivo;
-        datos['salio_antes']              = true;
       } else {
         datos['estatus'] = EstatusAsistencia.completado;
       }

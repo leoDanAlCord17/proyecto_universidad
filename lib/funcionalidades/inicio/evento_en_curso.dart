@@ -13,8 +13,10 @@ class EventoEnCurso extends Equatable {
     required this.permiteQrUsuario,
     required this.permiteForaneos,
     required this.modoRegistro,
+    required this.alcance,
     required this.totalPresentes,
     required this.totalRegistrados,
+    this.esColaborador = false,
   });
 
   final String  id;
@@ -26,8 +28,12 @@ class EventoEnCurso extends Equatable {
   final bool    permiteQrUsuario;
   final bool    permiteForaneos;
   final String  modoRegistro;
+  final String  alcance;
   final int     totalPresentes;
   final int     totalRegistrados;
+  final bool    esColaborador;
+
+  bool get esGeneral => alcance == AlcanceEvento.general;
 
   bool get esModoAuto => modoRegistro == ModoRegistro.auto;
 
@@ -47,7 +53,11 @@ class EventoEnCurso extends Equatable {
     return partes.length >= 2 ? '${partes[0]}:${partes[1]}' : hora;
   }
 
-  EventoEnCurso copyWith({int? totalPresentes, int? totalRegistrados}) =>
+  EventoEnCurso copyWith({
+    int?  totalPresentes,
+    int?  totalRegistrados,
+    bool? esColaborador,
+  }) =>
       EventoEnCurso(
         id:               id,
         titulo:           titulo,
@@ -58,8 +68,10 @@ class EventoEnCurso extends Equatable {
         permiteQrUsuario: permiteQrUsuario,
         permiteForaneos:  permiteForaneos,
         modoRegistro:     modoRegistro,
+        alcance:          alcance,
         totalPresentes:   totalPresentes   ?? this.totalPresentes,
         totalRegistrados: totalRegistrados ?? this.totalRegistrados,
+        esColaborador:    esColaborador    ?? this.esColaborador,
       );
 
   factory EventoEnCurso.desdeJson(Map<String, dynamic> json) => EventoEnCurso(
@@ -72,6 +84,7 @@ class EventoEnCurso extends Equatable {
     permiteQrUsuario: (json['permite_qr_usuario'] as bool?) ?? true,
     permiteForaneos:  (json['permite_foraneos']   as bool?) ?? false,
     modoRegistro:     json['modo_registro']     as String? ?? ModoRegistro.administrador,
+    alcance:          json['alcance']           as String? ?? AlcanceEvento.general,
     totalPresentes:   0,
     totalRegistrados: 0,
   );
@@ -80,6 +93,6 @@ class EventoEnCurso extends Equatable {
   List<Object?> get props => [
     id, titulo, lugar, horaInicio, horaFin,
     permiteQrEvento, permiteQrUsuario, permiteForaneos,
-    modoRegistro, totalPresentes, totalRegistrados,
+    modoRegistro, alcance, totalPresentes, totalRegistrados, esColaborador,
   ];
 }

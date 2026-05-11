@@ -99,7 +99,7 @@ class GestionarTagsUsuarioRepositorio {
         'usuario_id':   usuarioId,
         'tag_id':       tagId,
         'estatus':      true,
-        'asignado_por': adminId,
+        'creado_por': adminId,
       });
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));

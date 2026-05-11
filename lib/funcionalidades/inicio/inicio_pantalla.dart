@@ -236,6 +236,14 @@ class _BotonAjustes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final usuario = context.select<AuthCubit, Usuario?>(
+      (c) => c.state is Autenticado ? (c.state as Autenticado).usuario : null,
+    );
+
+    if (usuario == null || !usuario.tienePermiso('ajustes')) {
+      return const SizedBox.shrink();
+    }
+
     final revisionHabilitada = context.select<InicioCubit, bool>(
       (cubit) => cubit.state is InicioTagsCargados
           ? (cubit.state as InicioTagsCargados).revisionHabilitada
@@ -247,18 +255,19 @@ class _BotonAjustes extends StatelessWidget {
       alPresionar: () => PanelOpciones.mostrar(
         context,
         opciones: [
-          OpcionPanel(
-            icono:       Icons.people_outline_rounded,
-            colorFondo:  ColoresApp.acentoClaro,
-            colorIcono:  ColoresApp.acento,
-            titulo:      'Usuarios',
-            descripcion: 'Gestionar usuarios',
-            alPresionar: () {
-              Navigator.of(context, rootNavigator: true).pop();
-              context.push(Rutas.gestionUsuarios);
-            },
-          ),
-          if (revisionHabilitada)
+          if (usuario.tienePermiso('ajustes.usuarios'))
+            OpcionPanel(
+              icono:       Icons.people_outline_rounded,
+              colorFondo:  ColoresApp.acentoClaro,
+              colorIcono:  ColoresApp.acento,
+              titulo:      'Usuarios',
+              descripcion: 'Gestionar usuarios',
+              alPresionar: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                context.push(Rutas.gestionUsuarios);
+              },
+            ),
+          if (revisionHabilitada && usuario.tienePermiso('ajustes.revision_usuarios'))
             OpcionPanel(
               icono:       Icons.how_to_reg_outlined,
               colorFondo:  ColoresApp.ambarClaro,
@@ -270,68 +279,74 @@ class _BotonAjustes extends StatelessWidget {
                 context.push(Rutas.revisionUsuarios);
               },
             ),
-          OpcionPanel(
-            icono:       Icons.admin_panel_settings_outlined,
-            colorFondo:  ColoresApp.tealClaro,
-            colorIcono:  ColoresApp.teal,
-            titulo:      'Gestionar Roles',
-            descripcion: 'Asignar o remover roles',
-            alPresionar: () {
-              Navigator.of(context, rootNavigator: true).pop();
-              context.push(Rutas.gestionRoles);
-            },
-          ),
-          OpcionPanel(
-            icono:       Icons.shield_outlined,
-            colorFondo:  ColoresApp.verdeClaro,
-            colorIcono:  ColoresApp.verde,
-            titulo:      'Permisos',
-            descripcion: 'Permisos de la app',
-            alPresionar: () {
-              Navigator.of(context, rootNavigator: true).pop();
-              context.push(Rutas.permisosSistema);
-            },
-          ),
-          OpcionPanel(
-            icono:       Icons.label_outline_rounded,
-            colorFondo:  ColoresApp.ambarClaro,
-            colorIcono:  ColoresApp.ambar,
-            titulo:      'Gestionar Tags',
-            descripcion: 'Etiquetas',
-            alPresionar: () {
-              Navigator.of(context, rootNavigator: true).pop();
-              context.push(Rutas.gestionTags);
-            },
-          ),
-          OpcionPanel(
-            icono:       Icons.category_outlined,
-            colorFondo:  ColoresApp.tealClaro,
-            colorIcono:  ColoresApp.teal,
-            titulo:      'Tipos de evento',
-            descripcion: 'Gestionar tipos de evento',
-            alPresionar: () {
-              Navigator.of(context, rootNavigator: true).pop();
-              context.push(Rutas.gestionTiposEvento);
-            },
-          ),
-          OpcionPanel(
-            icono:       Icons.bar_chart_rounded,
-            colorFondo:  ColoresApp.verdeClaro,
-            colorIcono:  ColoresApp.verde,
-            titulo:      'Estadísticas',
-            descripcion: 'Métricas y análisis de eventos',
-            alPresionar: () {
-              Navigator.of(context, rootNavigator: true).pop();
-              context.push(Rutas.estadisticas);
-            },
-          ),
-          const OpcionPanel(
-            icono:       Icons.tune_rounded,
-            colorFondo:  ColoresApp.superficieTerciar,
-            colorIcono:  ColoresApp.textoSecundario,
-            titulo:      'Configuraciones generales',
-            descripcion: 'Preferencias y ajustes',
-          ),
+          if (usuario.tienePermiso('ajustes.gestionar_roles'))
+            OpcionPanel(
+              icono:       Icons.admin_panel_settings_outlined,
+              colorFondo:  ColoresApp.tealClaro,
+              colorIcono:  ColoresApp.teal,
+              titulo:      'Gestionar Roles',
+              descripcion: 'Asignar o remover roles',
+              alPresionar: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                context.push(Rutas.gestionRoles);
+              },
+            ),
+          if (usuario.tienePermiso('ajustes.permisos'))
+            OpcionPanel(
+              icono:       Icons.shield_outlined,
+              colorFondo:  ColoresApp.verdeClaro,
+              colorIcono:  ColoresApp.verde,
+              titulo:      'Permisos',
+              descripcion: 'Permisos de la app',
+              alPresionar: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                context.push(Rutas.permisosSistema);
+              },
+            ),
+          if (usuario.tienePermiso('ajustes.gestionar_tags'))
+            OpcionPanel(
+              icono:       Icons.label_outline_rounded,
+              colorFondo:  ColoresApp.ambarClaro,
+              colorIcono:  ColoresApp.ambar,
+              titulo:      'Gestionar Tags',
+              descripcion: 'Etiquetas',
+              alPresionar: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                context.push(Rutas.gestionTags);
+              },
+            ),
+          if (usuario.tienePermiso('ajustes.tipos_eventos'))
+            OpcionPanel(
+              icono:       Icons.category_outlined,
+              colorFondo:  ColoresApp.tealClaro,
+              colorIcono:  ColoresApp.teal,
+              titulo:      'Tipos de evento',
+              descripcion: 'Gestionar tipos de evento',
+              alPresionar: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                context.push(Rutas.gestionTiposEvento);
+              },
+            ),
+          if (usuario.tienePermiso('ajustes.estadisticas'))
+            OpcionPanel(
+              icono:       Icons.bar_chart_rounded,
+              colorFondo:  ColoresApp.verdeClaro,
+              colorIcono:  ColoresApp.verde,
+              titulo:      'Estadísticas',
+              descripcion: 'Métricas y análisis de eventos',
+              alPresionar: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                context.push(Rutas.estadisticas);
+              },
+            ),
+          if (usuario.tienePermiso('ajustes.configuraciones'))
+            const OpcionPanel(
+              icono:       Icons.tune_rounded,
+              colorFondo:  ColoresApp.superficieTerciar,
+              colorIcono:  ColoresApp.textoSecundario,
+              titulo:      'Configuraciones generales',
+              descripcion: 'Preferencias y ajustes',
+            ),
         ],
       ),
     );

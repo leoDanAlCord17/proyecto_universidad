@@ -76,6 +76,8 @@ import '../funcionalidades/historial/historial_pantalla.dart';
 import '../funcionalidades/inicio/eventos_en_curso_cubit.dart';
 import '../funcionalidades/estadisticas/estadisticas_cubit.dart';
 import '../funcionalidades/estadisticas/estadisticas_pantalla.dart';
+import '../funcionalidades/colaboradores_evento/colaboradores_evento_cubit.dart';
+import '../funcionalidades/colaboradores_evento/colaboradores_evento_pantalla.dart';
 
 class RouterApp {
   final AuthCubit authCubit;
@@ -471,6 +473,16 @@ class RouterApp {
           create: (_) => obtenerIt<CrearTipoEventoCubit>(),
           child: CrearTipoEventoPantalla(
             tipoEventoId: state.pathParameters['tipoEventoId'],
+          ),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.colaboradoresEvento,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<ColaboradoresEventoCubit>(),
+          child: ColaboradoresEventoPantalla(
+            eventoId: state.pathParameters['eventoId']!,
           ),
         ),
       ),

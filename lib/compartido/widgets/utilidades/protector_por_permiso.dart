@@ -25,7 +25,7 @@ class ProtectorPorPermiso extends StatelessWidget {
     final estadoAuth = context.watch<AuthCubit>().state;
 
     if (estadoAuth is Autenticado) {
-      final tienePermiso = estadoAuth.usuario.permisos.contains(permisoRequerido);
+      final tienePermiso = estadoAuth.usuario.tienePermiso(permisoRequerido);
       if (tienePermiso) return hijo;
     }
 

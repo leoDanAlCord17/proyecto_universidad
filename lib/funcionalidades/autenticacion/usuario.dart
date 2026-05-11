@@ -102,8 +102,12 @@ class Usuario extends Equatable {
     // roles y permisos viven en usuarios_roles y roles_permisos, no en usuarios
   };
 
-  bool tienePermiso(String permiso) => permisos.contains(permiso);
-  bool tieneRol(String rol)         => roles.contains(rol);
+  bool tienePermiso(String permiso) {
+    if (permiso.contains('.')) return permisos.contains(permiso);
+    return permisos.any((p) => p.startsWith('$permiso.'));
+  }
+
+  bool tieneRol(String rol) => roles.contains(rol);
 
   String get nombreCompleto => '$primerNombre $primerApellido';
   String get iniciales {

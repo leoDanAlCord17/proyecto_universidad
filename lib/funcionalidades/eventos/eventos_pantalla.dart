@@ -9,9 +9,11 @@ import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_navegacion_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../compartido/widgets/tarjetas/tarjeta_evento.dart';
+import '../../compartido/widgets/utilidades/protector_por_permiso.dart';
 import '../../configuracion/colores_app.dart';
 import '../autenticacion/auth_cubit.dart';
 import '../autenticacion/auth_estado.dart';
+import '../autenticacion/usuario.dart';
 import 'evento.dart';
 import 'eventos_cubit.dart';
 import 'eventos_estado.dart';
@@ -80,12 +82,18 @@ class _EventosPantallaState extends State<EventosPantalla>
                 derecha: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    BotonContornoIcono(
-                      icono:       Icons.description_outlined,
-                      alPresionar: () => context.push(Rutas.borradores),
+                    ProtectorPorPermiso(
+                      permisoRequerido: Permisos.eventosCrearEventos,
+                      hijo: BotonContornoIcono(
+                        icono:       Icons.description_outlined,
+                        alPresionar: () => context.push(Rutas.borradores),
+                      ),
                     ),
                     const SizedBox(width: 18),
-                    const _BotonCrearEvento(),
+                    const ProtectorPorPermiso(
+                      permisoRequerido: Permisos.eventosCrearEventos,
+                      hijo: _BotonCrearEvento(),
+                    ),
                     const SizedBox(width: 4),
                   ],
                 ),
@@ -255,6 +263,11 @@ class _VistaContenido extends StatelessWidget {
   Widget build(BuildContext context) {
     if (enCurso.isEmpty && proximos.isEmpty) return const _VistaVacia();
 
+    final usuario = context.select<AuthCubit, Usuario?>(
+      (c) => c.state is Autenticado ? (c.state as Autenticado).usuario : null,
+    );
+    final tienePanel = usuario?.tienePermiso(Permisos.eventosPanelControl) ?? false;
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: [
@@ -271,7 +284,9 @@ class _VistaContenido extends StatelessWidget {
                 lugar:        e.evento.lugar,
                 descripcion:  e.evento.descripcion,
                 colorTitulo:  ColoresApp.textoPrimario,
-                alAbrirPanel: () => context.push(Rutas.panelControlUrl(e.evento.id)),
+                alAbrirPanel: tienePanel
+                    ? () => context.push(Rutas.panelControlUrl(e.evento.id))
+                    : null,
               ),
             ),
           const SizedBox(height: 8),

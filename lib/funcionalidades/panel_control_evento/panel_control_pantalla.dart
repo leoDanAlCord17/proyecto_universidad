@@ -7,6 +7,7 @@ import '../../compartido/constantes.dart';
 import '../../compartido/widgets/dialogo/modal_foraneo.dart';
 import '../../compartido/widgets/dialogo/modal_qr_evento.dart';
 import '../../compartido/widgets/botones/boton_app.dart';
+import '../../compartido/widgets/panel/panel_opciones.dart';
 import '../../compartido/widgets/formularios/campo_texto_app.dart';
 import '../../compartido/widgets/indicadores/barra_estadistica.dart';
 import '../../compartido/widgets/tarjetas/tarjeta_app.dart';
@@ -131,11 +132,6 @@ class _ContenidoCargado extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _BotonCerrarEvento(
-                  estaCerrando: estado.estaCerrando,
-                  tituloEvento: estado.evento.titulo,
-                ),
-                const SizedBox(height: 16),
                 _FilaEstadisticas(estado: estado),
                 if (estado.tasaConvocatoria != null) ...[
                   const SizedBox(height: 14),
@@ -170,7 +166,13 @@ class _EncabezadoEvento extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _BotonRegresar(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const _BotonRegresar(),
+              _BotonConfiguracion(estado: estado),
+            ],
+          ),
           const SizedBox(height: 14),
           Text(
             evento.titulo,
@@ -293,30 +295,61 @@ class _ChipInfo extends StatelessWidget {
   }
 }
 
-// ─── Botón cerrar evento ──────────────────────────────────────────────────────
+// ─── Botón configuración (cabecera) ──────────────────────────────────────────
 
-class _BotonCerrarEvento extends StatelessWidget {
-  const _BotonCerrarEvento({
-    required this.estaCerrando,
-    required this.tituloEvento,
-  });
+class _BotonConfiguracion extends StatelessWidget {
+  const _BotonConfiguracion({required this.estado});
 
-  final bool   estaCerrando;
-  final String tituloEvento;
+  final PanelControlCargado estado;
+
+  void _abrirOpciones(BuildContext context) {
+    PanelOpciones.mostrar(context, opciones: _opciones(context));
+  }
+
+  List<OpcionPanel> _opciones(BuildContext context) => [
+    OpcionPanel(
+      icono:       Icons.group_add_rounded,
+      colorFondo:  ColoresApp.acentoClaro,
+      colorIcono:  ColoresApp.acento,
+      titulo:      'Colaboradores',
+      descripcion: 'Asigna usuarios para ayudar a gestionar este evento',
+      alPresionar: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        context.push(Rutas.colaboradoresEventoUrl(estado.evento.id));
+      },
+    ),
+    OpcionPanel(
+      icono:       Icons.event_busy_rounded,
+      colorFondo:  ColoresApp.rojoClaro,
+      colorIcono:  ColoresApp.rojo,
+      titulo:      'Cerrar evento',
+      descripcion: 'Finaliza y cierra el evento en curso',
+      alPresionar: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        _DialogoCerrarEvento.mostrar(
+          context,
+          tituloEvento: estado.evento.titulo,
+          alConfirmar:  context.read<PanelControlCubit>().cerrarEvento,
+        );
+      },
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return BotonApp(
-      variante:     VarianteBoton.rojo,
-      texto:        'CERRAR EVENTO',
-      estaCargando: estaCerrando,
-      alPresionar:  estaCerrando
-          ? null
-          : () => _DialogoCerrarEvento.mostrar(
-                context,
-                tituloEvento: tituloEvento,
-                alConfirmar:  context.read<PanelControlCubit>().cerrarEvento,
-              ),
+    return Material(
+      color:        Colors.white.withValues(alpha: 0.2),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap:          () => _abrirOpciones(context),
+        borderRadius:   BorderRadius.circular(12),
+        splashColor:    Colors.white.withValues(alpha: 0.3),
+        highlightColor: Colors.white.withValues(alpha: 0.1),
+        child: const Padding(
+          padding: EdgeInsets.all(8),
+          child:   Icon(Icons.settings_outlined, color: Colors.white, size: 20),
+        ),
+      ),
     );
   }
 }

@@ -143,7 +143,11 @@ class CrearEventoRepositorio {
     required Map<String, dynamic> datos,
   }) async {
     try {
-      await _cliente.from(TablasSupabase.eventos).update(datos).eq('id', id);
+      final actualizadoPor = await _resolverUsuarioId();
+      await _cliente
+          .from(TablasSupabase.eventos)
+          .update({...datos, 'actualizado_por': actualizadoPor})
+          .eq('id', id);
     } on PostgrestException catch (e) {
       throw FallaServidor(e.message);
     } catch (e) {
@@ -209,5 +213,16 @@ class CrearEventoRepositorio {
       }
     }
     return filas;
+  }
+
+  Future<String?> _resolverUsuarioId() async {
+    final authId = _cliente.auth.currentUser?.id;
+    if (authId == null) return null;
+    final fila = await _cliente
+        .from(TablasSupabase.usuarios)
+        .select('id')
+        .eq('auth_id', authId)
+        .maybeSingle();
+    return fila?['id'] as String?;
   }
 }

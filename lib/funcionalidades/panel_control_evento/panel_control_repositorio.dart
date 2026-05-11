@@ -95,9 +95,10 @@ class PanelControlRepositorio {
   /// Cambia el estatus del evento a 'finalizado'.
   Future<void> cerrarEvento(String eventoId) async {
     try {
+      final actualizadoPor = await _resolverUsuarioId();
       await _supabase
           .from(TablasSupabase.eventos)
-          .update({'estatus': EstatusEvento.finalizado})
+          .update({'estatus': EstatusEvento.finalizado, 'actualizado_por': actualizadoPor})
           .eq('id', eventoId);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
@@ -226,6 +227,17 @@ class PanelControlRepositorio {
       'visitante_contacto':        null,
       'usuarios':                  datosUsuario,
     }, eraEsperado: true);
+  }
+
+  Future<String?> _resolverUsuarioId() async {
+    final authId = _supabase.auth.currentUser?.id;
+    if (authId == null) return null;
+    final fila = await _supabase
+        .from(TablasSupabase.usuarios)
+        .select('id')
+        .eq('auth_id', authId)
+        .maybeSingle();
+    return fila?['id'] as String?;
   }
 
   AsistenteItem _construirItemDesdeUsuario(Map<String, dynamic> row) {

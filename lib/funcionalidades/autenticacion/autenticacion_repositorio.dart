@@ -107,13 +107,12 @@ class AutenticacionRepositorio {
       .where((data) => data.event == AuthChangeEvent.passwordRecovery)
       .map((_) => true);
 
-  /// Actualiza el token de sesión activa del usuario en la base de datos.
+  /// Registra o actualiza el token de sesión activa del usuario.
   Future<void> actualizarTokenSesion(String usuarioId, String token) async {
     try {
       await _supabase
-          .from(TablasSupabase.usuarios)
-          .update({'sesion_token': token})
-          .eq('id', usuarioId);
+          .from(TablasSupabase.sesionesActivas)
+          .upsert({'usuario_id': usuarioId, 'token': token}, onConflict: 'usuario_id');
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -124,10 +123,10 @@ class AutenticacionRepositorio {
   /// Stream que emite el token de sesión activo. Detecta inicio de sesión en otro dispositivo.
   Stream<String?> flujoTokenSesion(String usuarioId) =>
       _supabase
-          .from(TablasSupabase.usuarios)
-          .stream(primaryKey: ['id'])
-          .eq('id', usuarioId)
-          .map((filas) => filas.isEmpty ? null : filas.first['sesion_token'] as String?);
+          .from(TablasSupabase.sesionesActivas)
+          .stream(primaryKey: ['usuario_id'])
+          .eq('usuario_id', usuarioId)
+          .map((filas) => filas.isEmpty ? null : filas.first['token'] as String?);
 
   /// Crea o actualiza el perfil del usuario en la tabla 'usuarios'.
   /// Usa upsert con conflicto en auth_id para soportar el reintento de usuarios rechazados.

@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../constantes.dart';
 import '../../../configuracion/colores_app.dart';
+import '../../../funcionalidades/autenticacion/auth_cubit.dart';
+import '../../../funcionalidades/autenticacion/auth_estado.dart';
+import '../../../funcionalidades/autenticacion/usuario.dart';
 import '../../../funcionalidades/inicio/evento_en_curso.dart';
 import '../../../funcionalidades/inicio/eventos_en_curso_cubit.dart';
 import '../dialogo/modal_foraneo.dart';
@@ -16,8 +19,12 @@ class TarjetaEventoEnCurso extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final e      = eventoEnCurso;
-    final titulo = e.lugar != null ? '${e.titulo} · ${e.lugar}' : e.titulo;
+    final evento          = eventoEnCurso;
+    final titulo          = evento.lugar != null ? '${evento.titulo} · ${evento.lugar}' : evento.titulo;
+    final authEstado      = context.read<AuthCubit>().state;
+    final tienePanel      = authEstado is Autenticado &&
+        authEstado.usuario.tienePermiso(Permisos.eventosPanelControl);
+    final esColaborador   = evento.esColaborador;
 
     return Container(
       decoration: BoxDecoration(
@@ -46,9 +53,9 @@ class TarjetaEventoEnCurso extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const _ChipEnCurso(),
-                      if (e.rangoHorario.isNotEmpty)
+                      if (evento.rangoHorario.isNotEmpty)
                         Text(
-                          e.rangoHorario,
+                          evento.rangoHorario,
                           style: const TextStyle(
                             fontSize:   13,
                             fontWeight: FontWeight.w500,
@@ -63,21 +70,22 @@ class TarjetaEventoEnCurso extends StatelessWidget {
                     style: const TextStyle(
                       fontSize:   20,
                       fontWeight: FontWeight.w800,
-                 
                       height:     1.2,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  _ContadorPresentes(
-                    presentes:   e.totalPresentes,
-                    registrados: e.totalRegistrados,
-                  ),
+                  if (tienePanel) ...[
+                    const SizedBox(height: 10),
+                    _ContadorPresentes(
+                      presentes:   evento.totalPresentes,
+                      registrados: evento.totalRegistrados,
+                    ),
+                  ],
                 ],
               ),
             ),
-            _BarraProgreso(valor: e.progreso),
+            if (tienePanel) _BarraProgreso(valor: evento.progreso),
             const SizedBox(height: 14),
-            _FilaBotones(eventoEnCurso: e),
+            _FilaBotones(eventoEnCurso: evento, tienePanel: tienePanel, esColaborador: esColaborador),
             const SizedBox(height: 16),
           ],
         ),
@@ -139,7 +147,9 @@ class _ContadorPresentes extends StatelessWidget {
           TextSpan(
             children: [
               TextSpan(
-                text: '$presentes / $registrados ',
+                text: registrados > 0
+                    ? '$presentes / $registrados '
+                    : '$presentes ',
                 style: const TextStyle(
                   fontSize:   14,
                   fontWeight: FontWeight.w700,
@@ -197,19 +207,25 @@ class _BarraProgreso extends StatelessWidget {
 // ─── Fila de botones scrollable ───────────────────────────────────────────────
 
 class _FilaBotones extends StatelessWidget {
-  const _FilaBotones({required this.eventoEnCurso});
+  const _FilaBotones({
+    required this.eventoEnCurso,
+    required this.tienePanel,
+    required this.esColaborador,
+  });
 
   final EventoEnCurso eventoEnCurso;
+  final bool          tienePanel;
+  final bool          esColaborador;
 
-  List<_DatoBoton> _botones(BuildContext context) {
-    final id = eventoEnCurso.id;
-    final e  = eventoEnCurso;
+  List<_DatoBoton> _botonesAccion(BuildContext context, {required bool conDetalles}) {
+    final evento = eventoEnCurso;
+    final id     = evento.id;
     return [
-      if (e.permiteQrUsuario)
-        _DatoBoton('Escanear\n QR', () => context.push(Rutas.escanear)),
-      if (e.permiteQrEvento)
-        _DatoBoton('QR \nevento', () => ModalQrEvento.mostrar(context, eventoId: id, horaFin: e.horaFin)),
-      if (e.permiteForaneos)
+      if (evento.permiteQrUsuario)
+        _DatoBoton('Escanear\n QR', () => context.push(Rutas.escanearQrUsuarioUrl(id))),
+      if (evento.permiteQrEvento)
+        _DatoBoton('QR \nevento', () => ModalQrEvento.mostrar(context, eventoId: id, horaFin: evento.horaFin)),
+      if (evento.permiteForaneos)
         _DatoBoton('Usuario\nforáneo', () => ModalForaneo.mostrar(
           context,
           onRegistrar: ({required primerNombre, required primerApellido, required cedula, contacto}) =>
@@ -222,13 +238,18 @@ class _FilaBotones extends StatelessWidget {
               ),
         )),
       _DatoBoton('Buscar\nusuario', () => context.push(Rutas.buscarAsistenteUrl(id))),
-      _DatoBoton('Detalles', () => context.push(Rutas.panelControlUrl(id))),
+      if (conDetalles)
+        _DatoBoton('Detalles', () => context.push(Rutas.panelControlUrl(id))),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    final botones = _botones(context);
+    if (!tienePanel && !esColaborador) {
+      return _EtiquetasModoRegistro(eventoEnCurso: eventoEnCurso);
+    }
+
+    final botones = _botonesAccion(context, conDetalles: tienePanel);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SingleChildScrollView(
@@ -240,6 +261,61 @@ class _FilaBotones extends StatelessWidget {
               if (i < botones.length - 1) const SizedBox(width: 8),
             ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Etiquetas de modo de registro (solo lectura) ─────────────────────────────
+
+class _EtiquetasModoRegistro extends StatelessWidget {
+  const _EtiquetasModoRegistro({required this.eventoEnCurso});
+
+  final EventoEnCurso eventoEnCurso;
+
+  @override
+  Widget build(BuildContext context) {
+    final evento    = eventoEnCurso;
+    final etiquetas = <String>[
+      if (evento.modoRegistro == ModoRegistro.administrador) 'Manual',
+      if (evento.permiteQrEvento)  'Auto-Registro',
+      if (evento.permiteQrUsuario) 'Qr-Registro',
+    ];
+
+    if (etiquetas.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 6,
+        children: etiquetas.map((texto) => _ChipModo(texto: texto)).toList(),
+      ),
+    );
+  }
+}
+
+class _ChipModo extends StatelessWidget {
+  const _ChipModo({required this.texto});
+
+  final String texto;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      decoration: BoxDecoration(
+        color:        Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        border:       Border.all(color: ColoresApp.acentoBorde, width: 1),
+      ),
+      child: Text(
+        texto,
+        style: const TextStyle(
+          fontSize:   12,
+          fontWeight: FontWeight.w600,
+          color:      ColoresApp.acento,
         ),
       ),
     );
