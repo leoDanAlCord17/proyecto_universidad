@@ -10,8 +10,7 @@ class EventosEnCursoRepositorio {
 
   final SupabaseClient _supabase;
 
-  /// Retorna todos los eventos con estatus 'en_curso'.
-  /// TODO: filtrar por participación del usuario cuando los permisos estén definidos.
+  /// Retorna todos los eventos en curso, marcando cuáles tiene el usuario como colaborador.
   Future<List<EventoEnCurso>> obtenerEventosEnCurso(String usuarioId) async {
     try {
       final rows = await _supabase
@@ -19,11 +18,31 @@ class EventosEnCursoRepositorio {
           .select(
             'id, titulo, lugar, hora_inicio, hora_fin, '
             'permite_qr_evento, permite_qr_usuario, '
-            'permite_foraneos, modo_registro',
+            'permite_foraneos, modo_registro, alcance',
           )
           .eq('estatus', EstatusEvento.enCurso);
 
-      return rows.map(EventoEnCurso.desdeJson).toList();
+      if (rows.isEmpty) return [];
+
+      final eventoIds = rows.map((r) => r['id'] as String).toList();
+
+      final colaboraciones = await _supabase
+          .from(TablasSupabase.eventosUsuariosRoles)
+          .select('evento_id')
+          .eq('usuario_id', usuarioId)
+          .eq('estatus', true)
+          .inFilter('evento_id', eventoIds);
+
+      final idsColaborador = {
+        for (final c in colaboraciones) c['evento_id'] as String,
+      };
+
+      return rows.map((json) {
+        final evento = EventoEnCurso.desdeJson(json);
+        return idsColaborador.contains(evento.id)
+            ? evento.copyWith(esColaborador: true)
+            : evento;
+      }).toList();
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {

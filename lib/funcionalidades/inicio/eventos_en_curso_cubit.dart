@@ -57,13 +57,16 @@ class EventosEnCursoCubit extends Cubit<EventosEnCursoEstado> {
   ) {
     final estado = state;
     if (estado is! EventosEnCursoCargado) return;
+    final indice = estado.eventos.indexWhere((e) => e.id == eventoId);
+    if (indice == -1) return;
     final presentes = rows.where((r) {
       final s = r['estatus'] as String? ?? '';
       return s == EstatusAsistencia.presente || s == EstatusAsistencia.completado;
     }).length;
-    final total = rows
-        .where((r) => r['estatus'] != EstatusAsistencia.anulado)
-        .length;
+    final esGeneral = estado.eventos[indice].esGeneral;
+    final total     = esGeneral
+        ? 0
+        : rows.where((r) => r['estatus'] != EstatusAsistencia.anulado).length;
     final actualizados = estado.eventos.map((e) {
       if (e.id != eventoId) return e;
       return e.copyWith(totalPresentes: presentes, totalRegistrados: total);

@@ -29,14 +29,26 @@ class BorradoresRepositorio {
 
   Future<void> publicarEvento(String eventoId) async {
     try {
+      final actualizadoPor = await _resolverUsuarioId();
       await _cliente
           .from(TablasSupabase.eventos)
-          .update({'estatus': EstatusEvento.programado})
+          .update({'estatus': EstatusEvento.programado, 'actualizado_por': actualizadoPor})
           .eq('id', eventoId);
     } on PostgrestException catch (e) {
       throw FallaServidor(e.message);
     } catch (e) {
       throw FallaInesperada(e.toString());
     }
+  }
+
+  Future<String?> _resolverUsuarioId() async {
+    final authId = _cliente.auth.currentUser?.id;
+    if (authId == null) return null;
+    final fila = await _cliente
+        .from(TablasSupabase.usuarios)
+        .select('id')
+        .eq('auth_id', authId)
+        .maybeSingle();
+    return fila?['id'] as String?;
   }
 }

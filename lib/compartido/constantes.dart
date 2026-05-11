@@ -9,13 +9,15 @@ class TablasSupabase {
   static const String usuariosTags  = 'usuarios_tags';
   static const String usuariosRoles = 'usuarios_roles';
   static const String tiposEvento  = 'tipos_evento';
-  static const String eventoGruposTags = 'evento_grupos_tags';
+  static const String eventoGruposTags     = 'evento_grupos_tags';
+  static const String eventosUsuariosRoles = 'eventos_usuarios_roles';
   static const String configuracionInt     = 'configuracion_int';
   static const String configuracionBoolean = 'configuracion_boolean';
   static const String permisos             = 'permisos';
   static const String rolesPermisos        = 'roles_permisos';
   static const String notificaciones       = 'notificaciones';
   static const String tokensDispositivo    = 'tokens_dispositivo';
+  static const String sesionesActivas      = 'sesiones_activas';
 }
 
 /// Rutas de navegación de la app.
@@ -77,6 +79,9 @@ class Rutas {
   static const String escanearQrUsuario    = '/eventos/:eventoId/panel/qr_usuario';
   static String       escanearQrUsuarioUrl(String id) => '/eventos/$id/panel/qr_usuario';
 
+  static const String colaboradoresEvento    = '/eventos/:eventoId/panel/colaboradores';
+  static String       colaboradoresEventoUrl(String id) => '/eventos/$id/panel/colaboradores';
+
   /// Solo para desarrollo — muestra todos los widgets de la app visualmente.
   /// Eliminar esta ruta antes de subir a producción.
   static const String vistaWidgets    = '/dev/widgets';
@@ -122,6 +127,31 @@ class EstatusAsistencia {
   static const String ausente         = 'ausente';
   static const String salioAnticipado = 'salio_anticipado';
   static const String anulado         = 'anulado';
+}
+
+/// Nombres exactos de los permisos del sistema.
+/// Nunca escribir el nombre de un permiso como string directo en el código.
+class Permisos {
+  // Grupo ajustes
+  static const String ajustes              = 'ajustes';
+  static const String ajustesUsuarios      = 'ajustes.usuarios';
+  static const String ajustesRevision      = 'ajustes.revision_usuarios';
+  static const String ajustesRoles         = 'ajustes.gestionar_roles';
+  static const String ajustesPermisos      = 'ajustes.permisos';
+  static const String ajustesTags          = 'ajustes.gestionar_tags';
+  static const String ajustesTiposEvento   = 'ajustes.tipos_eventos';
+  static const String ajustesEstadisticas  = 'ajustes.estadisticas';
+  static const String ajustesConfig        = 'ajustes.configuraciones';
+  // Grupo eventos
+  static const String eventosPanelControl  = 'eventos.panel_control';
+  static const String eventosCrearEventos  = 'eventos.crear_eventos';
+  static const String eventosColaborar     = 'eventos.colaborar';
+}
+
+/// Nombres de roles del sistema (es_sistema = true).
+/// Nunca escribir el nombre de un rol del sistema como string directo.
+class RolesSistema {
+  static const String colaborador = 'Colaborador';
 }
 
 /// Mensajes de error genéricos para mostrar al usuario.

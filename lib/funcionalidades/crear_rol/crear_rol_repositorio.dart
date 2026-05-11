@@ -15,6 +15,7 @@ class CrearRolRepositorio {
       final res = await _supabase
           .from(TablasSupabase.permisos)
           .select('id, nombre, descripcion')
+          .eq('estatus', true)
           .order('nombre');
       return (res as List)
           .map((j) => PermisoOpcion.desdeJson(j as Map<String, dynamic>))
@@ -85,7 +86,11 @@ class CrearRolRepositorio {
     required Map<String, dynamic> datos,
   }) async {
     try {
-      await _supabase.from(TablasSupabase.roles).update(datos).eq('id', id);
+      final actualizadoPor = await _resolverUsuarioId();
+      await _supabase
+          .from(TablasSupabase.roles)
+          .update({...datos, 'actualizado_por': actualizadoPor})
+          .eq('id', id);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -101,26 +106,40 @@ class CrearRolRepositorio {
     required List<String> anterioresIds,
   }) async {
     try {
-      final aEliminar = anterioresIds.where((id) => !nuevosIds.contains(id)).toList();
-      final aInsertar = nuevosIds.where((id) => !anterioresIds.contains(id)).toList();
+      final aDesactivar = anterioresIds.where((id) => !nuevosIds.contains(id)).toList();
+      final aActivar    = nuevosIds.where((id) => !anterioresIds.contains(id)).toList();
 
-      if (aEliminar.isNotEmpty) {
+      if (aDesactivar.isNotEmpty) {
+        final actualizadoPor = await _resolverUsuarioId();
         await _supabase
             .from(TablasSupabase.rolesPermisos)
-            .delete()
+            .update({'estatus': false, 'actualizado_por': actualizadoPor})
             .eq('rol_id', rolId)
-            .inFilter('permiso_id', aEliminar);
+            .inFilter('permiso_id', aDesactivar);
       }
-      if (aInsertar.isNotEmpty) {
-        final filas = aInsertar
+      if (aActivar.isNotEmpty) {
+        final filas = aActivar
             .map((pid) => {'rol_id': rolId, 'permiso_id': pid, 'estatus': true})
             .toList();
-        await _supabase.from(TablasSupabase.rolesPermisos).insert(filas);
+        await _supabase
+            .from(TablasSupabase.rolesPermisos)
+            .upsert(filas, onConflict: 'rol_id,permiso_id');
       }
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
       throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
+  }
+
+  Future<String?> _resolverUsuarioId() async {
+    final authId = _supabase.auth.currentUser?.id;
+    if (authId == null) return null;
+    final fila = await _supabase
+        .from(TablasSupabase.usuarios)
+        .select('id')
+        .eq('auth_id', authId)
+        .maybeSingle();
+    return fila?['id'] as String?;
   }
 }

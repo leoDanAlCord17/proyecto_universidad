@@ -15,6 +15,7 @@ class PermisosRepositorio {
       final respuesta = await _supabase
           .from(TablasSupabase.permisos)
           .select('id, nombre, descripcion')
+          .eq('estatus', true)
           .order('nombre');
 
       return (respuesta as List)

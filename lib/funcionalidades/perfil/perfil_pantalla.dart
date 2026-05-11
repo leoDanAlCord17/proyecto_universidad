@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../compartido/constantes.dart';
 
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
+import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
 import '../../compartido/widgets/navegacion/barra_navegacion_app.dart';
 import '../../compartido/widgets/qr/tarjeta_qr_usuario.dart';
 import '../../compartido/widgets/tarjetas/tarjeta_info_personal.dart';
@@ -25,6 +26,19 @@ class PerfilPantalla extends StatefulWidget {
 
 class _PerfilPantallaState extends State<PerfilPantalla> {
   bool _tagsCargados = false;
+
+  Future<void> _confirmarCerrarSesion(BuildContext context) async {
+    final resultado = await DialogoConfirmacion.mostrar(
+      context,
+      titulo:         '¿Cerrar sesión?',
+      descripcion:    'Se cerrará tu sesión actual y tendrás que volver a iniciar sesión.',
+      textoConfirmar: 'Quedarme',
+      textoCancelar:  'Cerrar sesión',
+    );
+    if (resultado == false && context.mounted) {
+      context.read<AuthCubit>().cerrarSesion();
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -77,12 +91,11 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
                           ),
                           const SizedBox(height: 32),
                           TextButton(
-                            onPressed: () =>
-                                context.read<AuthCubit>().cerrarSesion(),
+                            onPressed: () => _confirmarCerrarSesion(context),
                             child: Text(
                               'Cerrar sesión',
                               style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(color: ColoresApp.rojo,  
+                                  ?.copyWith(color: ColoresApp.rojo,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 17,
                                 ),

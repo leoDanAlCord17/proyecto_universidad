@@ -30,19 +30,22 @@ class GestionarRolesUsuarioRepositorio {
   /// Retorna los roles activos actualmente asignados al usuario.
   Future<List<RolItem>> obtenerRolesUsuario(String usuarioId) async {
     try {
-      final datos = await _supabase
+      final asignaciones = await _supabase
           .from(TablasSupabase.usuariosRoles)
-          .select('roles(id, nombre, descripcion)')
+          .select('rol_id')
           .eq('usuario_id', usuarioId)
           .eq('estatus', true);
 
-      final resultado = <RolItem>[];
-      for (final fila in datos) {
-        final rolData = fila['roles'] as Map<String, dynamic>?;
-        if (rolData == null) continue;
-        resultado.add(RolItem.desdeJson(rolData));
-      }
-      return resultado;
+      if (asignaciones.isEmpty) return [];
+
+      final rolIds = asignaciones.map((r) => r['rol_id'] as String).toList();
+      final roles  = await _supabase
+          .from(TablasSupabase.roles)
+          .select('id, nombre, descripcion')
+          .inFilter('id', rolIds)
+          .eq('estatus', true);
+
+      return roles.map(RolItem.desdeJson).toList();
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -66,16 +69,18 @@ class GestionarRolesUsuarioRepositorio {
     }
   }
 
-  /// Inserta un nuevo registro de asignación de rol.
-  /// Siempre crea un registro nuevo para preservar trazabilidad.
+  /// Asigna un rol al usuario. Usa upsert para reactivar si ya existía desactivado.
   Future<void> asignarRol(String usuarioId, String rolId, String? adminId) async {
     try {
-      await _supabase.from(TablasSupabase.usuariosRoles).insert({
-        'usuario_id': usuarioId,
-        'roles_id':   rolId,
-        'estatus':    true,
-        'creado_por': adminId,
-      });
+      await _supabase.from(TablasSupabase.usuariosRoles).upsert(
+        {
+          'usuario_id': usuarioId,
+          'rol_id':     rolId,
+          'estatus':    true,
+          'creado_por': adminId,
+        },
+        onConflict: 'usuario_id,rol_id',
+      );
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -94,7 +99,7 @@ class GestionarRolesUsuarioRepositorio {
             'actualizado_en':  DateTime.now().toUtc().toIso8601String(),
           })
           .eq('usuario_id', usuarioId)
-          .eq('roles_id',   rolId)
+          .eq('rol_id',     rolId)
           .eq('estatus',    true);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
