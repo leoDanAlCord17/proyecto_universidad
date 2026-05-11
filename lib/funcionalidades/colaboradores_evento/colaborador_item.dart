@@ -14,6 +14,7 @@ class ColaboradorItem extends Equatable {
     required this.iniciales,
     this.urlFoto,
     this.numeroIdentificacion,
+    this.asignadoPorNombre,
   });
 
   final String  asignacionId;
@@ -22,6 +23,7 @@ class ColaboradorItem extends Equatable {
   final String  iniciales;
   final String? urlFoto;
   final String? numeroIdentificacion;
+  final String? asignadoPorNombre;
 
   factory ColaboradorItem.desdeJson(Map<String, dynamic> json) {
     final primerNombre   = json['primer_nombre']   as String? ?? '';
@@ -33,12 +35,14 @@ class ColaboradorItem extends Equatable {
       iniciales:           _calcularIniciales(primerNombre, primerApellido),
       urlFoto:             json['url_avatar']              as String?,
       numeroIdentificacion: json['numero_identificacion']  as String?,
+      asignadoPorNombre:   json['asignado_por_nombre']     as String?,
     );
   }
 
   @override
   List<Object?> get props => [
     asignacionId, usuarioId, nombre, iniciales, urlFoto, numeroIdentificacion,
+    asignadoPorNombre,
   ];
 }
 

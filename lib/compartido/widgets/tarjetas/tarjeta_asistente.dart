@@ -11,6 +11,7 @@ class TarjetaAsistente extends StatelessWidget {
     required this.nombre,
     required this.estatus,
     this.detalle,
+    this.subtitulo,
     this.urlFoto,
     this.textoBoton,
     this.alPresionarBoton,
@@ -28,6 +29,9 @@ class TarjetaAsistente extends StatelessWidget {
 
   /// Ej: 'V-22.100.004 · Estudiante'
   final String? detalle;
+
+  /// Segunda línea de detalle. Ej: 'Reg. por: Juan Pérez'
+  final String? subtitulo;
 
   final String? urlFoto;
 
@@ -63,6 +67,7 @@ class TarjetaAsistente extends StatelessWidget {
               Expanded(child: _InfoAsistente(
                 nombre:       nombre,
                 detalle:      detalle,
+                subtitulo:    subtitulo,
                 colorNombre:  colorNombre,
                 colorDetalle: colorDetalle,
               )),
@@ -89,14 +94,16 @@ class _InfoAsistente extends StatelessWidget {
   const _InfoAsistente({
     required this.nombre,
     this.detalle,
+    this.subtitulo,
     this.colorNombre,
     this.colorDetalle,
   });
 
-  final String nombre;
+  final String  nombre;
   final String? detalle;
-  final Color? colorNombre;
-  final Color? colorDetalle;
+  final String? subtitulo;
+  final Color?  colorNombre;
+  final Color?  colorDetalle;
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +124,16 @@ class _InfoAsistente extends StatelessWidget {
             detalle!,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: colorDetalle,
+            ),
+          ),
+        ],
+        if (subtitulo != null) ...[
+          const SizedBox(height: 1),
+          Text(
+            subtitulo!,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontSize: 11,
+              color:    colorDetalle?.withValues(alpha: 0.7),
             ),
           ),
         ],

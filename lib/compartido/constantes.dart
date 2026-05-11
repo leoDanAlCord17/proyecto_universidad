@@ -61,6 +61,7 @@ class Rutas {
 
   static const String historial            = '/historial';
   static const String estadisticas         = '/estadisticas';
+  static const String auditoriaEvento      = '/auditoria-evento';
   static const String pendienteAprobacion = '/pendiente_aprobacion';
   static const String usuarioRechazado    = '/usuario_rechazado';
   static const String revisionUsuarios    = '/revision_usuarios';

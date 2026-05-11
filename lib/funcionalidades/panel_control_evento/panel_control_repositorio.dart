@@ -36,7 +36,8 @@ class PanelControlRepositorio {
             'id, usuario_id, visitante_primer_nombre, visitante_primer_apellido, '
             'visitante_numero_identificacion, visitante_contacto, estatus, '
             'hora_entrada, hora_salida, '
-            'usuarios!usuario_id(primer_nombre, primer_apellido, url_avatar, numero_identificacion)',
+            'usuarios!usuario_id(primer_nombre, primer_apellido, url_avatar, numero_identificacion), '
+            'registrador:usuarios!entrada_registrada_por(primer_nombre, primer_apellido)',
           )
           .eq('evento_id', eventoId)
           .order('creado_en');

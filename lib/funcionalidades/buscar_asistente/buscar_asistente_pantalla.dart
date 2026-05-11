@@ -212,7 +212,12 @@ class _TarjetaResultado extends StatelessWidget {
         iniciales:        resultado.iniciales,
         nombre:           resultado.nombre,
         estatus:          resultado.estatus!,
-        detalle:          resultado.numeroIdentificacion,
+        detalle:          resultado.horaEntrada != null
+            ? 'Entrada ${resultado.horaEntrada}'
+            : resultado.numeroIdentificacion,
+        subtitulo:        resultado.registradoPorNombre != null
+            ? 'Reg. por: ${resultado.registradoPorNombre}'
+            : null,
         urlFoto:          resultado.urlFoto,
         textoBoton:       evento.permiteSalidaAnticipada ? 'MARCAR SALIDA' : null,
         varianteBoton:    VarianteBoton.rojo,

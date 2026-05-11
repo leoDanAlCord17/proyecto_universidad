@@ -6,7 +6,6 @@ import '../../constantes.dart';
 import '../../../configuracion/colores_app.dart';
 import '../../../funcionalidades/autenticacion/auth_cubit.dart';
 import '../../../funcionalidades/autenticacion/auth_estado.dart';
-import '../../../funcionalidades/autenticacion/usuario.dart';
 import '../../../funcionalidades/inicio/evento_en_curso.dart';
 import '../../../funcionalidades/inicio/eventos_en_curso_cubit.dart';
 import '../dialogo/modal_foraneo.dart';
