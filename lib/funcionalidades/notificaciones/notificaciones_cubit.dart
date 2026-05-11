@@ -34,7 +34,7 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
               notificaciones: anterior,
             ));
           },
-          onError: (_) {},
+          onError: (_) => emit(const NotificacionesCargadas(cantidad: 0, notificaciones: [])),
         );
   }
 

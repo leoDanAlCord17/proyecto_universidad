@@ -17,9 +17,13 @@ class NotificacionesPantalla extends StatefulWidget {
 }
 
 class _NotificacionesPantallaState extends State<NotificacionesPantalla> {
+  bool _estaIniciado = false;
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_estaIniciado) return;
+    _estaIniciado = true;
     context.read<NotificacionesCubit>().cargarLista();
   }
 

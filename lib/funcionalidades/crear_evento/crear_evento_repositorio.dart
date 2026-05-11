@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/traductor_errores.dart';
 import 'grupo_audiencia.dart';
 import 'tag_opcion.dart';
 import 'tipo_evento.dart';
@@ -20,9 +21,9 @@ class CrearEventoRepositorio {
           .eq('estatus', true);
       return (datos as List).map((e) => TipoEvento.desdeJson(e)).toList();
     } on PostgrestException catch (e) {
-      throw FallaServidor(e.message);
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(e.toString());
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
 
@@ -35,9 +36,9 @@ class CrearEventoRepositorio {
           .eq('estatus', true);
       return (datos as List).map((e) => TagOpcion.desdeJson(e)).toList();
     } on PostgrestException catch (e) {
-      throw FallaServidor(e.message);
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(e.toString());
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
 
@@ -51,9 +52,9 @@ class CrearEventoRepositorio {
           .maybeSingle();
       return (fila?['valor'] as int?) ?? 3;
     } on PostgrestException catch (e) {
-      throw FallaServidor(e.message);
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(e.toString());
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
 
@@ -81,9 +82,9 @@ class CrearEventoRepositorio {
           .single();
       return respuesta['id'] as String;
     } on PostgrestException catch (e) {
-      throw FallaServidor(e.message);
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(e.toString());
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
 
@@ -96,9 +97,9 @@ class CrearEventoRepositorio {
           .eq('id', id)
           .single();
     } on PostgrestException catch (e) {
-      throw FallaServidor(e.message);
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(e.toString());
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
 
@@ -131,9 +132,9 @@ class CrearEventoRepositorio {
         tagsSecundarios: secundariosPorGrupo[e.key] ?? [],
       )).toList();
     } on PostgrestException catch (e) {
-      throw FallaServidor(e.message);
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(e.toString());
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
 
@@ -149,9 +150,9 @@ class CrearEventoRepositorio {
           .update({...datos, 'actualizado_por': actualizadoPor})
           .eq('id', id);
     } on PostgrestException catch (e) {
-      throw FallaServidor(e.message);
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(e.toString());
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
 
@@ -166,9 +167,9 @@ class CrearEventoRepositorio {
         await _cliente.from(TablasSupabase.eventoGruposTags).insert(filas);
       }
     } on PostgrestException catch (e) {
-      throw FallaServidor(e.message);
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(e.toString());
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
 
@@ -187,9 +188,9 @@ class CrearEventoRepositorio {
         await _cliente.from(TablasSupabase.eventoGruposTags).insert(filas);
       }
     } on PostgrestException catch (e) {
-      throw FallaServidor(e.message);
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(e.toString());
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
 
