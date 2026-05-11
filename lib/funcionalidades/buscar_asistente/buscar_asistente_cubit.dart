@@ -18,9 +18,10 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
   String       _busqueda  = '';
   final _idsCargando = <String>{};
 
-  List<Map<String, dynamic>>        _ultimosUsuarios = [];
-  Map<String, Map<String, dynamic>> _mapaAsist       = {};
-  List<Map<String, dynamic>>        _foraneos        = [];
+  List<Map<String, dynamic>>        _ultimosUsuarios    = [];
+  Map<String, Map<String, dynamic>> _mapaAsist          = {};
+  List<Map<String, dynamic>>        _foraneos           = [];
+  Map<String, String>               _mapaRegistradores  = {};
 
   StreamSubscription<List<Map<String, dynamic>>>? _suscripcion;
 
@@ -140,6 +141,26 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
         _foraneos.add(f);
       }
     }
+    _resolverRegistradoresYEmitir();
+  }
+
+  Future<void> _resolverRegistradoresYEmitir() async {
+    final idsNuevos = {
+      ...(_mapaAsist.values
+          .map((f) => f['entrada_registrada_por'] as String?)
+          .whereType<String>()),
+      ...(_foraneos
+          .map((f) => f['entrada_registrada_por'] as String?)
+          .whereType<String>()),
+    }.where((id) => !_mapaRegistradores.containsKey(id)).toList();
+
+    if (idsNuevos.isNotEmpty) {
+      try {
+        final nuevos = await _repositorio.resolverNombresUsuarios(idsNuevos);
+        _mapaRegistradores = {..._mapaRegistradores, ...nuevos};
+      } catch (_) {}
+    }
+
     final cargado = _extraerCargado(state);
     if (cargado != null && _busqueda.trim().length >= 2) _emitirResultados(cargado);
   }
@@ -152,7 +173,13 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
       if (asistencia == null && esGeneral) {
         asistencia = {'estatus': EstatusAsistencia.esperado};
       }
-      return ResultadoBusqueda.desdeUsuario(u, asistencia: asistencia);
+      final regId   = asistencia?['entrada_registrada_por'] as String?;
+      final regNombre = regId != null ? _mapaRegistradores[regId] : null;
+      return ResultadoBusqueda.desdeUsuario(
+        u,
+        asistencia:          asistencia,
+        registradoPorNombre: regNombre,
+      );
     }).toList();
     final bLow     = _busqueda.toLowerCase();
     final foraneos = _foraneos.where((f) {

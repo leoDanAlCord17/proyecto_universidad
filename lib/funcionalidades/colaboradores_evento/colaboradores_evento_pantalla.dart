@@ -207,6 +207,7 @@ class _ItemColaborador extends StatelessWidget {
             child: _InfoUsuario(
               nombre: item.nombre,
               detalle: item.numeroIdentificacion,
+              asignadoPor: item.asignadoPorNombre,
             ),
           ),
           const SizedBox(width: 8),
@@ -296,9 +297,10 @@ class _Avatar extends StatelessWidget {
 }
 
 class _InfoUsuario extends StatelessWidget {
-  const _InfoUsuario({required this.nombre, this.detalle});
+  const _InfoUsuario({required this.nombre, this.detalle, this.asignadoPor});
   final String  nombre;
   final String? detalle;
+  final String? asignadoPor;
 
   @override
   Widget build(BuildContext context) {
@@ -316,6 +318,14 @@ class _InfoUsuario extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               color:    ColoresApp.textoSecundario,
+            ),
+          ),
+        if (asignadoPor != null)
+          Text(
+            'Registrado por: $asignadoPor',
+            style: const TextStyle(
+              fontSize: 11,
+              color:    ColoresApp.textoTerciario,
             ),
           ),
       ],

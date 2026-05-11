@@ -89,6 +89,26 @@ class BuscarAsistenteRepositorio {
     }
   }
 
+  /// Retorna un mapa id→nombreCompleto para los IDs dados.
+  Future<Map<String, String>> resolverNombresUsuarios(List<String> ids) async {
+    if (ids.isEmpty) return {};
+    try {
+      final filas = await _supabase
+          .from(TablasSupabase.usuarios)
+          .select('id, primer_nombre, primer_apellido')
+          .inFilter('id', ids);
+      return {
+        for (final f in filas)
+          f['id'] as String:
+            '${f['primer_nombre'] ?? ''} ${f['primer_apellido'] ?? ''}'.trim(),
+      };
+    } on PostgrestException catch (e) {
+      throw FallaServidor(TraductorErrores.dePostgres(e));
+    } catch (e) {
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
+    }
+  }
+
   /// Marca la salida de un asistente (normal o anticipada).
   Future<void> marcarSalida({
     required String asistenciaId,

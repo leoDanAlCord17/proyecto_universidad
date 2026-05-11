@@ -78,6 +78,8 @@ import '../funcionalidades/estadisticas/estadisticas_cubit.dart';
 import '../funcionalidades/estadisticas/estadisticas_pantalla.dart';
 import '../funcionalidades/colaboradores_evento/colaboradores_evento_cubit.dart';
 import '../funcionalidades/colaboradores_evento/colaboradores_evento_pantalla.dart';
+import '../funcionalidades/auditoria_evento/auditoria_evento_cubit.dart';
+import '../funcionalidades/auditoria_evento/auditoria_evento_pantalla.dart';
 
 class RouterApp {
   final AuthCubit authCubit;
@@ -448,6 +450,14 @@ class RouterApp {
         builder: (context, state) => BlocProvider(
           create: (_) => obtenerIt<EstadisticasCubit>(),
           child:  const EstadisticasPantalla(),
+        ),
+      ),
+
+      GoRoute(
+        path: Rutas.auditoriaEvento,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<AuditoriaEventoCubit>(),
+          child:  const AuditoriaEventoPantalla(),
         ),
       ),
 

@@ -13,6 +13,7 @@ class ResultadoBusqueda extends Equatable {
     this.estatus,
     this.horaEntrada,
     this.horaSalida,
+    this.registradoPorNombre,
     this.esForaneo = false,
   });
 
@@ -30,6 +31,7 @@ class ResultadoBusqueda extends Equatable {
   final String? estatus;
   final String? horaEntrada;
   final String? horaSalida;
+  final String? registradoPorNombre;
   final bool    esForaneo;
 
   bool get estaActivo =>
@@ -43,20 +45,22 @@ class ResultadoBusqueda extends Equatable {
   factory ResultadoBusqueda.desdeUsuario(
     Map<String, dynamic> fila, {
     Map<String, dynamic>? asistencia,
+    String?               registradoPorNombre,
   }) {
     final pN    = fila['primer_nombre']  as String? ?? '';
     final pA    = fila['primer_apellido'] as String? ?? '';
     final nombre = '$pN $pA'.trim();
     return ResultadoBusqueda(
-      usuarioId:            fila['id']                  as String,
-      nombre:               nombre.isNotEmpty ? nombre  : 'Sin nombre',
+      usuarioId:            fila['id']                    as String,
+      nombre:               nombre.isNotEmpty ? nombre    : 'Sin nombre',
       iniciales:            _iniciales(nombre),
-      urlFoto:              fila['url_avatar']           as String?,
-      numeroIdentificacion: fila['numero_identificacion'] as String?,
-      asistenciaId:         asistencia?['id']            as String?,
-      estatus:              asistencia?['estatus']        as String?,
+      urlFoto:              fila['url_avatar']             as String?,
+      numeroIdentificacion: fila['numero_identificacion']  as String?,
+      asistenciaId:         asistencia?['id']              as String?,
+      estatus:              asistencia?['estatus']          as String?,
       horaEntrada:          _parsearHora(asistencia?['hora_entrada'] as String?),
       horaSalida:           _parsearHora(asistencia?['hora_salida']  as String?),
+      registradoPorNombre:  registradoPorNombre,
     );
   }
 
@@ -93,5 +97,5 @@ class ResultadoBusqueda extends Equatable {
 
   @override
   List<Object?> get props =>
-      [usuarioId, estatus, horaEntrada, horaSalida, esForaneo];
+      [usuarioId, estatus, horaEntrada, horaSalida, registradoPorNombre, esForaneo];
 }

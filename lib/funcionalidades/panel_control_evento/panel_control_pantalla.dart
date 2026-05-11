@@ -676,6 +676,9 @@ class _SeccionUsuarios extends StatelessWidget {
                 nombre:         a.nombre,
                 estatus:        a.estatus,
                 detalle:        a.etiquetaDetalle,
+                subtitulo:      a.registradoPorNombre != null
+                    ? 'Reg. por: ${a.registradoPorNombre}'
+                    : null,
                 urlFoto:        a.urlFoto,
                 accionTrailing: a.estatus == EstatusAsistencia.esperado
                     ? _BotonRegistrar(eventoId: estado.evento.id)

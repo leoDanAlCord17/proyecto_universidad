@@ -15,6 +15,7 @@ class AsistenteItem extends Equatable {
     this.urlFoto,
     this.horaEntrada,
     this.horaSalida,
+    this.registradoPorNombre,
   });
 
   final String  id;
@@ -33,6 +34,7 @@ class AsistenteItem extends Equatable {
 
   final String? horaEntrada;
   final String? horaSalida;
+  final String? registradoPorNombre;
 
   bool get esRegistrado =>
       estatus == EstatusAsistencia.presente ||
@@ -58,17 +60,18 @@ class AsistenteItem extends Equatable {
   }
 
   AsistenteItem copiarCon({bool? eraEsperado}) => AsistenteItem(
-    id:          id,
-    usuarioId:   usuarioId,
-    nombre:      nombre,
-    detalle:     detalle,
-    urlFoto:     urlFoto,
-    iniciales:   iniciales,
-    estatus:     estatus,
-    esForaneo:   esForaneo,
-    eraEsperado: eraEsperado ?? this.eraEsperado,
-    horaEntrada: horaEntrada,
-    horaSalida:  horaSalida,
+    id:                  id,
+    usuarioId:           usuarioId,
+    nombre:              nombre,
+    detalle:             detalle,
+    urlFoto:             urlFoto,
+    iniciales:           iniciales,
+    estatus:             estatus,
+    esForaneo:           esForaneo,
+    eraEsperado:         eraEsperado ?? this.eraEsperado,
+    horaEntrada:         horaEntrada,
+    horaSalida:          horaSalida,
+    registradoPorNombre: registradoPorNombre,
   );
 
   factory AsistenteItem.desdeJson(
@@ -103,18 +106,26 @@ class AsistenteItem extends Equatable {
         ? '${partes[0][0]}${partes[1][0]}'.toUpperCase()
         : nombre.isNotEmpty ? nombre[0].toUpperCase() : '?';
 
+    final reg   = json['registrador'] as Map<String, dynamic>?;
+    final regN  = reg?['primer_nombre']  as String? ?? '';
+    final regA  = reg?['primer_apellido'] as String? ?? '';
+    final regNombre = reg != null
+        ? '$regN $regA'.trim().isNotEmpty ? '$regN $regA'.trim() : null
+        : null;
+
     return AsistenteItem(
-      id:          json['id']      as String,
-      usuarioId:   usuarioId,
-      nombre:      nombre,
-      detalle:     detalle,
-      urlFoto:     urlFoto,
-      iniciales:   iniciales,
-      estatus:     json['estatus'] as String? ?? EstatusAsistencia.esperado,
-      esForaneo:   esForaneo,
-      eraEsperado: eraEsperado,
-      horaEntrada: _parsearHora(json['hora_entrada'] as String?),
-      horaSalida:  _parsearHora(json['hora_salida']  as String?),
+      id:                  json['id']      as String,
+      usuarioId:           usuarioId,
+      nombre:              nombre,
+      detalle:             detalle,
+      urlFoto:             urlFoto,
+      iniciales:           iniciales,
+      estatus:             json['estatus'] as String? ?? EstatusAsistencia.esperado,
+      esForaneo:           esForaneo,
+      eraEsperado:         eraEsperado,
+      horaEntrada:         _parsearHora(json['hora_entrada'] as String?),
+      horaSalida:          _parsearHora(json['hora_salida']  as String?),
+      registradoPorNombre: regNombre,
     );
   }
 
