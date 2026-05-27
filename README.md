@@ -31,9 +31,12 @@ Edita `.env` con los valores de tu proyecto Supabase:
 ```
 SUPABASE_URL=https://tu-proyecto.supabase.co
 SUPABASE_ANON_KEY=tu_anon_key_aqui
+
+# Sentry es opcional — déjalo vacío para solo loggear en consola
+SENTRY_DSN=
 ```
 
-> Puedes encontrar estos valores en **Supabase → Settings → API**.
+> Puedes encontrar los valores de Supabase en **Supabase → Settings → API**.
 
 ### 3. Instalar dependencias
 
@@ -44,12 +47,19 @@ flutter pub get
 ### 4. Ejecutar la app
 
 ```bash
-# Modo debug (carga variables desde .env)
+# Modo dev — carga credenciales desde assets/.env vía flutter_dotenv
 flutter run
 
-# Modo release (inyecta variables en compile-time, no incluye .env)
-flutter run --dart-define-from-file=.env
+# Modo dev con flavor explícito (equivalente al anterior)
+flutter run --dart-define=ENTORNO=dev
+
+# Modo producción — credenciales inyectadas en compile-time (más seguro)
+# Requiere eliminar ".env" de la sección assets en pubspec.yaml antes del build
+flutter run --dart-define-from-file=.env --dart-define=ENTORNO=prod
 ```
+
+> **Nota de seguridad**: En debug el `.env` se incrusta en el APK/IPA en texto plano.
+> Para producción, usa `--dart-define-from-file` y elimina `- .env` de los assets en `pubspec.yaml`.
 
 ---
 
@@ -63,6 +73,8 @@ lib/
 │   ├── traductor_errores.dart
 │   └── widgets/
 ├── configuracion/       # Router, tema, colores, inyección de dependencias
+│   ├── entorno.dart     # Sistema de flavors (dev / staging / prod)
+│   └── ...
 └── funcionalidades/     # Una carpeta por feature (BLoC + repositorio + modelos)
     ├── autenticacion/
     ├── eventos/
@@ -90,20 +102,20 @@ flutter test
 # Tests con reporte de cobertura
 flutter test --coverage
 
-# Análisis estático
+# Análisis estático (debe retornar 0 issues)
 flutter analyze
 
 # Formatear código
 dart format lib/ test/
 
 # Aplicar correcciones automáticas del linter
-dart fix --apply lib/
+dart fix --apply
 
 # Build de producción (Android)
-flutter build apk --dart-define-from-file=.env --release
+flutter build apk --dart-define-from-file=.env --dart-define=ENTORNO=prod --release
 
 # Build de producción (iOS)
-flutter build ipa --dart-define-from-file=.env --release
+flutter build ipa --dart-define-from-file=.env --dart-define=ENTORNO=prod --release
 ```
 
 ---
@@ -121,15 +133,25 @@ Pantalla → BlocBuilder → Cubit → Repositorio → Supabase
 - **Estado**: sealed classes con variantes tipadas (`Inicial`, `Cargando`, `Cargado`, `Error`)
 - **GetIt**: inyección de dependencias, configurada en `configuracion/dependencias.dart`
 
+### Sistema de flavors
+
+El entorno se controla con `--dart-define=ENTORNO=<valor>` en tiempo de compilación:
+
+| Valor      | Uso                                      |
+|------------|------------------------------------------|
+| `dev`      | Desarrollo local (valor por defecto)     |
+| `staging`  | QA / pruebas pre-producción              |
+| `prod`     | Producción — activa Sentry si hay DSN    |
+
 ### Manejo de errores
 
 Todos los errores pasan por excepciones tipadas antes de llegar a la UI:
 
-| Excepción           | Cuándo se usa                          |
-|---------------------|----------------------------------------|
-| `FallaServidor`     | Errores de Supabase/PostgreSQL         |
-| `FallaAutenticacion`| Errores de login/registro              |
-| `FallaInesperada`   | Errores de red u otros inesperados     |
+| Excepción            | Cuándo se usa                          |
+|----------------------|----------------------------------------|
+| `FallaServidor`      | Errores de Supabase/PostgreSQL         |
+| `FallaAutenticacion` | Errores de login/registro              |
+| `FallaInesperada`    | Errores de red u otros inesperados     |
 
 ---
 
@@ -139,16 +161,18 @@ El proyecto incluye un workflow de GitHub Actions (`.github/workflows/ci.yml`) q
 
 1. **Formato** — verifica que el código esté bien formateado
 2. **Análisis** — ejecuta `flutter analyze`
-3. **Tests** — ejecuta la suite completa de tests con cobertura
+3. **Tests** — ejecuta la suite completa con cobertura mínima del 60 %
 
 ---
 
 ## Variables de entorno
 
-| Variable          | Descripción                          | Dónde obtenerla              |
-|-------------------|--------------------------------------|------------------------------|
-| `SUPABASE_URL`    | URL del proyecto Supabase            | Supabase → Settings → API    |
-| `SUPABASE_ANON_KEY` | Clave pública anónima de Supabase  | Supabase → Settings → API    |
+| Variable             | Descripción                             | Dónde obtenerla                |
+|----------------------|-----------------------------------------|--------------------------------|
+| `SUPABASE_URL`       | URL del proyecto Supabase               | Supabase → Settings → API      |
+| `SUPABASE_ANON_KEY`  | Clave pública anónima de Supabase       | Supabase → Settings → API      |
+| `SENTRY_DSN`         | DSN para reporte de errores (opcional)  | Sentry → Settings → Client Keys|
+| `ENTORNO`            | Flavor de la app: `dev`/`staging`/`prod`| Se pasa con `--dart-define`    |
 
 > **Nunca subas `.env` al repositorio.** Está en `.gitignore`.  
 > Para CI/CD, inyecta los valores como secrets del repositorio en GitHub.
