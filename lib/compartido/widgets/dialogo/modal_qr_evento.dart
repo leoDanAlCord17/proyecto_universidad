@@ -330,14 +330,14 @@ class _LadoIzquierdo extends StatelessWidget {
             Text('TIEMPO RESTANTE', style: texto.labelSmall?.copyWith(
               color: ColoresApp.textoPrimario, fontWeight: FontWeight.w800,
               letterSpacing: 0.8, fontSize: 11,
-            )),
+            ),),
           ],
         ),
         const SizedBox(height: 5),
         Text(tiempoTexto, style: texto.displaySmall?.copyWith(
           color: ColoresApp.verde, fontWeight: FontWeight.w800,
           fontSize: 38, letterSpacing: 1.5, height: 1.0,
-        )),
+        ),),
       ],
     );
   }

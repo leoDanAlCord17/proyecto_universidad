@@ -197,13 +197,13 @@ class _FilaNombreApellido extends StatelessWidget {
           controller:             nombreCtrl,
           decoration:             const InputDecoration(hintText: 'Primer nombre'),
           textCapitalization:     TextCapitalization.words,
-        )),
+        ),),
         const SizedBox(width: 10),
         Expanded(child: TextFormField(
           controller:             apellidoCtrl,
           decoration:             const InputDecoration(hintText: 'Primer apellido'),
           textCapitalization:     TextCapitalization.words,
-        )),
+        ),),
       ],
     );
   }
@@ -234,7 +234,7 @@ class _BotonRegistrar extends StatelessWidget {
                 ? const Center(child: SizedBox(
                     width: 20, height: 20,
                     child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                  ))
+                  ),)
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

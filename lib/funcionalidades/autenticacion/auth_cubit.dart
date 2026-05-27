@@ -79,7 +79,7 @@ class AuthCubit extends Cubit<AuthEstado> {
       final nuevoToken = _generarToken();
       _tokenSesionActual = nuevoToken;
       await _repositorio.actualizarTokenSesion(usuarioId, nuevoToken);
-      _suscripcionSesion?.cancel();
+      await _suscripcionSesion?.cancel();
       _suscripcionSesion = _repositorio
           .flujoTokenSesion(usuarioId)
           .listen(_procesarCambioToken);

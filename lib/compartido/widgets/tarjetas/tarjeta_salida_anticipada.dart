@@ -49,7 +49,7 @@ class TarjetaSalidaAnticipada extends StatelessWidget {
             motivo:       motivo,
             colorNombre:  colorNombre,
             colorDetalle: colorDetalle,
-          )),
+          ),),
           InsigniaEstado(estatus: estatus),
         ],
       ),

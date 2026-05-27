@@ -4,6 +4,13 @@ import 'package:uniasist/funcionalidades/autenticacion/auth_cubit.dart';
 import 'package:uniasist/funcionalidades/autenticacion/auth_estado.dart';
 
 class ProtectorPorPermiso extends StatelessWidget {
+
+  const ProtectorPorPermiso({
+    super.key,
+    required this.permisoRequerido,
+    required this.hijo,
+    this.reemplazo,
+  });
   /// El permiso específico que se necesita (ej: 'usuarios.crear', 'eventos.borrar')
   final String permisoRequerido;
 
@@ -12,13 +19,6 @@ class ProtectorPorPermiso extends StatelessWidget {
 
   /// Lo que se muestra si NO tiene el permiso (opcional)
   final Widget? reemplazo;
-
-  const ProtectorPorPermiso({
-    super.key,
-    required this.permisoRequerido,
-    required this.hijo,
-    this.reemplazo,
-  });
 
   @override
   Widget build(BuildContext context) {

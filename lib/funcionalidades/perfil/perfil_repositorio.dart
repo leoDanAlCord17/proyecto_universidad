@@ -5,9 +5,9 @@ import '../../compartido/errores.dart';
 import '../../compartido/traductor_errores.dart';
 
 class PerfilRepositorio {
-  final SupabaseClient _supabase;
 
   PerfilRepositorio(this._supabase);
+  final SupabaseClient _supabase;
 
   /// Obtiene el tag principal y los tags secundarios activos del usuario.
   Future<({String? tagPrincipal, List<String> tagsSecundarios})> obtenerTags(

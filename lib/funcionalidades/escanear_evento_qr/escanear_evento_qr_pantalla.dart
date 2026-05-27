@@ -444,7 +444,7 @@ class _CardNoDisponible extends StatelessWidget {
         Text(
           'Evento no disponible',
           style: TextStyle(
-            color: Colors.blueGrey.shade300, fontWeight: FontWeight.w700, fontSize: 13),
+            color: Colors.blueGrey.shade300, fontWeight: FontWeight.w700, fontSize: 13,),
         ),
       ],
     );

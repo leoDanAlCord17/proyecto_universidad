@@ -40,7 +40,7 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
         busqueda:          '',
         cantidadPresentes: 0,
         cantidadTotal:     0,
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(BuscarAsistenteError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
@@ -108,10 +108,10 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
       emit(cargado.copiarCon(estaMarcandoSalida: false));
     } on FallaServidor catch (e) {
       emit(BuscarAsistenteOperacionFallida(
-        anterior: cargado.copiarCon(estaMarcandoSalida: false), mensaje: e.mensaje));
+        anterior: cargado.copiarCon(estaMarcandoSalida: false), mensaje: e.mensaje,),);
     } on FallaInesperada catch (e) {
       emit(BuscarAsistenteOperacionFallida(
-        anterior: cargado.copiarCon(estaMarcandoSalida: false), mensaje: e.mensaje));
+        anterior: cargado.copiarCon(estaMarcandoSalida: false), mensaje: e.mensaje,),);
     }
   }
 
@@ -128,7 +128,7 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
     emit(BuscarAsistenteOperacionFallida(
       anterior: actual.copiarCon(estaRegistrando: false, usuarioIdRegistrando: null),
       mensaje:  mensaje,
-    ));
+    ),);
   }
 
   void _actualizarAsistencia(List<Map<String, dynamic>> filas) {
@@ -192,7 +192,7 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
       busqueda:          _busqueda,
       cantidadPresentes: _contarPresentes(),
       cantidadTotal:     _mapaAsist.length + _foraneos.length,
-    ));
+    ),);
   }
 
   int _contarPresentes() {

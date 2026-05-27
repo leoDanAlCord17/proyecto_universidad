@@ -57,14 +57,27 @@ void main() {
     );
 
     blocTest<RegistroCubit, RegistroEstado>(
-      'emite RegistroError cuando contraseña tiene menos de 6 caracteres',
+      'emite RegistroError cuando contraseña tiene menos de 8 caracteres',
       build: () => RegistroCubit(repositorio),
       act: (c) => c.registrarse('leo@uni.edu', '123', '123'),
       expect: () => [
         isA<RegistroError>().having(
           (e) => e.mensaje,
           'mensaje',
-          'La contraseña debe tener al menos 6 caracteres.',
+          'La contraseña debe tener al menos 8 caracteres.',
+        ),
+      ],
+    );
+
+    blocTest<RegistroCubit, RegistroEstado>(
+      'emite RegistroError cuando contraseña no tiene dígito',
+      build: () => RegistroCubit(repositorio),
+      act: (c) => c.registrarse('leo@uni.edu', 'sindigitos', 'sindigitos'),
+      expect: () => [
+        isA<RegistroError>().having(
+          (e) => e.mensaje,
+          'mensaje',
+          'La contraseña debe incluir al menos un número.',
         ),
       ],
     );

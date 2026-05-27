@@ -81,7 +81,7 @@ class _CrearTagPantallaState extends State<CrearTagPantalla> {
   Widget build(BuildContext context) {
     return BlocConsumer<CrearTagCubit, CrearTagEstado>(
       listener: _escucharEstado,
-      builder:  (context, estado) => _construirVista(context, estado),
+      builder:  _construirVista,
     );
   }
 

@@ -31,7 +31,7 @@ class _PermisosPantallaState extends State<PermisosPantalla> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PermisosCubit, PermisosEstado>(
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 
@@ -140,7 +140,7 @@ class _Lista extends StatelessWidget {
         ...items.map((p) => Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child:   _TarjetaPermiso(permiso: p),
-        )),
+        ),),
       ],
     );
   }

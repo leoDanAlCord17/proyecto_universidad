@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../compartido/constantes.dart';
 import '../configuracion/colores_app.dart';
 import '../configuracion/dependencias.dart';
+import '../configuracion/entorno.dart';
 import '../funcionalidades/autenticacion/auth_cubit.dart';
 import '../funcionalidades/autenticacion/auth_estado.dart';
 
@@ -82,9 +83,9 @@ import '../funcionalidades/auditoria_evento/auditoria_evento_cubit.dart';
 import '../funcionalidades/auditoria_evento/auditoria_evento_pantalla.dart';
 
 class RouterApp {
-  final AuthCubit authCubit;
 
   RouterApp(this.authCubit);
+  final AuthCubit authCubit;
 
   late final router = GoRouter(
     initialLocation: Rutas.splash,
@@ -130,8 +131,8 @@ class RouterApp {
         final esRutaPublica = ubicacion == Rutas.login
             || ubicacion == Rutas.registro
             || ubicacion == Rutas.recuperarContrasena
-            || (kDebugMode && ubicacion == Rutas.vistaWidgets)
-            || (kDebugMode && ubicacion == Rutas.vistaFuentes);
+            || (kDebugMode && entorno.esDev && ubicacion == Rutas.vistaWidgets)
+            || (kDebugMode && entorno.esDev && ubicacion == Rutas.vistaFuentes);
         return esRutaPublica ? null : Rutas.login;
       }
 
@@ -497,13 +498,13 @@ class RouterApp {
         ),
       ),
 
-      // Solo desarrollo — no registradas en release builds
-      if (kDebugMode)
+      // Solo entorno dev en debug — excluidas en staging/prod
+      if (kDebugMode && entorno.esDev)
         GoRoute(
           path: Rutas.vistaWidgets,
           builder: (context, state) => const VistaWidgetsPantalla(),
         ),
-      if (kDebugMode)
+      if (kDebugMode && entorno.esDev)
         GoRoute(
           path: Rutas.vistaFuentes,
           builder: (context, state) => const VistaFuentesPantalla(),
@@ -518,12 +519,12 @@ class RouterApp {
 
 /// Clase auxiliar para que GoRouter pueda escuchar el Stream del Cubit.
 class _StreamToListen extends ChangeNotifier {
-  late final StreamSubscription _suscripcion;
 
   _StreamToListen(Stream stream) {
     notifyListeners();
     _suscripcion = stream.listen((_) => notifyListeners());
   }
+  late final StreamSubscription _suscripcion;
 
   @override
   void dispose() {

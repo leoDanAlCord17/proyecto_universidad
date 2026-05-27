@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -61,7 +63,7 @@ class _RevisionUsuariosPantallaState
           );
         }
       },
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 
@@ -214,10 +216,10 @@ class _Lista extends StatelessWidget {
                     textoCancelar:  'Cancelar',
                   );
                   if (confirmo != true || !context.mounted) return;
-                  context.read<RevisionUsuariosCubit>().rechazar(usuario.id);
+                  unawaited(context.read<RevisionUsuariosCubit>().rechazar(usuario.id));
                 },
               ),
-            )),
+            ),),
           ],
         ),
         if (estado.usuarioIdProcessando != null)

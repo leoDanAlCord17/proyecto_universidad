@@ -33,8 +33,8 @@ class RolesCubit extends Cubit<RolesEstado> {
       rolesFiltrados: estadoActual.roles
           .where((r) =>
               r.nombre.toLowerCase().contains(q) ||
-              r.descripcion.toLowerCase().contains(q))
+              r.descripcion.toLowerCase().contains(q),)
           .toList(),
-    ));
+    ),);
   }
 }

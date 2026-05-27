@@ -1,6 +1,21 @@
 import 'package:equatable/equatable.dart';
 
 class RevisionUsuarioItem extends Equatable {
+
+  factory RevisionUsuarioItem.desdeJson(Map<String, dynamic> json) =>
+      RevisionUsuarioItem(
+        id:                   json['id']                   as String,
+        primerNombre:         json['primer_nombre']         as String,
+        segundoNombre:        json['segundo_nombre']        as String?,
+        primerApellido:       json['primer_apellido']       as String,
+        segundoApellido:      json['segundo_apellido']      as String?,
+        correo:               json['correo']               as String,
+        numeroIdentificacion: json['numero_identificacion'] as String?,
+        telefono:             json['telefono']             as String?,
+        creadoEn:             json['creado_en'] != null
+                                  ? DateTime.tryParse(json['creado_en'] as String)
+                                  : null,
+      );
   const RevisionUsuarioItem({
     required this.id,
     required this.primerNombre,
@@ -29,21 +44,6 @@ class RevisionUsuarioItem extends Equatable {
     primerApellido,
     if (segundoApellido != null && segundoApellido!.isNotEmpty) segundoApellido,
   ].join(' ');
-
-  factory RevisionUsuarioItem.desdeJson(Map<String, dynamic> json) =>
-      RevisionUsuarioItem(
-        id:                   json['id']                   as String,
-        primerNombre:         json['primer_nombre']         as String,
-        segundoNombre:        json['segundo_nombre']        as String?,
-        primerApellido:       json['primer_apellido']       as String,
-        segundoApellido:      json['segundo_apellido']      as String?,
-        correo:               json['correo']               as String,
-        numeroIdentificacion: json['numero_identificacion'] as String?,
-        telefono:             json['telefono']             as String?,
-        creadoEn:             json['creado_en'] != null
-                                  ? DateTime.tryParse(json['creado_en'] as String)
-                                  : null,
-      );
 
   @override
   List<Object?> get props => [

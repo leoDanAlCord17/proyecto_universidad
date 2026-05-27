@@ -34,7 +34,7 @@ class AuditoriaEventoCubit extends Cubit<AuditoriaEventoEstado> {
         eventoSeleccionado: evento,
         registros:          registros,
         resumen:            resumen,
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(AuditoriaEventoError(e.mensaje));
     } on FallaInesperada catch (e) {

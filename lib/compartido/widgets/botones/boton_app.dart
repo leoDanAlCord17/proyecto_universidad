@@ -140,11 +140,14 @@ class _BotonPrimario extends StatelessWidget {
           ),
         ),
         child: estaCargando
-            ? const SizedBox(
-                width: 22, height: 22,
-                child: CircularProgressIndicator(
-                  color:       Colors.white,
-                  strokeWidth: 2.5,
+            ? Semantics(
+                label: 'Cargando',
+                child: const SizedBox(
+                  width: 22, height: 22,
+                  child: CircularProgressIndicator(
+                    color:       Colors.white,
+                    strokeWidth: 2.5,
+                  ),
                 ),
               )
             : _ContenidoBoton(

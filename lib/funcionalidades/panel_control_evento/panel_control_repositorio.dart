@@ -58,7 +58,7 @@ class PanelControlRepositorio {
           .select('id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
           .order('primer_apellido', ascending: true);
       return rows
-          .map<AsistenteItem>((r) => _construirItemDesdeUsuario(r))
+          .map<AsistenteItem>(_construirItemDesdeUsuario)
           .toList();
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
@@ -206,7 +206,7 @@ class PanelControlRepositorio {
     final resultado = <AsistenteItem>[];
     for (final entry in tagsPorUsuario.entries) {
       final coincide = grupos.values.any(
-        (tags) => entry.value.containsAll(tags),
+        entry.value.containsAll,
       );
       if (!coincide) continue;
       resultado.add(_construirItemEsperado(entry.key, datosUsuario[entry.key]!));
@@ -227,7 +227,7 @@ class PanelControlRepositorio {
       'visitante_primer_apellido': null,
       'visitante_contacto':        null,
       'usuarios':                  datosUsuario,
-    }, eraEsperado: true);
+    }, eraEsperado: true,);
   }
 
   Future<String?> _resolverUsuarioId() async {

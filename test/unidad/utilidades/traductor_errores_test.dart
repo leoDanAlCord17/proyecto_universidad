@@ -44,11 +44,11 @@ void main() {
       );
     });
 
-    test('mensaje "password should be" → contraseña corta', () {
+    test('mensaje "password should be" → contraseña corta con número', () {
       const e = AuthException('Password should be at least 6 characters');
       expect(
         TraductorErrores.deAuth(e),
-        'La contraseña debe tener al menos 6 caracteres.',
+        'La contraseña debe tener al menos 8 caracteres e incluir un número.',
       );
     });
 

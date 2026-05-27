@@ -35,7 +35,7 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
         evento:         evento,
         asistentes:     asistentesConFlag,
         listaEsperados: _mergarConAsistencia(_audiencia, asistentesConFlag),
-      ));
+      ),);
       _suscribirStreamAsistencia(eventoId);
     } on FallaServidor catch (e) {
       emit(PanelControlError(mensaje: e.mensaje));
@@ -96,12 +96,12 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
       emit(PanelControlOperacionFallida(
         anterior: cargado.copiarCon(estaCerrando: false),
         mensaje:  e.mensaje,
-      ));
+      ),);
     } on FallaInesperada catch (e) {
       emit(PanelControlOperacionFallida(
         anterior: cargado.copiarCon(estaCerrando: false),
         mensaje:  e.mensaje,
-      ));
+      ),);
     }
   }
 
@@ -150,7 +150,7 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
       asistentes:      asistentesConFlag,
       listaEsperados:  _mergarConAsistencia(_audiencia, asistentesConFlag),
       estaRegistrando: estaRegistrando,
-    ));
+    ),);
   }
 
   void _emitirFalloPanel(PanelControlCargado base, String mensaje) {
@@ -158,7 +158,7 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
     emit(PanelControlOperacionFallida(
       anterior: actual.copiarCon(estaRegistrando: false),
       mensaje:  mensaje,
-    ));
+    ),);
   }
 
   List<AsistenteItem> _marcarEsperados(

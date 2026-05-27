@@ -33,7 +33,7 @@ void main() {
 
   group('CrearUsuarioPantalla', () {
     testWidgets('pre-llena el campo de correo con correoSesion', (tester) async {
-      when(() => crearCubit.state).thenReturn(CrearUsuarioInicial());
+      when(() => crearCubit.state).thenReturn(const CrearUsuarioInicial());
 
       await tester.pumpWidget(_marco(crearCubit, authCubit));
 
@@ -41,7 +41,7 @@ void main() {
     });
 
     testWidgets('renderiza los campos de nombre, apellido y botón', (tester) async {
-      when(() => crearCubit.state).thenReturn(CrearUsuarioInicial());
+      when(() => crearCubit.state).thenReturn(const CrearUsuarioInicial());
 
       await tester.pumpWidget(_marco(crearCubit, authCubit));
 
@@ -52,7 +52,7 @@ void main() {
 
     testWidgets('muestra CircularProgressIndicator cuando CrearUsuarioCargando',
         (tester) async {
-      when(() => crearCubit.state).thenReturn(CrearUsuarioCargando());
+      when(() => crearCubit.state).thenReturn(const CrearUsuarioCargando());
 
       await tester.pumpWidget(_marco(crearCubit, authCubit));
 
@@ -65,9 +65,9 @@ void main() {
       whenListen(
         crearCubit,
         Stream.fromIterable([
-          CrearUsuarioError('El nombre y apellido son obligatorios.'),
+          const CrearUsuarioError('El nombre y apellido son obligatorios.'),
         ]),
-        initialState: CrearUsuarioInicial(),
+        initialState: const CrearUsuarioInicial(),
       );
 
       await tester.pumpWidget(_marco(crearCubit, authCubit));
@@ -80,7 +80,7 @@ void main() {
     });
 
     testWidgets('llama guardarPerfil con los valores escritos', (tester) async {
-      when(() => crearCubit.state).thenReturn(CrearUsuarioInicial());
+      when(() => crearCubit.state).thenReturn(const CrearUsuarioInicial());
       when(() => crearCubit.guardarPerfil(
             primerNombre:   any(named: 'primerNombre'),
             primerApellido: any(named: 'primerApellido'),
@@ -88,7 +88,7 @@ void main() {
             segundoApellido:      any(named: 'segundoApellido'),
             numeroIdentificacion: any(named: 'numeroIdentificacion'),
             telefono:             any(named: 'telefono'),
-          )).thenAnswer((_) async {});
+          ),).thenAnswer((_) async {});
 
       await tester.pumpWidget(_marco(crearCubit, authCubit));
 
@@ -109,15 +109,15 @@ void main() {
             segundoApellido:      '',
             numeroIdentificacion: '',
             telefono:             '',
-          )).called(1);
+          ),).called(1);
     });
 
     testWidgets('llama verificarSesion en AuthCubit cuando CrearUsuarioExito',
         (tester) async {
       whenListen(
         crearCubit,
-        Stream.fromIterable([CrearUsuarioExito()]),
-        initialState: CrearUsuarioInicial(),
+        Stream.fromIterable([const CrearUsuarioExito()]),
+        initialState: const CrearUsuarioInicial(),
       );
 
       await tester.pumpWidget(_marco(crearCubit, authCubit));

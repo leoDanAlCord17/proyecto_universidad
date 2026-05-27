@@ -18,7 +18,7 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
       emit(UsuariosCargados(
         usuarios:          usuarios,
         usuariosFiltrados: _aplicarFiltro(usuarios, _busqueda),
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(UsuariosError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
@@ -49,7 +49,7 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
     }
     emit(estadoActual.copiarCon(
       usuariosFiltrados: _aplicarFiltro(estadoActual.usuarios, texto),
-    ));
+    ),);
   }
 
   UsuariosCargados? _extraerCargados(UsuariosEstado estado) => switch (estado) {

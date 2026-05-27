@@ -46,7 +46,7 @@ class FilaRol extends StatelessWidget {
             descripcion:      descripcion,
             colorNombre:      colorNombre,
             colorDescripcion: colorDescripcion,
-          )),
+          ),),
           const SizedBox(width: 12),
           if (esSistema)
             const _InsigniaSistema()

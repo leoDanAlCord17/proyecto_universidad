@@ -3,6 +3,21 @@ import 'package:equatable/equatable.dart';
 import '../../compartido/constantes.dart';
 
 class EventoEnCurso extends Equatable {
+
+  factory EventoEnCurso.desdeJson(Map<String, dynamic> json) => EventoEnCurso(
+    id:               json['id']               as String,
+    titulo:           json['titulo']            as String,
+    lugar:            json['lugar']             as String?,
+    horaInicio:       json['hora_inicio']       as String?,
+    horaFin:          json['hora_fin']          as String?,
+    permiteQrEvento:  (json['permite_qr_evento']  as bool?) ?? true,
+    permiteQrUsuario: (json['permite_qr_usuario'] as bool?) ?? true,
+    permiteForaneos:  (json['permite_foraneos']   as bool?) ?? false,
+    modoRegistro:     json['modo_registro']     as String? ?? ModoRegistro.administrador,
+    alcance:          json['alcance']           as String? ?? AlcanceEvento.general,
+    totalPresentes:   0,
+    totalRegistrados: 0,
+  );
   const EventoEnCurso({
     required this.id,
     required this.titulo,
@@ -73,21 +88,6 @@ class EventoEnCurso extends Equatable {
         totalRegistrados: totalRegistrados ?? this.totalRegistrados,
         esColaborador:    esColaborador    ?? this.esColaborador,
       );
-
-  factory EventoEnCurso.desdeJson(Map<String, dynamic> json) => EventoEnCurso(
-    id:               json['id']               as String,
-    titulo:           json['titulo']            as String,
-    lugar:            json['lugar']             as String?,
-    horaInicio:       json['hora_inicio']       as String?,
-    horaFin:          json['hora_fin']          as String?,
-    permiteQrEvento:  (json['permite_qr_evento']  as bool?) ?? true,
-    permiteQrUsuario: (json['permite_qr_usuario'] as bool?) ?? true,
-    permiteForaneos:  (json['permite_foraneos']   as bool?) ?? false,
-    modoRegistro:     json['modo_registro']     as String? ?? ModoRegistro.administrador,
-    alcance:          json['alcance']           as String? ?? AlcanceEvento.general,
-    totalPresentes:   0,
-    totalRegistrados: 0,
-  );
 
   @override
   List<Object?> get props => [

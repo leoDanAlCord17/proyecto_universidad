@@ -54,22 +54,26 @@ class InsigniaEstado extends StatelessWidget {
 
     final esPequeno = tamanio == TamanioInsignia.pequeno;
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: esPequeno ? 7 : 10,
-        vertical:   esPequeno ? 2 : 4,
-      ),
-      decoration: BoxDecoration(
-        color: colores.$1,
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Text(
-        texto,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color:         colores.$2,
-          fontSize:      esPequeno ? 9 : 11,
-          fontWeight:    FontWeight.w700,
-          letterSpacing: 0.2,
+    return Semantics(
+      label: 'Estado: $texto',
+      excludeSemantics: true,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: esPequeno ? 7 : 10,
+          vertical:   esPequeno ? 2 : 4,
+        ),
+        decoration: BoxDecoration(
+          color: colores.$1,
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Text(
+          texto,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color:         colores.$2,
+            fontSize:      esPequeno ? 9 : 11,
+            fontWeight:    FontWeight.w700,
+            letterSpacing: 0.2,
+          ),
         ),
       ),
     );

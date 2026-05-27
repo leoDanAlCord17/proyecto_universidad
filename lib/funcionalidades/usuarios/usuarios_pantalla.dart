@@ -42,7 +42,7 @@ class _UsuariosPantallaState extends State<UsuariosPantalla> {
           AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
         }
       },
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 
@@ -173,7 +173,7 @@ class _Lista extends StatelessWidget {
         ...items.map((u) => Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child:   _TarjetaUsuario(usuario: u),
-        )),
+        ),),
       ],
     );
   }

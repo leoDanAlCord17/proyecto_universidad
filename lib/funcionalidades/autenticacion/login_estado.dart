@@ -18,8 +18,8 @@ final class LoginExito extends LoginEstado {
 }
 
 final class LoginError extends LoginEstado {
-  final String mensaje;
   LoginError(this.mensaje);
+  final String mensaje;
 
   @override
   List<Object?> get props => [mensaje];

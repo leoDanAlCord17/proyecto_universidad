@@ -1,9 +1,15 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'compartido/logger.dart';
 import 'configuracion/dependencias.dart';
+import 'configuracion/entorno.dart';
 import 'configuracion/tema_app.dart';
 import 'configuracion/router_app.dart';
 import 'funcionalidades/autenticacion/auth_cubit.dart';
@@ -15,54 +21,146 @@ import 'funcionalidades/notificaciones/notificaciones_cubit.dart';
 const _dartUrl     = String.fromEnvironment('SUPABASE_URL');
 const _dartAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() {
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
 
-  final String url;
-  final String anonKey;
+      _configurarErrorHandlers();
 
-  if (_dartUrl.isNotEmpty && _dartAnonKey.isNotEmpty) {
-    url     = _dartUrl;
-    anonKey = _dartAnonKey;
-  } else {
-    await dotenv.load(fileName: '.env');
-    url     = dotenv.env['SUPABASE_URL']
-        ?? (throw StateError('SUPABASE_URL no encontrado — configura .env o usa --dart-define-from-file'));
-    anonKey = dotenv.env['SUPABASE_ANON_KEY']
-        ?? (throw StateError('SUPABASE_ANON_KEY no encontrado — configura .env o usa --dart-define-from-file'));
-  }
+      await _inicializarSentry();
 
-  await Supabase.initialize(url: url, anonKey: anonKey);
+      final String url;
+      final String anonKey;
 
-  configurarDependencias();
+      if (_dartUrl.isNotEmpty && _dartAnonKey.isNotEmpty) {
+        url     = _dartUrl;
+        anonKey = _dartAnonKey;
+      } else {
+        await dotenv.load(fileName: '.env');
+        url     = dotenv.env['SUPABASE_URL']
+            ?? (throw StateError('SUPABASE_URL no encontrado — configura .env o usa --dart-define-from-file'));
+        anonKey = dotenv.env['SUPABASE_ANON_KEY']
+            ?? (throw StateError('SUPABASE_ANON_KEY no encontrado — configura .env o usa --dart-define-from-file'));
+      }
 
-  final authCubit           = obtenerIt<AuthCubit>();
-  final notifCubit          = obtenerIt<NotificacionesCubit>();
-  final configuracionRouter = RouterApp(authCubit);
+      await Supabase.initialize(url: url, anonKey: anonKey);
+      log.i('Supabase inicializado');
 
-  // Inicia el stream de notificaciones en tiempo real al autenticarse
-  authCubit.stream.listen((estado) {
-    if (estado is! Autenticado) return;
-    final usuarioId = estado.usuario.id;
-    if (usuarioId == null) return;
-    notifCubit.iniciarStream(usuarioId);
-  });
+      configurarDependencias();
 
-  runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: authCubit..verificarSesion()),
-        BlocProvider.value(value: notifCubit),
-      ],
-      child: _App(routerApp: configuracionRouter),
-    ),
+      final authCubit           = obtenerIt<AuthCubit>();
+      final notifCubit          = obtenerIt<NotificacionesCubit>();
+      final configuracionRouter = RouterApp(authCubit);
+
+      authCubit.stream.listen((estado) {
+        if (estado is! Autenticado) return;
+        final usuarioId = estado.usuario.id;
+        if (usuarioId == null) return;
+        notifCubit.iniciarStream(usuarioId);
+      });
+
+      unawaited(authCubit.verificarSesion());
+
+      runApp(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: authCubit),
+            BlocProvider.value(value: notifCubit),
+          ],
+          child: _App(routerApp: configuracionRouter),
+        ),
+      );
+    },
+    (error, stack) => log.e('Error no capturado en zone', error: error, stackTrace: stack),
   );
 }
 
-class _App extends StatelessWidget {
-  final RouterApp routerApp;
+/// Inicializa Sentry si el DSN está configurado. En desarrollo o sin DSN, es no-op.
+Future<void> _inicializarSentry() async {
+  final dsn = entorno.sentryDsn;
+  if (dsn.isEmpty) return;
 
+  await SentryFlutter.init(
+    (options) {
+      options.dsn              = dsn;
+      options.environment      = entorno.nombre;
+      options.tracesSampleRate = entorno.esProd ? 0.2 : 0.0;
+      options.debug            = entorno.esDev;
+    },
+  );
+  log.i('Sentry inicializado (entorno: ${entorno.nombre})');
+}
+
+/// Configura los manejadores globales de errores antes de iniciar la app.
+void _configurarErrorHandlers() {
+  // Errores en el framework de Flutter (widgets, rendering, etc.)
+  FlutterError.onError = (details) {
+    log.e(
+      'FlutterError: ${details.exceptionAsString()}',
+      error:      details.exception,
+      stackTrace: details.stack,
+    );
+  };
+
+  // Errores asincrónicos no capturados fuera del árbol de Flutter
+  PlatformDispatcher.instance.onError = (error, stack) {
+    log.e('Error de plataforma no capturado', error: error, stackTrace: stack);
+    return true;
+  };
+
+  // Widget de fallback cuando un subtree lanza una excepción en release
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    if (details.context != null) {
+      log.e('Widget error: ${details.exceptionAsString()}', error: details.exception);
+    }
+    return _WidgetDeError(mensaje: details.exceptionAsString());
+  };
+}
+
+// ─── Widget de error visual ───────────────────────────────────────────────────
+
+class _WidgetDeError extends StatelessWidget {
+  const _WidgetDeError({required this.mensaje});
+
+  final String mensaje;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: Color(0xFFD32F2F)),
+              const SizedBox(height: 16),
+              const Text(
+                'Algo salió mal',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Por favor reinicia la aplicación.',
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── App ──────────────────────────────────────────────────────────────────────
+
+class _App extends StatelessWidget {
   const _App({required this.routerApp});
+
+  final RouterApp routerApp;
 
   @override
   Widget build(BuildContext context) {

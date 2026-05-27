@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:uniasist/funcionalidades/autenticacion/usuario.dart';
 
 void main() {
-  const jsonBase = {
+  const camposBase = {
     'id':                    'user-id-1',
     'auth_id':               'auth-id-1',
     'primer_nombre':         'Leo',
@@ -14,7 +14,11 @@ void main() {
     'telefono':              '+58123456789',
     'url_avatar':            null,
     'estatus':               true,
-    'usuarios_roles':        <dynamic>[],
+  };
+
+  const jsonBase = {
+    ...camposBase,
+    'usuarios_roles': <dynamic>[],
   };
 
   group('Usuario.desdeJson', () {
@@ -40,7 +44,7 @@ void main() {
     });
 
     test('usa valores por defecto cuando faltan campos opcionales', () {
-      final u = Usuario.desdeJson({
+      final u = Usuario.desdeJson(const {
         'primer_nombre':   'Maria',
         'primer_apellido': 'Gonzalez',
         'correo':          'maria@uni.edu',
@@ -53,17 +57,17 @@ void main() {
       expect(u.estatus,       isTrue);
     });
 
-    test('extrae solo roles con estatus activo', () {
-      final u = Usuario.desdeJson({
-        ...jsonBase,
+    test('extrae solo roles con estatus activo (boolean true)', () {
+      final u = Usuario.desdeJson(const {
+        ...camposBase,
         'usuarios_roles': [
           {
-            'estatus': 'activo',
-            'roles':   {'nombre': 'admin', 'roles_permisos': <dynamic>[]},
+            'estatus': true,
+            'roles':   {'nombre': 'admin', 'estatus': true, 'roles_permisos': <dynamic>[]},
           },
           {
-            'estatus': 'inactivo',
-            'roles':   {'nombre': 'coordinador', 'roles_permisos': <dynamic>[]},
+            'estatus': false,
+            'roles':   {'nombre': 'coordinador', 'estatus': true, 'roles_permisos': <dynamic>[]},
           },
         ],
       });
@@ -73,25 +77,27 @@ void main() {
     });
 
     test('extrae permisos sin duplicados cuando dos roles comparten uno', () {
-      final u = Usuario.desdeJson({
-        ...jsonBase,
+      final u = Usuario.desdeJson(const {
+        ...camposBase,
         'usuarios_roles': [
           {
-            'estatus': 'activo',
+            'estatus': true,
             'roles': {
               'nombre': 'admin',
+              'estatus': true,
               'roles_permisos': [
-                {'permisos': {'nombre': 'ver_eventos'}},
-                {'permisos': {'nombre': 'crear_eventos'}},
+                {'estatus': true, 'permisos': {'nombre': 'eventos.crear'}},
+                {'estatus': true, 'permisos': {'nombre': 'ajustes.usuarios'}},
               ],
             },
           },
           {
-            'estatus': 'activo',
+            'estatus': true,
             'roles': {
               'nombre': 'profesor',
+              'estatus': true,
               'roles_permisos': [
-                {'permisos': {'nombre': 'ver_eventos'}}, // duplicado
+                {'estatus': true, 'permisos': {'nombre': 'eventos.crear'}}, // duplicado
               ],
             },
           },
@@ -99,19 +105,40 @@ void main() {
       });
 
       expect(u.permisos.length, 2);
-      expect(u.permisos, containsAll(['ver_eventos', 'crear_eventos']));
+      expect(u.permisos, containsAll(['eventos.crear', 'ajustes.usuarios']));
+    });
+
+    test('ignora roles_permisos con estatus false', () {
+      final u = Usuario.desdeJson(const {
+        ...camposBase,
+        'usuarios_roles': [
+          {
+            'estatus': true,
+            'roles': {
+              'nombre': 'admin',
+              'estatus': true,
+              'roles_permisos': [
+                {'estatus': false, 'permisos': {'nombre': 'ajustes.usuarios'}},
+              ],
+            },
+          },
+        ],
+      });
+
+      expect(u.permisos, isEmpty);
     });
 
     test('ignora roles inactivos al calcular permisos', () {
-      final u = Usuario.desdeJson({
-        ...jsonBase,
+      final u = Usuario.desdeJson(const {
+        ...camposBase,
         'usuarios_roles': [
           {
-            'estatus': 'inactivo',
+            'estatus': false,
             'roles': {
               'nombre': 'admin',
+              'estatus': true,
               'roles_permisos': [
-                {'permisos': {'nombre': 'eliminar_usuarios'}},
+                {'estatus': true, 'permisos': {'nombre': 'ajustes.usuarios'}},
               ],
             },
           },
@@ -124,7 +151,7 @@ void main() {
 
   group('Getters', () {
     test('nombreCompleto retorna primer nombre + primer apellido', () {
-      final u = Usuario(
+      const u = Usuario(
         primerNombre:   'Leo',
         primerApellido: 'Alvarez',
         correo:         'leo@uni.edu',
@@ -133,7 +160,7 @@ void main() {
     });
 
     test('iniciales retorna mayúsculas del nombre y apellido', () {
-      final u = Usuario(
+      const u = Usuario(
         primerNombre:   'Leo',
         primerApellido: 'Alvarez',
         correo:         'leo@uni.edu',
@@ -142,7 +169,7 @@ void main() {
     });
 
     test('iniciales con nombre vacío retorna solo inicial del apellido', () {
-      final u = Usuario(
+      const u = Usuario(
         primerNombre:   '',
         primerApellido: 'Alvarez',
         correo:         'x@x.com',
@@ -151,7 +178,7 @@ void main() {
     });
 
     test('iniciales con apellido vacío retorna solo inicial del nombre', () {
-      final u = Usuario(
+      const u = Usuario(
         primerNombre:   'Leo',
         primerApellido: '',
         correo:         'x@x.com',
@@ -161,12 +188,13 @@ void main() {
   });
 
   group('tieneRol / tienePermiso', () {
-    final u = Usuario(
+    // Permisos reales usan formato con punto: 'grupo.accion'
+    const u = Usuario(
       primerNombre:   'Leo',
       primerApellido: 'Alvarez',
       correo:         'leo@uni.edu',
       roles:          ['admin', 'profesor'],
-      permisos:       ['ver_eventos', 'crear_eventos'],
+      permisos:       ['eventos.crear', 'ajustes.usuarios'],
     );
 
     test('tieneRol retorna true para rol asignado', () {
@@ -177,18 +205,27 @@ void main() {
       expect(u.tieneRol('estudiante'), isFalse);
     });
 
-    test('tienePermiso retorna true para permiso asignado', () {
-      expect(u.tienePermiso('ver_eventos'), isTrue);
+    test('tienePermiso con dot retorna true para coincidencia exacta', () {
+      expect(u.tienePermiso('eventos.crear'), isTrue);
     });
 
-    test('tienePermiso retorna false para permiso no asignado', () {
-      expect(u.tienePermiso('eliminar_usuarios'), isFalse);
+    test('tienePermiso sin dot retorna true si algún permiso tiene ese prefijo', () {
+      expect(u.tienePermiso('eventos'), isTrue);
+      expect(u.tienePermiso('ajustes'), isTrue);
+    });
+
+    test('tienePermiso retorna false para grupo sin coincidencia', () {
+      expect(u.tienePermiso('reportes'), isFalse);
+    });
+
+    test('tienePermiso con dot retorna false para permiso exacto no asignado', () {
+      expect(u.tienePermiso('ajustes.roles'), isFalse);
     });
   });
 
   group('aJson', () {
     test('incluye auth_id cuando está presente', () {
-      final u = Usuario(
+      const u = Usuario(
         authId:         'auth-id-1',
         primerNombre:   'Leo',
         primerApellido: 'Alvarez',
@@ -198,7 +235,7 @@ void main() {
     });
 
     test('omite auth_id cuando es null', () {
-      final u = Usuario(
+      const u = Usuario(
         primerNombre:   'Leo',
         primerApellido: 'Alvarez',
         correo:         'leo@uni.edu',
@@ -207,7 +244,7 @@ void main() {
     });
 
     test('incluye correo y nombres', () {
-      final u = Usuario(
+      const u = Usuario(
         primerNombre:   'Leo',
         primerApellido: 'Alvarez',
         correo:         'leo@uni.edu',
@@ -219,7 +256,7 @@ void main() {
     });
 
     test('no incluye roles ni permisos (viven en otras tablas)', () {
-      final u = Usuario(
+      const u = Usuario(
         primerNombre:   'Leo',
         primerApellido: 'Alvarez',
         correo:         'leo@uni.edu',

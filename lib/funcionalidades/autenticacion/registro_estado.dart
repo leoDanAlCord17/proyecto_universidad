@@ -18,8 +18,8 @@ final class RegistroExito extends RegistroEstado {
 }
 
 final class RegistroError extends RegistroEstado {
-  final String mensaje;
   RegistroError(this.mensaje);
+  final String mensaje;
 
   @override
   List<Object?> get props => [mensaje];

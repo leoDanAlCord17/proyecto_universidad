@@ -33,9 +33,9 @@ class TiposEventoCubit extends Cubit<TiposEventoEstado> {
       filtrados: estadoActual.items
           .where((tipo) =>
               tipo.nombre.toLowerCase().contains(busqueda) ||
-              tipo.descripcion.toLowerCase().contains(busqueda))
+              tipo.descripcion.toLowerCase().contains(busqueda),)
           .toList(),
-    ));
+    ),);
   }
 
   Future<void> desactivar(String id) async {
@@ -51,14 +51,14 @@ class TiposEventoCubit extends Cubit<TiposEventoEstado> {
         filtrados:        estadoActual.filtrados,
         estaDesactivando: false,
         errorOperacion:   falla.mensaje,
-      ));
+      ),);
     } on FallaInesperada catch (falla) {
       emit(TiposEventoCargados(
         items:            estadoActual.items,
         filtrados:        estadoActual.filtrados,
         estaDesactivando: false,
         errorOperacion:   falla.mensaje,
-      ));
+      ),);
     }
   }
 }

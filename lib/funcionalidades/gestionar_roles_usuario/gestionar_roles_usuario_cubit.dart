@@ -30,7 +30,7 @@ class GestionarRolesUsuarioCubit extends Cubit<GestionarRolesUsuarioEstado> {
         rolesDisponibles: todosLosRoles
             .where((r) => !idsActivos.contains(r.id))
             .toList(),
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(GestionarRolesUsuarioError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {

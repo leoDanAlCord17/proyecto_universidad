@@ -30,7 +30,7 @@ class _NotificacionesPantallaState extends State<NotificacionesPantalla> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NotificacionesCubit, NotificacionesEstado>(
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 

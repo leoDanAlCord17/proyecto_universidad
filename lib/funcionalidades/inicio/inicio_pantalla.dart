@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -108,12 +107,6 @@ class _InicioPantallaState extends State<InicioPantalla> {
                           builder: (context, estado) =>
                               _SeccionEventosEnCurso(estado: estado),
                         ),
-                        if (kDebugMode) ...[
-                          const SizedBox(height: 12),
-                          const _TarjetaDevWidgets(),
-                          const SizedBox(height: 12),
-                          const _TarjetaDevFuentes(),
-                        ],
                       ],
                     ),
                   ),
@@ -192,39 +185,6 @@ class _SeccionEventosEnCurso extends StatelessWidget {
           const SizedBox(height: 12),
         ],
       ],
-    );
-  }
-}
-
-// TODO: borrar cuando ya no se necesite
-class _TarjetaDevFuentes extends StatelessWidget {
-  const _TarjetaDevFuentes();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
-        borderRadius: BorderRadius.circular(16),
-        border:       Border.all(color: ColoresApp.bordeMedio),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.text_fields_outlined, color: ColoresApp.acento, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Vista de fuentes',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-          ),
-          TextButton(
-            onPressed: () => context.push(Rutas.vistaFuentes),
-            child: const Text('Ver'),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -404,39 +364,6 @@ class _Insignia extends StatelessWidget {
             height:     1.0,
           ),
         ),
-      ),
-    );
-  }
-}
-
-// TODO: borrar cuando ya no se necesite
-class _TarjetaDevWidgets extends StatelessWidget {
-  const _TarjetaDevWidgets();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
-        borderRadius: BorderRadius.circular(16),
-        border:       Border.all(color: ColoresApp.bordeMedio),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.widgets_outlined, color: ColoresApp.acento, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Vista de widgets',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-          ),
-          TextButton(
-            onPressed: () => context.push(Rutas.vistaWidgets),
-            child: const Text('Ver'),
-          ),
-        ],
       ),
     );
   }

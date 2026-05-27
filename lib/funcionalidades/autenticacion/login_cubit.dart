@@ -6,9 +6,9 @@ import 'autenticacion_repositorio.dart';
 import 'login_estado.dart';
 
 class LoginCubit extends Cubit<LoginEstado> {
-  final AutenticacionRepositorio _repositorio;
 
   LoginCubit(this._repositorio) : super(LoginInicial());
+  final AutenticacionRepositorio _repositorio;
 
   /// Inicia sesión con correo y contraseña.
   /// Emite [LoginExito] si las credenciales son válidas.

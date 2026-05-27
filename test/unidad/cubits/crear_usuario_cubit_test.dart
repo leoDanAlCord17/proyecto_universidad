@@ -100,6 +100,8 @@ void main() {
       'emite [CrearUsuarioCargando, CrearUsuarioExito] en caso exitoso',
       build: () {
         when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
+        when(() => repositorio.verificarRevisionCreacionHabilitada())
+            .thenAnswer((_) async => false);
         when(() => repositorio.crearPerfilUsuario(any()))
             .thenAnswer((_) async {});
         return CrearUsuarioCubit(repositorio);
@@ -113,6 +115,8 @@ void main() {
       'guarda el perfil con nombre y apellido con trim aplicado',
       build: () {
         when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
+        when(() => repositorio.verificarRevisionCreacionHabilitada())
+            .thenAnswer((_) async => false);
         when(() => repositorio.crearPerfilUsuario(any()))
             .thenAnswer((_) async {});
         return CrearUsuarioCubit(repositorio);
@@ -132,9 +136,32 @@ void main() {
     );
 
     blocTest<CrearUsuarioCubit, CrearUsuarioEstado>(
+      'asigna estatus_aprobacion pendiente cuando la revisión está habilitada',
+      build: () {
+        when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
+        when(() => repositorio.verificarRevisionCreacionHabilitada())
+            .thenAnswer((_) async => true);
+        when(() => repositorio.crearPerfilUsuario(any()))
+            .thenAnswer((_) async {});
+        return CrearUsuarioCubit(repositorio);
+      },
+      act: (c) =>
+          c.guardarPerfil(primerNombre: 'Leo', primerApellido: 'Alvarez'),
+      verify: (_) {
+        final capturado = verify(
+          () => repositorio.crearPerfilUsuario(captureAny()),
+        ).captured;
+        final usuario = capturado.first as Usuario;
+        expect(usuario.estatusAprobacion, EstatusAprobacion.pendiente);
+      },
+    );
+
+    blocTest<CrearUsuarioCubit, CrearUsuarioEstado>(
       'emite [CrearUsuarioCargando, CrearUsuarioError] al recibir FallaServidor',
       build: () {
         when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
+        when(() => repositorio.verificarRevisionCreacionHabilitada())
+            .thenAnswer((_) async => false);
         when(() => repositorio.crearPerfilUsuario(any()))
             .thenThrow(const FallaServidor('Ya existe un registro con esos datos.'));
         return CrearUsuarioCubit(repositorio);
@@ -155,6 +182,8 @@ void main() {
       'emite [CrearUsuarioCargando, CrearUsuarioError] al recibir FallaInesperada',
       build: () {
         when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
+        when(() => repositorio.verificarRevisionCreacionHabilitada())
+            .thenAnswer((_) async => false);
         when(() => repositorio.crearPerfilUsuario(any()))
             .thenThrow(const FallaInesperada('Sin conexión.'));
         return CrearUsuarioCubit(repositorio);

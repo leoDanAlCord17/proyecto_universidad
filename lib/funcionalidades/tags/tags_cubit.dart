@@ -18,7 +18,7 @@ class TagsCubit extends Cubit<TagsEstado> {
       emit(TagsCargados(
         tags:          tags,
         tagsFiltrados: _aplicarFiltro(tags, _busqueda),
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(TagsError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
@@ -73,6 +73,6 @@ class TagsCubit extends Cubit<TagsEstado> {
     return tags.where((t) =>
         t.nombre.toLowerCase().contains(q) ||
         t.descripcion.toLowerCase().contains(q) ||
-        t.tipo.toLowerCase().contains(q)).toList();
+        t.tipo.toLowerCase().contains(q),).toList();
   }
 }

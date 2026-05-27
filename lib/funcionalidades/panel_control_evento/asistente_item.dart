@@ -3,6 +3,61 @@ import 'package:equatable/equatable.dart';
 import '../../compartido/constantes.dart';
 
 class AsistenteItem extends Equatable {
+
+  factory AsistenteItem.desdeJson(
+    Map<String, dynamic> json, {
+    bool eraEsperado = false,
+  }) {
+    final usuarioId = json['usuario_id'] as String?;
+    final esForaneo = usuarioId == null;
+
+    final String  nombre;
+    final String? detalle;
+    final String? urlFoto;
+
+    if (!esForaneo) {
+      final u         = json['usuarios']               as Map<String, dynamic>?;
+      final pNombre   = u?['primer_nombre']             as String? ?? '';
+      final pApellido = u?['primer_apellido']           as String? ?? '';
+      nombre  = '$pNombre $pApellido'.trim();
+      detalle = u?['numero_identificacion']             as String?;
+      urlFoto = u?['url_avatar']                        as String?;
+    } else {
+      final vPN         = json['visitante_primer_nombre']   as String? ?? '';
+      final vPA         = json['visitante_primer_apellido'] as String? ?? '';
+      final nombreVisit = '$vPN $vPA'.trim();
+      nombre  = nombreVisit.isNotEmpty ? nombreVisit : 'Visitante';
+      detalle = json['visitante_contacto']                  as String?;
+      urlFoto = null;
+    }
+
+    final partes    = nombre.split(' ').where((p) => p.isNotEmpty).toList();
+    final iniciales = partes.length >= 2
+        ? '${partes[0][0]}${partes[1][0]}'.toUpperCase()
+        : nombre.isNotEmpty ? nombre[0].toUpperCase() : '?';
+
+    final reg   = json['registrador'] as Map<String, dynamic>?;
+    final regN  = reg?['primer_nombre']  as String? ?? '';
+    final regA  = reg?['primer_apellido'] as String? ?? '';
+    final regNombre = reg != null
+        ? '$regN $regA'.trim().isNotEmpty ? '$regN $regA'.trim() : null
+        : null;
+
+    return AsistenteItem(
+      id:                  json['id']      as String,
+      usuarioId:           usuarioId,
+      nombre:              nombre,
+      detalle:             detalle,
+      urlFoto:             urlFoto,
+      iniciales:           iniciales,
+      estatus:             json['estatus'] as String? ?? EstatusAsistencia.esperado,
+      esForaneo:           esForaneo,
+      eraEsperado:         eraEsperado,
+      horaEntrada:         _parsearHora(json['hora_entrada'] as String?),
+      horaSalida:          _parsearHora(json['hora_salida']  as String?),
+      registradoPorNombre: regNombre,
+    );
+  }
   const AsistenteItem({
     required this.id,
     required this.nombre,
@@ -73,61 +128,6 @@ class AsistenteItem extends Equatable {
     horaSalida:          horaSalida,
     registradoPorNombre: registradoPorNombre,
   );
-
-  factory AsistenteItem.desdeJson(
-    Map<String, dynamic> json, {
-    bool eraEsperado = false,
-  }) {
-    final usuarioId = json['usuario_id'] as String?;
-    final esForaneo = usuarioId == null;
-
-    final String  nombre;
-    final String? detalle;
-    final String? urlFoto;
-
-    if (!esForaneo) {
-      final u         = json['usuarios']               as Map<String, dynamic>?;
-      final pNombre   = u?['primer_nombre']             as String? ?? '';
-      final pApellido = u?['primer_apellido']           as String? ?? '';
-      nombre  = '$pNombre $pApellido'.trim();
-      detalle = u?['numero_identificacion']             as String?;
-      urlFoto = u?['url_avatar']                        as String?;
-    } else {
-      final vPN         = json['visitante_primer_nombre']   as String? ?? '';
-      final vPA         = json['visitante_primer_apellido'] as String? ?? '';
-      final nombreVisit = '$vPN $vPA'.trim();
-      nombre  = nombreVisit.isNotEmpty ? nombreVisit : 'Visitante';
-      detalle = json['visitante_contacto']                  as String?;
-      urlFoto = null;
-    }
-
-    final partes    = nombre.split(' ').where((p) => p.isNotEmpty).toList();
-    final iniciales = partes.length >= 2
-        ? '${partes[0][0]}${partes[1][0]}'.toUpperCase()
-        : nombre.isNotEmpty ? nombre[0].toUpperCase() : '?';
-
-    final reg   = json['registrador'] as Map<String, dynamic>?;
-    final regN  = reg?['primer_nombre']  as String? ?? '';
-    final regA  = reg?['primer_apellido'] as String? ?? '';
-    final regNombre = reg != null
-        ? '$regN $regA'.trim().isNotEmpty ? '$regN $regA'.trim() : null
-        : null;
-
-    return AsistenteItem(
-      id:                  json['id']      as String,
-      usuarioId:           usuarioId,
-      nombre:              nombre,
-      detalle:             detalle,
-      urlFoto:             urlFoto,
-      iniciales:           iniciales,
-      estatus:             json['estatus'] as String? ?? EstatusAsistencia.esperado,
-      esForaneo:           esForaneo,
-      eraEsperado:         eraEsperado,
-      horaEntrada:         _parsearHora(json['hora_entrada'] as String?),
-      horaSalida:          _parsearHora(json['hora_salida']  as String?),
-      registradoPorNombre: regNombre,
-    );
-  }
 
   static String? _parsearHora(String? isoString) {
     if (isoString == null) return null;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -529,7 +531,7 @@ class _BotonesAccion extends StatelessWidget {
           alPresionar: () async {
             await context.push(Rutas.escanearQrUsuarioUrl(evento.id));
             if (context.mounted) {
-              context.read<PanelControlCubit>().recargarSilencioso();
+              unawaited(context.read<PanelControlCubit>().recargarSilencioso());
             }
           },
         ),
@@ -540,7 +542,7 @@ class _BotonesAccion extends StatelessWidget {
           alPresionar: () async {
             await context.push(Rutas.buscarAsistenteUrl(evento.id));
             if (context.mounted) {
-              context.read<PanelControlCubit>().recargarSilencioso();
+              unawaited(context.read<PanelControlCubit>().recargarSilencioso());
             }
           },
         ),
@@ -750,7 +752,7 @@ class _FiltrosTabs extends StatelessWidget {
       return FiltroAsistentes.values
           .where((f) =>
               f != FiltroAsistentes.esperados &&
-              f != FiltroAsistentes.noEsperados)
+              f != FiltroAsistentes.noEsperados,)
           .toList();
     }
     return FiltroAsistentes.values.toList();

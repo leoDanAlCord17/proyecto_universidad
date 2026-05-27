@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -203,7 +205,7 @@ class _BotonCrearEvento extends StatelessWidget {
           if (!context.mounted) return;
           final authEstado = context.read<AuthCubit>().state;
           if (authEstado is Autenticado && authEstado.usuario.id != null) {
-            context.read<EventosCubit>().cargar(authEstado.usuario.id!);
+            unawaited(context.read<EventosCubit>().cargar(authEstado.usuario.id!));
           }
         },
         borderRadius:   BorderRadius.circular(12),

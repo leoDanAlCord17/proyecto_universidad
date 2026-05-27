@@ -7,9 +7,9 @@ import '../autenticacion/usuario.dart';
 import 'crear_usuario_estado.dart';
 
 class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
-  final AutenticacionRepositorio _repositorio;
 
   CrearUsuarioCubit(this._repositorio) : super(const CrearUsuarioInicial());
+  final AutenticacionRepositorio _repositorio;
 
   /// Retorna el correo de la sesión activa para pre-llenarlo en el formulario.
   String get correoSesion => _repositorio.obtenerSesionActual()?.user.email ?? '';
@@ -40,7 +40,7 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
         sesion.user.id, sesion.user.email ?? '', requiereRevision,
         primerNombre, primerApellido,
         segundoNombre, segundoApellido, numeroIdentificacion, telefono,
-      ));
+      ),);
       emit(const CrearUsuarioExito());
     } on FallaServidor catch (e) {
       emit(CrearUsuarioError(e.mensaje));
