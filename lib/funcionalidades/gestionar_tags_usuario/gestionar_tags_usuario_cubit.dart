@@ -35,7 +35,7 @@ class GestionarTagsUsuarioCubit extends Cubit<GestionarTagsUsuarioEstado> {
         principalesDisponibles: todosLosTags.where((t) =>  t.esPrincipal).toList(),
         secundariosDisponibles: todosLosTags.where((t) => !t.esPrincipal && !idsAsignados.contains(t.id)).toList(),
         maxSecundarios:         maxSecundarios,
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(GestionarTagsUsuarioError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {

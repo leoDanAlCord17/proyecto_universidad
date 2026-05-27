@@ -1,469 +1,178 @@
 # UniAsist
 
-## Guía de Desarrollo del Equipo
+Sistema de gestión de asistencia universitaria construido con Flutter + Supabase.
 
-### Flutter + Supabase · v2.0
+## Requisitos previos
 
----
-
-Este documento define cómo trabaja el equipo de desarrollo.
-Cómo se organiza el proyecto, cómo se escribe el código,
-qué está permitido, qué está prohibido y por qué.
-
-**Todo el equipo debe leerlo antes de escribir la primera línea de código.**
+- [Flutter](https://docs.flutter.dev/get-started/install) `>=3.0.0`
+- [Dart](https://dart.dev/get-dart) `>=3.0.0`
+- Una cuenta en [Supabase](https://supabase.com) con el proyecto configurado
+- Android Studio / Xcode para emuladores (opcional)
 
 ---
 
-# 1. Filosofía del Proyecto
+## Configuración del entorno
 
-Antes de entender las reglas técnicas, hay que entender el por qué de cada decisión.
-Este proyecto se construye con tres principios que guían todo.
+### 1. Clonar el repositorio
 
-## 1.1 Código que se entienda, no solo que funcione
+```bash
+git clone <url-del-repo>
+cd uniasist
+```
 
-Un código que funciona hoy pero que nadie entiende mañana es una deuda.
-Cada línea debe poder ser leída por cualquier persona del equipo sin tener que preguntar qué hace.
+### 2. Crear el archivo de variables de entorno
 
-## 1.2 Cada parte tiene un único trabajo
+```bash
+cp .env.example .env
+```
 
-La pantalla muestra datos.
-El repositorio habla con Supabase.
-El Cubit maneja el estado.
+Edita `.env` con los valores de tu proyecto Supabase:
 
-Ninguno hace el trabajo del otro.
-Si un archivo hace demasiadas cosas, está mal ubicado.
+```
+SUPABASE_URL=https://tu-proyecto.supabase.co
+SUPABASE_ANON_KEY=tu_anon_key_aqui
 
-## 1.3 Simple antes que perfecto
+# Sentry es opcional — déjalo vacío para solo loggear en consola
+SENTRY_DSN=
+```
 
-Esta guía usa una arquitectura simplificada adaptada a un equipo de 3 personas con nivel intermedio.
-No es la versión más pura del libro de texto, es la versión que funciona bien para este equipo sin volverse una carga.
+> Puedes encontrar los valores de Supabase en **Supabase → Settings → API**.
+
+### 3. Instalar dependencias
+
+```bash
+flutter pub get
+```
+
+### 4. Ejecutar la app
+
+```bash
+# Modo dev — carga credenciales desde assets/.env vía flutter_dotenv
+flutter run
+
+# Modo dev con flavor explícito (equivalente al anterior)
+flutter run --dart-define=ENTORNO=dev
+
+# Modo producción — credenciales inyectadas en compile-time (más seguro)
+# Requiere eliminar ".env" de la sección assets en pubspec.yaml antes del build
+flutter run --dart-define-from-file=.env --dart-define=ENTORNO=prod
+```
+
+> **Nota de seguridad**: En debug el `.env` se incrusta en el APK/IPA en texto plano.
+> Para producción, usa `--dart-define-from-file` y elimina `- .env` de los assets en `pubspec.yaml`.
 
 ---
 
-# 2. Estructura del Proyecto
+## Estructura del proyecto
 
-El proyecto está organizado por funcionalidades.
-Cada pantalla o módulo de la app tiene su propia carpeta con todo lo que necesita adentro.
+```
+lib/
+├── compartido/          # Utilidades, widgets y errores reutilizables
+│   ├── errores.dart     # Excepciones tipadas de la app
+│   ├── logger.dart      # Logger global
+│   ├── traductor_errores.dart
+│   └── widgets/
+├── configuracion/       # Router, tema, colores, inyección de dependencias
+│   ├── entorno.dart     # Sistema de flavors (dev / staging / prod)
+│   └── ...
+└── funcionalidades/     # Una carpeta por feature (BLoC + repositorio + modelos)
+    ├── autenticacion/
+    ├── eventos/
+    ├── panel_control_evento/
+    ├── notificaciones/
+    └── ...
 
-No hay que saltar entre 5 carpetas distintas para entender cómo funciona una sola cosa.
-
-> 💡 Cuando abres la carpeta `eventos` encuentras absolutamente todo lo de eventos en un solo lugar.
-
----
-
-## 2.1 Árbol Principal de Carpetas
-
-```text
-uniasist/
-├── lib/
-│   ├── main.dart
-│   ├── app.dart
-│   │
-│   ├── configuracion/
-│   │   ├── rutas.dart
-│   │   ├── tema.dart
-│   │   └── dependencias.dart
-│   │
-│   ├── compartido/
-│   │   ├── constantes.dart
-│   │   ├── errores.dart
-│   │   └── widgets/
-│   │       ├── boton_app.dart
-│   │       ├── avatar_usuario.dart
-│   │       ├── insignia_estado.dart
-│   │       ├── pastilla_estadistica.dart
-│   │       ├── esqueleto_carga.dart
-│   │       └── estado_vacio.dart
-│   │
-│   └── funcionalidades/
-│       ├── autenticacion/
-│       ├── eventos/
-│       ├── asistencia/
-│       ├── qr/
-│       ├── roles/
-│       ├── reportes/
-│       └── inicio/
-│
-├── test/
-└── supabase/
-    ├── migrations/
-    └── seed.sql
+test/
+├── helpers.dart         # Mocks y fixtures compartidos
+├── unidad/
+│   ├── cubits/          # Tests de lógica de negocio (BLoC)
+│   ├── modelos/         # Tests de modelos y parsers
+│   └── utilidades/      # Tests de utilidades puras
+└── widgets/             # Tests de pantallas y componentes UI
 ```
 
 ---
 
-## 2.2 Regla de Widgets
+## Comandos frecuentes
 
-### Widget exclusivo
+```bash
+# Ejecutar todos los tests
+flutter test
 
-Si un widget se usa solo dentro de una funcionalidad:
+# Tests con reporte de cobertura
+flutter test --coverage
 
-```text
-funcionalidades/modulo/widgets/
+# Análisis estático (debe retornar 0 issues)
+flutter analyze
+
+# Formatear código
+dart format lib/ test/
+
+# Aplicar correcciones automáticas del linter
+dart fix --apply
+
+# Build de producción (Android)
+flutter build apk --dart-define-from-file=.env --dart-define=ENTORNO=prod --release
+
+# Build de producción (iOS)
+flutter build ipa --dart-define-from-file=.env --dart-define=ENTORNO=prod --release
 ```
-
-### Widget compartido
-
-Si se usa en más de una funcionalidad:
-
-```text
-compartido/widgets/
-```
-
-> ⚠️ Nunca al revés.
-
----
-
-# 3. Flujo del Código
-
-El flujo siempre va en una sola dirección:
-
-```text
-Pantalla → Cubit → Repositorio → Supabase
-```
-
-## Reglas absolutas
-
-* La pantalla NO llama al repositorio directamente
-* El Cubit NO llama a Supabase directamente
-* El repositorio NO sabe que existe una pantalla
-
----
-
-# 4. Convenciones de Nombres
-
----
-
-## 4.1 Archivos
-
-Todos usan `snake_case`.
-
-| Tipo        | Ejemplo                     |
-| ----------- | --------------------------- |
-| Pantalla    | eventos_lista_pantalla.dart |
-| Cubit       | eventos_lista_cubit.dart    |
-| Estado      | eventos_lista_estado.dart   |
-| Repositorio | eventos_repositorio.dart    |
-| Modelo      | evento.dart                 |
-| Widget      | tarjeta_evento.dart         |
-
----
-
-## 4.2 Clases
-
-Todas usan `PascalCase`.
-
-| Tipo        | Ejemplo              |
-| ----------- | -------------------- |
-| Modelo      | Evento               |
-| Repositorio | EventosRepositorio   |
-| Cubit       | EventosListaCubit    |
-| Estado      | EventosListaEstado   |
-| Pantalla    | EventosListaPantalla |
-| Widget      | TarjetaEvento        |
-| Error       | FallaServidor        |
-
----
-
-## 4.3 Variables
-
-Todas usan `camelCase`.
-Siempre descriptivas.
-Siempre en español.
-
-### Correcto
-
-```dart
-final String idEvento;
-final List<Evento> listaEventos;
-final bool estaCargando;
-```
-
-### Incorrecto
-
-```dart
-final String id;
-final var data;
-final bool flag;
-```
-
----
-
-## 4.4 Booleanos
-
-Siempre empiezan con:
-
-* esta
-* es
-* tiene
-* puede
-* debe
-
-### Correcto
-
-```dart
-bool estaCargando;
-bool esAdministrador;
-bool puedeMarcarSalida;
-```
-
----
-
-# 5. Comentarios
-
-Los comentarios explican el **por qué**, no el **qué**.
-
-## Correcto
-
-```dart
-// Solo se puede marcar salida si ya existe hora de entrada
-```
-
-## Incorrecto
-
-```dart
-// Incrementa el contador
-contador++;
-```
-
----
-
-# 6. Widgets Reutilizables
-
-## Reglas
-
-* Solo reciben datos y funciones
-* No acceden a Cubits
-* No acceden a Repositorios
-* Los parámetros obligatorios usan `required`
-* Los opcionales tienen valor por defecto
-* No contienen lógica de negocio
-
----
-
-# 7. Manejo de Estado con Cubit
-
-Cada pantalla tiene su propio Cubit.
-
-## Ejemplos
-
-| Cubit              | Pantalla             |
-| ------------------ | -------------------- |
-| EventosListaCubit  | Lista de eventos     |
-| EventoDetalleCubit | Detalle del evento   |
-| CrearEventoCubit   | Crear evento         |
-| AuthCubit          | Autenticación global |
-
----
-
-# 8. Integración con Supabase
-
----
-
-## 8.1 Inicialización
-
-Supabase se inicializa una sola vez en `main.dart`.
-
-Las credenciales siempre vienen de `.env`.
-
-### Nunca hacer esto
-
-```dart
-final url = 'https://proyecto.supabase.co';
-```
-
----
-
-## 8.2 Regla Absoluta
-
-```text
-supabase.from()
-```
-
-solo puede existir dentro de archivos:
-
-```text
-*_repositorio.dart
-```
-
----
-
-# 9. Buenas Prácticas
-
-## Siempre usar constantes
-
-### Correcto
-
-```dart
-_supabase.from(TablasSupabase.eventos)
-```
-
-### Incorrecto
-
-```dart
-_supabase.from('eventos')
-```
-
----
-
-## Manejo de null
-
-### Correcto
-
-```dart
-final nombre = usuario.nombre ?? 'Sin nombre';
-```
-
-### Incorrecto
-
-```dart
-final nombre = usuario.nombre!;
-```
-
----
-
-# 10. Estrictamente Prohibido
 
 ---
 
 ## Arquitectura
 
-🚫 Llamar Supabase fuera de repositorios
-🚫 Lógica de negocio en pantallas
-🚫 Importar entre funcionalidades
+La app sigue la arquitectura **Feature-first** con el patrón **BLoC (Cubit)**:
 
----
-
-## Código
-
-🚫 `print()` en producción
-🚫 `catch {}` vacío
-🚫 Credenciales en código
-🚫 Métodos de más de 30 líneas
-🚫 Widgets con `build()` de más de 100 líneas
-
----
-
-## Trabajo en Equipo
-
-🚫 Confirmar directamente en `main`
-🚫 Aprobar tu propio PR
-🚫 Subir `.env` a GitHub
-🚫 Mensajes como `cambios`, `update`, `arreglos`
-
----
-
-# 11. Flujo de Trabajo con Git
-
----
-
-## Ramas oficiales
-
-| Rama       | Uso                    |
-| ---------- | ---------------------- |
-| main       | Código estable         |
-| desarrollo | Integración del equipo |
-| dev-nombre | Rama personal          |
-
----
-
-## Formato de commits
-
-| Prefijo      | Uso                 |
-| ------------ | ------------------- |
-| agrego:      | nueva funcionalidad |
-| modifico:    | cambio existente    |
-| corrigo:     | solución de error   |
-| elimino:     | borrar código       |
-| refactorizo: | reorganizar         |
-
-### Correcto
-
-```bash
-git commit -m "agrego: pantalla de creación de evento"
+```
+Pantalla → BlocBuilder → Cubit → Repositorio → Supabase
 ```
 
-### Incorrecto
+- **Cubit**: lógica de negocio y manejo de estados
+- **Repositorio**: acceso a datos (Supabase), convierte errores técnicos con `TraductorErrores`
+- **Estado**: sealed classes con variantes tipadas (`Inicial`, `Cargando`, `Cargado`, `Error`)
+- **GetIt**: inyección de dependencias, configurada en `configuracion/dependencias.dart`
 
-```bash
-git commit -m "cambios"
-```
+### Sistema de flavors
 
----
+El entorno se controla con `--dart-define=ENTORNO=<valor>` en tiempo de compilación:
 
-# 12. Seguridad
+| Valor      | Uso                                      |
+|------------|------------------------------------------|
+| `dev`      | Desarrollo local (valor por defecto)     |
+| `staging`  | QA / pruebas pre-producción              |
+| `prod`     | Producción — activa Sentry si hay DSN    |
 
----
+### Manejo de errores
 
-## Variables de Entorno
+Todos los errores pasan por excepciones tipadas antes de llegar a la UI:
 
-### .env
-
-```env
-SUPABASE_URL=
-SUPABASE_ANON_KEY=
-```
-
-### .gitignore
-
-```gitignore
-.env
-*.env
-!.env.ejemplo
-```
+| Excepción            | Cuándo se usa                          |
+|----------------------|----------------------------------------|
+| `FallaServidor`      | Errores de Supabase/PostgreSQL         |
+| `FallaAutenticacion` | Errores de login/registro              |
+| `FallaInesperada`    | Errores de red u otros inesperados     |
 
 ---
 
-## RLS (Row Level Security)
+## CI/CD
 
-Debe estar activado en todas las tablas desde el primer día.
+El proyecto incluye un workflow de GitHub Actions (`.github/workflows/ci.yml`) que se ejecuta en cada push y pull request:
 
-> 🔒 Nunca se desactiva, ni siquiera para pruebas.
-
----
-
-# 13. Checklist Antes de Revisión
-
-## Código
-
-* [ ] No hay Supabase fuera de repositorios
-* [ ] No hay lógica de negocio en pantallas
-* [ ] No hay `print()`
-* [ ] No hay `catch` vacíos
-* [ ] No hay credenciales en código
-* [ ] Métodos menores a 30 líneas
-
-## Nombres
-
-* [ ] Archivos en snake_case
-* [ ] Clases en PascalCase
-* [ ] Variables en camelCase
-* [ ] Booleanos correctos
-* [ ] Métodos con verbo
-
-## Git
-
-* [ ] Commit correcto
-* [ ] PR hacia desarrollo
-* [ ] `.env` no incluido
+1. **Formato** — verifica que el código esté bien formateado
+2. **Análisis** — ejecuta `flutter analyze`
+3. **Tests** — ejecuta la suite completa con cobertura mínima del 60 %
 
 ---
 
-# 14. Glosario
+## Variables de entorno
 
-| Término        | Significado                     |
-| -------------- | ------------------------------- |
-| Cubit          | Maneja estado de una pantalla   |
-| Estado sellado | Fuerza manejar todos los casos  |
-| Repositorio    | Único que habla con Supabase    |
-| Modelo         | Representación de una tabla     |
-| RLS            | Seguridad por filas en Supabase |
-| snake_case     | nombre_de_archivo               |
-| PascalCase     | NombreDeClase                   |
-| camelCase      | nombreDeVariable                |
+| Variable             | Descripción                             | Dónde obtenerla                |
+|----------------------|-----------------------------------------|--------------------------------|
+| `SUPABASE_URL`       | URL del proyecto Supabase               | Supabase → Settings → API      |
+| `SUPABASE_ANON_KEY`  | Clave pública anónima de Supabase       | Supabase → Settings → API      |
+| `SENTRY_DSN`         | DSN para reporte de errores (opcional)  | Sentry → Settings → Client Keys|
+| `ENTORNO`            | Flavor de la app: `dev`/`staging`/`prod`| Se pasa con `--dart-define`    |
 
----
-
-# UniAsist · Guía de Desarrollo · v2.0
-
-**Documento de uso interno del equipo de desarrollo**
+> **Nunca subas `.env` al repositorio.** Está en `.gitignore`.  
+> Para CI/CD, inyecta los valores como secrets del repositorio en GitHub.

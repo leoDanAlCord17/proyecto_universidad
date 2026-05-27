@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -72,9 +74,11 @@ class _CrearRolPantallaState extends State<CrearRolPantalla> {
       );
       if (confirmo != true || !context.mounted) return;
     }
-    context.read<CrearRolCubit>().guardar(
-      nombre:      _nombreCtrl.text.trim(),
-      descripcion: _descripcionCtrl.text.trim(),
+    unawaited(
+      context.read<CrearRolCubit>().guardar(
+        nombre:      _nombreCtrl.text.trim(),
+        descripcion: _descripcionCtrl.text.trim(),
+      ),
     );
   }
 
@@ -82,7 +86,7 @@ class _CrearRolPantallaState extends State<CrearRolPantalla> {
   Widget build(BuildContext context) {
     return BlocConsumer<CrearRolCubit, CrearRolEstado>(
       listener: _escucharEstado,
-      builder:  (context, estado) => _construirVista(context, estado),
+      builder:  _construirVista,
     );
   }
 
@@ -109,7 +113,7 @@ class _CrearRolPantallaState extends State<CrearRolPantalla> {
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontSize: 20, fontWeight: FontWeight.w700,
                         color: ColoresApp.textoPrimario,
-                      )),
+                      ),),
                   ],
                 ),
               ),
@@ -117,7 +121,7 @@ class _CrearRolPantallaState extends State<CrearRolPantalla> {
             Expanded(child: _Cuerpo(estado: estado, nombreCtrl: _nombreCtrl, descripcionCtrl: _descripcionCtrl)),
             _BarraInferior(estado: estado, alGuardar: () {
               if (estado is CrearRolCargado) _alGuardar(context, estado);
-            }),
+            },),
           ],
         ),
       ),
@@ -172,7 +176,7 @@ class _Formulario extends StatelessWidget {
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: ColoresApp.textoTerciario, letterSpacing: 0.8,
             fontSize: 13, fontWeight: FontWeight.w900,
-          )),
+          ),),
         const SizedBox(height: 12),
         ...estado.permisosVisibles.map((p) => Padding(
           padding: const EdgeInsets.only(bottom: 10),
@@ -181,7 +185,7 @@ class _Formulario extends StatelessWidget {
             estaAgregado:  estado.permisosSeleccionadosIds.contains(p.id),
             alToggle:      () => context.read<CrearRolCubit>().togglePermiso(p.id),
           ),
-        )),
+        ),),
       ],
     );
   }
@@ -213,7 +217,7 @@ class _SeccionInfo extends StatelessWidget {
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: ColoresApp.acento, letterSpacing: 0.8,
               fontSize: 14, fontWeight: FontWeight.w800,
-            )),
+            ),),
           const SizedBox(height: 16),
           CampoTextoApp(etiqueta: 'Nombre*',     hintText: 'Ej. Coordinador', controller: nombreCtrl),
           const SizedBox(height: 16),
@@ -253,13 +257,13 @@ class _ItemPermiso extends StatelessWidget {
                 Text(permiso.nombre,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w600, color: ColoresApp.textoPrimario, fontSize: 16,
-                  )),
+                  ),),
                 if (permiso.descripcion.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(permiso.descripcion,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: ColoresApp.textoSecundario, fontSize: 13,
-                    )),
+                    ),),
                 ],
               ],
             ),
@@ -295,7 +299,7 @@ class _BotonAgregar extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: const Text('Agregar',
-            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),),
         ),
       ),
     );
@@ -325,7 +329,7 @@ class _BotonQuitar extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: const Text('Quitar',
-            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),),
         ),
       ),
     );

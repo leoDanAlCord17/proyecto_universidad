@@ -3,6 +3,22 @@ import 'package:equatable/equatable.dart';
 import '../../compartido/constantes.dart';
 
 class HistorialItem extends Equatable {
+
+  factory HistorialItem.desdeJson(Map<String, dynamic> json) {
+    final e = json['eventos'] as Map<String, dynamic>? ?? {};
+    return HistorialItem(
+      id:               json['id']      as String,
+      eventoId:         json['evento_id'] as String,
+      eventoTitulo:     e['titulo']     as String? ?? 'Evento sin título',
+      eventoLugar:      e['lugar']      as String?,
+      eventoFechaInicio: e['fecha_inicio'] != null
+          ? DateTime.tryParse(e['fecha_inicio'] as String)
+          : null,
+      estatus:      json['estatus']     as String? ?? EstatusAsistencia.ausente,
+      horaEntrada:  _parsearHora(json['hora_entrada'] as String?),
+      horaSalida:   _parsearHora(json['hora_salida']  as String?),
+    );
+  }
   const HistorialItem({
     required this.id,
     required this.eventoId,
@@ -39,22 +55,6 @@ class HistorialItem extends Equatable {
     if (eventoFechaInicio == null) return '';
     final d = eventoFechaInicio!;
     return '${d.day} ${_meses[d.month - 1]} ${d.year}';
-  }
-
-  factory HistorialItem.desdeJson(Map<String, dynamic> json) {
-    final e = json['eventos'] as Map<String, dynamic>? ?? {};
-    return HistorialItem(
-      id:               json['id']      as String,
-      eventoId:         json['evento_id'] as String,
-      eventoTitulo:     e['titulo']     as String? ?? 'Evento sin título',
-      eventoLugar:      e['lugar']      as String?,
-      eventoFechaInicio: e['fecha_inicio'] != null
-          ? DateTime.tryParse(e['fecha_inicio'] as String)
-          : null,
-      estatus:      json['estatus']     as String? ?? EstatusAsistencia.ausente,
-      horaEntrada:  _parsearHora(json['hora_entrada'] as String?),
-      horaSalida:   _parsearHora(json['hora_salida']  as String?),
-    );
   }
 
   static String? _parsearHora(String? isoString) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,7 +35,7 @@ class _RolesPantallaState extends State<RolesPantalla> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RolesCubit, RolesEstado>(
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 
@@ -98,7 +100,7 @@ class _BotonCrearRol extends StatelessWidget {
       child: InkWell(
         onTap: () async {
           await context.push(Rutas.crearRol);
-          if (context.mounted) context.read<RolesCubit>().cargarRoles();
+          if (context.mounted) unawaited(context.read<RolesCubit>().cargarRoles());
         },
         borderRadius:   BorderRadius.circular(12),
         splashColor:    Colors.white.withValues(alpha: 0.3),
@@ -179,7 +181,7 @@ class _Lista extends StatelessWidget {
         ...items.map((r) => Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child:   _TarjetaRol(rol: r),
-        )),
+        ),),
       ],
     );
   }
@@ -239,8 +241,8 @@ class _TarjetaRol extends StatelessWidget {
               ? const _InsigniaSistema()
               : _BotonEditar(alPresionar: () async {
                   await context.push(Rutas.editarRolUrl(rol.id));
-                  if (context.mounted) context.read<RolesCubit>().cargarRoles();
-                }),
+                  if (context.mounted) unawaited(context.read<RolesCubit>().cargarRoles());
+                },),
         ],
       ),
     );

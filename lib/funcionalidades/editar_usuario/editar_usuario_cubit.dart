@@ -22,7 +22,7 @@ class EditarUsuarioCubit extends Cubit<EditarUsuarioEstado> {
         numeroIdentificacionInicial: data['numero_identificacion'] as String?,
         correoInicial:               data['correo']                as String,
         telefonoInicial:             data['telefono']              as String?,
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(EditarUsuarioError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {

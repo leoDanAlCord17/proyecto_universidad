@@ -1,4 +1,15 @@
 class Notificacion {
+
+  factory Notificacion.desdeJson(Map<String, dynamic> json) => Notificacion(
+    id:          json['id']           as String,
+    titulo:      json['titulo']       as String,
+    cuerpo:      json['cuerpo']       as String,
+    tipo:        json['tipo']         as String,
+    leida:       json['leida']        as bool,
+    creadoEn:    DateTime.parse(json['creado_en'] as String).toLocal(),
+    entidadId:   json['entidad_id']   as String?,
+    entidadTipo: json['entidad_tipo'] as String?,
+  );
   const Notificacion({
     required this.id,
     required this.titulo,
@@ -18,17 +29,6 @@ class Notificacion {
   final DateTime creadoEn;
   final String?  entidadId;
   final String?  entidadTipo;
-
-  factory Notificacion.desdeJson(Map<String, dynamic> json) => Notificacion(
-    id:          json['id']           as String,
-    titulo:      json['titulo']       as String,
-    cuerpo:      json['cuerpo']       as String,
-    tipo:        json['tipo']         as String,
-    leida:       json['leida']        as bool,
-    creadoEn:    DateTime.parse(json['creado_en'] as String).toLocal(),
-    entidadId:   json['entidad_id']   as String?,
-    entidadTipo: json['entidad_tipo'] as String?,
-  );
 
   Notificacion comoLeida() => Notificacion(
     id:          id,

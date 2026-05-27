@@ -54,7 +54,7 @@ class _BorradoresPantallaState extends State<BorradoresPantalla> {
           context.read<BorradoresCubit>().limpiarError();
         }
       },
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 
@@ -78,7 +78,7 @@ class _BorradoresPantallaState extends State<BorradoresPantalla> {
                     const BotonRegresar(),
                     const SizedBox(width: 12),
                     Text('Borradores',
-                        style: Theme.of(context).textTheme.headlineSmall),
+                        style: Theme.of(context).textTheme.headlineSmall,),
                   ],
                 ),
               ),

@@ -3,6 +3,35 @@ import 'package:equatable/equatable.dart';
 import '../../compartido/constantes.dart';
 
 class Evento extends Equatable {
+
+  factory Evento.desdeJson(Map<String, dynamic> json) => Evento(
+        id:                      json['id']                         as String,
+        titulo:                  json['titulo']                     as String,
+        alcance:                 json['alcance']                    as String? ?? AlcanceEvento.general,
+        descripcion:             json['descripcion']                as String?,
+        lugar:                   json['lugar']                      as String?,
+        tipoEventoId:            json['tipo_evento_id']             as String?,
+        fechaInicio:             json['fecha_inicio'] != null
+            ? DateTime.parse(json['fecha_inicio'] as String)
+            : null,
+        fechaFin:                json['fecha_fin'] != null
+            ? DateTime.parse(json['fecha_fin'] as String)
+            : null,
+        horaInicio:              json['hora_inicio']                as String?,
+        horaFin:                 json['hora_fin']                   as String?,
+        modoRegistro:            json['modo_registro']              as String,
+        estatus:                 json['estatus']                    as String,
+        creadoPor:               json['creado_por']                 as String?,
+        creadoEn:                DateTime.parse(json['creado_en']   as String),
+        actualizadoEn:           DateTime.parse(json['actualizado_en'] as String),
+        permiteQrEvento:         (json['permite_qr_evento']        as bool?) ?? true,
+        permiteQrUsuario:        (json['permite_qr_usuario']       as bool?) ?? true,
+        permiteManualAdmin:      (json['permite_manual_admin']     as bool?) ?? true,
+        requiereCicloCompleto:   (json['requiere_ciclo_completo']  as bool?) ?? false,
+        permiteSalidaAnticipada: (json['permite_salida_anticipada'] as bool?) ?? false,
+        marcarAusentesAuto:      (json['marcar_ausentes_auto']     as bool?) ?? false,
+        permiteForaneos:         (json['permite_foraneos']         as bool?) ?? false,
+      );
   const Evento({
     required this.id,
     required this.titulo,
@@ -50,35 +79,6 @@ class Evento extends Equatable {
   final bool      permiteSalidaAnticipada;
   final bool      marcarAusentesAuto;
   final bool      permiteForaneos;
-
-  factory Evento.desdeJson(Map<String, dynamic> json) => Evento(
-        id:                      json['id']                         as String,
-        titulo:                  json['titulo']                     as String,
-        alcance:                 json['alcance']                    as String? ?? AlcanceEvento.general,
-        descripcion:             json['descripcion']                as String?,
-        lugar:                   json['lugar']                      as String?,
-        tipoEventoId:            json['tipo_evento_id']             as String?,
-        fechaInicio:             json['fecha_inicio'] != null
-            ? DateTime.parse(json['fecha_inicio'] as String)
-            : null,
-        fechaFin:                json['fecha_fin'] != null
-            ? DateTime.parse(json['fecha_fin'] as String)
-            : null,
-        horaInicio:              json['hora_inicio']                as String?,
-        horaFin:                 json['hora_fin']                   as String?,
-        modoRegistro:            json['modo_registro']              as String,
-        estatus:                 json['estatus']                    as String,
-        creadoPor:               json['creado_por']                 as String?,
-        creadoEn:                DateTime.parse(json['creado_en']   as String),
-        actualizadoEn:           DateTime.parse(json['actualizado_en'] as String),
-        permiteQrEvento:         (json['permite_qr_evento']        as bool?) ?? true,
-        permiteQrUsuario:        (json['permite_qr_usuario']       as bool?) ?? true,
-        permiteManualAdmin:      (json['permite_manual_admin']     as bool?) ?? true,
-        requiereCicloCompleto:   (json['requiere_ciclo_completo']  as bool?) ?? false,
-        permiteSalidaAnticipada: (json['permite_salida_anticipada'] as bool?) ?? false,
-        marcarAusentesAuto:      (json['marcar_ausentes_auto']     as bool?) ?? false,
-        permiteForaneos:         (json['permite_foraneos']         as bool?) ?? false,
-      );
 
   Map<String, dynamic> aJson() => {
         'titulo':                    titulo,
@@ -140,6 +140,12 @@ class GrupoEvento extends Equatable {
 // ─── Evento con sus grupos de audiencia ──────────────────────────────────────
 
 class EventoConGrupos extends Equatable {
+
+  factory EventoConGrupos.desdeJson(Map<String, dynamic> json) {
+    final filas  = json['evento_grupos_tags'] as List? ?? [];
+    final grupos = _construirGrupos(filas);
+    return EventoConGrupos(evento: Evento.desdeJson(json), grupos: grupos);
+  }
   const EventoConGrupos({
     required this.evento,
     required this.grupos,
@@ -153,18 +159,12 @@ class EventoConGrupos extends Equatable {
   List<String> get nombresParaBusqueda =>
       grupos.expand((g) => g.nombresParaBusqueda).toList();
 
-  factory EventoConGrupos.desdeJson(Map<String, dynamic> json) {
-    final filas  = json['evento_grupos_tags'] as List? ?? [];
-    final grupos = _construirGrupos(filas);
-    return EventoConGrupos(evento: Evento.desdeJson(json), grupos: grupos);
-  }
-
   static List<GrupoEvento> _construirGrupos(List<dynamic> filas) {
     final Map<int, String>         principalesId     = {};
     final Map<int, List<String>>   secundariosIds    = {};
     final Map<int, List<String>>   nombresPorGrupo   = {};
 
-    for (final fila in filas) {
+    for (final fila in filas.cast<Map<String, dynamic>>()) {
       final grupoIndex = fila['grupo_index'] as int;
       final tagId      = fila['tag_id']      as String;
       final tagData    = fila['tags']         as Map<String, dynamic>?;
@@ -186,7 +186,7 @@ class EventoConGrupos extends Equatable {
       tagPrincipalId:      e.value,
       tagsSecundariosIds:  secundariosIds[e.key]  ?? [],
       nombresParaBusqueda: nombresPorGrupo[e.key] ?? [],
-    )).toList();
+    ),).toList();
   }
 
   @override

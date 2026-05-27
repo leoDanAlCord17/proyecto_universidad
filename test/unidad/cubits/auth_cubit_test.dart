@@ -19,6 +19,9 @@ void main() {
     mockUser    = MockUser();
     when(() => mockUser.id).thenReturn('auth-id-1');
     when(() => sesion.user).thenReturn(mockUser);
+    // AuthCubit constructor suscribe inmediatamente a este stream
+    when(() => repositorio.flujoRecuperacionContrasena())
+        .thenAnswer((_) => const Stream.empty());
   });
 
   group('AuthCubit', () {
@@ -46,6 +49,10 @@ void main() {
         when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
         when(() => repositorio.obtenerPerfil(any()))
             .thenAnswer((_) async => usuarioEjemplo);
+        when(() => repositorio.actualizarTokenSesion(any(), any()))
+            .thenAnswer((_) async {});
+        when(() => repositorio.flujoTokenSesion(any()))
+            .thenAnswer((_) => const Stream.empty());
         return AuthCubit(repositorio);
       },
       act: (c) => c.verificarSesion(),
@@ -64,6 +71,10 @@ void main() {
         when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
         when(() => repositorio.obtenerPerfil(any()))
             .thenAnswer((_) async => usuarioEjemplo);
+        when(() => repositorio.actualizarTokenSesion(any(), any()))
+            .thenAnswer((_) async {});
+        when(() => repositorio.flujoTokenSesion(any()))
+            .thenAnswer((_) => const Stream.empty());
         return AuthCubit(repositorio);
       },
       act: (c) => c.verificarSesion(),

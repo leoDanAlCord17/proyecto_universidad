@@ -270,7 +270,7 @@ class _BarraTitulo extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.tune_rounded,
-                      color: totalActivos > 0 ? ColoresApp.blanco : ColoresApp.acento, size: 15),
+                      color: totalActivos > 0 ? ColoresApp.blanco : ColoresApp.acento, size: 15,),
                     const SizedBox(width: 4),
                     Text(
                       totalActivos > 0 ? 'Filtros ($totalActivos)' : 'Filtros',
@@ -498,15 +498,15 @@ class _ChipsFiltrosActivos extends StatelessWidget {
         for (final o in filtros.tiposSeleccionados)
           _ChipFiltro(prefijo: 'Tipo',    nombre: o.nombre,
             color: ColoresApp.acento, fondo: ColoresApp.acentoClaro,
-            alQuitar: () => onQuitarTipo(o)),
+            alQuitar: () => onQuitarTipo(o),),
         for (final o in filtros.creadoresSeleccionados)
           _ChipFiltro(prefijo: 'Creador', nombre: o.nombre,
             color: ColoresApp.teal, fondo: ColoresApp.tealClaro,
-            alQuitar: () => onQuitarCreador(o)),
+            alQuitar: () => onQuitarCreador(o),),
         for (final o in filtros.tagsSeleccionados)
           _ChipFiltro(prefijo: 'Tag',     nombre: o.nombre,
             color: ColoresApp.ambar, fondo: ColoresApp.ambarClaro,
-            alQuitar: () => onQuitarTag(o)),
+            alQuitar: () => onQuitarTag(o),),
       ],
     );
   }
@@ -540,9 +540,9 @@ class _ChipFiltro extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('$prefijo: ',
-            style: TextStyle(fontSize: 12, color: color.withValues(alpha: 0.7), fontWeight: FontWeight.w500)),
+            style: TextStyle(fontSize: 12, color: color.withValues(alpha: 0.7), fontWeight: FontWeight.w500),),
           Text(nombre,
-            style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w700)),
+            style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w700),),
           const SizedBox(width: 4),
           Material(
             color:        Colors.transparent,
@@ -575,22 +575,22 @@ class _SeccionKpis extends StatelessWidget {
         Row(children: [
           Expanded(child: _TarjetaKpi(icono: Icons.event_outlined,
             valor: '${resumen.totalEventos}', label: 'Eventos',
-            color: ColoresApp.acento, fondo: ColoresApp.acentoClaro)),
+            color: ColoresApp.acento, fondo: ColoresApp.acentoClaro,),),
           const SizedBox(width: 12),
           Expanded(child: _TarjetaKpi(icono: Icons.people_outline_rounded,
             valor: '${resumen.totalAsistencias}', label: 'Asistencias',
-            color: ColoresApp.verde, fondo: ColoresApp.verdeClaro)),
-        ]),
+            color: ColoresApp.verde, fondo: ColoresApp.verdeClaro,),),
+        ],),
         const SizedBox(height: 12),
         Row(children: [
           Expanded(child: _TarjetaKpi(icono: Icons.percent_rounded,
             valor: '${resumen.tasaAsistencia.toStringAsFixed(1)}%', label: 'Tasa asistencia',
-            color: ColoresApp.ambar, fondo: ColoresApp.ambarClaro)),
+            color: ColoresApp.ambar, fondo: ColoresApp.ambarClaro,),),
           const SizedBox(width: 12),
           Expanded(child: _TarjetaKpi(icono: Icons.person_outline_rounded,
             valor: '${resumen.usuariosActivos}', label: 'Usuarios activos',
-            color: ColoresApp.teal, fondo: ColoresApp.tealClaro)),
-        ]),
+            color: ColoresApp.teal, fondo: ColoresApp.tealClaro,),),
+        ],),
       ],
     );
   }
@@ -632,11 +632,11 @@ class _TarjetaKpi extends StatelessWidget {
           const SizedBox(height: 10),
           Text(valor, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             fontSize: 22, fontWeight: FontWeight.w800, color: ColoresApp.textoPrimario,
-          )),
+          ),),
           const SizedBox(height: 2),
           Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: ColoresApp.textoTerciario,
-          )),
+          ),),
         ],
       ),
     );
@@ -676,7 +676,7 @@ class _TarjetaGrafica extends StatelessWidget {
             const SizedBox(height: 2),
             Text(subtitulo!, style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: ColoresApp.textoTerciario,
-            )),
+            ),),
           ],
           const SizedBox(height: 16),
           altura != null ? SizedBox(height: altura!, child: child) : child,
@@ -701,16 +701,16 @@ class _GraficaEmbudo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _FilaEmbudo(etiqueta: 'Convocados',  cantidad: m.total,       pct: 1.0,
-            color: ColoresApp.acento),
+            color: ColoresApp.acento,),
         const SizedBox(height: 10),
         _FilaEmbudo(etiqueta: 'Llegaron',    cantidad: m.llegaron,    pct: m.total == 0 ? 0 : m.llegaron / m.total,
-            color: ColoresApp.verde),
+            color: ColoresApp.verde,),
         const SizedBox(height: 10),
         _FilaEmbudo(etiqueta: 'Completaron', cantidad: m.completaron, pct: m.total == 0 ? 0 : m.completaron / m.total,
-            color: ColoresApp.teal),
+            color: ColoresApp.teal,),
         const SizedBox(height: 10),
         _FilaEmbudo(etiqueta: 'No llegaron', cantidad: m.ausentes,    pct: m.total == 0 ? 0 : m.ausentes / m.total,
-            color: ColoresApp.rojo),
+            color: ColoresApp.rojo,),
       ],
     );
   }
@@ -737,7 +737,7 @@ class _FilaEmbudo extends StatelessWidget {
           width: 92,
           child: Text(etiqueta, style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: ColoresApp.textoSecundario, fontWeight: FontWeight.w600,
-          )),
+          ),),
         ),
         Expanded(
           child: ClipRRect(
@@ -755,7 +755,7 @@ class _FilaEmbudo extends StatelessWidget {
           width: 36,
           child: Text('${(pct * 100).toStringAsFixed(0)}%',
             textAlign: TextAlign.end,
-            style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 12)),
+            style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 12),),
         ),
         const SizedBox(width: 4),
         SizedBox(
@@ -763,7 +763,7 @@ class _FilaEmbudo extends StatelessWidget {
           child: Text('${cantidad.toInt()}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: ColoresApp.textoTerciario, fontSize: 11,
-            )),
+            ),),
         ),
       ],
     );
@@ -796,7 +796,7 @@ class _SeccionEstadoEventos extends StatelessWidget {
           Text('Salud operacional', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 2),
           Text('Estado de los eventos en el período',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario)),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
           const SizedBox(height: 14),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
@@ -807,7 +807,7 @@ class _SeccionEstadoEventos extends StatelessWidget {
                   height: 16,
                   color: _colorEstatusEvento(d.etiqueta),
                 ),
-              )).toList(),
+              ),).toList(),
             ),
           ),
           const SizedBox(height: 12),
@@ -827,15 +827,15 @@ class _SeccionEstadoEventos extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(width: 8, height: 8,
-                      decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+                      decoration: BoxDecoration(color: color, shape: BoxShape.circle),),
                     const SizedBox(width: 5),
                     Text(d.etiqueta, style: TextStyle(
                       fontSize: 12, color: color, fontWeight: FontWeight.w600,
-                    )),
+                    ),),
                     const SizedBox(width: 5),
                     Text('${d.valor.toInt()} ($pct%)', style: TextStyle(
                       fontSize: 12, color: color, fontWeight: FontWeight.w800,
-                    )),
+                    ),),
                   ],
                 ),
               );
@@ -896,7 +896,7 @@ class _GraficaTendenciaDual extends StatelessWidget {
             padding: const EdgeInsets.only(top: 6),
             child: Text(datos[i].mes, style: const TextStyle(
               fontSize: 10, color: ColoresApp.textoTerciario, fontWeight: FontWeight.w500,
-            )),
+            ),),
           );
         },
       ),
@@ -927,23 +927,23 @@ class _GraficaTendenciaDual extends StatelessWidget {
                 spots: List.generate(datos.length, (i) => FlSpot(
                   i.toDouble(),
                   maxCant == 0 ? 0 : (datos[i].cantidad / maxCant * 100),
-                )),
+                ),),
                 isCurved: true, color: ColoresApp.acento, barWidth: 2.5,
                 dotData: const FlDotData(show: false),
                 belowBarData: BarAreaData(show: true,
-                    color: ColoresApp.acento.withValues(alpha: 0.06)),
+                    color: ColoresApp.acento.withValues(alpha: 0.06),),
               ),
               LineChartBarData(
                 spots: List.generate(datos.length, (i) =>
-                    FlSpot(i.toDouble(), datos[i].tasa)),
+                    FlSpot(i.toDouble(), datos[i].tasa),),
                 isCurved: true, color: ColoresApp.verde, barWidth: 2.5,
                 dotData: const FlDotData(show: false),
                 belowBarData: BarAreaData(show: true,
-                    color: ColoresApp.verde.withValues(alpha: 0.06)),
+                    color: ColoresApp.verde.withValues(alpha: 0.06),),
                 dashArray: [6, 3],
               ),
             ],
-          )),
+          ),),
         ),
         const SizedBox(height: 10),
         const Row(
@@ -971,11 +971,11 @@ class _PuntoLeyenda extends StatelessWidget {
       children: [
         Container(width: 20, height: 3, decoration: BoxDecoration(
           color: color, borderRadius: BorderRadius.circular(2),
-        )),
+        ),),
         const SizedBox(width: 5),
         Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(
           color: ColoresApp.textoSecundario, fontSize: 11,
-        )),
+        ),),
       ],
     );
   }
@@ -1006,7 +1006,7 @@ class _GraficaComposicion extends StatelessWidget {
           barRods: [BarChartRodData(
             toY: acum, rodStackItems: stackItems, width: 18,
             borderRadius: BorderRadius.circular(4),
-          )],
+          ),],
         );
       });
 
@@ -1063,14 +1063,14 @@ class _GraficaComposicion extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 6),
                       child: Text(datos[i].mes, style: const TextStyle(
                         fontSize: 10, color: ColoresApp.textoTerciario, fontWeight: FontWeight.w500,
-                      )),
+                      ),),
                     );
                   },
                 ),
               ),
             ),
             barGroups: _construirBarras(tipos),
-          )),
+          ),),
         ),
         const SizedBox(height: 10),
         Wrap(
@@ -1080,13 +1080,13 @@ class _GraficaComposicion extends StatelessWidget {
             children: [
               Container(width: 10, height: 10, decoration: BoxDecoration(
                 color: _paleta[j % _paleta.length], borderRadius: BorderRadius.circular(2),
-              )),
+              ),),
               const SizedBox(width: 5),
               Text(tipos[j], style: const TextStyle(
                 fontSize: 11, color: ColoresApp.textoSecundario,
-              )),
+              ),),
             ],
-          )),
+          ),),
         ),
       ],
     );
@@ -1144,7 +1144,7 @@ class _GraficaDonutState extends State<_GraficaDonut> {
               );
             }),
             centerSpaceRadius: 44, sectionsSpace: 2,
-          )),
+          ),),
         ),
         const SizedBox(width: 16),
         Expanded(child: _LeyendaDonut(datos: widget.datos, seleccionado: _seleccionado)),
@@ -1179,14 +1179,14 @@ class _LeyendaDonut extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color:      activo ? ColoresApp.textoPrimario : ColoresApp.textoSecundario,
                   fontWeight: activo ? FontWeight.w700 : FontWeight.w500, fontSize: 12,
-                )),
+                ),),
             ),
             Text('${datos[i].valor.toInt()}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: activo ? color : ColoresApp.textoPrimario,
                 fontWeight: FontWeight.w700, fontSize: 12,
-              )),
-          ]),
+              ),),
+          ],),
         );
       }),
     );
@@ -1213,14 +1213,14 @@ class _GraficaTasaPorTipo extends StatelessWidget {
                 child: Text(d.tipoNombre,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600, fontSize: 13,
-                  ), overflow: TextOverflow.ellipsis),
+                  ), overflow: TextOverflow.ellipsis,),
               ),
               const SizedBox(width: 8),
               Text('${d.tasa.toStringAsFixed(0)}%', style: TextStyle(
                 fontSize: 14, fontWeight: FontWeight.w800,
                 color: _colorTasa(d.tasa),
-              )),
-            ]),
+              ),),
+            ],),
             const SizedBox(height: 5),
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
@@ -1240,7 +1240,7 @@ class _GraficaTasaPorTipo extends StatelessWidget {
             ),
           ],
         ),
-      )).toList(),
+      ),).toList(),
     );
   }
 }
@@ -1295,7 +1295,7 @@ class _GraficaBarrasEstatus extends StatelessWidget {
                 child: Text(datos[i].etiqueta, textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 10, color: ColoresApp.textoTerciario, fontWeight: FontWeight.w500,
-                  )),
+                  ),),
               );
             },
           ),
@@ -1308,9 +1308,9 @@ class _GraficaBarrasEstatus extends StatelessWidget {
           color:        _colorEstatus(datos[i].etiqueta),
           width:        28,
           borderRadius: BorderRadius.circular(6),
-        )],
-      )),
-    ));
+        ),],
+      ),),
+    ),);
   }
 }
 
@@ -1366,7 +1366,7 @@ class _GraficaBarrasDia extends StatelessWidget {
                   fontSize: 11,
                   fontWeight: activo ? FontWeight.w700 : FontWeight.w500,
                   color: activo ? ColoresApp.teal : ColoresApp.textoTerciario,
-                )),
+                ),),
               );
             },
           ),
@@ -1381,10 +1381,10 @@ class _GraficaBarrasDia extends StatelessWidget {
             color:        activo ? ColoresApp.teal : ColoresApp.teal.withValues(alpha: 0.45),
             width:        22,
             borderRadius: BorderRadius.circular(6),
-          )],
+          ),],
         );
       }),
-    ));
+    ),);
   }
 }
 
@@ -1416,9 +1416,9 @@ class _GraficaHeatmap extends StatelessWidget {
               child: Text(d, textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 10, color: ColoresApp.textoTerciario, fontWeight: FontWeight.w700,
-                )),
-            )),
-          ]),
+                ),),
+            ),),
+          ],),
           const SizedBox(height: 6),
           ...horas.map((hora) => Padding(
             padding: const EdgeInsets.only(bottom: 4),
@@ -1426,7 +1426,7 @@ class _GraficaHeatmap extends StatelessWidget {
               SizedBox(
                 width: 44,
                 child: Text('${hora.toString().padLeft(2, '0')}h',
-                  style: const TextStyle(fontSize: 10, color: ColoresApp.textoTerciario)),
+                  style: const TextStyle(fontSize: 10, color: ColoresApp.textoTerciario),),
               ),
               ..._dias.map((dia) {
                 final cant      = mapa['${dia}_$hora'] ?? 0;
@@ -1445,12 +1445,12 @@ class _GraficaHeatmap extends StatelessWidget {
                           fontSize: 9,
                           fontWeight: FontWeight.w700,
                           color: intensity > 0.55 ? Colors.white : ColoresApp.acento,
-                        )))
+                        ),),)
                       : null,
                 );
               }),
-            ]),
-          )),
+            ],),
+          ),),
         ],
       ),
     );
@@ -1499,7 +1499,7 @@ class _GraficaEscala extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(datos[i].etiqueta, style: const TextStyle(
                   fontSize: 10, color: ColoresApp.textoTerciario, fontWeight: FontWeight.w500,
-                )),
+                ),),
               );
             },
           ),
@@ -1514,10 +1514,10 @@ class _GraficaEscala extends StatelessWidget {
             color:        ColoresApp.acento.withValues(alpha: 0.3 + pct * 0.7),
             width:        32,
             borderRadius: BorderRadius.circular(6),
-          )],
+          ),],
         );
       }),
-    ));
+    ),);
   }
 }
 
@@ -1547,12 +1547,12 @@ class _SeccionPorCreador extends StatelessWidget {
           Text('Eventos por organizador', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 2),
           Text('Toca un nombre para ver sus eventos',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario)),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
           const SizedBox(height: 16),
           ...porCreador.map((d) => Padding(
             padding: const EdgeInsets.only(bottom: 14),
             child:   _FilaCreador(dato: d, maxCant: maxCant, onTap: () => onTap(d)),
-          )),
+          ),),
         ],
       ),
     );
@@ -1583,14 +1583,14 @@ class _FilaCreador extends StatelessWidget {
                   child: Text(dato.nombre,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600, color: ColoresApp.textoPrimario, fontSize: 13,
-                    ), overflow: TextOverflow.ellipsis),
+                    ), overflow: TextOverflow.ellipsis,),
                 ),
                 const SizedBox(width: 8),
                 Text('${dato.cantidad} eventos · ${dato.presentes} presentes',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: ColoresApp.textoTerciario,
-                  )),
-              ]),
+                  ),),
+              ],),
               const SizedBox(height: 5),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
@@ -1631,12 +1631,12 @@ class _SeccionTopAsistentes extends StatelessWidget {
           Text('Asistentes más frecuentes', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 2),
           Text('Usuarios con mayor presencia en eventos',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario)),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
           const SizedBox(height: 16),
           ...datos.asMap().entries.map((e) => Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child:   _FilaAsistente(puesto: e.key + 1, dato: e.value),
-          )),
+          ),),
         ],
       ),
     );
@@ -1662,7 +1662,7 @@ class _FilaAsistente extends StatelessWidget {
           child: Center(child: Text('$puesto', style: TextStyle(
             fontSize: 11, fontWeight: FontWeight.w800,
             color: puesto <= 3 ? ColoresApp.acento : ColoresApp.textoTerciario,
-          ))),
+          ),),),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -1674,7 +1674,7 @@ class _FilaAsistente extends StatelessWidget {
                   child: Text(dato.nombre,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600, fontSize: 13,
-                    ), overflow: TextOverflow.ellipsis),
+                    ), overflow: TextOverflow.ellipsis,),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -1684,9 +1684,9 @@ class _FilaAsistente extends StatelessWidget {
                   ),
                   child: Text('${dato.tasa.toStringAsFixed(0)}%', style: TextStyle(
                     fontSize: 12, fontWeight: FontWeight.w800, color: color,
-                  )),
+                  ),),
                 ),
-              ]),
+              ],),
               const SizedBox(height: 3),
               Row(children: [
                 const Icon(Icons.event_outlined, size: 11, color: ColoresApp.textoTerciario),
@@ -1694,8 +1694,8 @@ class _FilaAsistente extends StatelessWidget {
                 Text('${dato.totalAsistencias} asistencias en ${dato.totalEventos} eventos',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: ColoresApp.textoTerciario, fontSize: 11,
-                  )),
-              ]),
+                  ),),
+              ],),
             ],
           ),
         ),
@@ -1728,14 +1728,14 @@ class _SeccionTopTags extends StatelessWidget {
           Text('Tags más usados', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 2),
           Text('Etiquetas por cantidad de eventos y tasa de asistencia',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario)),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
           const SizedBox(height: 16),
           ...datos.map((d) => Padding(
             padding: const EdgeInsets.only(bottom: 14),
             child:   _FilaTag(dato: d, maxCant: maxCant, onTap: () => onTap(
               DatoGrafica(etiqueta: d.nombre, valor: d.cantidad.toDouble()),
-            )),
-          )),
+            ),),
+          ),),
         ],
       ),
     );
@@ -1775,14 +1775,14 @@ class _FilaTag extends StatelessWidget {
                     const SizedBox(width: 3),
                     Text(dato.nombre, style: const TextStyle(
                       fontSize: 11, color: ColoresApp.ambar, fontWeight: FontWeight.w700,
-                    )),
-                  ]),
+                    ),),
+                  ],),
                 ),
                 const Spacer(),
                 Text('${dato.cantidad} eventos',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: ColoresApp.textoTerciario,
-                  )),
+                  ),),
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
@@ -1792,9 +1792,9 @@ class _FilaTag extends StatelessWidget {
                   ),
                   child: Text('${dato.tasa.toStringAsFixed(0)}%', style: TextStyle(
                     fontSize: 11, color: colorTasa, fontWeight: FontWeight.w700,
-                  )),
+                  ),),
                 ),
-              ]),
+              ],),
               const SizedBox(height: 6),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
@@ -1835,7 +1835,7 @@ class _SeccionTopEventos extends StatelessWidget {
           Text('Top eventos por asistencia', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 2),
           Text('Los 5 con mayor participación',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario)),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
           const SizedBox(height: 16),
           if (topEventos.isEmpty)
             const _SinDatos()
@@ -1843,7 +1843,7 @@ class _SeccionTopEventos extends StatelessWidget {
             ...topEventos.asMap().entries.map((e) => Padding(
               padding: const EdgeInsets.only(bottom: 14),
               child:   _FilaTopEvento(rango: e.key + 1, evento: e.value),
-            )),
+            ),),
         ],
       ),
     );
@@ -1872,7 +1872,7 @@ class _FilaTopEvento extends StatelessWidget {
           child: Center(child: Text('$rango', style: TextStyle(
             fontSize: 11, fontWeight: FontWeight.w800,
             color: pct >= 0.75 ? ColoresApp.verde : ColoresApp.textoTerciario,
-          ))),
+          ),),),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -1883,13 +1883,13 @@ class _FilaTopEvento extends StatelessWidget {
                 Expanded(child: Text(evento.titulo,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600, color: ColoresApp.textoPrimario, fontSize: 13,
-                  ), overflow: TextOverflow.ellipsis, maxLines: 1)),
+                  ), overflow: TextOverflow.ellipsis, maxLines: 1,),),
                 const SizedBox(width: 8),
                 Text('${(pct * 100).toStringAsFixed(0)}%',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: color, fontWeight: FontWeight.w700, fontSize: 12,
-                  )),
-              ]),
+                  ),),
+              ],),
               const SizedBox(height: 5),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
@@ -1904,7 +1904,7 @@ class _FilaTopEvento extends StatelessWidget {
               Text('${evento.totalPresentes} de ${evento.totalEsperados} asistentes',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: ColoresApp.textoTerciario, fontSize: 11,
-                )),
+                ),),
             ],
           ),
         ),
@@ -1969,7 +1969,7 @@ class _ModalDetalleState extends State<_ModalDetalle> {
         children: [
           const SizedBox(height: 14),
           Container(width: 36, height: 4,
-            decoration: BoxDecoration(color: ColoresApp.bordeMedio, borderRadius: BorderRadius.circular(2))),
+            decoration: BoxDecoration(color: ColoresApp.bordeMedio, borderRadius: BorderRadius.circular(2)),),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1981,13 +1981,13 @@ class _ModalDetalleState extends State<_ModalDetalle> {
                 children: [
                   Text(_etiquetaDimension(), style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: ColoresApp.acento, letterSpacing: 1.1,
-                  )),
+                  ),),
                   Text(widget.titulo, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w700,
-                  ), overflow: TextOverflow.ellipsis),
+                  ), overflow: TextOverflow.ellipsis,),
                 ],
-              )),
-            ]),
+              ),),
+            ],),
           ),
           const SizedBox(height: 4),
           const Divider(height: 24),
@@ -2045,23 +2045,23 @@ class _FilaEventoDetalle extends StatelessWidget {
               Text(evento.titulo,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600, color: ColoresApp.textoPrimario,
-                ), maxLines: 1, overflow: TextOverflow.ellipsis),
+                ), maxLines: 1, overflow: TextOverflow.ellipsis,),
               const SizedBox(height: 3),
               Row(children: [
                 const Icon(Icons.category_outlined, size: 11, color: ColoresApp.textoTerciario),
                 const SizedBox(width: 3),
                 Text(evento.tipoNombre, style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: ColoresApp.textoTerciario, fontSize: 11,
-                )),
+                ),),
                 if (fechaStr.isNotEmpty) ...[
                   const SizedBox(width: 10),
                   const Icon(Icons.calendar_today_outlined, size: 11, color: ColoresApp.textoTerciario),
                   const SizedBox(width: 3),
                   Text(fechaStr, style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: ColoresApp.textoTerciario, fontSize: 11,
-                  )),
+                  ),),
                 ],
-              ]),
+              ],),
               const SizedBox(height: 3),
               Row(children: [
                 const Icon(Icons.person_outline_rounded, size: 11, color: ColoresApp.textoTerciario),
@@ -2069,8 +2069,8 @@ class _FilaEventoDetalle extends StatelessWidget {
                 Expanded(child: Text(evento.creadorNombre,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: ColoresApp.textoTerciario, fontSize: 11,
-                  ), overflow: TextOverflow.ellipsis)),
-              ]),
+                  ), overflow: TextOverflow.ellipsis,),),
+              ],),
             ],
           ),
         ),
@@ -2079,14 +2079,14 @@ class _FilaEventoDetalle extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text('${(pct * 100).toStringAsFixed(0)}%',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: color)),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: color),),
             Text('${evento.presentes}/${evento.total}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: ColoresApp.textoTerciario, fontSize: 11,
-              )),
+              ),),
           ],
         ),
-      ]),
+      ],),
     );
   }
 }
@@ -2107,7 +2107,7 @@ class _SinDatos extends StatelessWidget {
             const Icon(Icons.bar_chart_outlined, color: ColoresApp.textoTerciario, size: 36),
             const SizedBox(height: 8),
             Text('Sin datos para este período',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario)),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
           ],
         ),
       ),
@@ -2131,7 +2131,7 @@ class _VistaError extends StatelessWidget {
             const Icon(Icons.error_outline, color: ColoresApp.rojo, size: 48),
             const SizedBox(height: 16),
             Text(mensaje, textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: ColoresApp.textoSecundario)),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: ColoresApp.textoSecundario),),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: alReintentar,
@@ -2191,7 +2191,7 @@ class _PanelFiltrosState extends State<_PanelFiltros>
     setState(() => _rango = DateTimeRange(
       start: ahora.subtract(Duration(days: dias)),
       end:   ahora,
-    ));
+    ),);
   }
 
   void _seleccionarAnio() {
@@ -2199,7 +2199,7 @@ class _PanelFiltrosState extends State<_PanelFiltros>
     setState(() => _rango = DateTimeRange(
       start: DateTime(ahora.year, 1, 1),
       end:   ahora,
-    ));
+    ),);
   }
 
   Future<void> _seleccionarPersonalizado() async {
@@ -2254,7 +2254,7 @@ class _PanelFiltrosState extends State<_PanelFiltros>
           children: [
             const SizedBox(height: 14),
             Container(width: 36, height: 4,
-              decoration: BoxDecoration(color: ColoresApp.bordeMedio, borderRadius: BorderRadius.circular(2))),
+              decoration: BoxDecoration(color: ColoresApp.bordeMedio, borderRadius: BorderRadius.circular(2)),),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -2269,9 +2269,9 @@ class _PanelFiltrosState extends State<_PanelFiltros>
                       _tagsSeleccionados.clear();
                     }),
                     child: const Text('Limpiar todo',
-                      style: TextStyle(color: ColoresApp.rojo, fontSize: 13)),
+                      style: TextStyle(color: ColoresApp.rojo, fontSize: 13),),
                   ),
-              ]),
+              ],),
             ),
             const SizedBox(height: 8),
             _TabsFiltros(controller: _tabController, totalActivos: totalActivos),
@@ -2317,14 +2317,14 @@ class _PanelFiltrosState extends State<_PanelFiltros>
                   tiposSeleccionados:     _tiposSeleccionados,
                   creadoresSeleccionados: _creadoresSeleccionados,
                   tagsSeleccionados:      _tagsSeleccionados,
-                )),
+                ),),
                 style: FilledButton.styleFrom(
                   backgroundColor: ColoresApp.acento,
                   minimumSize:     const Size.fromHeight(50),
                   shape:           RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
                 child: const Text('Aplicar filtros',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),),
               ),
             ),
           ],
@@ -2403,7 +2403,7 @@ class _TabPeriodo extends StatelessWidget {
         children: [
           Text('Rango activo', style: Theme.of(context).textTheme.labelSmall?.copyWith(
             letterSpacing: 1.1, color: ColoresApp.textoTerciario,
-          )),
+          ),),
           const SizedBox(height: 6),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -2423,12 +2423,12 @@ class _TabPeriodo extends StatelessWidget {
                   color: ColoresApp.acento, fontWeight: FontWeight.w600, fontSize: 13,
                 ),
               ),
-            ]),
+            ],),
           ),
           const SizedBox(height: 20),
           Text('Presets', style: Theme.of(context).textTheme.labelSmall?.copyWith(
             letterSpacing: 1.1, color: ColoresApp.textoTerciario,
-          )),
+          ),),
           const SizedBox(height: 10),
           Wrap(
             spacing: 8, runSpacing: 8,
@@ -2438,9 +2438,9 @@ class _TabPeriodo extends StatelessWidget {
               _ChipPreset(label: '90 días',  activo: dias > 31 && dias <= 92, alTap: alSeleccionar90),
               _ChipPreset(label: 'Este año',
                 activo: rango.start.month == 1 && rango.start.day == 1,
-                alTap: alSeleccionarAnio),
+                alTap: alSeleccionarAnio,),
               _ChipPreset(label: 'Personalizado',
-                icono: Icons.edit_calendar_outlined, activo: false, alTap: alPersonalizado),
+                icono: Icons.edit_calendar_outlined, activo: false, alTap: alPersonalizado,),
             ],
           ),
         ],
@@ -2475,14 +2475,14 @@ class _ChipPreset extends StatelessWidget {
             children: [
               if (icono != null) ...[
                 Icon(icono, size: 14,
-                  color: activo ? ColoresApp.blanco : ColoresApp.textoSecundario),
+                  color: activo ? ColoresApp.blanco : ColoresApp.textoSecundario,),
                 const SizedBox(width: 6),
               ],
               Text(label, style: TextStyle(
                 fontSize:   13,
                 fontWeight: FontWeight.w600,
                 color:      activo ? ColoresApp.blanco : ColoresApp.textoSecundario,
-              )),
+              ),),
             ],
           ),
         ),
@@ -2513,7 +2513,7 @@ class _TabMultiselect extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(32),
           child: Text(etiquetaVacia, textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario)),
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
         ),
       );
     }
@@ -2537,12 +2537,12 @@ class _TabMultiselect extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: activo ? FontWeight.w700 : FontWeight.w500,
                     color:      activo ? ColoresApp.acento : ColoresApp.textoPrimario,
-                  ))),
+                  ),),),
                 if (activo)
                   const Icon(Icons.check_circle_rounded, color: ColoresApp.acento, size: 22)
                 else
                   const Icon(Icons.radio_button_unchecked_rounded, color: ColoresApp.bordeMedio, size: 22),
-              ]),
+              ],),
             ),
           ),
         );

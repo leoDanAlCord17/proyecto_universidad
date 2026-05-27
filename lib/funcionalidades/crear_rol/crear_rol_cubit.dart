@@ -35,7 +35,7 @@ class CrearRolCubit extends Cubit<CrearRolEstado> {
     emit(e.copiarCon(
       permisosSeleccionadosIds: actuales,
       permisosVisibles: _computarVisibles(e.permisos, actuales, _busqueda),
-    ));
+    ),);
   }
 
   void filtrarPermisos(String texto) {
@@ -44,7 +44,7 @@ class CrearRolCubit extends Cubit<CrearRolEstado> {
     _busqueda = texto;
     emit(e.copiarCon(
       permisosVisibles: _computarVisibles(e.permisos, e.permisosSeleccionadosIds, texto),
-    ));
+    ),);
   }
 
   Future<void> cargarRolParaEditar(String rolId) async {
@@ -61,7 +61,7 @@ class CrearRolCubit extends Cubit<CrearRolEstado> {
         permisosIniciales:        sel,
         nombreInicial:            resultado.rol['nombre']      as String? ?? '',
         descripcionInicial:       resultado.rol['descripcion'] as String? ?? '',
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(CrearRolError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
@@ -120,7 +120,7 @@ class CrearRolCubit extends Cubit<CrearRolEstado> {
       final q = busqueda.toLowerCase();
       return todos.where((p) =>
         p.nombre.toLowerCase().contains(q) ||
-        p.descripcion.toLowerCase().contains(q)).toList();
+        p.descripcion.toLowerCase().contains(q),).toList();
     }
     final sel   = todos.where((p) =>  seleccionados.contains(p.id)).toList();
     final noSel = todos.where((p) => !seleccionados.contains(p.id)).toList();

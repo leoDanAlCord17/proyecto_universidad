@@ -33,7 +33,7 @@ class _VerPerfilUsuarioState extends State<VerPerfilUsuarioPantalla> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<VerPerfilUsuarioCubit, VerPerfilUsuarioEstado>(
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 

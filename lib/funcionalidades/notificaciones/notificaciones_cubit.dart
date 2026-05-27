@@ -32,7 +32,7 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
             emit(NotificacionesCargadas(
               cantidad:       cantidad,
               notificaciones: anterior,
-            ));
+            ),);
           },
           onError: (_) => emit(const NotificacionesCargadas(cantidad: 0, notificaciones: [])),
         );
@@ -52,7 +52,7 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
       emit(NotificacionesCargadas(
         cantidad:       cantidadActual,
         notificaciones: lista,
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(NotificacionesError(e.mensaje));
     } on FallaInesperada catch (e) {

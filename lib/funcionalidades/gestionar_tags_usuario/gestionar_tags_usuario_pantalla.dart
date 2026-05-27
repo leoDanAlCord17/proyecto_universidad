@@ -44,7 +44,7 @@ class _GestionarTagsUsuarioState extends State<GestionarTagsUsuarioPantalla> {
           AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
         }
       },
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 
@@ -269,7 +269,7 @@ class _SeccionSecundarios extends StatelessWidget {
                   .read<GestionarTagsUsuarioCubit>()
                   .quitarSecundario(t.id),
             ),
-          )),
+          ),),
         const SizedBox(height: 10),
         if (!estado.estaEnLimite && estado.secundariosDisponibles.isNotEmpty)
           _BotonAccion(

@@ -37,7 +37,7 @@ class EstadisticasRepositorio {
       return filas.cast<Map<String, dynamic>>().map((r) => DatoGrafica(
             etiqueta: (r['nombre']   as String?) ?? '',
             valor:    (r['cantidad'] as num?)?.toDouble() ?? 0,
-          )).toList();
+          ),).toList();
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -56,7 +56,7 @@ class EstadisticasRepositorio {
             etiqueta: (r['mes']      as String?) ?? '',
             valor:    (r['cantidad'] as num?)?.toDouble() ?? 0,
             valorSql: (r['mes']      as String?) ?? '',
-          )).toList();
+          ),).toList();
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -112,7 +112,7 @@ class EstadisticasRepositorio {
             etiqueta: (r['dia']      as String?) ?? '',
             valor:    (r['cantidad'] as num?)?.toDouble() ?? 0,
             valorSql: (r['dia']      as String?) ?? '',
-          )).toList();
+          ),).toList();
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -218,7 +218,7 @@ class EstadisticasRepositorio {
       return filas.cast<Map<String, dynamic>>().map((r) => DatoGrafica(
             etiqueta: (r['rango']    as String?) ?? '',
             valor:    (r['cantidad'] as num?)?.toDouble() ?? 0,
-          )).toList();
+          ),).toList();
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {

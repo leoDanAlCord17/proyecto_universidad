@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,10 +42,10 @@ class _TiposEventoPantallaState extends State<TiposEventoPantalla> {
       listener: (context, estado) {
         if (estado is TiposEventoCargados && estado.errorOperacion != null) {
           AvisoApp.mostrar(context,
-              texto: estado.errorOperacion!, estilo: EstiloAviso.error);
+              texto: estado.errorOperacion!, estilo: EstiloAviso.error,);
         }
       },
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 
@@ -119,7 +121,7 @@ class _BotonCrear extends StatelessWidget {
       child: InkWell(
         onTap: () async {
           await context.push(Rutas.crearTipoEvento);
-          if (context.mounted) context.read<TiposEventoCubit>().cargar();
+          if (context.mounted) unawaited(context.read<TiposEventoCubit>().cargar());
         },
         borderRadius:   BorderRadius.circular(12),
         splashColor:    Colors.white.withValues(alpha: 0.3),
@@ -201,7 +203,7 @@ class _Lista extends StatelessWidget {
                 tipo: tipo,
                 alEditar: () async {
                   await context.push(Rutas.editarTipoEventoUrl(tipo.id));
-                  if (context.mounted) context.read<TiposEventoCubit>().cargar();
+                  if (context.mounted) unawaited(context.read<TiposEventoCubit>().cargar());
                 },
                 alDesactivar: () async {
                   final confirmo = await DialogoConfirmacion.mostrar(
@@ -212,10 +214,10 @@ class _Lista extends StatelessWidget {
                     textoCancelar:  'Cancelar',
                   );
                   if (confirmo != true || !context.mounted) return;
-                  context.read<TiposEventoCubit>().desactivar(tipo.id);
+                  unawaited(context.read<TiposEventoCubit>().desactivar(tipo.id));
                 },
               ),
-            )),
+            ),),
           ],
         ),
         if (estado.estaDesactivando)

@@ -95,7 +95,7 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
         nombre:    nombre,
         cedula:    cedula,
         rol:       rol,
-      ));
+      ),);
       _programarReset(listo, nuevosPresentes: listo.presentes + 1);
     } else {
       emit(EscanearQrYaRegistrado(
@@ -103,7 +103,7 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
         presentes: listo.presentes,
         nombre:    nombre,
         cedula:    cedula,
-      ));
+      ),);
       _programarReset(listo);
     }
   }
@@ -116,7 +116,7 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
         emit(EscanearQrListo(
           evento:    base.evento,
           presentes: nuevosPresentes ?? base.presentes,
-        ));
+        ),);
       }
     });
   }

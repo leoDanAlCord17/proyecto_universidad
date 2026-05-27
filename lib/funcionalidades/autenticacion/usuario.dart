@@ -3,21 +3,6 @@ import 'package:equatable/equatable.dart';
 import '../../compartido/constantes.dart';
 
 class Usuario extends Equatable {
-  final String? id;
-  final String? authId;
-  final String primerNombre;
-  final String? segundoNombre;
-  final String primerApellido;
-  final String? segundoApellido;
-  final String? numeroIdentificacion;
-  final String correo;
-  final String? telefono;
-  final String? urlAvatar;
-  final bool   estatus;
-  final String estatusAprobacion;
-  final DateTime? creadoEn;
-  final List<String> roles;
-  final List<String> permisos;
 
   const Usuario({
     this.id,
@@ -61,9 +46,25 @@ class Usuario extends Equatable {
       permisos:             _extraerNombresPermisos(activos),
     );
   }
+  final String? id;
+  final String? authId;
+  final String primerNombre;
+  final String? segundoNombre;
+  final String primerApellido;
+  final String? segundoApellido;
+  final String? numeroIdentificacion;
+  final String correo;
+  final String? telefono;
+  final String? urlAvatar;
+  final bool   estatus;
+  final String estatusAprobacion;
+  final DateTime? creadoEn;
+  final List<String> roles;
+  final List<String> permisos;
 
-  static List<Map<String, dynamic>> _rolesActivos(List usuariosRoles) =>
+  static List<Map<String, dynamic>> _rolesActivos(List<dynamic> usuariosRoles) =>
       usuariosRoles
+          .whereType<Map<String, dynamic>>()
           .where((ur) => ur['estatus'] == true)
           .map((ur) => ur['roles'])
           .whereType<Map<String, dynamic>>()
@@ -79,6 +80,7 @@ class Usuario extends Equatable {
   static List<String> _extraerNombresPermisos(List<Map<String, dynamic>> activos) =>
       activos
           .expand((r) => (r['roles_permisos'] as List? ?? []))
+          .whereType<Map<String, dynamic>>()
           .where((rp) => rp['estatus'] == true)
           .map((rp) => rp['permisos'])
           .whereType<Map<String, dynamic>>()

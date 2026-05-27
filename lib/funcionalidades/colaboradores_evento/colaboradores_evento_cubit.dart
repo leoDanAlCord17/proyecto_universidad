@@ -23,7 +23,7 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
         colaboradores:      colaboradores,
         resultadosBusqueda: const [],
         busqueda:           '',
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(ColaboradoresEventoError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
@@ -104,7 +104,7 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
     emit(ColaboradoresEventoOperacionFallida(
       anterior: actual.copiarCon(idOperando: null),
       mensaje:  mensaje,
-    ));
+    ),);
   }
 
   ColaboradoresEventoCargado? _extraerCargado(ColaboradoresEventoEstado estado) =>

@@ -33,8 +33,8 @@ class PermisosCubit extends Cubit<PermisosEstado> {
       permisosFiltrados: estadoActual.permisos
           .where((p) =>
               p.nombre.toLowerCase().contains(q) ||
-              p.descripcion.toLowerCase().contains(q))
+              p.descripcion.toLowerCase().contains(q),)
           .toList(),
-    ));
+    ),);
   }
 }

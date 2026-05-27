@@ -342,7 +342,7 @@ class _HojaCrearGrupoState extends State<_HojaCrearGrupo> {
       grupoIndex:      widget.grupoIndex,
       tagPrincipal:    _principal!,
       tagsSecundarios: _secundarios,
-    ));
+    ),);
   }
 
   @override

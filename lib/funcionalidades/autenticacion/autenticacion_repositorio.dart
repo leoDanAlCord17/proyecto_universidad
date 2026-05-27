@@ -6,9 +6,9 @@ import '../../compartido/traductor_errores.dart';
 import 'usuario.dart';
 
 class AutenticacionRepositorio {
-  final SupabaseClient _supabase;
 
   AutenticacionRepositorio(this._supabase);
+  final SupabaseClient _supabase;
 
   /// Inicia sesión con correo y contraseña.
   /// Lanza [FallaAutenticacion] si las credenciales son incorrectas.

@@ -70,7 +70,7 @@ class TarjetaAsistente extends StatelessWidget {
                 subtitulo:    subtitulo,
                 colorNombre:  colorNombre,
                 colorDetalle: colorDetalle,
-              )),
+              ),),
               const SizedBox(width: 8),
               accionTrailing ?? InsigniaEstado(estatus: estatus),
             ],

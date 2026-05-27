@@ -22,7 +22,7 @@ class CrearTagCubit extends Cubit<CrearTagEstado> {
         nombreInicial:      tag['nombre']      as String? ?? '',
         descripcionInicial: tag['descripcion'] as String? ?? '',
         tipoSeleccionado:   tag['tipo']        as String?,
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(CrearTagError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
@@ -66,7 +66,7 @@ class CrearTagCubit extends Cubit<CrearTagEstado> {
         emit(e.copiarCon(
           estaGuardando:   false,
           errorValidacion: 'Ya existe un tag "$nombre" de tipo $tipoDisplay.',
-        ));
+        ),);
         return;
       }
       await _persistirTag(estado: e, nombre: nombre, descripcion: descripcion, tipo: tipo, creadorId: creadorId);

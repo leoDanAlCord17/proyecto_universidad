@@ -295,7 +295,7 @@ class _ModalSelectorEventoState extends State<_ModalSelectorEvento> {
         : todos
             .where((e) =>
                 e.titulo.toLowerCase().contains(q) ||
-                e.fechaFormateada.toLowerCase().contains(q))
+                e.fechaFormateada.toLowerCase().contains(q),)
             .toList();
 
     return Container(
@@ -1113,7 +1113,7 @@ class _EncabezadoParticipantes extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
+                        horizontal: 14, vertical: 8,),
                       decoration: BoxDecoration(
                         color:        activo ? ColoresApp.acento : ColoresApp.superficiePrimaria,
                         borderRadius: BorderRadius.circular(20),
@@ -1211,7 +1211,7 @@ class _TarjetaParticipante extends StatelessWidget {
                     const SizedBox(height: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 7, vertical: 2),
+                        horizontal: 7, vertical: 2,),
                       decoration: BoxDecoration(
                         color:        ColoresApp.tealClaro,
                         borderRadius: BorderRadius.circular(30),
@@ -1280,7 +1280,7 @@ class _DetalleRegistro extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Icon(Icons.warning_amber_rounded,
-                    size: 14, color: ColoresApp.ambar),
+                    size: 14, color: ColoresApp.ambar,),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(

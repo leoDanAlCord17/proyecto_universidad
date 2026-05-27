@@ -73,7 +73,7 @@ class _CrearTipoEventoPantallaState extends State<CrearTipoEventoPantalla> {
   Widget build(BuildContext context) {
     return BlocConsumer<CrearTipoEventoCubit, CrearTipoEventoEstado>(
       listener: _escucharEstado,
-      builder:  (context, estado) => _construirVista(context, estado),
+      builder:  _construirVista,
     );
   }
 

@@ -44,7 +44,7 @@ class _GestionarRolesUsuarioState extends State<GestionarRolesUsuarioPantalla> {
           AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
         }
       },
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 
@@ -184,7 +184,7 @@ class _VistaContenido extends StatelessWidget {
                     .read<GestionarRolesUsuarioCubit>()
                     .quitarRol(r.id),
               ),
-            )),
+            ),),
           if (estado.rolesDisponibles.isNotEmpty) ...[
             const SizedBox(height: 10),
             _BotonAgregar(alPresionar: () => _abrirPicker(context)),

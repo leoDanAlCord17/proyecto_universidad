@@ -70,7 +70,7 @@ class _HistorialPantallaState extends State<HistorialPantalla>
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HistorialCubit, HistorialEstado>(
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 

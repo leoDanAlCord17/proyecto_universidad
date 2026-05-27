@@ -1,6 +1,17 @@
 import 'package:equatable/equatable.dart';
 
 class TipoEventoItem extends Equatable {
+
+  factory TipoEventoItem.desdeJson(Map<String, dynamic> json) => TipoEventoItem(
+    id:             json['id']              as String,
+    nombre:         json['nombre']          as String,
+    descripcion:    (json['descripcion']    as String?) ?? '',
+    estatus:        (json['estatus']        as bool?) ?? false,
+    creadoEn:       json['creado_en']       != null ? DateTime.tryParse(json['creado_en'] as String)       : null,
+    creadoPor:      json['creado_por']      as String?,
+    actualizadoPor: json['actualizado_por'] as String?,
+    actualizadoEn:  json['actualizado_en']  != null ? DateTime.tryParse(json['actualizado_en'] as String) : null,
+  );
   const TipoEventoItem({
     required this.id,
     required this.nombre,
@@ -20,17 +31,6 @@ class TipoEventoItem extends Equatable {
   final String?   creadoPor;
   final String?   actualizadoPor;
   final DateTime? actualizadoEn;
-
-  factory TipoEventoItem.desdeJson(Map<String, dynamic> json) => TipoEventoItem(
-    id:             json['id']              as String,
-    nombre:         json['nombre']          as String,
-    descripcion:    (json['descripcion']    as String?) ?? '',
-    estatus:        (json['estatus']        as bool?) ?? false,
-    creadoEn:       json['creado_en']       != null ? DateTime.tryParse(json['creado_en'] as String)       : null,
-    creadoPor:      json['creado_por']      as String?,
-    actualizadoPor: json['actualizado_por'] as String?,
-    actualizadoEn:  json['actualizado_en']  != null ? DateTime.tryParse(json['actualizado_en'] as String) : null,
-  );
 
   Map<String, dynamic> aJson() => {
     'nombre':      nombre,

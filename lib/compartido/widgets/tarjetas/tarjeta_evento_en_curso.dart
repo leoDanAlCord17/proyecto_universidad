@@ -235,7 +235,7 @@ class _FilaBotones extends StatelessWidget {
                 cedula:         cedula,
                 contacto:       contacto,
               ),
-        )),
+        ),),
       _DatoBoton('Buscar\nusuario', () => context.push(Rutas.buscarAsistenteUrl(id))),
       if (conDetalles)
         _DatoBoton('Detalles', () => context.push(Rutas.panelControlUrl(id))),

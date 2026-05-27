@@ -33,7 +33,7 @@ class BorradoresCubit extends Cubit<BorradoresEstado> {
       filtrados = filtrados
           .where((e) =>
               e.titulo.toLowerCase().contains(q) ||
-              e.descripcion.toLowerCase().contains(q))
+              e.descripcion.toLowerCase().contains(q),)
           .toList();
     }
     if (rango != null) {
@@ -43,7 +43,7 @@ class BorradoresCubit extends Cubit<BorradoresEstado> {
           .where((e) =>
               e.fechaInicio != null &&
               !e.fechaInicio!.isBefore(inicio) &&
-              !e.fechaInicio!.isAfter(fin))
+              !e.fechaInicio!.isAfter(fin),)
           .toList();
     }
     emit(estadoActual.copiarCon(borradoresFiltrados: filtrados));
@@ -65,13 +65,13 @@ class BorradoresCubit extends Cubit<BorradoresEstado> {
         borradores:          estadoActual.borradores,
         borradoresFiltrados: estadoActual.borradoresFiltrados,
         errorPublicacion:    e.mensaje,
-      ));
+      ),);
     } on FallaInesperada catch (e) {
       emit(BorradoresCargados(
         borradores:          estadoActual.borradores,
         borradoresFiltrados: estadoActual.borradoresFiltrados,
         errorPublicacion:    e.mensaje,
-      ));
+      ),);
     }
   }
 

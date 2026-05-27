@@ -10,8 +10,8 @@ final class AuthInicial extends AuthEstado {
 }
 
 final class Autenticado extends AuthEstado {
-  final Usuario usuario;
   Autenticado(this.usuario);
+  final Usuario usuario;
 
   @override
   List<Object?> get props => [usuario];

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,7 +38,7 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
       textoCancelar:  'Cerrar sesión',
     );
     if (resultado == false && context.mounted) {
-      context.read<AuthCubit>().cerrarSesion();
+      unawaited(context.read<AuthCubit>().cerrarSesion());
     }
   }
 

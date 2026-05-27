@@ -72,7 +72,7 @@ class CrearRolRepositorio {
           .select('permiso_id')
           .eq('rol_id', id)
           .eq('estatus', true);
-      final ids = (perms as List).map((r) => r['permiso_id'] as String).toList();
+      final ids = (perms as List).cast<Map<String, dynamic>>().map((r) => r['permiso_id'] as String).toList();
       return (rol: rol, permisosIds: ids);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));

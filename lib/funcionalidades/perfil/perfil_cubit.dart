@@ -16,7 +16,7 @@ class PerfilCubit extends Cubit<PerfilEstado> {
       emit(PerfilCargado(
         tagPrincipal:    resultado.tagPrincipal,
         tagsSecundarios: resultado.tagsSecundarios,
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(PerfilError(e.mensaje));
     } on FallaInesperada catch (e) {

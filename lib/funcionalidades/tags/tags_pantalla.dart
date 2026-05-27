@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,7 +44,7 @@ class _TagsPantallaState extends State<TagsPantalla> {
           AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
         }
       },
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 
@@ -106,7 +108,7 @@ class _BotonCrearTag extends StatelessWidget {
       child: InkWell(
         onTap: () async {
           await context.push(Rutas.crearTag);
-          if (context.mounted) context.read<TagsCubit>().cargarTags();
+          if (context.mounted) unawaited(context.read<TagsCubit>().cargarTags());
         },
         borderRadius:   BorderRadius.circular(12),
         splashColor:    Colors.white.withValues(alpha: 0.3),
@@ -188,7 +190,7 @@ class _Lista extends StatelessWidget {
         ...items.map((t) => Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child:   _TarjetaTag(tag: t),
-        )),
+        ),),
       ],
     );
   }
@@ -226,12 +228,12 @@ class _TarjetaTag extends StatelessWidget {
           _navegarYRecargar(context, Rutas.crearTag);
         },
       ),
-    ]);
+    ],);
   }
 
   Future<void> _navegarYRecargar(BuildContext context, String ruta) async {
     await context.push(ruta);
-    if (context.mounted) context.read<TagsCubit>().cargarTags();
+    if (context.mounted) unawaited(context.read<TagsCubit>().cargarTags());
   }
 
   OpcionPanel _opcionToggle(BuildContext context) => OpcionPanel(
@@ -259,13 +261,13 @@ class _TarjetaTag extends StatelessWidget {
       textoCancelar:  'Cancelar',
     );
     if (confirmo != true || !context.mounted) return;
-    context.read<TagsCubit>().activar(tag.id);
+    unawaited(context.read<TagsCubit>().activar(tag.id));
   }
 
   Future<void> _confirmarDesactivar(BuildContext context) async {
     final confirmo = await _DialogoDesactivarTag.mostrar(context, tag: tag);
     if (confirmo != true || !context.mounted) return;
-    context.read<TagsCubit>().desactivar(tag.id);
+    unawaited(context.read<TagsCubit>().desactivar(tag.id));
   }
 
   @override

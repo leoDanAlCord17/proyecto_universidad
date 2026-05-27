@@ -17,15 +17,16 @@ class InicioCubit extends Cubit<InicioEstado> {
       final revisionF = _repositorio.obtenerRevisionHabilitada();
       final tags      = await tagsF;
       final revision  = await revisionF;
+      if (isClosed) return;
       emit(InicioTagsCargados(
         tagPrincipal:       tags.tagPrincipal,
         tagsSecundarios:    tags.tagsSecundarios,
         revisionHabilitada: revision,
-      ));
+      ),);
     } on FallaServidor catch (falla) {
-      emit(InicioError(falla.mensaje));
+      if (!isClosed) emit(InicioError(falla.mensaje));
     } on FallaInesperada catch (falla) {
-      emit(InicioError(falla.mensaje));
+      if (!isClosed) emit(InicioError(falla.mensaje));
     }
   }
 }

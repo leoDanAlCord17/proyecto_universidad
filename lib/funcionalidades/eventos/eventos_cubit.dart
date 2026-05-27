@@ -50,7 +50,7 @@ class EventosCubit extends Cubit<EventosEstado> {
       textoBusqueda: texto,
       rangoFechas:   rango,
       limpiarRango:  rango == null,
-    ));
+    ),);
   }
 
   Future<void> _refrescarSilencioso(String usuarioId) async {
@@ -68,7 +68,7 @@ class EventosCubit extends Cubit<EventosEstado> {
       emit(estadoActual.copiarCon(
         enCurso:  _aplicarFiltros(_enCurso,  estadoActual.textoBusqueda, estadoActual.rangoFechas),
         proximos: _aplicarFiltros(_proximos, estadoActual.textoBusqueda, estadoActual.rangoFechas),
-      ));
+      ),);
     } catch (_) {
       // Fallo silencioso — no interrumpe al usuario
     }

@@ -6,9 +6,9 @@ import 'autenticacion_repositorio.dart';
 import 'registro_estado.dart';
 
 class RegistroCubit extends Cubit<RegistroEstado> {
-  final AutenticacionRepositorio _repositorio;
 
   RegistroCubit(this._repositorio) : super(RegistroInicial());
+  final AutenticacionRepositorio _repositorio;
 
   /// Crea un nuevo usuario en Supabase Auth con correo y contraseña.
   ///

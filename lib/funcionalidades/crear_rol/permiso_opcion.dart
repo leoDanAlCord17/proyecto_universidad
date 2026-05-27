@@ -1,6 +1,12 @@
 import 'package:equatable/equatable.dart';
 
 class PermisoOpcion extends Equatable {
+
+  factory PermisoOpcion.desdeJson(Map<String, dynamic> json) => PermisoOpcion(
+    id:          json['id']          as String,
+    nombre:      json['nombre']      as String,
+    descripcion: json['descripcion'] as String? ?? '',
+  );
   const PermisoOpcion({
     required this.id,
     required this.nombre,
@@ -10,12 +16,6 @@ class PermisoOpcion extends Equatable {
   final String id;
   final String nombre;
   final String descripcion;
-
-  factory PermisoOpcion.desdeJson(Map<String, dynamic> json) => PermisoOpcion(
-    id:          json['id']          as String,
-    nombre:      json['nombre']      as String,
-    descripcion: json['descripcion'] as String? ?? '',
-  );
 
   Map<String, dynamic> aJson() => {
     'id':          id,

@@ -53,7 +53,7 @@ final class AuditoriaEventoCargada extends AuditoriaEventoEstado {
       lista = lista
           .where((r) =>
               r.nombre.toLowerCase().contains(q) ||
-              (r.numeroIdentificacion?.toLowerCase().contains(q) ?? false))
+              (r.numeroIdentificacion?.toLowerCase().contains(q) ?? false),)
           .toList();
     }
 

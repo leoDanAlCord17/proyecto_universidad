@@ -1,4 +1,21 @@
 class EventoParaAuditoria {
+
+  factory EventoParaAuditoria.desdeJson(Map<String, dynamic> json) {
+    DateTime? fecha;
+    final fechaStr = json['fecha_inicio'] as String?;
+    if (fechaStr != null) {
+      try {
+        fecha = DateTime.parse(fechaStr);
+      } catch (_) {}
+    }
+    return EventoParaAuditoria(
+      id:          (json['id']         as String?) ?? '',
+      titulo:      (json['titulo']     as String?) ?? '',
+      estatus:     (json['estatus']    as String?) ?? '',
+      fechaInicio: fecha,
+      horaInicio:  json['hora_inicio'] as String?,
+    );
+  }
   const EventoParaAuditoria({
     required this.id,
     required this.titulo,
@@ -32,26 +49,78 @@ class EventoParaAuditoria {
     final d = fechaInicio!;
     return '${d.day} de ${_meses[d.month]}, ${d.year}';
   }
-
-  factory EventoParaAuditoria.desdeJson(Map<String, dynamic> json) {
-    DateTime? fecha;
-    final fechaStr = json['fecha_inicio'] as String?;
-    if (fechaStr != null) {
-      try {
-        fecha = DateTime.parse(fechaStr);
-      } catch (_) {}
-    }
-    return EventoParaAuditoria(
-      id:          (json['id']         as String?) ?? '',
-      titulo:      (json['titulo']     as String?) ?? '',
-      estatus:     (json['estatus']    as String?) ?? '',
-      fechaInicio: fecha,
-      horaInicio:  json['hora_inicio'] as String?,
-    );
-  }
 }
 
 class RegistroAuditoria {
+
+  factory RegistroAuditoria.desdeJson(Map<String, dynamic> json) {
+    final asistente  = json['asistente']   as Map<String, dynamic>?;
+    final regEntrada = json['reg_entrada'] as Map<String, dynamic>?;
+    final regSalida  = json['reg_salida']  as Map<String, dynamic>?;
+
+    final esForaneo  = json['usuario_id'] == null;
+
+    String nombre;
+    String iniciales;
+    String? urlFoto;
+    String? numeroIdentificacion;
+    String? contactoForaneo;
+
+    if (esForaneo) {
+      final pNombre   = (json['visitante_primer_nombre']   as String?) ?? '';
+      final pApellido = (json['visitante_primer_apellido'] as String?) ?? '';
+      nombre              = '$pNombre $pApellido'.trim();
+      iniciales           = _calcularIniciales(pNombre, pApellido);
+      numeroIdentificacion = json['visitante_numero_identificacion'] as String?;
+      contactoForaneo     = json['visitante_contacto']               as String?;
+    } else {
+      final pNombre   = (asistente?['primer_nombre']   as String?) ?? '';
+      final pApellido = (asistente?['primer_apellido'] as String?) ?? '';
+      nombre              = '$pNombre $pApellido'.trim();
+      iniciales           = _calcularIniciales(pNombre, pApellido);
+      urlFoto             = asistente?['url_avatar']            as String?;
+      numeroIdentificacion = asistente?['numero_identificacion'] as String?;
+    }
+
+    if (nombre.isEmpty) nombre = 'Sin nombre';
+
+    String? regPorNombre;
+    if (regEntrada != null) {
+      final rn = (regEntrada['primer_nombre']   as String?) ?? '';
+      final ra = (regEntrada['primer_apellido'] as String?) ?? '';
+      regPorNombre = '$rn $ra'.trim();
+      if (regPorNombre.isEmpty) regPorNombre = null;
+    }
+
+    String? salidaRegPorNombre;
+    if (regSalida != null) {
+      final sn = (regSalida['primer_nombre']   as String?) ?? '';
+      final sa = (regSalida['primer_apellido'] as String?) ?? '';
+      salidaRegPorNombre = '$sn $sa'.trim();
+      if (salidaRegPorNombre.isEmpty) salidaRegPorNombre = null;
+    }
+
+    final horaEntradaIso = json['hora_entrada'] as String?;
+    final horaSalidaIso  = json['hora_salida']  as String?;
+
+    return RegistroAuditoria(
+      id:                        (json['id']     as String?) ?? '',
+      usuarioId:                 json['usuario_id'] as String?,
+      nombre:                    nombre,
+      iniciales:                 iniciales,
+      urlFoto:                   urlFoto,
+      numeroIdentificacion:      numeroIdentificacion,
+      estatus:                   (json['estatus'] as String?) ?? 'esperado',
+      esForaneo:                 esForaneo,
+      horaEntrada:               _formatearHora(horaEntradaIso),
+      horaEntradaHora:           _extraerHora(horaEntradaIso),
+      horaSalida:                _formatearHora(horaSalidaIso),
+      registradoPorNombre:       regPorNombre,
+      salidaRegistradaPorNombre: salidaRegPorNombre,
+      motivoSalidaAnticipada:    json['motivo_salida_anticipada'] as String?,
+      contactoForaneo:           contactoForaneo,
+    );
+  }
   const RegistroAuditoria({
     required this.id,
     required this.nombre,
@@ -124,75 +193,6 @@ class RegistroAuditoria {
     }
   }
 
-  factory RegistroAuditoria.desdeJson(Map<String, dynamic> json) {
-    final asistente  = json['asistente']   as Map<String, dynamic>?;
-    final regEntrada = json['reg_entrada'] as Map<String, dynamic>?;
-    final regSalida  = json['reg_salida']  as Map<String, dynamic>?;
-
-    final esForaneo  = json['usuario_id'] == null;
-
-    String nombre;
-    String iniciales;
-    String? urlFoto;
-    String? numeroIdentificacion;
-    String? contactoForaneo;
-
-    if (esForaneo) {
-      final pNombre   = (json['visitante_primer_nombre']   as String?) ?? '';
-      final pApellido = (json['visitante_primer_apellido'] as String?) ?? '';
-      nombre              = '$pNombre $pApellido'.trim();
-      iniciales           = _calcularIniciales(pNombre, pApellido);
-      numeroIdentificacion = json['visitante_numero_identificacion'] as String?;
-      contactoForaneo     = json['visitante_contacto']               as String?;
-    } else {
-      final pNombre   = (asistente?['primer_nombre']   as String?) ?? '';
-      final pApellido = (asistente?['primer_apellido'] as String?) ?? '';
-      nombre              = '$pNombre $pApellido'.trim();
-      iniciales           = _calcularIniciales(pNombre, pApellido);
-      urlFoto             = asistente?['url_avatar']            as String?;
-      numeroIdentificacion = asistente?['numero_identificacion'] as String?;
-    }
-
-    if (nombre.isEmpty) nombre = 'Sin nombre';
-
-    String? regPorNombre;
-    if (regEntrada != null) {
-      final rn = (regEntrada['primer_nombre']   as String?) ?? '';
-      final ra = (regEntrada['primer_apellido'] as String?) ?? '';
-      regPorNombre = '$rn $ra'.trim();
-      if (regPorNombre.isEmpty) regPorNombre = null;
-    }
-
-    String? salidaRegPorNombre;
-    if (regSalida != null) {
-      final sn = (regSalida['primer_nombre']   as String?) ?? '';
-      final sa = (regSalida['primer_apellido'] as String?) ?? '';
-      salidaRegPorNombre = '$sn $sa'.trim();
-      if (salidaRegPorNombre.isEmpty) salidaRegPorNombre = null;
-    }
-
-    final horaEntradaIso = json['hora_entrada'] as String?;
-    final horaSalidaIso  = json['hora_salida']  as String?;
-
-    return RegistroAuditoria(
-      id:                        (json['id']     as String?) ?? '',
-      usuarioId:                 json['usuario_id'] as String?,
-      nombre:                    nombre,
-      iniciales:                 iniciales,
-      urlFoto:                   urlFoto,
-      numeroIdentificacion:      numeroIdentificacion,
-      estatus:                   (json['estatus'] as String?) ?? 'esperado',
-      esForaneo:                 esForaneo,
-      horaEntrada:               _formatearHora(horaEntradaIso),
-      horaEntradaHora:           _extraerHora(horaEntradaIso),
-      horaSalida:                _formatearHora(horaSalidaIso),
-      registradoPorNombre:       regPorNombre,
-      salidaRegistradaPorNombre: salidaRegPorNombre,
-      motivoSalidaAnticipada:    json['motivo_salida_anticipada'] as String?,
-      contactoForaneo:           contactoForaneo,
-    );
-  }
-
   static String _calcularIniciales(String nombre, String apellido) {
     final n = nombre.isNotEmpty   ? nombre[0].toUpperCase()   : '';
     final a = apellido.isNotEmpty ? apellido[0].toUpperCase() : '';
@@ -226,32 +226,6 @@ class DatoRegistrador {
 }
 
 class ResumenAuditoria {
-  const ResumenAuditoria({
-    required this.totalRegistros,
-    required this.haEntrado,
-    required this.completados,
-    required this.presentes,
-    required this.ausentes,
-    required this.salioAnticipado,
-    required this.foraneos,
-    required this.esperados,
-    required this.timelineEntradas,
-    required this.registradores,
-  });
-
-  final int                  totalRegistros;
-  final int                  haEntrado;
-  final int                  completados;
-  final int                  presentes;
-  final int                  ausentes;
-  final int                  salioAnticipado;
-  final int                  foraneos;
-  final int                  esperados;
-  final List<DatoTimeline>   timelineEntradas;
-  final List<DatoRegistrador> registradores;
-
-  double get tasaAsistencia =>
-      totalRegistros == 0 ? 0 : (haEntrado / totalRegistros * 100);
 
   factory ResumenAuditoria.calcular(List<RegistroAuditoria> registros) {
     int haEntradoC       = 0;
@@ -317,6 +291,32 @@ class ResumenAuditoria {
       registradores:   registradoresList,
     );
   }
+  const ResumenAuditoria({
+    required this.totalRegistros,
+    required this.haEntrado,
+    required this.completados,
+    required this.presentes,
+    required this.ausentes,
+    required this.salioAnticipado,
+    required this.foraneos,
+    required this.esperados,
+    required this.timelineEntradas,
+    required this.registradores,
+  });
+
+  final int                  totalRegistros;
+  final int                  haEntrado;
+  final int                  completados;
+  final int                  presentes;
+  final int                  ausentes;
+  final int                  salioAnticipado;
+  final int                  foraneos;
+  final int                  esperados;
+  final List<DatoTimeline>   timelineEntradas;
+  final List<DatoRegistrador> registradores;
+
+  double get tasaAsistencia =>
+      totalRegistros == 0 ? 0 : (haEntrado / totalRegistros * 100);
 }
 
 enum FiltroParticipantes {

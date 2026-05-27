@@ -25,7 +25,7 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
         tagsPrincipales:    tags.where((t) => t.tipo == 'principal').toList(),
         tagsSecundarios:    tags.where((t) => t.tipo == 'secundario').toList(),
         maxTagsSecundarios: maxTagsSecundarios,
-      ));
+      ),);
     } on FallaServidor catch (e) {
       emit(CrearEventoError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
@@ -126,7 +126,7 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
   void eliminarGrupo(int grupoIndex) {
     actualizarCampo((s) => s.copiarCon(
       grupos: s.grupos.where((g) => g.grupoIndex != grupoIndex).toList(),
-    ));
+    ),);
   }
 
   Future<void> publicarEvento() async {

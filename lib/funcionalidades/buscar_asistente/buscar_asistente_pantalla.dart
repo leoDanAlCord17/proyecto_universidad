@@ -223,7 +223,7 @@ class _TarjetaResultado extends StatelessWidget {
         varianteBoton:    VarianteBoton.rojo,
         alPresionarBoton: evento.permiteSalidaAnticipada
             ? () => _HojaMarcarSalida.mostrar(context,
-                resultado: resultado, evento: evento, cubit: cubit)
+                resultado: resultado, evento: evento, cubit: cubit,)
             : null,
       );
     }
@@ -259,7 +259,7 @@ class _TrailingForaneo extends StatelessWidget {
           decoration: BoxDecoration(color: ColoresApp.tealClaro, borderRadius: BorderRadius.circular(30)),
           child: Text('Foráneo', style: Theme.of(context).textTheme.labelSmall?.copyWith(
             color: ColoresApp.teal, fontWeight: FontWeight.w700, fontSize: 11,
-          )),
+          ),),
         ),
       ],
     );
@@ -447,7 +447,7 @@ class _CuerpoHojaSalida extends StatelessWidget {
                       child: TextFormField(
                         controller: motivoCtrl,
                         decoration: const InputDecoration(
-                            hintText: 'Motivo de salida anticipada *'),
+                            hintText: 'Motivo de salida anticipada *',),
                         maxLines: 2,
                       ),
                     )
@@ -607,7 +607,7 @@ class _VistaError extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Text(mensaje,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(color: ColoresApp.rojo),
-          textAlign: TextAlign.center),
+          textAlign: TextAlign.center,),
       ),
     );
   }

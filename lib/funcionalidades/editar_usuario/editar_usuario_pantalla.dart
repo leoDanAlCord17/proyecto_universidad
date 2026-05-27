@@ -87,7 +87,7 @@ class _EditarUsuarioPantallaState extends State<EditarUsuarioPantalla> {
   Widget build(BuildContext context) {
     return BlocConsumer<EditarUsuarioCubit, EditarUsuarioEstado>(
       listener: _escucharEstado,
-      builder:  (context, estado) => _construirVista(context, estado),
+      builder:  _construirVista,
     );
   }
 
@@ -131,7 +131,7 @@ class _EditarUsuarioPantallaState extends State<EditarUsuarioPantalla> {
               numeroIdentificacionCtrl: _numeroIdentificacionCtrl,
               correoCtrl:               _correoCtrl,
               telefonoCtrl:             _telefonoCtrl,
-            )),
+            ),),
             _BarraInferior(
               estado:    estado,
               alGuardar: () => _alGuardar(context),

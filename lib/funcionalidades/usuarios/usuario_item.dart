@@ -1,6 +1,15 @@
 import 'package:equatable/equatable.dart';
 
 class UsuarioItem extends Equatable {
+
+  factory UsuarioItem.desdeJson(Map<String, dynamic> json) => UsuarioItem(
+    id:                   json['id']                    as String,
+    primerNombre:         json['primer_nombre']         as String? ?? '',
+    primerApellido:       json['primer_apellido']       as String? ?? '',
+    correo:               json['correo']                as String? ?? '',
+    estatus:              (json['estatus']              as bool?) ?? true,
+    numeroIdentificacion: json['numero_identificacion'] as String?,
+  );
   const UsuarioItem({
     required this.id,
     required this.primerNombre,
@@ -23,15 +32,6 @@ class UsuarioItem extends Equatable {
     final a = primerApellido.isNotEmpty ? primerApellido[0] : '';
     return '$n$a'.toUpperCase();
   }
-
-  factory UsuarioItem.desdeJson(Map<String, dynamic> json) => UsuarioItem(
-    id:                   json['id']                    as String,
-    primerNombre:         json['primer_nombre']         as String? ?? '',
-    primerApellido:       json['primer_apellido']       as String? ?? '',
-    correo:               json['correo']                as String? ?? '',
-    estatus:              (json['estatus']              as bool?) ?? true,
-    numeroIdentificacion: json['numero_identificacion'] as String?,
-  );
 
   @override
   List<Object?> get props => [

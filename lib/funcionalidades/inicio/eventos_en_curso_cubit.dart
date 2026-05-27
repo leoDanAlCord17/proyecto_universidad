@@ -33,14 +33,15 @@ class EventosEnCursoCubit extends Cubit<EventosEnCursoEstado> {
     emit(const EventosEnCursoCargando());
     try {
       final eventos = await _repositorio.obtenerEventosEnCurso(usuarioId);
+      if (isClosed) return;
       emit(EventosEnCursoCargado(eventos: eventos));
       for (final e in eventos) {
         _suscribir(e.id);
       }
     } on FallaServidor catch (f) {
-      emit(EventosEnCursoError(f.mensaje));
+      if (!isClosed) emit(EventosEnCursoError(f.mensaje));
     } on FallaInesperada catch (f) {
-      emit(EventosEnCursoError(f.mensaje));
+      if (!isClosed) emit(EventosEnCursoError(f.mensaje));
     }
   }
 

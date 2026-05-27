@@ -30,7 +30,7 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
     emit(estadoActual.copiarCon(
       usuarioIdProcessando: usuarioId,
       limpiarError:         true,
-    ));
+    ),);
     try {
       await _repositorio.aprobar(usuarioId);
       await cargar();
@@ -38,12 +38,12 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
       emit(estadoActual.copiarCon(
         limpiarProcessando: true,
         errorOperacion:     falla.mensaje,
-      ));
+      ),);
     } on FallaInesperada catch (falla) {
       emit(estadoActual.copiarCon(
         limpiarProcessando: true,
         errorOperacion:     falla.mensaje,
-      ));
+      ),);
     }
   }
 
@@ -54,7 +54,7 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
     emit(estadoActual.copiarCon(
       usuarioIdProcessando: usuarioId,
       limpiarError:         true,
-    ));
+    ),);
     try {
       await _repositorio.rechazar(usuarioId);
       await cargar();
@@ -62,12 +62,12 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
       emit(estadoActual.copiarCon(
         limpiarProcessando: true,
         errorOperacion:     falla.mensaje,
-      ));
+      ),);
     } on FallaInesperada catch (falla) {
       emit(estadoActual.copiarCon(
         limpiarProcessando: true,
         errorOperacion:     falla.mensaje,
-      ));
+      ),);
     }
   }
 }

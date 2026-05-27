@@ -19,7 +19,7 @@ class CampoFechaApp extends StatelessWidget {
 
   String _formatearFecha(DateTime fecha) {
     const meses = ['ene','feb','mar','abr','may','jun',
-                   'jul','ago','sep','oct','nov','dic'];
+                   'jul','ago','sep','oct','nov','dic',];
     return '${fecha.day} ${meses[fecha.month - 1]} ${fecha.year}';
   }
 

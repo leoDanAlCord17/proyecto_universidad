@@ -7,6 +7,20 @@ String _calcularIniciales(String nombre, String apellido) {
 }
 
 class ColaboradorItem extends Equatable {
+
+  factory ColaboradorItem.desdeJson(Map<String, dynamic> json) {
+    final primerNombre   = json['primer_nombre']   as String? ?? '';
+    final primerApellido = json['primer_apellido']  as String? ?? '';
+    return ColaboradorItem(
+      asignacionId:        json['asignacion_id']          as String,
+      usuarioId:           json['usuario_id']              as String,
+      nombre:              '$primerNombre $primerApellido'.trim(),
+      iniciales:           _calcularIniciales(primerNombre, primerApellido),
+      urlFoto:             json['url_avatar']              as String?,
+      numeroIdentificacion: json['numero_identificacion']  as String?,
+      asignadoPorNombre:   json['asignado_por_nombre']     as String?,
+    );
+  }
   const ColaboradorItem({
     required this.asignacionId,
     required this.usuarioId,
@@ -25,20 +39,6 @@ class ColaboradorItem extends Equatable {
   final String? numeroIdentificacion;
   final String? asignadoPorNombre;
 
-  factory ColaboradorItem.desdeJson(Map<String, dynamic> json) {
-    final primerNombre   = json['primer_nombre']   as String? ?? '';
-    final primerApellido = json['primer_apellido']  as String? ?? '';
-    return ColaboradorItem(
-      asignacionId:        json['asignacion_id']          as String,
-      usuarioId:           json['usuario_id']              as String,
-      nombre:              '$primerNombre $primerApellido'.trim(),
-      iniciales:           _calcularIniciales(primerNombre, primerApellido),
-      urlFoto:             json['url_avatar']              as String?,
-      numeroIdentificacion: json['numero_identificacion']  as String?,
-      asignadoPorNombre:   json['asignado_por_nombre']     as String?,
-    );
-  }
-
   @override
   List<Object?> get props => [
     asignacionId, usuarioId, nombre, iniciales, urlFoto, numeroIdentificacion,
@@ -47,6 +47,18 @@ class ColaboradorItem extends Equatable {
 }
 
 class UsuarioParaAsignar extends Equatable {
+
+  factory UsuarioParaAsignar.desdeJson(Map<String, dynamic> json) {
+    final primerNombre   = json['primer_nombre']   as String? ?? '';
+    final primerApellido = json['primer_apellido']  as String? ?? '';
+    return UsuarioParaAsignar(
+      id:                   json['id']                     as String,
+      nombre:               '$primerNombre $primerApellido'.trim(),
+      iniciales:            _calcularIniciales(primerNombre, primerApellido),
+      urlFoto:              json['url_avatar']              as String?,
+      numeroIdentificacion: json['numero_identificacion']   as String?,
+    );
+  }
   const UsuarioParaAsignar({
     required this.id,
     required this.nombre,
@@ -60,18 +72,6 @@ class UsuarioParaAsignar extends Equatable {
   final String  iniciales;
   final String? urlFoto;
   final String? numeroIdentificacion;
-
-  factory UsuarioParaAsignar.desdeJson(Map<String, dynamic> json) {
-    final primerNombre   = json['primer_nombre']   as String? ?? '';
-    final primerApellido = json['primer_apellido']  as String? ?? '';
-    return UsuarioParaAsignar(
-      id:                   json['id']                     as String,
-      nombre:               '$primerNombre $primerApellido'.trim(),
-      iniciales:            _calcularIniciales(primerNombre, primerApellido),
-      urlFoto:              json['url_avatar']              as String?,
-      numeroIdentificacion: json['numero_identificacion']   as String?,
-    );
-  }
 
   @override
   List<Object?> get props => [id, nombre, iniciales, urlFoto, numeroIdentificacion];

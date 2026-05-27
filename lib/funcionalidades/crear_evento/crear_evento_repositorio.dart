@@ -114,7 +114,7 @@ class CrearEventoRepositorio {
       final Map<int, TagOpcion>       principalesPorGrupo  = {};
       final Map<int, List<TagOpcion>> secundariosPorGrupo  = {};
 
-      for (final fila in datos as List) {
+      for (final fila in (datos as List).cast<Map<String, dynamic>>()) {
         final grupoIndex = fila['grupo_index'] as int;
         final tagData    = fila['tags']         as Map<String, dynamic>?;
         if (tagData == null) continue;
@@ -130,7 +130,7 @@ class CrearEventoRepositorio {
         grupoIndex:      e.key,
         tagPrincipal:    e.value,
         tagsSecundarios: secundariosPorGrupo[e.key] ?? [],
-      )).toList();
+      ),).toList();
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {

@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:uniasist/configuracion/colores_app.dart';
 
 class CampoTextoApp extends StatefulWidget {
-  final String etiqueta;
-  final String hintText;
-  final TextEditingController? controller;
-  final bool esContrasena;
-  final bool soloLectura;
 
   const CampoTextoApp({
     super.key,
@@ -16,6 +11,11 @@ class CampoTextoApp extends StatefulWidget {
     this.esContrasena = false,
     this.soloLectura = false,
   });
+  final String etiqueta;
+  final String hintText;
+  final TextEditingController? controller;
+  final bool esContrasena;
+  final bool soloLectura;
 
   @override
   State<CampoTextoApp> createState() => _CampoTextoAppState();

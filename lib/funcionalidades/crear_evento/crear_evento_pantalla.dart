@@ -100,7 +100,7 @@ class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
           AvisoApp.mostrar(context, texto: estado.errorValidacion!, estilo: EstiloAviso.error);
         }
       },
-      builder: (context, estado) => _construirVista(context, estado),
+      builder: _construirVista,
     );
   }
 
@@ -512,7 +512,7 @@ class _BotonesAccion extends StatelessWidget {
                 child: Center(
                   child: estado.estaGuardando
                       ? const CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 2)
+                          color: Colors.white, strokeWidth: 2,)
                       : const Text(
                           'Publicar evento',
                           style: TextStyle(

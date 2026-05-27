@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, master]
+  pull_request:
+    branches: [main, develop, master]
+
+jobs:
+  analyze_and_test:
+    name: Analyze & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: stable
+          cache: true
+
+      - name: Instalar dependencias
+        run: flutter pub get
+
+      - name: Verificar formato de código
+        run: dart format --output=none --set-exit-if-changed lib/ test/
+
+      - name: Análisis estático
+        run: flutter analyze --no-fatal-infos
+
+      - name: Ejecutar tests con cobertura
+        run: flutter test --no-pub --coverage
+
+      - name: Verificar umbral mínimo de cobertura (60%)
+        run: |
+          COVERAGE=$(lcov --summary coverage/lcov.info 2>&1 | grep 'lines' | grep -oP '\d+\.\d+(?=%)' | head -1)
+          echo "Cobertura de líneas: ${COVERAGE}%"
+          if (( $(echo "$COVERAGE < 60" | bc -l) )); then
+            echo "❌ Cobertura ${COVERAGE}% es menor al mínimo requerido (60%)"
+            exit 1
+          fi
+          echo "✅ Cobertura ${COVERAGE}% supera el umbral mínimo"
+
+      - name: Subir reporte de cobertura
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          file: coverage/lcov.info
+          fail_ci_if_error: false

@@ -21,7 +21,7 @@ class CrearTipoEventoCubit extends Cubit<CrearTipoEventoEstado> {
         tipoEventoId:       id,
         nombreInicial:      (datos['nombre']      as String?) ?? '',
         descripcionInicial: (datos['descripcion'] as String?) ?? '',
-      ));
+      ),);
     } on FallaServidor catch (falla) {
       emit(CrearTipoEventoError(mensaje: falla.mensaje));
     } on FallaInesperada catch (falla) {

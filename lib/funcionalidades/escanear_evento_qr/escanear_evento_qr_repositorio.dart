@@ -57,7 +57,7 @@ class EscanearEventoQrRepositorio {
           .inFilter('tag_id', todosTagIds);
 
       final setTags = userTags.map((f) => f['tag_id'] as String).toSet();
-      return mapa.values.any((grupo) => setTags.containsAll(grupo));
+      return mapa.values.any(setTags.containsAll);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {

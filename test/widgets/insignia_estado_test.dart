@@ -91,7 +91,7 @@ void main() {
           enMarcoApp(InsigniaEstado(estatus: estatus)),
         );
         expect(tester.takeException(), isNull,
-            reason: 'estatus "$estatus" lanzó una excepción');
+            reason: 'estatus "$estatus" lanzó una excepción',);
       }
     });
   });
