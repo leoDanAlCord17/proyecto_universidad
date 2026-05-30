@@ -49,6 +49,7 @@ final class CrearEventoCargado extends CrearEventoEstado {
     this.marcarAusentesAuto      = false,
     this.estaGuardando           = false,
     this.errorValidacion,
+    this.pasoActual              = 0,
   });
 
   final String?            eventoId;
@@ -77,6 +78,9 @@ final class CrearEventoCargado extends CrearEventoEstado {
   final bool               estaGuardando;
   final String?            errorValidacion;
 
+  /// Paso actual del wizard (0 = info básica, 1 = fecha/lugar, 2 = configuración).
+  final int                pasoActual;
+
   CrearEventoCargado copiarCon({
     String?              eventoId,
     List<TipoEvento>?    tiposEvento,
@@ -104,6 +108,7 @@ final class CrearEventoCargado extends CrearEventoEstado {
     bool?                estaGuardando,
     String?              errorValidacion,
     bool                 limpiarErrorValidacion = false,
+    int?                 pasoActual,
   }) =>
       CrearEventoCargado(
         eventoId:                eventoId                ?? this.eventoId,
@@ -133,6 +138,7 @@ final class CrearEventoCargado extends CrearEventoEstado {
         errorValidacion: limpiarErrorValidacion
             ? null
             : (errorValidacion ?? this.errorValidacion),
+        pasoActual:              pasoActual              ?? this.pasoActual,
       );
 
   @override
@@ -162,16 +168,23 @@ final class CrearEventoCargado extends CrearEventoEstado {
         marcarAusentesAuto,
         estaGuardando,
         errorValidacion,
+        pasoActual,
       ];
 }
 
 final class CrearEventoGuardado extends CrearEventoEstado {
-  const CrearEventoGuardado({required this.eventoId});
+  const CrearEventoGuardado({
+    required this.eventoId,
+    this.esBorrador = false,
+  });
 
   final String eventoId;
 
+  /// `true` cuando se guardó como borrador (muestra snackbar de confirmación).
+  final bool esBorrador;
+
   @override
-  List<Object?> get props => [eventoId];
+  List<Object?> get props => [eventoId, esBorrador];
 }
 
 final class CrearEventoError extends CrearEventoEstado {

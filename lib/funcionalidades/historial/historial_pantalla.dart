@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/constantes.dart';
+import '../../compartido/widgets/avisos/vista_error_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
@@ -11,6 +12,7 @@ import '../autenticacion/auth_cubit.dart';
 import '../autenticacion/auth_estado.dart';
 import 'historial_cubit.dart';
 import 'historial_estado.dart';
+import 'historial_exportador.dart';
 import 'historial_item.dart';
 
 class HistorialPantalla extends StatefulWidget {
@@ -26,6 +28,7 @@ class _HistorialPantallaState extends State<HistorialPantalla>
   final      TextEditingController _busquedaCtrl = TextEditingController();
   DateTimeRange? _rango;
   bool _estaIniciado = false;
+  bool _exportando   = false;
 
   @override
   void initState() {
@@ -48,6 +51,18 @@ class _HistorialPantallaState extends State<HistorialPantalla>
     final authEstado = context.read<AuthCubit>().state;
     if (authEstado is Autenticado) {
       context.read<HistorialCubit>().cargar(authEstado.usuario.id!);
+    }
+  }
+
+  Future<void> _exportar(List<HistorialItem> items, String nombre) async {
+    setState(() => _exportando = true);
+    try {
+      await HistorialExportador.generarYCompartirPdf(
+        nombreUsuario: nombre,
+        items:         items,
+      );
+    } finally {
+      if (mounted) setState(() => _exportando = false);
     }
   }
 
@@ -82,6 +97,10 @@ class _HistorialPantallaState extends State<HistorialPantalla>
     final ausentesFiltrados    = filtrados.where((i) => i.esAusente).toList();
     final hayBusquedaActiva    = _busquedaCtrl.text.trim().isNotEmpty || _rango != null;
 
+    final authEstado = context.read<AuthCubit>().state;
+    final nombre     = authEstado is Autenticado ? authEstado.usuario.nombreCompleto : '';
+    final todosItems = cargado?.items ?? [];
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor:          Colors.transparent,
@@ -92,7 +111,12 @@ class _HistorialPantallaState extends State<HistorialPantalla>
         backgroundColor: ColoresApp.fondo,
         body: Column(
           children: [
-            const _BarraTitulo(),
+            _BarraTitulo(
+              estaExportando: _exportando,
+              alCompartir:    (todosItems.isNotEmpty && !_exportando)
+                  ? () => _exportar(todosItems, nombre)
+                  : null,
+            ),
             if (cargado != null) ..._construirControles(filtrados),
             Expanded(
               child: _Cuerpo(
@@ -131,7 +155,13 @@ class _HistorialPantallaState extends State<HistorialPantalla>
 // ─── Barra de título ──────────────────────────────────────────────────────────
 
 class _BarraTitulo extends StatelessWidget {
-  const _BarraTitulo();
+  const _BarraTitulo({
+    this.alCompartir,
+    this.estaExportando = false,
+  });
+
+  final VoidCallback? alCompartir;
+  final bool          estaExportando;
 
   @override
   Widget build(BuildContext context) {
@@ -153,6 +183,33 @@ class _BarraTitulo extends StatelessWidget {
             ),
           ],
         ),
+        derecha: alCompartir != null || estaExportando
+            ? Material(
+                color:        Colors.transparent,
+                borderRadius: BorderRadius.circular(50),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(50),
+                  onTap:        estaExportando ? null : alCompartir,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: estaExportando
+                        ? const SizedBox(
+                            width:  20,
+                            height: 20,
+                            child:  CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color:       ColoresApp.acento,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.ios_share_rounded,
+                            color: ColoresApp.acento,
+                            size:  22,
+                          ),
+                  ),
+                ),
+              )
+            : null,
       ),
     );
   }
@@ -334,6 +391,36 @@ class _Cuerpo extends StatelessWidget {
     required this.hayBusquedaActiva,
   });
 
+  // ── Configuraciones de estado vacío ─────────────────────────────────────────
+  static const _vaciaResultados = _VaciaConfig(
+    icono:     Icons.search_off_rounded,
+    titulo:    'Sin resultados',
+    subtitulo: 'Intenta con otro término o ajusta el rango de fechas',
+  );
+  static const _vaciaTodos = _VaciaConfig(
+    icono:     Icons.calendar_today_outlined,
+    titulo:    'Sin eventos aún',
+    subtitulo: 'Los eventos a los que asistas aparecerán aquí',
+  );
+  static const _vaciaAsistidos = _VaciaConfig(
+    icono:      Icons.check_circle_outline,
+    titulo:     'Sin asistencias aún',
+    subtitulo:  'Los eventos donde asististe aparecerán aquí',
+    colorIcono: ColoresApp.verde,
+  );
+  static const _vaciaSalieron = _VaciaConfig(
+    icono:      Icons.logout_outlined,
+    titulo:     'Sin salidas anticipadas',
+    subtitulo:  'Aquí verás los eventos donde saliste antes del cierre',
+    colorIcono: ColoresApp.ambar,
+  );
+  static const _vaciaAusentes = _VaciaConfig(
+    icono:      Icons.emoji_events_rounded,
+    titulo:     '¡Sin ausencias!',
+    subtitulo:  'Mantén este récord asistiendo a todos tus eventos',
+    colorIcono: ColoresApp.verde,
+  );
+
   final HistorialEstado     estado;
   final TabController       tabController;
   final List<HistorialItem> todos;
@@ -352,24 +439,32 @@ class _Cuerpo extends StatelessWidget {
           controller: tabController,
           children: [
             _ListaHistorial(
-              items:         todos,
-              etiquetaVacia: hayBusquedaActiva ? 'Sin resultados' : 'Sin eventos en el historial',
+              items:       todos,
+              vaciaConfig: hayBusquedaActiva ? _vaciaResultados : _vaciaTodos,
             ),
             _ListaHistorial(
-              items:         asistidos,
-              etiquetaVacia: hayBusquedaActiva ? 'Sin resultados' : 'No hay eventos donde hayas asistido',
+              items:       asistidos,
+              vaciaConfig: hayBusquedaActiva ? _vaciaResultados : _vaciaAsistidos,
             ),
             _ListaHistorial(
-              items:         salieron,
-              etiquetaVacia: hayBusquedaActiva ? 'Sin resultados' : 'No hay eventos donde hayas salido antes',
+              items:       salieron,
+              vaciaConfig: hayBusquedaActiva ? _vaciaResultados : _vaciaSalieron,
             ),
             _ListaHistorial(
-              items:         ausentes,
-              etiquetaVacia: hayBusquedaActiva ? 'Sin resultados' : 'No hay eventos donde hayas estado ausente',
+              items:       ausentes,
+              vaciaConfig: hayBusquedaActiva ? _vaciaResultados : _vaciaAusentes,
             ),
           ],
         ),
-      final HistorialError error => _VistaError(mensaje: error.mensaje),
+      final HistorialError error => VistaErrorApp(
+          mensaje:      error.mensaje,
+          alReintentar: () {
+            final authEstado = context.read<AuthCubit>().state;
+            if (authEstado is Autenticado) {
+              context.read<HistorialCubit>().cargar(authEstado.usuario.id!);
+            }
+          },
+        ),
     };
   }
 }
@@ -377,26 +472,15 @@ class _Cuerpo extends StatelessWidget {
 // ─── Lista de eventos ─────────────────────────────────────────────────────────
 
 class _ListaHistorial extends StatelessWidget {
-  const _ListaHistorial({required this.items, required this.etiquetaVacia});
+  const _ListaHistorial({required this.items, required this.vaciaConfig});
 
   final List<HistorialItem> items;
-  final String              etiquetaVacia;
+  final _VaciaConfig        vaciaConfig;
 
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Text(
-            etiquetaVacia,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: ColoresApp.textoTerciario,
-            ),
-          ),
-        ),
-      );
+      return _VistaVacia(config: vaciaConfig);
     }
 
     return ListView.builder(
@@ -593,40 +677,67 @@ class _EtiquetaEstatus extends StatelessWidget {
   }
 }
 
-// ─── Vista de error ───────────────────────────────────────────────────────────
 
-class _VistaError extends StatelessWidget {
-  const _VistaError({required this.mensaje});
+// ─── Configuración de estado vacío ───────────────────────────────────────────
 
-  final String mensaje;
+class _VaciaConfig {
+  const _VaciaConfig({
+    required this.icono,
+    required this.titulo,
+    this.subtitulo,
+    this.colorIcono,
+  });
+
+  final IconData icono;
+  final String   titulo;
+  final String?  subtitulo;
+  final Color?   colorIcono;
+}
+
+// ─── Vista estado vacío ───────────────────────────────────────────────────────
+
+class _VistaVacia extends StatelessWidget {
+  const _VistaVacia({required this.config});
+
+  final _VaciaConfig config;
 
   @override
   Widget build(BuildContext context) {
+    final color = config.colorIcono ?? ColoresApp.textoTerciario;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, color: ColoresApp.rojo, size: 48),
+            Container(
+              width:  72,
+              height: 72,
+              decoration: BoxDecoration(
+                color:  color.withValues(alpha: 0.1),
+                shape:  BoxShape.circle,
+              ),
+              child: Icon(config.icono, color: color, size: 36),
+            ),
             const SizedBox(height: 16),
             Text(
-              mensaje,
+              config.titulo,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color:      ColoresApp.textoPrimario,
               ),
             ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: () {
-                final authEstado = context.read<AuthCubit>().state;
-                if (authEstado is Autenticado) {
-                  context.read<HistorialCubit>().cargar(authEstado.usuario.id!);
-                }
-              },
-              child: const Text('Reintentar'),
-            ),
+            if (config.subtitulo != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                config.subtitulo!,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: ColoresApp.textoTerciario,
+                ),
+              ),
+            ],
           ],
         ),
       ),

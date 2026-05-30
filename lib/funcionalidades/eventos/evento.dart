@@ -149,10 +149,20 @@ class EventoConGrupos extends Equatable {
   const EventoConGrupos({
     required this.evento,
     required this.grupos,
+    this.totalPresentes,
   });
 
   final Evento            evento;
   final List<GrupoEvento> grupos;
+
+  /// Cantidad de asistentes actualmente presentes (solo en curso).
+  final int? totalPresentes;
+
+  EventoConGrupos copiarConPresentes(int total) => EventoConGrupos(
+    evento:         evento,
+    grupos:         grupos,
+    totalPresentes: total,
+  );
 
   bool get esGeneral => evento.alcance == AlcanceEvento.general;
 
@@ -190,5 +200,5 @@ class EventoConGrupos extends Equatable {
   }
 
   @override
-  List<Object?> get props => [evento, grupos];
+  List<Object?> get props => [evento, grupos, totalPresentes];
 }

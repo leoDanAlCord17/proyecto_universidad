@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../compartido/widgets/avisos/vista_error_app.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
@@ -97,7 +98,7 @@ class _Cuerpo extends StatelessWidget {
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
       PermisosCargados() => _Lista(estado: e),
-      PermisosError()    => _VistaError(mensaje: e.mensaje),
+      PermisosError()    => VistaErrorApp(mensaje: e.mensaje, alReintentar: () => context.read<PermisosCubit>().cargarPermisos()),
     };
   }
 }
@@ -195,33 +196,3 @@ class _TarjetaPermiso extends StatelessWidget {
   }
 }
 
-// ─── Vista de error ───────────────────────────────────────────────────────────
-
-class _VistaError extends StatelessWidget {
-  const _VistaError({required this.mensaje});
-
-  final String mensaje;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.error_outline, color: ColoresApp.rojo, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              mensaje,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

@@ -161,14 +161,14 @@ class _BotonPublicar extends StatelessWidget {
                       width:  16,
                       height: 16,
                       child:  CircularProgressIndicator(
-                        color:       Colors.white,
+                        color:       ColoresApp.blanco,
                         strokeWidth: 2,
                       ),
                     )
                   : const Text(
                       'Publicar',
                       style: TextStyle(
-                        color:      Colors.white,
+                        color:      ColoresApp.blanco,
                         fontSize:   13,
                         fontWeight: FontWeight.w700,
                       ),

@@ -37,6 +37,13 @@ class TarjetaQrPerfil extends StatelessWidget {
               letterSpacing: 1.4,
             ),
           ),
+          const SizedBox(height: 4),
+          Text(
+            'Muéstralo al organizador para registrar tu asistencia',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: ColoresApp.blanco.withValues(alpha: 0.65),
+            ),
+          ),
           const SizedBox(height: 16),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +82,7 @@ class _ContenedorQr extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color:        Colors.white,
+        color:        ColoresApp.blanco,
         borderRadius: BorderRadius.circular(14),
       ),
       child: QrUsuario(usuarioId: usuarioId, tamanio: 110),
@@ -127,7 +134,7 @@ class _EtiquetaSeccion extends StatelessWidget {
     return Text(
       texto,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color:      Colors.white.withValues(alpha: 0.75),
+        color:      ColoresApp.blanco.withValues(alpha: 0.75),
         fontWeight: FontWeight.w600,
       ),
     );
@@ -169,16 +176,16 @@ class _ChipPerfil extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color:        Colors.white.withValues(alpha: 0.18),
+        color:        ColoresApp.blanco.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(30),
         border:       Border.all(
-          color: Colors.white.withValues(alpha: 0.25),
+          color: ColoresApp.blanco.withValues(alpha: 0.25),
         ),
       ),
       child: Text(
         texto,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color:      Colors.white,
+          color:      ColoresApp.blanco,
           fontWeight: FontWeight.w600,
         ),
       ),

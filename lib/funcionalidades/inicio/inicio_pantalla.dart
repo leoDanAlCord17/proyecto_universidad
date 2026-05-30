@@ -133,13 +133,6 @@ class _CabeceraTexto extends StatelessWidget {
 
   final String nombre;
 
-  String _obtenerFecha() {
-    final ahora = DateTime.now();
-    const dias  = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
-    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-    return '${dias[ahora.weekday - 1]}, ${ahora.day} ${meses[ahora.month - 1]}';
-  }
-
   @override
   Widget build(BuildContext context) {
     final estilos = Theme.of(context).textTheme;
@@ -147,9 +140,22 @@ class _CabeceraTexto extends StatelessWidget {
       mainAxisAlignment:  MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          _obtenerFecha(),
-          style: estilos.titleSmall?.copyWith(color: ColoresApp.textoSecundario),
+        BlocSelector<EventosEnCursoCubit, EventosEnCursoEstado, int>(
+          selector: (estado) =>
+              estado is EventosEnCursoCargado ? estado.eventos.length : 0,
+          builder: (context, cantidad) {
+            if (cantidad == 0) return const SizedBox.shrink();
+            final texto = cantidad == 1
+                ? '1 evento activo ahora'
+                : '$cantidad eventos activos ahora';
+            return Text(
+              texto,
+              style: estilos.titleSmall?.copyWith(
+                color:      ColoresApp.verde,
+                fontWeight: FontWeight.w600,
+              ),
+            );
+          },
         ),
         Text(
           'Hola, $nombre 👋',
@@ -175,7 +181,7 @@ class _SeccionEventosEnCurso extends StatelessWidget {
   Widget build(BuildContext context) {
     if (estado is! EventosEnCursoCargado) return const SizedBox.shrink();
     final eventos = (estado as EventosEnCursoCargado).eventos;
-    if (eventos.isEmpty) return const SizedBox.shrink();
+    if (eventos.isEmpty) return const _EstadoVacioEventos();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -185,6 +191,49 @@ class _SeccionEventosEnCurso extends StatelessWidget {
           const SizedBox(height: 12),
         ],
       ],
+    );
+  }
+}
+
+// ─── Estado vacío: sin eventos en curso ──────────────────────────────────────
+
+class _EstadoVacioEventos extends StatelessWidget {
+  const _EstadoVacioEventos();
+
+  @override
+  Widget build(BuildContext context) {
+    final estilos = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Container(
+        width:   double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        decoration: BoxDecoration(
+          color:        ColoresApp.superficieTerciar,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            const Icon(
+              Icons.event_busy_outlined,
+              size:  40,
+              color: ColoresApp.textoSecundario,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'No hay eventos activos en este momento',
+              textAlign: TextAlign.center,
+              style: estilos.bodyMedium?.copyWith(color: ColoresApp.textoSecundario),
+            ),
+            const SizedBox(height: 12),
+            TextButton.icon(
+              onPressed: () => context.go(Rutas.eventos),
+              icon:  const Icon(Icons.calendar_month_outlined),
+              label: const Text('Ver próximos eventos'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -358,7 +407,7 @@ class _Insignia extends StatelessWidget {
         child: Text(
           cantidad > 9 ? '+9' : '$cantidad',
           style: const TextStyle(
-            color:      Colors.white,
+            color:      ColoresApp.blanco,
             fontSize:   10,
             fontWeight: FontWeight.w700,
             height:     1.0,

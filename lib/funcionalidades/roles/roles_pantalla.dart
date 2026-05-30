@@ -103,8 +103,8 @@ class _BotonCrearRol extends StatelessWidget {
           if (context.mounted) unawaited(context.read<RolesCubit>().cargarRoles());
         },
         borderRadius:   BorderRadius.circular(12),
-        splashColor:    Colors.white.withValues(alpha: 0.3),
-        highlightColor: Colors.white.withValues(alpha: 0.15),
+        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
           width:  40,
           height: 40,
@@ -114,7 +114,7 @@ class _BotonCrearRol extends StatelessWidget {
           ),
           child: const Icon(
             Icons.add_rounded,
-            color: Colors.white,
+            color: ColoresApp.blanco,
             size:  22,
           ),
         ),
@@ -180,7 +180,10 @@ class _Lista extends StatelessWidget {
         const SizedBox(height: 12),
         ...items.map((r) => Padding(
           padding: const EdgeInsets.only(bottom: 10),
-          child:   _TarjetaRol(rol: r),
+          child:   _TarjetaRol(
+            rol:              r,
+            cantidadUsuarios: estado.conteoUsuarios[r.id] ?? 0,
+          ),
         ),),
       ],
     );
@@ -190,9 +193,10 @@ class _Lista extends StatelessWidget {
 // ─── Tarjeta de rol ───────────────────────────────────────────────────────────
 
 class _TarjetaRol extends StatelessWidget {
-  const _TarjetaRol({required this.rol});
+  const _TarjetaRol({required this.rol, required this.cantidadUsuarios});
 
   final Rol rol;
+  final int cantidadUsuarios;
 
   @override
   Widget build(BuildContext context) {
@@ -233,6 +237,8 @@ class _TarjetaRol extends StatelessWidget {
                     ),
                   ),
                 ],
+                const SizedBox(height: 6),
+                _ContadorUsuarios(cantidad: cantidadUsuarios),
               ],
             ),
           ),
@@ -290,8 +296,8 @@ class _BotonEditar extends StatelessWidget {
       child: InkWell(
         onTap:          alPresionar,
         borderRadius:   BorderRadius.circular(10),
-        splashColor:    Colors.white.withValues(alpha: 0.3),
-        highlightColor: Colors.white.withValues(alpha: 0.15),
+        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           decoration: BoxDecoration(
@@ -301,13 +307,46 @@ class _BotonEditar extends StatelessWidget {
           child: const Text(
             'Editar',
             style: TextStyle(
-              color:      Colors.white,
+              color:      ColoresApp.blanco,
               fontSize:   14,
               fontWeight: FontWeight.w600,
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+// ─── Contador de usuarios asignados ──────────────────────────────────────────
+
+class _ContadorUsuarios extends StatelessWidget {
+  const _ContadorUsuarios({required this.cantidad});
+
+  final int cantidad;
+
+  @override
+  Widget build(BuildContext context) {
+    final texto = cantidad == 0
+        ? 'Sin usuarios asignados'
+        : 'Asignado a $cantidad ${cantidad == 1 ? "usuario" : "usuarios"}';
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(
+          Icons.people_outline_rounded,
+          size:  13,
+          color: ColoresApp.textoTerciario,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          texto,
+          style: const TextStyle(
+            color:    ColoresApp.textoTerciario,
+            fontSize: 12,
+          ),
+        ),
+      ],
     );
   }
 }

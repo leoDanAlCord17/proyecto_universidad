@@ -54,6 +54,7 @@ abstract class ColoresApp {
 
   // ─── SOMBRA ───────────────────────────────────────────
   static const sombraTarjeta  = Color(0x0F5B3FD4);
+  static const sombraAcento   = Color(0x1A5B3FD4);  // acento 10%
   static const sombraGeneral  = Color(0x1A000000);
   static const sombraBarrera  = Color(0x66000000);  // overlay oscuro de modales
 
@@ -63,4 +64,20 @@ abstract class ColoresApp {
   static const bordeError     = Color(0x40C23B3B);   // rojo  40%
 
   static const blanco = Color.fromARGB(255, 255, 255, 255);
+
+  // ─── ESCÁNER QR (tema oscuro) ─────────────────────────────────────
+  static const scannerFondo       = Color(0xFF0D0D1A);  // fondo cámara
+  static const scannerOverlay     = Color(0xA6000000);  // máscara 65%
+  static const scannerEsquina     = Color(0xFF00C9A7);  // marco listo
+  static const scannerVerdeOscuro = Color(0xFF092B1A);  // tarjeta confirmado
+  static const scannerAmbarOscuro = Color(0xFF2B1800);  // tarjeta ya registrado
+  static const scannerRojoOscuro  = Color(0xFF2B0808);  // tarjeta inválido / sin acceso
+  static const scannerAzulOscuro  = Color(0xFF0D1829);  // tarjeta no disponible
+  static const scannerGris        = Color(0xFF607D8B);  // blueGrey base
+  static const scannerGrisClaro   = Color(0xFF90A4AE);  // blueGrey 300
+  static const scannerGrisOscuro  = Color(0xFF546E7A);  // blueGrey 600
+
+  // ─── BORDES ADICIONALES ───────────────────────────────────────────
+  static const bordeSutilVerde = Color(0x1A1A9462);   // verde  10%
+  static const bordeSuaveVerde = Color(0x261A9462);   // verde  15%
 }

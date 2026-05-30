@@ -127,7 +127,7 @@ class _BotonPrimario extends StatelessWidget {
                 begin:  Alignment.topLeft,
                 end:    Alignment.bottomRight,
               ),
-        color:        alPresionar == null ? Colors.grey.shade300 : null,
+        color:        alPresionar == null ? ColoresApp.superficieTerciar : null,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ElevatedButton(
@@ -145,7 +145,7 @@ class _BotonPrimario extends StatelessWidget {
                 child: const SizedBox(
                   width: 22, height: 22,
                   child: CircularProgressIndicator(
-                    color:       Colors.white,
+                    color:       ColoresApp.blanco,
                     strokeWidth: 2.5,
                   ),
                 ),
@@ -153,7 +153,7 @@ class _BotonPrimario extends StatelessWidget {
             : _ContenidoBoton(
                 texto:      texto,
                 icono:      icono,
-                colorTexto: Colors.white,
+                colorTexto: ColoresApp.blanco,
               ),
       ),
     );
@@ -218,7 +218,7 @@ class _BotonRojo extends StatelessWidget {
       child: _ContenidoBoton(
         texto:      texto,
         icono:      icono,
-        colorTexto: Colors.white,
+        colorTexto: ColoresApp.blanco,
       ),
     );
   }

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/widgets/avisos/aviso_app.dart';
+import '../../compartido/widgets/avisos/vista_error_app.dart';
 import '../../compartido/widgets/botones/boton_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
 import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
@@ -150,7 +151,7 @@ class _Cuerpo extends StatelessWidget {
       final RevisionUsuariosCargados cargados =>
           _Lista(estado: cargados, busqueda: busqueda),
       final RevisionUsuariosError error =>
-          _VistaError(mensaje: error.mensaje),
+          VistaErrorApp(mensaje: error.mensaje, alReintentar: () => context.read<RevisionUsuariosCubit>().cargar()),
     };
   }
 }
@@ -224,7 +225,7 @@ class _Lista extends StatelessWidget {
         ),
         if (estado.usuarioIdProcessando != null)
           const ColoredBox(
-            color: Colors.black12,
+            color: ColoresApp.sombraGeneral,
             child: Center(
               child: CircularProgressIndicator(color: ColoresApp.acento),
             ),
@@ -434,39 +435,3 @@ class _BotonesAccion extends StatelessWidget {
   }
 }
 
-// ─── Vista de error ───────────────────────────────────────────────────────────
-
-class _VistaError extends StatelessWidget {
-  const _VistaError({required this.mensaje});
-
-  final String mensaje;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.error_outline, color: ColoresApp.rojo, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              mensaje,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
-            ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: () =>
-                  context.read<RevisionUsuariosCubit>().cargar(),
-              child: const Text('Reintentar'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

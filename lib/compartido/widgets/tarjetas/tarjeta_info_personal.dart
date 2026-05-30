@@ -11,6 +11,7 @@ class TarjetaInfoPersonal extends StatelessWidget {
     this.tagPrincipal,
     this.tagsSecundarios   = const [],
     this.miembroDesde,
+    this.alEditarTap,
   });
 
   final String?       cedula;
@@ -19,6 +20,8 @@ class TarjetaInfoPersonal extends StatelessWidget {
   final String?       tagPrincipal;
   final List<String>  tagsSecundarios;
   final DateTime?     miembroDesde;
+  /// Si no es null, muestra el botón de editar en el encabezado.
+  final VoidCallback? alEditarTap;
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +30,36 @@ class TarjetaInfoPersonal extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'INFORMACIÓN PERSONAL',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color:         ColoresApp.textoTerciario,
-              fontWeight:    FontWeight.w700,
-              letterSpacing: 1.2,
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'INFORMACIÓN PERSONAL',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color:         ColoresApp.textoTerciario,
+                    fontWeight:    FontWeight.w700,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+              if (alEditarTap != null)
+                Material(
+                  color:        Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap:        alEditarTap,
+                    child: const Padding(
+                      padding: EdgeInsets.all(6),
+                      child:   Icon(
+                        Icons.edit_outlined,
+                        size:  18,
+                        color: ColoresApp.acento,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
           const SizedBox(height: 16),
           if (cedula != null) ...[

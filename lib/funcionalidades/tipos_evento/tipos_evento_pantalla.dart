@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/widgets/avisos/aviso_app.dart';
+import '../../compartido/widgets/avisos/vista_error_app.dart';
 import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
@@ -124,8 +125,8 @@ class _BotonCrear extends StatelessWidget {
           if (context.mounted) unawaited(context.read<TiposEventoCubit>().cargar());
         },
         borderRadius:   BorderRadius.circular(12),
-        splashColor:    Colors.white.withValues(alpha: 0.3),
-        highlightColor: Colors.white.withValues(alpha: 0.15),
+        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
           width:  40,
           height: 40,
@@ -133,7 +134,7 @@ class _BotonCrear extends StatelessWidget {
             gradient:     ColoresApp.degradadoPrincipal,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Icon(Icons.add_rounded, color: Colors.white, size: 22),
+          child: const Icon(Icons.add_rounded, color: ColoresApp.blanco, size: 22),
         ),
       ),
     );
@@ -154,7 +155,7 @@ class _Cuerpo extends StatelessWidget {
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
       final TiposEventoCargados cargados => _Lista(estado: cargados),
-      final TiposEventoError error       => _VistaError(mensaje: error.mensaje),
+      final TiposEventoError error       => VistaErrorApp(mensaje: error.mensaje, alReintentar: () => context.read<TiposEventoCubit>().cargar()),
     };
   }
 }
@@ -222,7 +223,7 @@ class _Lista extends StatelessWidget {
         ),
         if (estado.estaDesactivando)
           const ColoredBox(
-            color: Colors.black12,
+            color: ColoresApp.sombraGeneral,
             child: Center(
               child: CircularProgressIndicator(color: ColoresApp.acento),
             ),
@@ -317,8 +318,8 @@ class _BotonEditar extends StatelessWidget {
       child: InkWell(
         onTap:          alPresionar,
         borderRadius:   BorderRadius.circular(10),
-        splashColor:    Colors.white.withValues(alpha: 0.3),
-        highlightColor: Colors.white.withValues(alpha: 0.15),
+        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           decoration: BoxDecoration(
@@ -328,7 +329,7 @@ class _BotonEditar extends StatelessWidget {
           child: const Text(
             'Editar',
             style: TextStyle(
-              color:      Colors.white,
+              color:      ColoresApp.blanco,
               fontSize:   14,
               fontWeight: FontWeight.w600,
             ),
@@ -377,38 +378,3 @@ class _BotonDesactivar extends StatelessWidget {
   }
 }
 
-// ─── Vista de error ───────────────────────────────────────────────────────────
-
-class _VistaError extends StatelessWidget {
-  const _VistaError({required this.mensaje});
-
-  final String mensaje;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.error_outline, color: ColoresApp.rojo, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              mensaje,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
-            ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: () => context.read<TiposEventoCubit>().cargar(),
-              child: const Text('Reintentar'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

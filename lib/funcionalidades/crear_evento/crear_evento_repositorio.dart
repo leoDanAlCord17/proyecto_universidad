@@ -46,9 +46,10 @@ class CrearEventoRepositorio {
   Future<int> obtenerMaxTagsSecundarios() async {
     try {
       final fila = await _cliente
-          .from(TablasSupabase.configuracionInt)
+          .from(TablasSupabase.configuracion)
           .select('valor')
           .eq('clave', 'max_tags_secundarios_por_usuario')
+          .eq('estatus', true)
           .maybeSingle();
       return (fila?['valor'] as int?) ?? 3;
     } on PostgrestException catch (e) {

@@ -41,4 +41,39 @@ class PerfilRepositorio {
       throw FallaInesperada(TraductorErrores.deInesperado(e));
     }
   }
+
+  /// Retorna true si la configuración permite al usuario editar su perfil.
+  /// Devuelve false ante cualquier error (seguro por defecto).
+  Future<bool> obtenerPuedeEditarPerfil() async {
+    try {
+      final fila = await _supabase
+          .from(TablasSupabase.configuracion)
+          .select('valor')
+          .eq('clave', 'usuario_editar_perfil')
+          .eq('estatus', true)
+          .maybeSingle();
+      return (fila?['valor'] as int?) == 1;
+    } on PostgrestException catch (_) {
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Actualiza los datos personales del usuario en la tabla usuarios.
+  Future<void> actualizarPerfil({
+    required String               usuarioId,
+    required Map<String, dynamic> datos,
+  }) async {
+    try {
+      await _supabase
+          .from(TablasSupabase.usuarios)
+          .update(datos)
+          .eq('id', usuarioId);
+    } on PostgrestException catch (e) {
+      throw FallaServidor(TraductorErrores.dePostgres(e));
+    } catch (e) {
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
+    }
+  }
 }

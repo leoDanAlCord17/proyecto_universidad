@@ -150,7 +150,7 @@ class _BotonEscanear extends StatelessWidget {
               child: Icon(
                 Icons.qr_code_scanner_rounded,
                 size:  22,
-                color: estaActivo ? Colors.white : ColoresApp.acento,
+                color: estaActivo ? ColoresApp.blanco : ColoresApp.acento,
               ),
             ),
             const SizedBox(height: 4),

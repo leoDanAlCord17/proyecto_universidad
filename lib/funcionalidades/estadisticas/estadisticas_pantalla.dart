@@ -1444,7 +1444,7 @@ class _GraficaHeatmap extends StatelessWidget {
                       ? Center(child: Text('$cant', style: TextStyle(
                           fontSize: 9,
                           fontWeight: FontWeight.w700,
-                          color: intensity > 0.55 ? Colors.white : ColoresApp.acento,
+                          color: intensity > 0.55 ? ColoresApp.blanco : ColoresApp.acento,
                         ),),)
                       : null,
                 );

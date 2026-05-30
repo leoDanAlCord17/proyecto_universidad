@@ -108,7 +108,7 @@ class _CuerpoModal extends StatelessWidget {
       insetPadding:    const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color:        Colors.white,
+          color:        ColoresApp.superficiePrimaria,
           borderRadius: BorderRadius.circular(20),
           boxShadow: const [
             BoxShadow(color: ColoresApp.sombraGeneral, blurRadius: 24, offset: Offset(0, 8)),
@@ -227,24 +227,24 @@ class _BotonRegistrar extends StatelessWidget {
         child: InkWell(
           onTap:        guardando ? null : onTap,
           borderRadius: BorderRadius.circular(14),
-          splashColor:  Colors.white.withValues(alpha: 0.15),
+          splashColor:  ColoresApp.blanco.withValues(alpha: 0.15),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
             child: guardando
                 ? const Center(child: SizedBox(
                     width: 20, height: 20,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                    child: CircularProgressIndicator(color: ColoresApp.blanco, strokeWidth: 2),
                   ),)
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.check_rounded, color: Colors.white, size: 18),
+                      const Icon(Icons.check_rounded, color: ColoresApp.blanco, size: 18),
                       const SizedBox(width: 10),
                       Flexible(
                         child: Text(
                           'Registrar como invitado y\nmarcar entrada',
                           style: texto.titleSmall?.copyWith(
-                            color: Colors.white, fontWeight: FontWeight.w700,
+                            color: ColoresApp.blanco, fontWeight: FontWeight.w700,
                             fontSize: 14, height: 1.3,
                           ),
                           textAlign: TextAlign.center,

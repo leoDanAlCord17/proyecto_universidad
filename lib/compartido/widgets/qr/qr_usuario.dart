@@ -26,7 +26,7 @@ class QrUsuario extends StatelessWidget {
         dataModuleShape: QrDataModuleShape.square,
         color:           ColoresApp.textoPrimario,
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: ColoresApp.superficiePrimaria,
     );
   }
 }

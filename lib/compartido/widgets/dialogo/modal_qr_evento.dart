@@ -101,10 +101,10 @@ class _ModalQrEventoState extends State<ModalQrEvento> {
       insetPadding:    const EdgeInsets.symmetric(horizontal: 32),
       child: Container(
         decoration: BoxDecoration(
-          color:        Colors.white,
+          color:        ColoresApp.superficiePrimaria,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: _caducado ? ColoresApp.bordeError : const Color(0x261A9462),
+            color: _caducado ? ColoresApp.bordeError : ColoresApp.bordeSuaveVerde,
             width: 1.5,
           ),
           boxShadow: const [
@@ -257,7 +257,7 @@ class _QrBloqueado extends StatelessWidget {
             size:            180,
             eyeStyle:        const QrEyeStyle(eyeShape: QrEyeShape.square, color: ColoresApp.textoSecundario),
             dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: ColoresApp.textoSecundario),
-            backgroundColor: Colors.white,
+            backgroundColor: ColoresApp.superficiePrimaria,
           ),
         ),
         Container(
@@ -359,9 +359,9 @@ class _SeccionQr extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color:        Colors.white,
+              color:        ColoresApp.superficiePrimaria,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0x1A1A9462), width: 1),
+              border: Border.all(color: ColoresApp.bordeSutilVerde, width: 1),
               boxShadow: const [BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 10, offset: Offset(0, 3))],
             ),
             child: QrImageView(
@@ -370,7 +370,7 @@ class _SeccionQr extends StatelessWidget {
               size:            190,
               eyeStyle:        const QrEyeStyle(eyeShape: QrEyeShape.square, color: ColoresApp.acento),
               dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: ColoresApp.acento),
-              backgroundColor: Colors.white,
+              backgroundColor: ColoresApp.superficiePrimaria,
             ),
           ),
           const SizedBox(height: 16),

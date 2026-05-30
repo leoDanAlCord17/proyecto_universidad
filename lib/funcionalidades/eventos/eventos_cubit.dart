@@ -26,17 +26,51 @@ class EventosCubit extends Cubit<EventosEstado> {
     try {
       final eventos     = await _repositorio.obtenerEventosConGrupos();
       final tagsUsuario = await _repositorio.obtenerTagsUsuario(usuarioId);
+      if (isClosed) return;
       final visibles    = eventos.where((e) => _esVisible(e, tagsUsuario)).toList();
 
       _enCurso  = visibles.where((e) => e.evento.estatus == EstatusEvento.enCurso).toList();
       _proximos = visibles.where((e) => e.evento.estatus == EstatusEvento.programado).toList();
 
-      emit(EventosCargado(enCurso: _enCurso, proximos: _proximos));
+      _enCurso  = await _enriquecerConPresentes(_enCurso);
+      if (isClosed) return;
+
+      // Conteos auxiliares — fallo silencioso para no bloquear la carga principal
+      int cantidadBorradores = 0;
+      try {
+        cantidadBorradores = await _repositorio.contarBorradores(usuarioId);
+      } catch (_) {}
+
+      if (isClosed) return;
+      emit(EventosCargado(
+        enCurso:            _enCurso,
+        proximos:           _proximos,
+        cantidadBorradores: cantidadBorradores,
+      ),);
       _timer = Timer.periodic(_intervaloRefresh, (_) => _refrescarSilencioso(usuarioId));
     } on FallaServidor catch (e) {
+      if (isClosed) return;
       emit(EventosError(e.mensaje));
     } on FallaInesperada catch (e) {
+      if (isClosed) return;
       emit(EventosError(e.mensaje));
+    }
+  }
+
+  /// Enriquece los eventos en curso con el contador de asistentes presentes.
+  Future<List<EventoConGrupos>> _enriquecerConPresentes(
+    List<EventoConGrupos> enCurso,
+  ) async {
+    if (enCurso.isEmpty) return enCurso;
+    try {
+      final ids     = enCurso.map((e) => e.evento.id).toList();
+      final conteos = await _repositorio.obtenerConteoPresentesPorEvento(ids);
+      return enCurso.map((e) {
+        final total = conteos[e.evento.id];
+        return total != null ? e.copiarConPresentes(total) : e;
+      }).toList();
+    } catch (_) {
+      return enCurso; // fallo silencioso — tarjetas sin contador
     }
   }
 
@@ -61,13 +95,21 @@ class EventosCubit extends Cubit<EventosEstado> {
 
       _enCurso  = visibles.where((e) => e.evento.estatus == EstatusEvento.enCurso).toList();
       _proximos = visibles.where((e) => e.evento.estatus == EstatusEvento.programado).toList();
+      _enCurso  = await _enriquecerConPresentes(_enCurso);
 
       final estadoActual = state;
-      if (estadoActual is! EventosCargado) return;
+      if (isClosed || estadoActual is! EventosCargado) return;
 
+      int cantidadBorradores = estadoActual.cantidadBorradores;
+      try {
+        cantidadBorradores = await _repositorio.contarBorradores(usuarioId);
+      } catch (_) {}
+
+      if (isClosed) return;
       emit(estadoActual.copiarCon(
-        enCurso:  _aplicarFiltros(_enCurso,  estadoActual.textoBusqueda, estadoActual.rangoFechas),
-        proximos: _aplicarFiltros(_proximos, estadoActual.textoBusqueda, estadoActual.rangoFechas),
+        enCurso:            _aplicarFiltros(_enCurso,  estadoActual.textoBusqueda, estadoActual.rangoFechas),
+        proximos:           _aplicarFiltros(_proximos, estadoActual.textoBusqueda, estadoActual.rangoFechas),
+        cantidadBorradores: cantidadBorradores,
       ),);
     } catch (_) {
       // Fallo silencioso — no interrumpe al usuario

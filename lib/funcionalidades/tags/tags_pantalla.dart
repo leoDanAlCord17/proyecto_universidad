@@ -111,8 +111,8 @@ class _BotonCrearTag extends StatelessWidget {
           if (context.mounted) unawaited(context.read<TagsCubit>().cargarTags());
         },
         borderRadius:   BorderRadius.circular(12),
-        splashColor:    Colors.white.withValues(alpha: 0.3),
-        highlightColor: Colors.white.withValues(alpha: 0.15),
+        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
           width:  40,
           height: 40,
@@ -122,7 +122,7 @@ class _BotonCrearTag extends StatelessWidget {
           ),
           child: const Icon(
             Icons.add_rounded,
-            color: Colors.white,
+            color: ColoresApp.blanco,
             size:  22,
           ),
         ),
@@ -602,8 +602,8 @@ class _BotonDesactivarConfirmar extends StatelessWidget {
         child: InkWell(
           onTap:          habilitado ? alPresionar : null,
           borderRadius:   BorderRadius.circular(12),
-          splashColor:    habilitado ? Colors.white.withValues(alpha: 0.3) : null,
-          highlightColor: habilitado ? Colors.white.withValues(alpha: 0.15) : null,
+          splashColor:    habilitado ? ColoresApp.blanco.withValues(alpha: 0.3) : null,
+          highlightColor: habilitado ? ColoresApp.blanco.withValues(alpha: 0.15) : null,
           child: Ink(
             decoration: BoxDecoration(
               gradient:     habilitado ? ColoresApp.degradadoPrincipal : null,
@@ -614,7 +614,7 @@ class _BotonDesactivarConfirmar extends StatelessWidget {
               child: Text(
                 'Desactivar',
                 style: TextStyle(
-                  color:      habilitado ? Colors.white : ColoresApp.textoTerciario,
+                  color:      habilitado ? ColoresApp.blanco : ColoresApp.textoTerciario,
                   fontSize:   14,
                   fontWeight: FontWeight.w700,
                 ),

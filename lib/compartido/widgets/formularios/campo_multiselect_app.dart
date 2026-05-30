@@ -191,7 +191,7 @@ class _HojaMultiselectState<T> extends State<_HojaMultiselect<T>> {
                   value:      estaSeleccionado,
                   onChanged:  (_) => _alternar(id),
                   activeColor: ColoresApp.acento,
-                  checkColor:  Colors.white,
+                  checkColor:  ColoresApp.blanco,
                   title: Text(
                     widget.mostrarTexto(opcion),
                     style: Theme.of(context).textTheme.titleSmall,

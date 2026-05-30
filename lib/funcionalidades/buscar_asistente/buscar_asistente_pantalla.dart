@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/constantes.dart';
+import '../../compartido/widgets/avisos/aviso_app.dart';
+import '../../compartido/widgets/avisos/vista_error_app.dart';
 import '../../compartido/widgets/botones/boton_app.dart';
 import '../autenticacion/auth_cubit.dart';
 import '../autenticacion/auth_estado.dart';
@@ -68,8 +70,7 @@ class _BuscarAsistentePantallaState extends State<BuscarAsistentePantalla> {
 
   void _escucharEstado(BuildContext context, BuscarAsistenteEstado state) {
     if (state is BuscarAsistenteOperacionFallida) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(state.mensaje)));
+      AvisoApp.mostrar(context, texto: state.mensaje, estilo: EstiloAviso.error);
     }
   }
 
@@ -109,7 +110,7 @@ class _BuscarAsistentePantallaState extends State<BuscarAsistentePantalla> {
     BuscarAsistenteCargando()         => const Center(child: CircularProgressIndicator(color: ColoresApp.acento)),
     BuscarAsistenteCargado()          => _ListaResultados(estado: state),
     BuscarAsistenteOperacionFallida() => _ListaResultados(estado: state.anterior),
-    BuscarAsistenteError()            => _VistaError(mensaje: state.mensaje),
+    BuscarAsistenteError()            => VistaErrorApp(mensaje: state.mensaje),
   };
 
 }
@@ -416,7 +417,7 @@ class _CuerpoHojaSalida extends StatelessWidget {
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: Container(
         decoration: const BoxDecoration(
-          color:        Colors.white,
+          color:        ColoresApp.superficiePrimaria,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
@@ -510,7 +511,7 @@ class _OpcionSalida extends StatelessWidget {
         splashColor:  ColoresApp.ambarClaro,
         child: Ink(
           decoration: BoxDecoration(
-            color:        Colors.white,
+            color:        ColoresApp.superficiePrimaria,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: borderColor,
@@ -596,19 +597,3 @@ class _EstadoSinResultados extends StatelessWidget {
   }
 }
 
-class _VistaError extends StatelessWidget {
-  const _VistaError({required this.mensaje});
-  final String mensaje;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Text(mensaje,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: ColoresApp.rojo),
-          textAlign: TextAlign.center,),
-      ),
-    );
-  }
-}

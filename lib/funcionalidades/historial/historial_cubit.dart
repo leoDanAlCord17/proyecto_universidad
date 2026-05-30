@@ -14,10 +14,13 @@ class HistorialCubit extends Cubit<HistorialEstado> {
     emit(const HistorialCargando());
     try {
       final items = await _repositorio.obtenerHistorial(usuarioId);
+      if (isClosed) return;
       emit(HistorialCargado(items: items));
     } on FallaServidor catch (falla) {
+      if (isClosed) return;
       emit(HistorialError(falla.mensaje));
     } on FallaInesperada catch (falla) {
+      if (isClosed) return;
       emit(HistorialError(falla.mensaje));
     }
   }

@@ -12,11 +12,19 @@ class RolesCubit extends Cubit<RolesEstado> {
   Future<void> cargarRoles() async {
     emit(const RolesCargando());
     try {
-      final roles = await _repositorio.obtenerRoles();
-      emit(RolesCargados(roles: roles, rolesFiltrados: roles));
+      final roles   = await _repositorio.obtenerRoles();
+      final conteos = await _repositorio.contarUsuariosPorRol();
+      if (isClosed) return;
+      emit(RolesCargados(
+        roles:          roles,
+        rolesFiltrados: roles,
+        conteoUsuarios: conteos,
+      ),);
     } on FallaServidor catch (e) {
+      if (isClosed) return;
       emit(RolesError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      if (isClosed) return;
       emit(RolesError(mensaje: e.mensaje));
     }
   }
