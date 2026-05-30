@@ -8,6 +8,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'compartido/logger.dart';
+import 'compartido/widgets/avisos/aviso_app.dart';
+import 'configuracion/colores_app.dart';
 import 'configuracion/dependencias.dart';
 import 'configuracion/entorno.dart';
 import 'configuracion/tema_app.dart';
@@ -127,24 +129,24 @@ class _WidgetDeError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
+    return const Material(
+      color: ColoresApp.superficiePrimaria,
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Color(0xFFD32F2F)),
-              const SizedBox(height: 16),
-              const Text(
+              Icon(Icons.error_outline, size: 48, color: ColoresApp.rojo),
+              SizedBox(height: 16),
+              Text(
                 'Algo salió mal',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 'Por favor reinicia la aplicación.',
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                style: TextStyle(fontSize: 14, color: ColoresApp.textoSecundario),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -171,10 +173,10 @@ class _App extends StatelessWidget {
       routerConfig:               routerApp.router,
       builder: (context, child) => BlocListener<AuthCubit, AuthEstado>(
         listenWhen: (_, curr) => curr is SesionDesplazada,
-        listener: (ctx, _) => ScaffoldMessenger.of(ctx).showSnackBar(
-          const SnackBar(
-            content: Text('Tu sesión fue iniciada en otro dispositivo.'),
-          ),
+        listener: (ctx, _) => AvisoApp.mostrar(
+          ctx,
+          texto:  'Tu sesión fue iniciada en otro dispositivo.',
+          estilo: EstiloAviso.informativa,
         ),
         child: child!,
       ),

@@ -290,8 +290,8 @@ class _BotonAgregar extends StatelessWidget {
       child: InkWell(
         onTap:          alPresionar,
         borderRadius:   BorderRadius.circular(10),
-        splashColor:    Colors.white.withValues(alpha: 0.3),
-        highlightColor: Colors.white.withValues(alpha: 0.15),
+        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
           decoration: BoxDecoration(
@@ -299,7 +299,7 @@ class _BotonAgregar extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: const Text('Agregar',
-            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),),
+            style: TextStyle(color: ColoresApp.blanco, fontSize: 14, fontWeight: FontWeight.w600),),
         ),
       ),
     );
@@ -320,8 +320,8 @@ class _BotonQuitar extends StatelessWidget {
       child: InkWell(
         onTap:          alPresionar,
         borderRadius:   BorderRadius.circular(10),
-        splashColor:    Colors.white.withValues(alpha: 0.3),
-        highlightColor: Colors.white.withValues(alpha: 0.15),
+        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
           decoration: BoxDecoration(
@@ -329,7 +329,7 @@ class _BotonQuitar extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           child: const Text('Quitar',
-            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600),),
+            style: TextStyle(color: ColoresApp.blanco, fontSize: 14, fontWeight: FontWeight.w600),),
         ),
       ),
     );

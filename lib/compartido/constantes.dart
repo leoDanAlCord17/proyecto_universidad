@@ -11,8 +11,7 @@ class TablasSupabase {
   static const String tiposEvento  = 'tipos_evento';
   static const String eventoGruposTags     = 'evento_grupos_tags';
   static const String eventosUsuariosRoles = 'eventos_usuarios_roles';
-  static const String configuracionInt     = 'configuracion_int';
-  static const String configuracionBoolean = 'configuracion_boolean';
+  static const String configuracion = 'configuracion';
   static const String permisos             = 'permisos';
   static const String rolesPermisos        = 'roles_permisos';
   static const String notificaciones       = 'notificaciones';

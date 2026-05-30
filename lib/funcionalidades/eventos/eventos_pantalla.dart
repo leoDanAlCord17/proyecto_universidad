@@ -77,26 +77,23 @@ class _EventosPantallaState extends State<EventosPantalla>
         backgroundColor: ColoresApp.fondo,
         body: Column(
           children: [
-            SafeArea(
+            const SafeArea(
               bottom: false,
               child: BarraSuperiorApp(
-                izquierda: const _CabeceraTitulo(),
+                izquierda: _CabeceraTitulo(),
                 derecha: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     ProtectorPorPermiso(
                       permisoRequerido: Permisos.eventosCrearEventos,
-                      hijo: BotonContornoIcono(
-                        icono:       Icons.description_outlined,
-                        alPresionar: () => context.push(Rutas.borradores),
-                      ),
+                      hijo: _BotonBorradores(),
                     ),
-                    const SizedBox(width: 18),
-                    const ProtectorPorPermiso(
+                    SizedBox(width: 18),
+                    ProtectorPorPermiso(
                       permisoRequerido: Permisos.eventosCrearEventos,
                       hijo: _BotonCrearEvento(),
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4),
                   ],
                 ),
               ),
@@ -209,8 +206,8 @@ class _BotonCrearEvento extends StatelessWidget {
           }
         },
         borderRadius:   BorderRadius.circular(12),
-        splashColor:    Colors.white.withValues(alpha: 0.3),
-        highlightColor: Colors.white.withValues(alpha: 0.15),
+        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
           width:  40,
           height: 40,
@@ -218,7 +215,72 @@ class _BotonCrearEvento extends StatelessWidget {
             gradient:     ColoresApp.degradadoPrincipal,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Icon(Icons.add_rounded, color: Colors.white, size: 22),
+          child: const Icon(Icons.add_rounded, color: ColoresApp.blanco, size: 22),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Botón borradores con badge de conteo ────────────────────────────────────
+
+class _BotonBorradores extends StatelessWidget {
+  const _BotonBorradores();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocSelector<EventosCubit, EventosEstado, int>(
+      selector: (estado) =>
+          estado is EventosCargado ? estado.cantidadBorradores : 0,
+      builder: (context, cantidad) => Stack(
+        clipBehavior: Clip.none,
+        children: [
+          BotonContornoIcono(
+            icono:       Icons.description_outlined,
+            alPresionar: () async {
+              await context.push(Rutas.borradores);
+              if (!context.mounted) return;
+              final auth = context.read<AuthCubit>().state;
+              if (auth is Autenticado && auth.usuario.id != null) {
+                unawaited(context.read<EventosCubit>().cargar(auth.usuario.id!));
+              }
+            },
+          ),
+          if (cantidad > 0)
+            Positioned(
+              top:   -5,
+              right: -5,
+              child: _InsigniaBorradores(cantidad: cantidad),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InsigniaBorradores extends StatelessWidget {
+  const _InsigniaBorradores({required this.cantidad});
+
+  final int cantidad;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+      padding:     const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration:  BoxDecoration(
+        color:        ColoresApp.ambar,
+        borderRadius: BorderRadius.circular(9),
+      ),
+      child: Center(
+        child: Text(
+          cantidad > 9 ? '+9' : '$cantidad',
+          style: const TextStyle(
+            color:      ColoresApp.blanco,
+            fontSize:   10,
+            fontWeight: FontWeight.w700,
+            height:     1.0,
+          ),
         ),
       ),
     );
@@ -280,12 +342,16 @@ class _VistaContenido extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: TarjetaEvento(
-                titulo:       e.evento.titulo,
-                estatus:      e.evento.estatus,
-                horario:      _horario(e.evento),
-                lugar:        e.evento.lugar,
-                descripcion:  e.evento.descripcion,
-                colorTitulo:  ColoresApp.textoPrimario,
+                titulo:         e.evento.titulo,
+                estatus:        e.evento.estatus,
+                horario:        _horario(e.evento),
+                lugar:          e.evento.lugar,
+                descripcion:    e.evento.descripcion,
+                colorTitulo:    ColoresApp.textoPrimario,
+                contadorTexto:  e.totalPresentes != null
+                    ? '${e.totalPresentes} presentes'
+                    : null,
+                colorContador: ColoresApp.verde,
                 alAbrirPanel: tienePanel
                     ? () => context.push(Rutas.panelControlUrl(e.evento.id))
                     : null,

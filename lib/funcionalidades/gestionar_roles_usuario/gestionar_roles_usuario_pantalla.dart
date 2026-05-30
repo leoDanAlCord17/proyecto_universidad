@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/widgets/avisos/aviso_app.dart';
+import '../../compartido/widgets/avisos/vista_error_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../configuracion/colores_app.dart';
@@ -135,7 +136,7 @@ class _Cuerpo extends StatelessWidget {
       ),
       GestionarRolesUsuarioCargado()         => _VistaContenido(estado: e),
       GestionarRolesUsuarioOperacionFallida() => _VistaContenido(estado: e.anterior),
-      GestionarRolesUsuarioError()            => _VistaError(mensaje: e.mensaje),
+      GestionarRolesUsuarioError()            => VistaErrorApp(mensaje: e.mensaje),
     };
   }
 }
@@ -460,42 +461,6 @@ class _HojaPickerRolState extends State<_HojaPickerRol> {
                   );
                 },
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Vista de error ───────────────────────────────────────────────────────────
-
-class _VistaError extends StatelessWidget {
-  const _VistaError({required this.mensaje});
-
-  final String mensaje;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.error_outline, color: ColoresApp.rojo, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              mensaje,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
-            ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: () => context.read<GestionarRolesUsuarioCubit>().cargar(''),
-              child: const Text('Reintentar'),
             ),
           ],
         ),

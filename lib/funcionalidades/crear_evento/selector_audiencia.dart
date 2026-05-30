@@ -394,13 +394,13 @@ class _HojaCrearGrupoState extends State<_HojaCrearGrupo> {
                 child: InkWell(
                   onTap:        puedeConfirmar ? _confirmar : null,
                   borderRadius: BorderRadius.circular(12),
-                  splashColor:    Colors.white.withValues(alpha: 0.2),
-                  highlightColor: Colors.white.withValues(alpha: 0.1),
+                  splashColor:    ColoresApp.blanco.withValues(alpha: 0.2),
+                  highlightColor: ColoresApp.blanco.withValues(alpha: 0.1),
                   child: Center(
                     child: Text(
                       'Agregar',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: Colors.white,
+                        color: ColoresApp.blanco,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

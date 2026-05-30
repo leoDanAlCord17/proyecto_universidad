@@ -65,14 +65,16 @@ class _EscanearEventoQrPantallaState extends State<EscanearEventoQrPantalla> {
         statusBarBrightness:     Brightness.dark,
       ),
       child: Scaffold(
-        backgroundColor: const Color(0xFF0D0D1A),
+        backgroundColor: ColoresApp.scannerFondo,
         body: Stack(
           fit: StackFit.expand,
           children: [
             MobileScanner(controller: _controladorCamara, onDetect: _onDetect),
             BlocConsumer<EscanearEventoQrCubit, EscanearEventoQrEstado>(
               listener: (ctx, state) {
-                if (state is EscanearEventoQrListo) _ultimoQr = null;
+                if (state is EscanearEventoQrListo)        _ultimoQr = null;
+                if (state is EscanearEventoQrConfirmado)   HapticFeedback.mediumImpact();
+                if (state is EscanearEventoQrYaRegistrado) HapticFeedback.lightImpact();
               },
               builder: _construirOverlay,
             ),
@@ -85,8 +87,8 @@ class _EscanearEventoQrPantallaState extends State<EscanearEventoQrPantalla> {
   Widget _construirOverlay(BuildContext context, EscanearEventoQrEstado state) {
     return Column(
       children: [
-        Container(height: MediaQuery.paddingOf(context).top, color: const Color(0xFF0D0D1A)),
-        _EncabezadoEscaneo(onBack: () => context.pop()),
+        Container(height: MediaQuery.paddingOf(context).top, color: ColoresApp.scannerFondo),
+        _EncabezadoEscaneo(onBack: () => context.pop(), controlador: _controladorCamara),
         _construirAreaEscaneo(state),
       ],
     );
@@ -147,22 +149,29 @@ class _EscanearEventoQrPantallaState extends State<EscanearEventoQrPantalla> {
 // ─── Encabezado ────────────────────────────────────────────────────────────────
 
 class _EncabezadoEscaneo extends StatelessWidget {
-  const _EncabezadoEscaneo({required this.onBack});
-  final VoidCallback onBack;
+  const _EncabezadoEscaneo({
+    required this.onBack,
+    required this.controlador,
+  });
+  final VoidCallback            onBack;
+  final MobileScannerController controlador;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color:   const Color(0xFF0D0D1A),
+      color:   ColoresApp.scannerFondo,
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
       child: Row(
         children: [
           _BotonVolver(onTap: onBack),
           const SizedBox(width: 12),
-          const Text(
-            'Escanear evento',
-            style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+          const Expanded(
+            child: Text(
+              'Escanear evento',
+              style: TextStyle(color: ColoresApp.blanco, fontSize: 16, fontWeight: FontWeight.w700),
+            ),
           ),
+          _BotonLinterna(controlador: controlador),
         ],
       ),
     );
@@ -176,17 +185,57 @@ class _BotonVolver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.white.withValues(alpha: 0.1),
+      color:        ColoresApp.blanco.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap:        onTap,
         borderRadius: BorderRadius.circular(12),
-        splashColor:  Colors.white.withValues(alpha: 0.2),
+        splashColor:  ColoresApp.blanco.withValues(alpha: 0.2),
         child: const Padding(
           padding: EdgeInsets.all(8),
-          child: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 18),
+          child: Icon(Icons.arrow_back_ios_new_rounded, color: ColoresApp.blanco, size: 18),
         ),
       ),
+    );
+  }
+}
+
+// ─── Botón linterna ────────────────────────────────────────────────────────────
+
+class _BotonLinterna extends StatelessWidget {
+  const _BotonLinterna({required this.controlador});
+  final MobileScannerController controlador;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<MobileScannerState>(
+      valueListenable: controlador,
+      builder: (_, scannerState, __) {
+        final torchState = scannerState.torchState;
+        if (torchState == TorchState.unavailable) return const SizedBox.shrink();
+        final encendida = torchState == TorchState.on;
+        return Material(
+          color:        encendida
+              ? ColoresApp.ambar.withValues(alpha: 0.25)
+              : ColoresApp.blanco.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap:        controlador.toggleTorch,
+            borderRadius: BorderRadius.circular(12),
+            splashColor:  ColoresApp.blanco.withValues(alpha: 0.2),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Icon(
+                encendida
+                    ? Icons.flashlight_on_rounded
+                    : Icons.flashlight_off_rounded,
+                color: encendida ? ColoresApp.ambar : ColoresApp.blanco,
+                size:  20,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -199,11 +248,9 @@ class _PintorMarco extends CustomPainter {
   final Rect ventanaRect;
   final bool procesando;
 
-  static const _teal = Color(0xFF00C9A7);
-
   @override
   void paint(Canvas canvas, Size size) {
-    final overlay = Paint()..color = Colors.black.withValues(alpha: 0.65);
+    final overlay = Paint()..color = ColoresApp.scannerOverlay;
     final r = ventanaRect;
 
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, r.top), overlay);
@@ -212,7 +259,7 @@ class _PintorMarco extends CustomPainter {
     canvas.drawRect(Rect.fromLTWH(r.right, r.top, size.width - r.right, r.height), overlay);
 
     final cornerPaint = Paint()
-      ..color       = procesando ? ColoresApp.ambar : _teal
+      ..color       = procesando ? ColoresApp.ambar : ColoresApp.scannerEsquina
       ..strokeWidth = 3.5
       ..style       = PaintingStyle.stroke
       ..strokeCap   = StrokeCap.round;
@@ -290,7 +337,7 @@ class _CardConfirmado extends StatelessWidget {
           width:      22,
           height:     22,
           decoration: const BoxDecoration(color: ColoresApp.verde, shape: BoxShape.circle),
-          child: const Icon(Icons.check_rounded, color: Colors.white, size: 14),
+          child: const Icon(Icons.check_rounded, color: ColoresApp.blanco, size: 14),
         ),
         const SizedBox(width: 8),
         const Text(
@@ -309,11 +356,11 @@ class _CardConfirmado extends StatelessWidget {
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.check_rounded, color: Colors.white, size: 18),
+          Icon(Icons.check_rounded, color: ColoresApp.blanco, size: 18),
           SizedBox(width: 8),
           Text(
             '✓ Entrada registrada',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
+            style: TextStyle(color: ColoresApp.blanco, fontWeight: FontWeight.w700, fontSize: 15),
           ),
         ],
       ),
@@ -325,7 +372,7 @@ class _CardConfirmado extends StatelessWidget {
     return Container(
       padding:    const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:        const Color(0xFF092B1A),
+        color:        ColoresApp.scannerVerdeOscuro,
         borderRadius: BorderRadius.circular(20),
         border:       Border.all(color: ColoresApp.verde.withValues(alpha: 0.35), width: 1),
       ),
@@ -338,7 +385,7 @@ class _CardConfirmado extends StatelessWidget {
           Text(
             state.eventoNombre,
             style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20, height: 1.2,
+              color: ColoresApp.blanco, fontWeight: FontWeight.w800, fontSize: 20, height: 1.2,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -358,66 +405,53 @@ class _CardYaRegistrado extends StatelessWidget {
 
   final EscanearEventoQrYaRegistrado state;
 
-  Widget _construirEncabezado() {
-    return Row(
-      children: [
-        Container(
-          width:      22,
-          height:     22,
-          decoration: const BoxDecoration(color: ColoresApp.ambar, shape: BoxShape.circle),
-          child: const Icon(Icons.warning_rounded, color: Colors.white, size: 13),
-        ),
-        const SizedBox(width: 8),
-        const Text(
-          'Ya registrado',
-          style: TextStyle(color: ColoresApp.ambar, fontWeight: FontWeight.w700, fontSize: 13),
-        ),
-      ],
-    );
-  }
-
-  Widget _construirAviso() {
-    return Container(
-      width:   double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(
-        color:        ColoresApp.ambar.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(14),
-        border:       Border.all(color: ColoresApp.ambar.withValues(alpha: 0.3)),
-      ),
-      child: const Text(
-        'Ya estás registrado en este evento',
-        textAlign: TextAlign.center,
-        style: TextStyle(color: ColoresApp.ambar, fontWeight: FontWeight.w600, fontSize: 13),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
       padding:    const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:        const Color(0xFF2B1800),
+        color:        ColoresApp.scannerAmbarOscuro,
         borderRadius: BorderRadius.circular(20),
-        border:       Border.all(color: ColoresApp.ambar.withValues(alpha: 0.35), width: 1),
+        border:       Border.all(color: ColoresApp.ambar.withValues(alpha: 0.5), width: 1),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+      child: Row(
         children: [
-          _construirEncabezado(),
-          const SizedBox(height: 12),
-          Text(
-            state.eventoNombre,
-            style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20, height: 1.2,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+          Container(
+            width:      42,
+            height:     42,
+            decoration: const BoxDecoration(color: ColoresApp.ambar, shape: BoxShape.circle),
+            child: const Icon(Icons.replay_rounded, color: ColoresApp.blanco, size: 22),
           ),
-          const SizedBox(height: 16),
-          _construirAviso(),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Ya registrado',
+                  style: TextStyle(
+                    color: ColoresApp.ambar, fontWeight: FontWeight.w700, fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  state.eventoNombre,
+                  style: const TextStyle(
+                    color: ColoresApp.blanco, fontWeight: FontWeight.w800,
+                    fontSize: 15, height: 1.2,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'Ya estás registrado en este evento',
+                  style: TextStyle(color: ColoresApp.blanco.withValues(alpha: 0.4), fontSize: 11),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -437,14 +471,14 @@ class _CardNoDisponible extends StatelessWidget {
         Container(
           width:      22,
           height:     22,
-          decoration: BoxDecoration(color: Colors.blueGrey.shade600, shape: BoxShape.circle),
-          child: const Icon(Icons.event_busy_rounded, color: Colors.white, size: 13),
+          decoration: const BoxDecoration(color: ColoresApp.scannerGrisOscuro, shape: BoxShape.circle),
+          child: const Icon(Icons.event_busy_rounded, color: ColoresApp.blanco, size: 13),
         ),
         const SizedBox(width: 8),
-        Text(
+        const Text(
           'Evento no disponible',
           style: TextStyle(
-            color: Colors.blueGrey.shade300, fontWeight: FontWeight.w700, fontSize: 13,),
+            color: ColoresApp.scannerGrisClaro, fontWeight: FontWeight.w700, fontSize: 13,),
         ),
       ],
     );
@@ -455,14 +489,14 @@ class _CardNoDisponible extends StatelessWidget {
       width:   double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
-        color:        Colors.blueGrey.withValues(alpha: 0.12),
+        color:        ColoresApp.scannerGris.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(14),
-        border:       Border.all(color: Colors.blueGrey.withValues(alpha: 0.3)),
+        border:       Border.all(color: ColoresApp.scannerGris.withValues(alpha: 0.3)),
       ),
-      child: Text(
+      child: const Text(
         'Este evento ya no acepta registros',
         textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.blueGrey.shade300, fontWeight: FontWeight.w600, fontSize: 13),
+        style: TextStyle(color: ColoresApp.scannerGrisClaro, fontWeight: FontWeight.w600, fontSize: 13),
       ),
     );
   }
@@ -472,9 +506,9 @@ class _CardNoDisponible extends StatelessWidget {
     return Container(
       padding:    const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:        const Color(0xFF0D1829),
+        color:        ColoresApp.scannerAzulOscuro,
         borderRadius: BorderRadius.circular(20),
-        border:       Border.all(color: Colors.blueGrey.withValues(alpha: 0.35), width: 1),
+        border:       Border.all(color: ColoresApp.scannerGris.withValues(alpha: 0.35), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -485,7 +519,7 @@ class _CardNoDisponible extends StatelessWidget {
           Text(
             state.eventoNombre,
             style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20, height: 1.2,
+              color: ColoresApp.blanco, fontWeight: FontWeight.w800, fontSize: 20, height: 1.2,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -512,7 +546,7 @@ class _CardDirigidoNoPermitido extends StatelessWidget {
           width:      22,
           height:     22,
           decoration: const BoxDecoration(color: ColoresApp.rojo, shape: BoxShape.circle),
-          child: const Icon(Icons.block_rounded, color: Colors.white, size: 13),
+          child: const Icon(Icons.block_rounded, color: ColoresApp.blanco, size: 13),
         ),
         const SizedBox(width: 8),
         const Text(
@@ -545,7 +579,7 @@ class _CardDirigidoNoPermitido extends StatelessWidget {
     return Container(
       padding:    const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:        const Color(0xFF2B0808),
+        color:        ColoresApp.scannerRojoOscuro,
         borderRadius: BorderRadius.circular(20),
         border:       Border.all(color: ColoresApp.rojo.withValues(alpha: 0.35), width: 1),
       ),
@@ -558,7 +592,7 @@ class _CardDirigidoNoPermitido extends StatelessWidget {
           Text(
             state.eventoNombre,
             style: const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.w800, fontSize: 20, height: 1.2,
+              color: ColoresApp.blanco, fontWeight: FontWeight.w800, fontSize: 20, height: 1.2,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -581,7 +615,7 @@ class _CardNoValido extends StatelessWidget {
     return Container(
       padding:    const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:        const Color(0xFF2B0808),
+        color:        ColoresApp.scannerRojoOscuro,
         borderRadius: BorderRadius.circular(20),
         border:       Border.all(color: ColoresApp.rojo.withValues(alpha: 0.35), width: 1),
       ),
@@ -591,7 +625,7 @@ class _CardNoValido extends StatelessWidget {
             width:      42,
             height:     42,
             decoration: const BoxDecoration(color: ColoresApp.rojo, shape: BoxShape.circle),
-            child: const Icon(Icons.close_rounded, color: Colors.white, size: 22),
+            child: const Icon(Icons.close_rounded, color: ColoresApp.blanco, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -606,7 +640,7 @@ class _CardNoValido extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   'Este código no corresponde a ningún evento.',
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
+                  style: TextStyle(color: ColoresApp.blanco.withValues(alpha: 0.5), fontSize: 12),
                 ),
               ],
             ),

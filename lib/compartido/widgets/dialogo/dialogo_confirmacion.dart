@@ -125,7 +125,7 @@ class _BotonConfirmar extends StatelessWidget {
               child: Text(
                 texto,
                 style: const TextStyle(
-                  color:      Colors.white,
+                  color:      ColoresApp.blanco,
                   fontSize:   14,
                   fontWeight: FontWeight.w700,
                 ),

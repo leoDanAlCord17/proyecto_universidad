@@ -12,15 +12,24 @@ import 'package:uniasist/funcionalidades/autenticacion/registro_cubit.dart';
 import 'package:uniasist/funcionalidades/autenticacion/registro_estado.dart';
 import 'package:uniasist/funcionalidades/autenticacion/usuario.dart';
 import 'package:uniasist/funcionalidades/auditoria_evento/auditoria_evento_repositorio.dart';
+import 'package:uniasist/funcionalidades/buscar_asistente/buscar_asistente_repositorio.dart';
+import 'package:uniasist/funcionalidades/crear_evento/crear_evento_repositorio.dart';
+import 'package:uniasist/funcionalidades/crear_evento/tag_opcion.dart';
+import 'package:uniasist/funcionalidades/crear_evento/tipo_evento.dart';
 import 'package:uniasist/funcionalidades/crear_usuario/crear_usuario_cubit.dart';
 import 'package:uniasist/funcionalidades/crear_usuario/crear_usuario_estado.dart';
 import 'package:uniasist/funcionalidades/escanear_qr/escanear_qr_repositorio.dart';
 import 'package:uniasist/funcionalidades/eventos/evento.dart';
+import 'package:uniasist/funcionalidades/eventos/eventos_repositorio.dart';
 import 'package:uniasist/funcionalidades/historial/historial_item.dart';
 import 'package:uniasist/funcionalidades/historial/historial_repositorio.dart';
 import 'package:uniasist/funcionalidades/notificaciones/notificaciones_repositorio.dart';
 import 'package:uniasist/funcionalidades/panel_control_evento/asistente_item.dart';
 import 'package:uniasist/funcionalidades/panel_control_evento/panel_control_repositorio.dart';
+import 'package:uniasist/funcionalidades/perfil/perfil_repositorio.dart';
+import 'package:uniasist/funcionalidades/roles/rol.dart';
+import 'package:uniasist/funcionalidades/roles/roles_repositorio.dart';
+import 'package:uniasist/funcionalidades/usuarios/usuarios_repositorio.dart';
 
 // ─── Mocks de repositorio ────────────────────────────────────────────────────
 
@@ -103,6 +112,48 @@ const asistenteEjemplo = AsistenteItem(
   estatus:     'presente',
   esForaneo:   false,
   eraEsperado: false,
+);
+
+// ─── Mocks de repositorio — cubits de gestión ────────────────────────────────
+
+class MockEventosRepositorio extends Mock implements EventosRepositorio {}
+
+class MockUsuariosRepositorio extends Mock implements UsuariosRepositorio {}
+
+class MockRolesRepositorio extends Mock implements RolesRepositorio {}
+
+class MockPerfilRepositorio extends Mock implements PerfilRepositorio {}
+
+class MockBuscarAsistenteRepositorio extends Mock
+    implements BuscarAsistenteRepositorio {}
+
+class MockCrearEventoRepositorio extends Mock
+    implements CrearEventoRepositorio {}
+
+// ─── Fixtures adicionales ─────────────────────────────────────────────────────
+
+const rolEjemplo = Rol(
+  id:          'rol-1',
+  nombre:      'Estudiante',
+  descripcion: 'Rol base',
+  esSistema:   false,
+);
+
+const tagPrincipalEjemplo = TagOpcion(
+  id:     'tp-1',
+  nombre: 'Ingeniería',
+  tipo:   'principal',
+);
+
+const tagSecundarioEjemplo = TagOpcion(
+  id:     'ts-1',
+  nombre: 'Sistemas',
+  tipo:   'secundario',
+);
+
+const tipoEventoEjemplo = TipoEvento(
+  id:     'tipo-1',
+  nombre: 'Conferencia',
 );
 
 /// Registra los tipos personalizados necesarios para que any() funcione

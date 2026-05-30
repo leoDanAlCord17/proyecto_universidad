@@ -147,11 +147,12 @@ class AutenticacionRepositorio {
   Future<bool> verificarRevisionCreacionHabilitada() async {
     try {
       final datos = await _supabase
-          .from(TablasSupabase.configuracionBoolean)
+          .from(TablasSupabase.configuracion)
           .select('valor')
           .eq('clave', 'revision_usuario_creacion')
+          .eq('estatus', true)
           .single();
-      return (datos['valor'] as bool?) ?? false;
+      return (datos['valor'] as int?) == 1;
     } on PostgrestException catch (_) {
       return false;
     } catch (_) {

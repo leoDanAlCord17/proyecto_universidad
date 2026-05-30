@@ -22,19 +22,41 @@ final class UsuariosCargados extends UsuariosEstado {
   const UsuariosCargados({
     required this.usuarios,
     required this.usuariosFiltrados,
+    this.seleccionados      = const {},
+    this.modoSeleccion      = false,
+    this.estaEjecutandoLote = false,
+    this.errorLote,
   });
 
   final List<UsuarioItem> usuarios;
   final List<UsuarioItem> usuariosFiltrados;
+  final Set<String>       seleccionados;
+  final bool              modoSeleccion;
+  final bool              estaEjecutandoLote;
+  final String?           errorLote;
 
-  UsuariosCargados copiarCon({List<UsuarioItem>? usuariosFiltrados}) =>
+  UsuariosCargados copiarCon({
+    List<UsuarioItem>? usuariosFiltrados,
+    Set<String>?       seleccionados,
+    bool?              modoSeleccion,
+    bool?              estaEjecutandoLote,
+    String?            errorLote,
+    bool               limpiarError = false,
+  }) =>
       UsuariosCargados(
-        usuarios:          usuarios,
-        usuariosFiltrados: usuariosFiltrados ?? this.usuariosFiltrados,
+        usuarios:            usuarios,
+        usuariosFiltrados:   usuariosFiltrados  ?? this.usuariosFiltrados,
+        seleccionados:       seleccionados      ?? this.seleccionados,
+        modoSeleccion:       modoSeleccion      ?? this.modoSeleccion,
+        estaEjecutandoLote:  estaEjecutandoLote ?? this.estaEjecutandoLote,
+        errorLote:           limpiarError ? null : (errorLote ?? this.errorLote),
       );
 
   @override
-  List<Object?> get props => [usuarios, usuariosFiltrados];
+  List<Object?> get props => [
+    usuarios, usuariosFiltrados, seleccionados,
+    modoSeleccion, estaEjecutandoLote, errorLote,
+  ];
 }
 
 final class UsuariosError extends UsuariosEstado {

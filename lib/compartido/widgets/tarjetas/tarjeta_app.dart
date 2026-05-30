@@ -50,7 +50,7 @@ class TarjetaApp extends StatelessWidget {
   Widget _tarjetaNormal() => _contenedor(
     relleno: relleno ?? const EdgeInsets.all(14),
     radio:   18,
-    fondo:   Colors.white,
+    fondo:   ColoresApp.superficiePrimaria,
     borde:   Border.all(color: _borde),
     sombra:  _sombra,
   );
@@ -58,7 +58,7 @@ class TarjetaApp extends StatelessWidget {
   Widget _tarjetaPequena() => _contenedor(
     relleno: relleno ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
     radio:   12,
-    fondo:   Colors.white,
+    fondo:   ColoresApp.superficiePrimaria,
     borde:   Border.all(color: _borde),
     sombra:  _sombra,
   );

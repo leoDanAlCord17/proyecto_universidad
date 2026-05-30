@@ -28,6 +28,51 @@ class EventosRepositorio {
     }
   }
 
+  /// Retorna cuántos eventos con estatus "borrador" tiene el usuario.
+  Future<int> contarBorradores(String usuarioId) async {
+    try {
+      final datos = await _supabase
+          .from(TablasSupabase.eventos)
+          .select('id')
+          .eq('estatus', EstatusEvento.borrador)
+          .eq('creado_por', usuarioId);
+      return datos.length;
+    } on PostgrestException catch (e) {
+      throw FallaServidor(TraductorErrores.dePostgres(e));
+    } catch (e) {
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
+    }
+  }
+
+  /// Retorna un mapa [eventoId → cantidad] de asistentes presentes/completados
+  /// para los eventos dados. Solo relevante para eventos en curso.
+  Future<Map<String, int>> obtenerConteoPresentesPorEvento(
+    List<String> eventoIds,
+  ) async {
+    if (eventoIds.isEmpty) return {};
+    try {
+      final filas = await _supabase
+          .from(TablasSupabase.asistencia)
+          .select('evento_id')
+          .inFilter('evento_id', eventoIds)
+          .inFilter('estatus', [
+            EstatusAsistencia.presente,
+            EstatusAsistencia.completado,
+            EstatusAsistencia.salioAnticipado,
+          ]);
+      final conteos = <String, int>{};
+      for (final fila in filas) {
+        final id = fila['evento_id'] as String;
+        conteos[id] = (conteos[id] ?? 0) + 1;
+      }
+      return conteos;
+    } on PostgrestException catch (e) {
+      throw FallaServidor(TraductorErrores.dePostgres(e));
+    } catch (e) {
+      throw FallaInesperada(TraductorErrores.deInesperado(e));
+    }
+  }
+
   /// Retorna el tag principal y los tags secundarios activos del usuario.
   Future<({String? tagPrincipalId, List<String> tagsSecundariosIds})>
       obtenerTagsUsuario(String usuarioId) async {

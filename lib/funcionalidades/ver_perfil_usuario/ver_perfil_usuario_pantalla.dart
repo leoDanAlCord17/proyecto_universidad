@@ -128,7 +128,7 @@ class _CabeceraGradiente extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: ColoresApp.blanco, size: 20),
               onPressed: () => context.pop(),
             ),
           ),
@@ -139,21 +139,21 @@ class _CabeceraGradiente extends StatelessWidget {
                 AvatarUsuario(
                   iniciales:  perfil.iniciales,
                   tamanio:    72,
-                  colorFondo: Colors.white.withValues(alpha: 0.2),
-                  colorTexto: Colors.white,
+                  colorFondo: ColoresApp.blanco.withValues(alpha: 0.2),
+                  colorTexto: ColoresApp.blanco,
                 ),
                 const SizedBox(height: 12),
                 Text(
                   perfil.nombreCompleto,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.white, fontSize: 22,
+                    color: ColoresApp.blanco, fontSize: 22,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   perfil.correo,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: ColoresApp.blanco.withValues(alpha: 0.8),
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -188,13 +188,13 @@ class _ChipHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
+        color: ColoresApp.blanco.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(30),
       ),
       child: Text(
         texto,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: Colors.white, fontWeight: FontWeight.w600,
+          color: ColoresApp.blanco, fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -244,7 +244,7 @@ class _VistaError extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top + 4),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: ColoresApp.blanco, size: 20),
                 onPressed: () => context.pop(),
               ),
             ),

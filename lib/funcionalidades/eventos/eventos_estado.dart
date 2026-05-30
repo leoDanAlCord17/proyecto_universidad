@@ -23,31 +23,43 @@ final class EventosCargado extends EventosEstado {
   const EventosCargado({
     required this.enCurso,
     required this.proximos,
-    this.textoBusqueda = '',
+    this.textoBusqueda       = '',
     this.rangoFechas,
+    this.cantidadBorradores  = 0,
   });
 
   final List<EventoConGrupos> enCurso;
   final List<EventoConGrupos> proximos;
-  final String              textoBusqueda;
-  final DateTimeRange?      rangoFechas;
+  final String                textoBusqueda;
+  final DateTimeRange?        rangoFechas;
+
+  /// Borradores pendientes del usuario actual — alimenta el badge del botón.
+  final int cantidadBorradores;
 
   EventosCargado copiarCon({
     List<EventoConGrupos>? enCurso,
     List<EventoConGrupos>? proximos,
-    String?              textoBusqueda,
-    DateTimeRange?       rangoFechas,
-    bool                 limpiarRango = false,
+    String?               textoBusqueda,
+    DateTimeRange?        rangoFechas,
+    bool                  limpiarRango         = false,
+    int?                  cantidadBorradores,
   }) =>
       EventosCargado(
-        enCurso:       enCurso       ?? this.enCurso,
-        proximos:      proximos      ?? this.proximos,
-        textoBusqueda: textoBusqueda ?? this.textoBusqueda,
-        rangoFechas:   limpiarRango ? null : (rangoFechas ?? this.rangoFechas),
+        enCurso:             enCurso             ?? this.enCurso,
+        proximos:            proximos            ?? this.proximos,
+        textoBusqueda:       textoBusqueda       ?? this.textoBusqueda,
+        rangoFechas:         limpiarRango ? null : (rangoFechas ?? this.rangoFechas),
+        cantidadBorradores:  cantidadBorradores  ?? this.cantidadBorradores,
       );
 
   @override
-  List<Object?> get props => [enCurso, proximos, textoBusqueda, rangoFechas];
+  List<Object?> get props => [
+    enCurso,
+    proximos,
+    textoBusqueda,
+    rangoFechas,
+    cantidadBorradores,
+  ];
 }
 
 final class EventosError extends EventosEstado {

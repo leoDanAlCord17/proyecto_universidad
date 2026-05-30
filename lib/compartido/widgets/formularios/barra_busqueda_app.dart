@@ -138,7 +138,7 @@ class _BotonCalendario extends StatelessWidget {
         data: Theme.of(context).copyWith(
           colorScheme: const ColorScheme.light(
             primary:    ColoresApp.acento,
-            onPrimary:  Colors.white,
+            onPrimary:  ColoresApp.blanco,
             surface:    ColoresApp.superficiePrimaria,
             onSurface:  ColoresApp.textoPrimario,
           ),

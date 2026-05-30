@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../compartido/widgets/avisos/aviso_app.dart';
+import '../../compartido/widgets/avisos/vista_error_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
@@ -63,8 +65,7 @@ class _ColaboradoresEventoPantallaState extends State<ColaboradoresEventoPantall
 
   void _escucharEstado(BuildContext context, ColaboradoresEventoEstado estado) {
     if (estado is ColaboradoresEventoOperacionFallida) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(estado.mensaje)));
+      AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
     }
   }
 
@@ -109,7 +110,7 @@ class _ColaboradoresEventoPantallaState extends State<ColaboradoresEventoPantall
       ),
     ColaboradoresEventoCargado()          => _Contenido(estado: estado),
     ColaboradoresEventoOperacionFallida() => _Contenido(estado: estado.anterior),
-    ColaboradoresEventoError()            => _VistaError(mensaje: estado.mensaje),
+    ColaboradoresEventoError()            => VistaErrorApp(mensaje: estado.mensaje),
   };
 }
 
@@ -436,23 +437,3 @@ class _EstadoSinResultados extends StatelessWidget {
   }
 }
 
-class _VistaError extends StatelessWidget {
-  const _VistaError({required this.mensaje});
-  final String mensaje;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Text(
-          mensaje,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: ColoresApp.rojo,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-}

@@ -4,7 +4,7 @@ import '../../compartido/constantes.dart';
 import '../eventos/evento.dart';
 import 'asistente_item.dart';
 
-enum FiltroAsistentes { todos, esperados, noEsperados, registrados, abandono, foraneos }
+enum FiltroAsistentes { todos, esperados, pendientes, noEsperados, registrados, abandono, foraneos }
 
 sealed class PanelControlEstado extends Equatable {
   const PanelControlEstado();
@@ -109,6 +109,9 @@ final class PanelControlCargado extends PanelControlEstado {
   List<AsistenteItem> get asistentesFiltrados => switch (filtroActivo) {
     FiltroAsistentes.todos        => asistentes,
     FiltroAsistentes.esperados    => listaEsperados,
+    FiltroAsistentes.pendientes   => listaEsperados
+        .where((a) => a.estatus == EstatusAsistencia.esperado)
+        .toList(),
     FiltroAsistentes.noEsperados  => asistentes
         .where((a) => !a.esForaneo && !a.eraEsperado)
         .toList(),

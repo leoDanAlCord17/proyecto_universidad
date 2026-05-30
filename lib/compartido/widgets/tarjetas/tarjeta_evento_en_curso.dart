@@ -32,7 +32,7 @@ class TarjetaEventoEnCurso extends StatelessWidget {
         border: Border.all(color: ColoresApp.acentoBorde, width: 1),
         boxShadow: const [
           BoxShadow(
-            color:      Color(0x1A5B3FD4),
+            color:      ColoresApp.sombraAcento,
             blurRadius: 16,
             offset:     Offset(0, 4),
           ),
@@ -340,8 +340,8 @@ class _BotonAccion extends StatelessWidget {
       child: InkWell(
         onTap:          dato.accion,
         borderRadius:   BorderRadius.circular(12),
-        splashColor:    Colors.white.withValues(alpha: 0.25),
-        highlightColor: Colors.white.withValues(alpha: 0.1),
+        splashColor:    ColoresApp.blanco.withValues(alpha: 0.25),
+        highlightColor: ColoresApp.blanco.withValues(alpha: 0.1),
         child: SizedBox(
           width:  88,
           height: 58,
@@ -352,7 +352,7 @@ class _BotonAccion extends StatelessWidget {
                 dato.texto,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color:      Colors.white,
+                  color:      ColoresApp.blanco,
                   fontSize:   12,
                   fontWeight: FontWeight.w600,
                   height:     1.35,

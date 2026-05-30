@@ -119,6 +119,24 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
     emit(actualizar(estadoActual).copiarCon(limpiarErrorValidacion: true));
   }
 
+  /// Avanza o retrocede al paso indicado en el wizard.
+  /// Valida el paso actual antes de avanzar.
+  void irAPaso(int paso) {
+    final estadoActual = state;
+    if (estadoActual is! CrearEventoCargado) return;
+    // Validación al avanzar desde el paso 0: el título es obligatorio.
+    if (paso > estadoActual.pasoActual &&
+        estadoActual.pasoActual == 0 &&
+        estadoActual.titulo.trim().isEmpty) {
+      _emitirErrorValidacion('El título del evento es obligatorio.');
+      return;
+    }
+    emit(estadoActual.copiarCon(
+      pasoActual:            paso,
+      limpiarErrorValidacion: true,
+    ),);
+  }
+
   void agregarGrupo(GrupoAudiencia grupo) {
     actualizarCampo((s) => s.copiarCon(grupos: [...s.grupos, grupo]));
   }
@@ -133,10 +151,20 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
     final estadoActual = state;
     if (estadoActual is! CrearEventoCargado) return;
     if (estadoActual.horaFin == null) {
-      emit(estadoActual.copiarCon(errorValidacion: 'La hora de cierre es obligatoria para publicar.'));
+      _emitirErrorValidacion('La hora de cierre es obligatoria para publicar.');
       return;
     }
     await _guardar(estatus: EstatusEvento.programado);
+  }
+
+  /// Emite primero un estado sin error y luego uno con el error dado.
+  /// Esto garantiza que el listener de BlocConsumer se dispare siempre,
+  /// incluso si el mensaje es idéntico al anterior (Equatable lo ignoraría).
+  void _emitirErrorValidacion(String mensaje) {
+    final s = state;
+    if (s is! CrearEventoCargado) return;
+    emit(s.copiarCon(limpiarErrorValidacion: true));
+    emit((state as CrearEventoCargado).copiarCon(errorValidacion: mensaje));
   }
 
   Future<void> guardarBorrador() async =>
@@ -161,7 +189,10 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
         alcance:  estadoActual.alcance,
         grupos:   estadoActual.grupos,
       );
-      emit(CrearEventoGuardado(eventoId: eventoId));
+      emit(CrearEventoGuardado(
+        eventoId:   eventoId,
+        esBorrador: estatus == EstatusEvento.borrador,
+      ),);
     } on FallaServidor catch (e) {
       emit(CrearEventoError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {

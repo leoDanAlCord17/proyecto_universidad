@@ -35,6 +35,8 @@ dependencies:
 
   # Compartir y exportar
   share_plus: ^9.0.0
+  pdf: ^3.10.8
+  path_provider: ^2.1.4
 
   # UI
   shimmer: ^3.0.0

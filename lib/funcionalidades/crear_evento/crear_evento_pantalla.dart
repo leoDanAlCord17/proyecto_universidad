@@ -92,7 +92,16 @@ class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
           _descripcionCtrl.text = estado.descripcion;
           _lugarCtrl.text       = estado.lugar;
         }
-        if (estado is CrearEventoGuardado) context.go(Rutas.eventos);
+        if (estado is CrearEventoGuardado) {
+          AvisoApp.mostrar(
+            context,
+            texto:  estado.esBorrador
+                ? 'Borrador guardado ✓'
+                : 'Evento publicado ✓',
+            estilo: EstiloAviso.exito,
+          );
+          context.go(Rutas.eventos);
+        }
         if (estado is CrearEventoError) {
           AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
         }
@@ -105,34 +114,43 @@ class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
   }
 
   Widget _construirVista(BuildContext context, CrearEventoEstado estado) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
-      ),
-      child: Scaffold(
-        backgroundColor: ColoresApp.fondo,
-        body: switch (estado) {
-          CrearEventoInicial() || CrearEventoCargando() => const Center(
-              child: CircularProgressIndicator(color: ColoresApp.acento),
-            ),
-          CrearEventoCargado() => _CuerpoFormulario(
-              estado:          estado,
-              tituloCtrl:      _tituloCtrl,
-              descripcionCtrl: _descripcionCtrl,
-              lugarCtrl:       _lugarCtrl,
-              modoEdicion:     widget.eventoId != null,
-            ),
-          CrearEventoGuardado() => const SizedBox.shrink(),
-          CrearEventoError()    => _VistaError(mensaje: estado.mensaje),
-        },
+    final pasoActual = estado is CrearEventoCargado ? estado.pasoActual : 0;
+    return PopScope(
+      canPop: pasoActual == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && estado is CrearEventoCargado) {
+          context.read<CrearEventoCubit>().irAPaso(pasoActual - 1);
+        }
+      },
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor:          Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness:     Brightness.light,
+        ),
+        child: Scaffold(
+          backgroundColor: ColoresApp.fondo,
+          body: switch (estado) {
+            CrearEventoInicial() || CrearEventoCargando() => const Center(
+                child: CircularProgressIndicator(color: ColoresApp.acento),
+              ),
+            CrearEventoCargado() => _CuerpoFormulario(
+                estado:          estado,
+                tituloCtrl:      _tituloCtrl,
+                descripcionCtrl: _descripcionCtrl,
+                lugarCtrl:       _lugarCtrl,
+                modoEdicion:     widget.eventoId != null,
+              ),
+            CrearEventoGuardado() => const SizedBox.shrink(),
+            CrearEventoError()    => _VistaError(mensaje: estado.mensaje),
+          },
+        ),
       ),
     );
   }
 }
 
-// ─── Cuerpo ───────────────────────────────────────────────────────────────────
+// ─── Cuerpo wizard ────────────────────────────────────────────────────────────
 
 class _CuerpoFormulario extends StatelessWidget {
   const _CuerpoFormulario({
@@ -149,6 +167,12 @@ class _CuerpoFormulario extends StatelessWidget {
   final TextEditingController lugarCtrl;
   final bool                  modoEdicion;
 
+  static const _nombresPasos = [
+    'Información básica',
+    'Fecha y lugar',
+    'Audiencia y configuración',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -159,43 +183,231 @@ class _CuerpoFormulario extends StatelessWidget {
             izquierda: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const BotonRegresar(),
+                BotonRegresar(
+                  alPresionar: estado.pasoActual > 0
+                      ? () => context.read<CrearEventoCubit>().irAPaso(
+                            estado.pasoActual - 1,
+                          )
+                      : null,
+                ),
                 const SizedBox(width: 12),
-                Text(
-                  modoEdicion ? 'Editar evento' : 'Nuevo evento',
-                  style: Theme.of(context).textTheme.headlineSmall,
+                Column(
+                  mainAxisAlignment:  MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      modoEdicion ? 'Editar evento' : 'Nuevo evento',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    Text(
+                      _nombresPasos[estado.pasoActual],
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: ColoresApp.textoSecundario,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
         ),
+        _IndicadorPasos(pasoActual: estado.pasoActual),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            // key provoca reset del scroll al cambiar de paso
+            key: ValueKey(estado.pasoActual),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
             child: Column(
               children: [
-                _TarjetaInfoBasica(
+                if (estado.pasoActual == 0) _TarjetaInfoBasica(
                   estado:          estado,
                   tituloCtrl:      tituloCtrl,
                   descripcionCtrl: descripcionCtrl,
                   lugarCtrl:       lugarCtrl,
                 ),
-                const SizedBox(height: 16),
-                _TarjetaFechaDuracion(estado: estado),
-                const SizedBox(height: 16),
-                _TarjetaAudiencia(estado: estado),
-                const SizedBox(height: 16),
-                _TarjetaModosRegistro(estado: estado),
-                const SizedBox(height: 16),
-                _TarjetaControlSalida(estado: estado),
-                const SizedBox(height: 28),
-                _BotonesAccion(estado: estado),
-                SizedBox(height: MediaQuery.paddingOf(context).bottom + 20),
+                if (estado.pasoActual == 1) _TarjetaFechaDuracion(estado: estado),
+                if (estado.pasoActual == 2) ...[
+                  _TarjetaAudiencia(estado: estado),
+                  const SizedBox(height: 16),
+                  _TarjetaModosRegistro(estado: estado),
+                  const SizedBox(height: 16),
+                  _TarjetaControlSalida(estado: estado),
+                ],
               ],
             ),
           ),
         ),
+        _BotonesWizard(estado: estado),
+        SizedBox(height: MediaQuery.paddingOf(context).bottom + 16),
       ],
+    );
+  }
+}
+
+// ─── Indicador de pasos ───────────────────────────────────────────────────────
+
+class _IndicadorPasos extends StatelessWidget {
+  const _IndicadorPasos({required this.pasoActual});
+
+  final int pasoActual;
+  static const _totalPasos = 3;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+      child: Row(
+        children: [
+          for (int i = 0; i < _totalPasos; i++) ...[
+            Expanded(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                height: 4,
+                decoration: BoxDecoration(
+                  color: i <= pasoActual
+                      ? ColoresApp.acento
+                      : ColoresApp.superficieTerciar,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            if (i < _totalPasos - 1) const SizedBox(width: 6),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Botones del wizard ───────────────────────────────────────────────────────
+
+class _BotonesWizard extends StatelessWidget {
+  const _BotonesWizard({required this.estado});
+
+  final CrearEventoCargado estado;
+  static const _ultimoPaso = 2;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit   = context.read<CrearEventoCubit>();
+    final paso    = estado.pasoActual;
+    final esFinal = paso == _ultimoPaso;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              if (paso > 0) ...[
+                Expanded(
+                  child: SizedBox(
+                    height: 52,
+                    child: OutlinedButton.icon(
+                      onPressed: () => cubit.irAPaso(paso - 1),
+                      icon:  const Icon(Icons.arrow_back_rounded, size: 18),
+                      label: const Text('Anterior'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: ColoresApp.textoSecundario,
+                        side: const BorderSide(color: ColoresApp.bordeMedio),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
+              Expanded(
+                child: SizedBox(
+                  height: 52,
+                  child: Material(
+                    color:        Colors.transparent,
+                    borderRadius: BorderRadius.circular(14),
+                    child: InkWell(
+                      onTap: esFinal
+                          ? (estado.estaGuardando ? null : cubit.publicarEvento)
+                          : () => cubit.irAPaso(paso + 1),
+                      borderRadius:   BorderRadius.circular(14),
+                      splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+                      highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          gradient:     ColoresApp.degradadoPrincipal,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Center(
+                          child: esFinal
+                              ? (estado.estaGuardando
+                                  ? const CircularProgressIndicator(
+                                      color: ColoresApp.blanco, strokeWidth: 2,)
+                                  : const Text(
+                                      'Publicar evento',
+                                      style: TextStyle(
+                                        color:      ColoresApp.blanco,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize:   15,
+                                      ),
+                                    ))
+                              : const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Siguiente',
+                                      style: TextStyle(
+                                        color:      ColoresApp.blanco,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize:   15,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Icon(
+                                      Icons.arrow_forward_rounded,
+                                      color: ColoresApp.blanco,
+                                      size:  18,
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (esFinal) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width:  double.infinity,
+              height: 52,
+              child: Material(
+                color:        Colors.transparent,
+                borderRadius: BorderRadius.circular(14),
+                child: InkWell(
+                  onTap:          estado.estaGuardando ? null : cubit.guardarBorrador,
+                  borderRadius:   BorderRadius.circular(14),
+                  highlightColor: ColoresApp.superficieTerciar,
+                  splashColor:    ColoresApp.bordeMedio,
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      border:       Border.all(color: ColoresApp.bordeMedio),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Guardar como borrador',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: ColoresApp.textoSecundario,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -477,85 +689,6 @@ class _TarjetaControlSalida extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-// ─── Botones de acción ────────────────────────────────────────────────────────
-
-class _BotonesAccion extends StatelessWidget {
-  const _BotonesAccion({required this.estado});
-
-  final CrearEventoCargado estado;
-
-  @override
-  Widget build(BuildContext context) {
-    final cubit = context.read<CrearEventoCubit>();
-    return Column(
-      children: [
-        SizedBox(
-          width:  double.infinity,
-          height: 52,
-          child: Material(
-            color:        Colors.transparent,
-            borderRadius: BorderRadius.circular(14),
-            child: InkWell(
-              onTap:          estado.estaGuardando ? null : cubit.publicarEvento,
-              borderRadius:   BorderRadius.circular(14),
-              splashColor:    Colors.white.withValues(alpha: 0.3),
-              highlightColor: Colors.white.withValues(alpha: 0.15),
-              child: Ink(
-                decoration: BoxDecoration(
-                  gradient:     ColoresApp.degradadoPrincipal,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Center(
-                  child: estado.estaGuardando
-                      ? const CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 2,)
-                      : const Text(
-                          'Publicar evento',
-                          style: TextStyle(
-                            color:      Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize:   15,
-                          ),
-                        ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          width:  double.infinity,
-          height: 52,
-          child: Material(
-            color:        Colors.transparent,
-            borderRadius: BorderRadius.circular(14),
-            child: InkWell(
-              onTap:          estado.estaGuardando ? null : cubit.guardarBorrador,
-              borderRadius:   BorderRadius.circular(14),
-              highlightColor: ColoresApp.superficieTerciar,
-              splashColor:    ColoresApp.bordeMedio,
-              child: Ink(
-                decoration: BoxDecoration(
-                  border:       Border.all(color: ColoresApp.bordeMedio),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Center(
-                  child: Text(
-                    'Guardar como borrador',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: ColoresApp.textoSecundario,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

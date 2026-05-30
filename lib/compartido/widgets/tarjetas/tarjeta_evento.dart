@@ -152,8 +152,8 @@ class _BotonPanel extends StatelessWidget {
       child: InkWell(
         onTap:          alPresionar,
         borderRadius:   BorderRadius.circular(10),
-        splashColor:    Colors.white.withValues(alpha: 0.3),
-        highlightColor: Colors.white.withValues(alpha: 0.1),
+        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        highlightColor: ColoresApp.blanco.withValues(alpha: 0.1),
         child: Ink(
           decoration: BoxDecoration(
             gradient:     ColoresApp.degradadoPrincipal,
@@ -162,7 +162,7 @@ class _BotonPanel extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           child: const Icon(
             Icons.tune_rounded,
-            color: Colors.white,
+            color: ColoresApp.blanco,
             size:  16,
           ),
         ),
