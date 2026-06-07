@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, develop, master]
+    branches: [main, develop, master, main-pwa, dev-leo-pwa]
   pull_request:
-    branches: [main, develop, master]
+    branches: [main, develop, master, main-pwa, dev-leo-pwa]
 
 jobs:
   analyze_and_test:
