@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import 'grupo_audiencia.dart';
 import 'tag_opcion.dart';
@@ -13,51 +14,60 @@ class CrearEventoRepositorio {
   final SupabaseClient _cliente;
 
   /// Retorna los tipos de evento con estatus activo.
-  Future<List<TipoEvento>> obtenerTiposEvento() async {
-    try {
-      final datos = await _cliente
-          .from(TablasSupabase.tiposEvento)
-          .select()
-          .eq('estatus', true);
-      return (datos as List).map((e) => TipoEvento.desdeJson(e)).toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<List<TipoEvento>> obtenerTiposEvento() =>
+      conReintentos(() async {
+        try {
+          final datos = await _cliente
+              .from(TablasSupabase.tiposEvento)
+              .select()
+              .eq('estatus', true)
+              .timeout(kTimeoutSolicitud);
+          return (datos as List).map((e) => TipoEvento.desdeJson(e)).toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
-  /// Retorna los tags activos (principales y secundarios).
-  Future<List<TagOpcion>> obtenerTags() async {
-    try {
-      final datos = await _cliente
-          .from(TablasSupabase.tags)
-          .select()
-          .eq('estatus', true);
-      return (datos as List).map((e) => TagOpcion.desdeJson(e)).toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  /// Retorna los tags activos (principales y secundarios) — techo de 200 para el picker.
+  Future<List<TagOpcion>> obtenerTags() =>
+      conReintentos(() async {
+        try {
+          final datos = await _cliente
+              .from(TablasSupabase.tags)
+              .select()
+              .eq('estatus', true)
+              .order('tipo')
+              .order('nombre')
+              .limit(200)
+              .timeout(kTimeoutSolicitud);
+          return (datos as List).map((e) => TagOpcion.desdeJson(e)).toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Retorna el valor de max_tags_secundarios_por_usuario desde configuracion_int.
-  Future<int> obtenerMaxTagsSecundarios() async {
-    try {
-      final fila = await _cliente
-          .from(TablasSupabase.configuracion)
-          .select('valor')
-          .eq('clave', 'max_tags_secundarios_por_usuario')
-          .eq('estatus', true)
-          .maybeSingle();
-      return (fila?['valor'] as int?) ?? 3;
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<int> obtenerMaxTagsSecundarios() =>
+      conReintentos(() async {
+        try {
+          final fila = await _cliente
+              .from(TablasSupabase.configuracion)
+              .select('valor')
+              .eq('clave', 'max_tags_secundarios_por_usuario')
+              .eq('estatus', true)
+              .maybeSingle()
+              .timeout(kTimeoutSolicitud);
+          return (fila?['valor'] as int?) ?? 3;
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Inserta un nuevo evento y retorna su ID generado.
   Future<String> crearEvento({required Map<String, dynamic> datos}) async {
@@ -85,59 +95,63 @@ class CrearEventoRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
   /// Retorna los datos de un evento.
-  Future<Map<String, dynamic>> obtenerEvento(String id) async {
-    try {
-      return await _cliente
-          .from(TablasSupabase.eventos)
-          .select()
-          .eq('id', id)
-          .single();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<Map<String, dynamic>> obtenerEvento(String id) =>
+      conReintentos(() async {
+        try {
+          return await _cliente
+              .from(TablasSupabase.eventos)
+              .select()
+              .eq('id', id)
+              .single()
+              .timeout(kTimeoutSolicitud);
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Retorna los grupos de audiencia de un evento con sus tags completos.
-  Future<List<GrupoAudiencia>> obtenerGruposEvento(String eventoId) async {
-    try {
-      final datos = await _cliente
-          .from(TablasSupabase.eventoGruposTags)
-          .select('grupo_index, tag_id, tags(id, nombre, tipo)')
-          .eq('evento_id', eventoId);
+  Future<List<GrupoAudiencia>> obtenerGruposEvento(String eventoId) =>
+      conReintentos(() async {
+        try {
+          final datos = await _cliente
+              .from(TablasSupabase.eventoGruposTags)
+              .select('grupo_index, tag_id, tags(id, nombre, tipo)')
+              .eq('evento_id', eventoId)
+              .timeout(kTimeoutSolicitud);
 
-      final Map<int, TagOpcion>       principalesPorGrupo  = {};
-      final Map<int, List<TagOpcion>> secundariosPorGrupo  = {};
+          final Map<int, TagOpcion>       principalesPorGrupo  = {};
+          final Map<int, List<TagOpcion>> secundariosPorGrupo  = {};
 
-      for (final fila in (datos as List).cast<Map<String, dynamic>>()) {
-        final grupoIndex = fila['grupo_index'] as int;
-        final tagData    = fila['tags']         as Map<String, dynamic>?;
-        if (tagData == null) continue;
-        final tag = TagOpcion.desdeJson(tagData);
-        if (tag.tipo == 'principal') {
-          principalesPorGrupo[grupoIndex] = tag;
-        } else {
-          secundariosPorGrupo.putIfAbsent(grupoIndex, () => []).add(tag);
+          for (final fila in (datos as List).cast<Map<String, dynamic>>()) {
+            final grupoIndex = fila['grupo_index'] as int;
+            final tagData    = fila['tags']         as Map<String, dynamic>?;
+            if (tagData == null) continue;
+            final tag = TagOpcion.desdeJson(tagData);
+            if (tag.tipo == 'principal') {
+              principalesPorGrupo[grupoIndex] = tag;
+            } else {
+              secundariosPorGrupo.putIfAbsent(grupoIndex, () => []).add(tag);
+            }
+          }
+
+          return principalesPorGrupo.entries.map((e) => GrupoAudiencia(
+            grupoIndex:      e.key,
+            tagPrincipal:    e.value,
+            tagsSecundarios: secundariosPorGrupo[e.key] ?? [],
+          ),).toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
         }
-      }
-
-      return principalesPorGrupo.entries.map((e) => GrupoAudiencia(
-        grupoIndex:      e.key,
-        tagPrincipal:    e.value,
-        tagsSecundarios: secundariosPorGrupo[e.key] ?? [],
-      ),).toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+      });
 
   /// Actualiza un evento existente.
   Future<void> actualizarEvento({
@@ -153,7 +167,7 @@ class CrearEventoRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -170,7 +184,7 @@ class CrearEventoRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -191,7 +205,7 @@ class CrearEventoRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 

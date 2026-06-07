@@ -137,8 +137,17 @@ class _Cuerpo extends StatelessWidget {
       RolesInicial() || RolesCargando() => const Center(
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
-      RolesCargados() => _Lista(estado: e),
-      RolesError()    => _VistaError(mensaje: e.mensaje),
+      RolesCargados()    => _Lista(estado: e),
+      RolesCargandoMas() => _Lista(
+          estado: RolesCargados(
+            roles:          e.roles,
+            rolesFiltrados: e.rolesFiltrados,
+            hayMas:         true,
+            conteoUsuarios: e.conteoUsuarios,
+          ),
+          cargandoMas: true,
+        ),
+      RolesError() => _VistaError(mensaje: e.mensaje),
     };
   }
 }
@@ -146,9 +155,10 @@ class _Cuerpo extends StatelessWidget {
 // ─── Lista de roles ───────────────────────────────────────────────────────────
 
 class _Lista extends StatelessWidget {
-  const _Lista({required this.estado});
+  const _Lista({required this.estado, this.cargandoMas = false});
 
   final RolesCargados estado;
+  final bool          cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +173,25 @@ class _Lista extends StatelessWidget {
           ),
         ),
       );
+    }
+
+    Widget pieDeLista() {
+      if (cargandoMas) {
+        return const Padding(
+          padding: EdgeInsets.only(top: 8),
+          child: Center(
+            child: CircularProgressIndicator(color: ColoresApp.acento),
+          ),
+        );
+      }
+      if (estado.hayMas) {
+        return TextButton.icon(
+          onPressed: () => context.read<RolesCubit>().cargarMas(),
+          icon:  const Icon(Icons.expand_more_rounded),
+          label: const Text('Cargar más'),
+        );
+      }
+      return const SizedBox.shrink();
     }
 
     return ListView(
@@ -185,6 +214,7 @@ class _Lista extends StatelessWidget {
             cantidadUsuarios: estado.conteoUsuarios[r.id] ?? 0,
           ),
         ),),
+        pieDeLista(),
       ],
     );
   }

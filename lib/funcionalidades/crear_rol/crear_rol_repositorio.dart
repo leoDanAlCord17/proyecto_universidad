@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import 'permiso_opcion.dart';
 
@@ -10,22 +11,24 @@ class CrearRolRepositorio {
 
   final SupabaseClient _supabase;
 
-  Future<List<PermisoOpcion>> obtenerPermisos() async {
-    try {
-      final res = await _supabase
-          .from(TablasSupabase.permisos)
-          .select('id, nombre, descripcion')
-          .eq('estatus', true)
-          .order('nombre');
-      return (res as List)
-          .map((j) => PermisoOpcion.desdeJson(j as Map<String, dynamic>))
-          .toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<List<PermisoOpcion>> obtenerPermisos() =>
+      conReintentos(() async {
+        try {
+          final res = await _supabase
+              .from(TablasSupabase.permisos)
+              .select('id, nombre, descripcion')
+              .eq('estatus', true)
+              .order('nombre')
+              .timeout(kTimeoutSolicitud);
+          return (res as List)
+              .map((j) => PermisoOpcion.desdeJson(j as Map<String, dynamic>))
+              .toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   Future<String> crearRol({required Map<String, dynamic> datos}) async {
     try {
@@ -38,7 +41,7 @@ class CrearRolRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -54,32 +57,35 @@ class CrearRolRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
   Future<({Map<String, dynamic> rol, List<String> permisosIds})> obtenerRol(
     String id,
-  ) async {
-    try {
-      final rol = await _supabase
-          .from(TablasSupabase.roles)
-          .select('id, nombre, descripcion')
-          .eq('id', id)
-          .single();
-      final perms = await _supabase
-          .from(TablasSupabase.rolesPermisos)
-          .select('permiso_id')
-          .eq('rol_id', id)
-          .eq('estatus', true);
-      final ids = (perms as List).cast<Map<String, dynamic>>().map((r) => r['permiso_id'] as String).toList();
-      return (rol: rol, permisosIds: ids);
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  ) =>
+      conReintentos(() async {
+        try {
+          final rol = await _supabase
+              .from(TablasSupabase.roles)
+              .select('id, nombre, descripcion')
+              .eq('id', id)
+              .single()
+              .timeout(kTimeoutSolicitud);
+          final perms = await _supabase
+              .from(TablasSupabase.rolesPermisos)
+              .select('permiso_id')
+              .eq('rol_id', id)
+              .eq('estatus', true)
+              .timeout(kTimeoutSolicitud);
+          final ids = (perms as List).cast<Map<String, dynamic>>().map((r) => r['permiso_id'] as String).toList();
+          return (rol: rol, permisosIds: ids);
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   Future<void> actualizarRol({
     required String              id,
@@ -94,7 +100,7 @@ class CrearRolRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -128,7 +134,7 @@ class CrearRolRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 

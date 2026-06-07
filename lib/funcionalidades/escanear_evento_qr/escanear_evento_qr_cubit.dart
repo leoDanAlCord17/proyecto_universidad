@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import '../eventos/evento.dart';
 import 'escanear_evento_qr_estado.dart';
 import 'escanear_evento_qr_repositorio.dart';
@@ -29,9 +30,11 @@ class EscanearEventoQrCubit extends Cubit<EscanearEventoQrEstado> {
     emit(const EscanearEventoQrProcesando());
     try {
       await _validarYRegistrar(rawValue);
-    } on FallaServidor catch (_) {
+    } on FallaServidor catch (e) {
+      reportarError(e);
       _programarReset();
-    } on FallaInesperada catch (_) {
+    } on FallaInesperada catch (e) {
+      reportarError(e);
       _programarReset();
     }
   }

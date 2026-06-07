@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import 'borrador_evento.dart';
 
@@ -10,23 +11,33 @@ class BorradoresRepositorio {
 
   final SupabaseClient _cliente;
 
-  Future<List<BorradorEvento>> obtenerBorradores(String usuarioId) async {
-    try {
-      final datos = await _cliente
-          .from(TablasSupabase.eventos)
-          .select()
-          .eq('estatus', EstatusEvento.borrador)
-          .eq('creado_por', usuarioId)
-          .order('fecha_inicio', ascending: false);
-      return (datos as List)
-          .map((e) => BorradorEvento.desdeJson(e as Map<String, dynamic>))
-          .toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  static const _limite = 20;
+
+  Future<({List<BorradorEvento> borradores, bool hayMas})> obtenerBorradores(
+    String usuarioId, {
+    int offset = 0,
+    int limite = _limite,
+  }) =>
+      conReintentos(() async {
+        try {
+          final datos = await _cliente
+              .from(TablasSupabase.eventos)
+              .select()
+              .eq('estatus', EstatusEvento.borrador)
+              .eq('creado_por', usuarioId)
+              .order('fecha_inicio', ascending: false)
+              .range(offset, offset + limite - 1)
+              .timeout(kTimeoutSolicitud);
+          final borradores = (datos as List)
+              .map((e) => BorradorEvento.desdeJson(e as Map<String, dynamic>))
+              .toList();
+          return (borradores: borradores, hayMas: borradores.length >= limite);
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   Future<void> publicarEvento(String eventoId) async {
     try {
@@ -38,7 +49,7 @@ class BorradoresRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 

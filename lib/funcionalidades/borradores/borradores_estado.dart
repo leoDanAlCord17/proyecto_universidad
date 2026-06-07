@@ -22,18 +22,21 @@ final class BorradoresCargados extends BorradoresEstado {
   const BorradoresCargados({
     required this.borradores,
     required this.borradoresFiltrados,
+    required this.hayMas,
     this.publicandoId,
     this.errorPublicacion,
   });
 
   final List<BorradorEvento> borradores;
   final List<BorradorEvento> borradoresFiltrados;
+  final bool                 hayMas;
   final String?              publicandoId;
   final String?              errorPublicacion;
 
   BorradoresCargados copiarCon({
     List<BorradorEvento>? borradores,
     List<BorradorEvento>? borradoresFiltrados,
+    bool?                 hayMas,
     String?               publicandoId,
     bool                  limpiarPublicando = false,
     String?               errorPublicacion,
@@ -42,6 +45,7 @@ final class BorradoresCargados extends BorradoresEstado {
       BorradoresCargados(
         borradores:          borradores          ?? this.borradores,
         borradoresFiltrados: borradoresFiltrados ?? this.borradoresFiltrados,
+        hayMas:              hayMas              ?? this.hayMas,
         publicandoId:        limpiarPublicando ? null : (publicandoId ?? this.publicandoId),
         errorPublicacion:    limpiarError ? null : (errorPublicacion ?? this.errorPublicacion),
       );
@@ -50,9 +54,24 @@ final class BorradoresCargados extends BorradoresEstado {
   List<Object?> get props => [
         borradores,
         borradoresFiltrados,
+        hayMas,
         publicandoId,
         errorPublicacion,
       ];
+}
+
+/// La lista ya muestra resultados y se está cargando la siguiente página.
+final class BorradoresCargandoMas extends BorradoresEstado {
+  const BorradoresCargandoMas({
+    required this.borradores,
+    required this.borradoresFiltrados,
+  });
+
+  final List<BorradorEvento> borradores;
+  final List<BorradorEvento> borradoresFiltrados;
+
+  @override
+  List<Object?> get props => [borradores, borradoresFiltrados];
 }
 
 final class BorradoresError extends BorradoresEstado {

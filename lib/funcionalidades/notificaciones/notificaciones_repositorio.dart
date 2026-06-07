@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import 'notificacion.dart';
 
@@ -21,21 +22,23 @@ class NotificacionesRepositorio {
   }
 
   /// Lista completa de notificaciones del usuario, más recientes primero.
-  Future<List<Notificacion>> obtenerTodas(String usuarioId) async {
-    try {
-      final filas = await _supabase
-          .from(TablasSupabase.notificaciones)
-          .select()
-          .eq('usuario_id', usuarioId)
-          .order('creado_en', ascending: false)
-          .limit(50);
-      return filas.map(Notificacion.desdeJson).toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<List<Notificacion>> obtenerTodas(String usuarioId) =>
+      conReintentos(() async {
+        try {
+          final filas = await _supabase
+              .from(TablasSupabase.notificaciones)
+              .select()
+              .eq('usuario_id', usuarioId)
+              .order('creado_en', ascending: false)
+              .limit(50)
+              .timeout(kTimeoutSolicitud);
+          return filas.map(Notificacion.desdeJson).toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Marca una notificación como leída.
   Future<void> marcarLeida(String notificacionId) async {
@@ -47,7 +50,7 @@ class NotificacionesRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -62,7 +65,7 @@ class NotificacionesRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -89,7 +92,7 @@ class NotificacionesRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -106,7 +109,7 @@ class NotificacionesRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 }

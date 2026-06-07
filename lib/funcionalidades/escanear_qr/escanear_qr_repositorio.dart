@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import '../eventos/evento.dart';
 
@@ -15,61 +16,67 @@ class EscanearQrRepositorio {
   );
 
   /// Obtiene los datos del evento por su UUID.
-  Future<Evento> obtenerEvento(String eventoId) async {
-    try {
-      final fila = await _supabase
-          .from(TablasSupabase.eventos)
-          .select()
-          .eq('id', eventoId)
-          .single();
-      return Evento.desdeJson(fila);
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<Evento> obtenerEvento(String eventoId) =>
+      conReintentos(() async {
+        try {
+          final fila = await _supabase
+              .from(TablasSupabase.eventos)
+              .select()
+              .eq('id', eventoId)
+              .single()
+              .timeout(kTimeoutSolicitud);
+          return Evento.desdeJson(fila);
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Cuenta asistentes con estatus activo en el evento.
-  Future<int> contarPresentes(String eventoId) async {
-    try {
-      final result = await _supabase
-          .from(TablasSupabase.asistencia)
-          .select('id')
-          .eq('evento_id', eventoId)
-          .inFilter('estatus', [
-            EstatusAsistencia.presente,
-            EstatusAsistencia.completado,
-            EstatusAsistencia.salioAnticipado,
-          ]);
-      return result.length;
-    } on PostgrestException catch (_) {
-      return 0;
-    } catch (_) {
-      return 0;
-    }
-  }
+  Future<int> contarPresentes(String eventoId) =>
+      conReintentos(() async {
+        try {
+          final result = await _supabase
+              .from(TablasSupabase.asistencia)
+              .select('id')
+              .eq('evento_id', eventoId)
+              .inFilter('estatus', [
+                EstatusAsistencia.presente,
+                EstatusAsistencia.completado,
+                EstatusAsistencia.salioAnticipado,
+              ])
+              .timeout(kTimeoutSolicitud);
+          return result.length;
+        } on PostgrestException catch (_) {
+          return 0;
+        } catch (_) {
+          return 0;
+        }
+      });
 
   /// Busca un usuario activo por su UUID. Retorna null si no existe o no es válido.
-  Future<Map<String, dynamic>?> buscarUsuario(String usuarioId) async {
-    if (!_regexUuid.hasMatch(usuarioId)) return null;
-    try {
-      final fila = await _supabase
-          .from(TablasSupabase.usuarios)
-          .select(
-            'primer_nombre, primer_apellido, numero_identificacion, '
-            'usuarios_roles!usuarios_roles_usuario_id_fkey(roles(nombre))',
-          )
-          .eq('id', usuarioId)
-          .eq('estatus', true)
-          .maybeSingle();
-      return fila;
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<Map<String, dynamic>?> buscarUsuario(String usuarioId) =>
+      conReintentos(() async {
+        if (!_regexUuid.hasMatch(usuarioId)) return null;
+        try {
+          final fila = await _supabase
+              .from(TablasSupabase.usuarios)
+              .select(
+                'primer_nombre, primer_apellido, numero_identificacion, '
+                'usuarios_roles!usuarios_roles_usuario_id_fkey(roles(nombre))',
+              )
+              .eq('id', usuarioId)
+              .eq('estatus', true)
+              .maybeSingle()
+              .timeout(kTimeoutSolicitud);
+          return fila;
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Registra la entrada del usuario para el evento.
   /// Retorna true si fue registrado, false si ya estaba registrado.
@@ -101,7 +108,7 @@ class EscanearQrRepositorio {
       if (e.code == '23505') return false;
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 

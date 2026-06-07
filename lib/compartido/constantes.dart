@@ -60,7 +60,7 @@ class Rutas {
 
   static const String historial            = '/historial';
   static const String estadisticas         = '/estadisticas';
-  static const String auditoriaEvento      = '/auditoria-evento';
+  static const String auditoriaEvento      = '/auditoria_evento';
   static const String pendienteAprobacion = '/pendiente_aprobacion';
   static const String usuarioRechazado    = '/usuario_rechazado';
   static const String revisionUsuarios    = '/revision_usuarios';
@@ -154,10 +154,15 @@ class RolesSistema {
   static const String colaborador = 'Colaborador';
 }
 
+/// Timeout máximo para una sola llamada HTTP a Supabase.
+/// Si se supera → TimeoutException → TraductorErrores lo convierte en FallaRed.
+const kTimeoutSolicitud = Duration(seconds: 15);
+
 /// Mensajes de error genéricos para mostrar al usuario.
 class MensajesError {
-  static const String conexion  = 'Error de conexión. Verifica tu internet.';
-  static const String sesion    = 'Tu sesión expiró. Inicia sesión de nuevo.';
-  static const String permiso   = 'No tienes permiso para esta acción.';
+  static const String conexion   = 'Error de conexión. Verifica tu internet.';
+  static const String timeout    = 'El servidor tardó demasiado. Intenta de nuevo.';
+  static const String sesion     = 'Tu sesión expiró. Inicia sesión de nuevo.';
+  static const String permiso    = 'No tienes permiso para esta acción.';
   static const String inesperado = 'Ocurrió un error inesperado. Intenta de nuevo.';
 }

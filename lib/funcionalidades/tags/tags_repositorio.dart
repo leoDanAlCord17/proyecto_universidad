@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import 'tag.dart';
 
@@ -10,23 +11,32 @@ class TagsRepositorio {
 
   final SupabaseClient _supabase;
 
-  Future<List<Tag>> obtenerTags() async {
-    try {
-      final respuesta = await _supabase
-          .from(TablasSupabase.tags)
-          .select('id, nombre, tipo, estatus, descripcion, usuarios_tags(count)')
-          .eq('usuarios_tags.estatus', true)
-          .order('nombre');
+  static const _limite = 20;
 
-      return (respuesta as List)
-          .map((json) => Tag.desdeJson(json as Map<String, dynamic>))
-          .toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<({List<Tag> tags, bool hayMas})> obtenerTags({
+    int offset = 0,
+    int limite = _limite,
+  }) =>
+      conReintentos(() async {
+        try {
+          final respuesta = await _supabase
+              .from(TablasSupabase.tags)
+              .select('id, nombre, tipo, estatus, descripcion, usuarios_tags(count)')
+              .eq('usuarios_tags.estatus', true)
+              .order('nombre')
+              .range(offset, offset + limite - 1)
+              .timeout(kTimeoutSolicitud);
+
+          final tags = (respuesta as List)
+              .map((json) => Tag.desdeJson(json as Map<String, dynamic>))
+              .toList();
+          return (tags: tags, hayMas: tags.length >= limite);
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   Future<void> activarTag(String id) async {
     try {
@@ -37,7 +47,7 @@ class TagsRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -57,7 +67,7 @@ class TagsRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 }

@@ -123,8 +123,16 @@ class _Cuerpo extends StatelessWidget {
       BorradoresInicial() || BorradoresCargando() => const Center(
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
-      BorradoresCargados() => _Lista(estado: e),
-      BorradoresError()    => _VistaError(mensaje: e.mensaje),
+      BorradoresCargados()    => _Lista(estado: e),
+      BorradoresCargandoMas() => _Lista(
+          estado: BorradoresCargados(
+            borradores:          e.borradores,
+            borradoresFiltrados: e.borradoresFiltrados,
+            hayMas:              true,
+          ),
+          cargandoMas: true,
+        ),
+      BorradoresError() => _VistaError(mensaje: e.mensaje),
     };
   }
 }
@@ -132,9 +140,10 @@ class _Cuerpo extends StatelessWidget {
 // ─── Lista de borradores ──────────────────────────────────────────────────────
 
 class _Lista extends StatelessWidget {
-  const _Lista({required this.estado});
+  const _Lista({required this.estado, this.cargandoMas = false});
 
   final BorradoresCargados estado;
+  final bool               cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -152,10 +161,28 @@ class _Lista extends StatelessWidget {
     }
 
     return ListView.separated(
-      padding:     const EdgeInsets.fromLTRB(20, 16, 20, 32),
-      itemCount:   items.length,
+      padding:          const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      itemCount:        items.length + 1,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, i) {
+        if (i == items.length) {
+          if (cargandoMas) {
+            return const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Center(
+                child: CircularProgressIndicator(color: ColoresApp.acento),
+              ),
+            );
+          }
+          if (estado.hayMas) {
+            return TextButton.icon(
+              onPressed: () => context.read<BorradoresCubit>().cargarMas(),
+              icon: const Icon(Icons.expand_more_rounded),
+              label: const Text('Cargar más'),
+            );
+          }
+          return const SizedBox.shrink();
+        }
         final borrador = items[i];
         return TarjetaBorradorEvento(
           titulo:         borrador.titulo,

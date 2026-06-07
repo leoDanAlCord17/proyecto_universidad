@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'borrador_evento.dart';
 import 'borradores_estado.dart';
 import 'borradores_repositorio.dart';
@@ -10,24 +11,80 @@ class BorradoresCubit extends Cubit<BorradoresEstado> {
   BorradoresCubit(this._repositorio) : super(const BorradoresInicial());
 
   final BorradoresRepositorio _repositorio;
+
   List<BorradorEvento> _todos = [];
+  String?              _usuarioId;
+  int                  _offset = 0;
 
   Future<void> cargarBorradores(String usuarioId) async {
+    _usuarioId = usuarioId;
+    _offset    = 0;
+    _todos     = [];
     emit(const BorradoresCargando());
     try {
-      _todos = await _repositorio.obtenerBorradores(usuarioId);
-      emit(BorradoresCargados(borradores: _todos, borradoresFiltrados: _todos));
+      final resultado = await _repositorio.obtenerBorradores(usuarioId, offset: _offset);
+      if (isClosed) return;
+      _todos   = resultado.borradores;
+      _offset += resultado.borradores.length;
+      emit(BorradoresCargados(
+        borradores:          _todos,
+        borradoresFiltrados: _todos,
+        hayMas:              resultado.hayMas,
+      ),);
     } on FallaServidor catch (e) {
+      if (isClosed) return;
+      reportarError(e);
+      emit(BorradoresError(e.mensaje));
+    } on FallaRed catch (e) {
+      if (isClosed) return;
+      reportarError(e);
       emit(BorradoresError(e.mensaje));
     } on FallaInesperada catch (e) {
+      if (isClosed) return;
+      reportarError(e);
       emit(BorradoresError(e.mensaje));
+    }
+  }
+
+  Future<void> cargarMas() async {
+    final estado    = state;
+    final usuarioId = _usuarioId;
+    if (estado is! BorradoresCargados || !estado.hayMas || usuarioId == null) return;
+
+    emit(BorradoresCargandoMas(
+      borradores:          estado.borradores,
+      borradoresFiltrados: estado.borradoresFiltrados,
+    ),);
+    try {
+      final resultado = await _repositorio.obtenerBorradores(usuarioId, offset: _offset);
+      if (isClosed) return;
+      _todos   = [...estado.borradores, ...resultado.borradores];
+      _offset += resultado.borradores.length;
+      emit(BorradoresCargados(
+        borradores:          _todos,
+        borradoresFiltrados: _todos,
+        hayMas:              resultado.hayMas,
+      ),);
+    } catch (_) {
+      if (isClosed) return;
+      emit(BorradoresCargados(
+        borradores:          estado.borradores,
+        borradoresFiltrados: estado.borradoresFiltrados,
+        hayMas:              estado.hayMas,
+      ),);
     }
   }
 
   void filtrar(String texto, DateTimeRange? rango) {
     final estadoActual = state;
-    if (estadoActual is! BorradoresCargados) return;
-    var filtrados = _todos;
+    final base = switch (estadoActual) {
+      BorradoresCargados()    => estadoActual.borradores,
+      BorradoresCargandoMas() => estadoActual.borradores,
+      _                       => null,
+    };
+    if (base == null) return;
+
+    var filtrados = base;
     if (texto.isNotEmpty) {
       final q = texto.toLowerCase();
       filtrados = filtrados
@@ -46,7 +103,15 @@ class BorradoresCubit extends Cubit<BorradoresEstado> {
               !e.fechaInicio!.isAfter(fin),)
           .toList();
     }
-    emit(estadoActual.copiarCon(borradoresFiltrados: filtrados));
+
+    if (estadoActual is BorradoresCargados) {
+      emit(estadoActual.copiarCon(borradoresFiltrados: filtrados));
+    } else if (estadoActual is BorradoresCargandoMas) {
+      emit(BorradoresCargandoMas(
+        borradores:          estadoActual.borradores,
+        borradoresFiltrados: filtrados,
+      ),);
+    }
   }
 
   Future<void> publicarEvento(String eventoId) async {
@@ -59,17 +124,25 @@ class BorradoresCubit extends Cubit<BorradoresEstado> {
       final filtrados = estadoActual.borradoresFiltrados
           .where((e) => e.id != eventoId)
           .toList();
-      emit(BorradoresCargados(borradores: _todos, borradoresFiltrados: filtrados));
+      emit(BorradoresCargados(
+        borradores:          _todos,
+        borradoresFiltrados: filtrados,
+        hayMas:              estadoActual.hayMas,
+      ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(BorradoresCargados(
         borradores:          estadoActual.borradores,
         borradoresFiltrados: estadoActual.borradoresFiltrados,
+        hayMas:              estadoActual.hayMas,
         errorPublicacion:    e.mensaje,
       ),);
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(BorradoresCargados(
         borradores:          estadoActual.borradores,
         borradoresFiltrados: estadoActual.borradoresFiltrados,
+        hayMas:              estadoActual.hayMas,
         errorPublicacion:    e.mensaje,
       ),);
     }

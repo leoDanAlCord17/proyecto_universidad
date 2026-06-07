@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'evento.dart';
 import 'eventos_estado.dart';
 import 'eventos_repositorio.dart';
@@ -50,11 +51,25 @@ class EventosCubit extends Cubit<EventosEstado> {
       _timer = Timer.periodic(_intervaloRefresh, (_) => _refrescarSilencioso(usuarioId));
     } on FallaServidor catch (e) {
       if (isClosed) return;
-      emit(EventosError(e.mensaje));
+      reportarError(e);
+      _emitirDesdeCache(e.mensaje);
     } on FallaInesperada catch (e) {
       if (isClosed) return;
-      emit(EventosError(e.mensaje));
+      reportarError(e);
+      _emitirDesdeCache(e.mensaje);
     }
+  }
+
+  /// Si hay datos en caché emite [EventosSinConexion]; si no, emite [EventosError].
+  void _emitirDesdeCache(String mensajeError) {
+    final desdeCache = _repositorio.obtenerEventosConGruposDesdeCache();
+    if (desdeCache == null) {
+      emit(EventosError(mensajeError));
+      return;
+    }
+    _enCurso  = desdeCache.where((e) => e.evento.estatus == EstatusEvento.enCurso).toList();
+    _proximos = desdeCache.where((e) => e.evento.estatus == EstatusEvento.programado).toList();
+    emit(EventosSinConexion(enCurso: _enCurso, proximos: _proximos));
   }
 
   /// Enriquece los eventos en curso con el contador de asistentes presentes.
@@ -76,15 +91,24 @@ class EventosCubit extends Cubit<EventosEstado> {
 
   void filtrar(String texto, DateTimeRange? rango) {
     final estadoActual = state;
-    if (estadoActual is! EventosCargado) return;
 
-    emit(estadoActual.copiarCon(
-      enCurso:       _aplicarFiltros(_enCurso,  texto, rango),
-      proximos:      _aplicarFiltros(_proximos, texto, rango),
-      textoBusqueda: texto,
-      rangoFechas:   rango,
-      limpiarRango:  rango == null,
-    ),);
+    if (estadoActual is EventosCargado) {
+      emit(estadoActual.copiarCon(
+        enCurso:       _aplicarFiltros(_enCurso,  texto, rango),
+        proximos:      _aplicarFiltros(_proximos, texto, rango),
+        textoBusqueda: texto,
+        rangoFechas:   rango,
+        limpiarRango:  rango == null,
+      ),);
+    } else if (estadoActual is EventosSinConexion) {
+      emit(estadoActual.copiarCon(
+        enCurso:       _aplicarFiltros(_enCurso,  texto, rango),
+        proximos:      _aplicarFiltros(_proximos, texto, rango),
+        textoBusqueda: texto,
+        rangoFechas:   rango,
+        limpiarRango:  rango == null,
+      ),);
+    }
   }
 
   Future<void> _refrescarSilencioso(String usuarioId) async {

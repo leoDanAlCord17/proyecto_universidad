@@ -71,12 +71,15 @@ void main() {
       );
 
       await tester.pumpWidget(_marco(crearCubit, authCubit));
-      await tester.pump();
+      await tester.pump(); // BlocConsumer listener fires → Overlay.insert
+      await tester.pump(); // Overlay rebuilds con la nueva entrada
 
       expect(
         find.text('El nombre y apellido son obligatorios.'),
         findsOneWidget,
       );
+
+      await tester.pump(const Duration(seconds: 3)); // drena timers de AvisoApp
     });
 
     testWidgets('llama guardarPerfil con los valores escritos', (tester) async {

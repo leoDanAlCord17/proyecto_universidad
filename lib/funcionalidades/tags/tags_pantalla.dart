@@ -142,12 +142,20 @@ class _Cuerpo extends StatelessWidget {
   Widget build(BuildContext context) {
     final e = estado;
     return switch (e) {
-      TagsInicial() || TagsCargando()   => const Center(
+      TagsInicial() || TagsCargando() => const Center(
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
-      TagsCargados()                    => _Lista(estado: e),
-      TagsOperacionFallida()            => _Lista(estado: e.anterior),
-      TagsError()                       => _VistaError(mensaje: e.mensaje),
+      TagsCargados()         => _Lista(estado: e),
+      TagsCargandoMas()      => _Lista(
+          estado: TagsCargados(
+            tags:          e.tags,
+            tagsFiltrados: e.tagsFiltrados,
+            hayMas:        true,
+          ),
+          cargandoMas: true,
+        ),
+      TagsOperacionFallida() => _Lista(estado: e.anterior),
+      TagsError()            => _VistaError(mensaje: e.mensaje),
     };
   }
 }
@@ -155,9 +163,10 @@ class _Cuerpo extends StatelessWidget {
 // ─── Lista de tags ────────────────────────────────────────────────────────────
 
 class _Lista extends StatelessWidget {
-  const _Lista({required this.estado});
+  const _Lista({required this.estado, this.cargandoMas = false});
 
   final TagsCargados estado;
+  final bool         cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -172,6 +181,25 @@ class _Lista extends StatelessWidget {
           ),
         ),
       );
+    }
+
+    Widget pieDeLista() {
+      if (cargandoMas) {
+        return const Padding(
+          padding: EdgeInsets.only(top: 8),
+          child: Center(
+            child: CircularProgressIndicator(color: ColoresApp.acento),
+          ),
+        );
+      }
+      if (estado.hayMas) {
+        return TextButton.icon(
+          onPressed: () => context.read<TagsCubit>().cargarMas(),
+          icon:  const Icon(Icons.expand_more_rounded),
+          label: const Text('Cargar más'),
+        );
+      }
+      return const SizedBox.shrink();
     }
 
     return ListView(
@@ -191,6 +219,7 @@ class _Lista extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 10),
           child:   _TarjetaTag(tag: t),
         ),),
+        pieDeLista(),
       ],
     );
   }

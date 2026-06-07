@@ -80,8 +80,11 @@ class Evento extends Equatable {
   final bool      marcarAusentesAuto;
   final bool      permiteForaneos;
 
+  /// Serialización para enviar a Supabase en operaciones de escritura.
+  /// No incluye `id` ni timestamps gestionados por el servidor.
   Map<String, dynamic> aJson() => {
         'titulo':                    titulo,
+        'alcance':                   alcance,
         'descripcion':               descripcion,
         'lugar':                     lugar,
         'tipo_evento_id':            tipoEventoId,
@@ -98,6 +101,16 @@ class Evento extends Equatable {
         'permite_salida_anticipada': permiteSalidaAnticipada,
         'marcar_ausentes_auto':      marcarAusentesAuto,
         'permite_foraneos':          permiteForaneos,
+      };
+
+  /// Serialización completa para caché local: incluye todos los campos
+  /// necesarios para reconstruir el objeto con `Evento.desdeJson()`.
+  Map<String, dynamic> aJsonCompleto() => {
+        ...aJson(),
+        'id':             id,
+        'creado_por':     creadoPor,
+        'creado_en':      creadoEn.toUtc().toIso8601String(),
+        'actualizado_en': actualizadoEn.toUtc().toIso8601String(),
       };
 
   static String? _formatearFecha(DateTime? fecha) {

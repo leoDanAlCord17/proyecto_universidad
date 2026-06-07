@@ -7,6 +7,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'compartido/cache_local.dart';
 import 'compartido/logger.dart';
 import 'compartido/widgets/avisos/aviso_app.dart';
 import 'configuracion/colores_app.dart';
@@ -27,6 +28,14 @@ void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+
+      // Evita que el caché de imágenes en memoria crezca indefinidamente
+      // en sesiones largas (ej. operadores que dejan la app abierta todo el día).
+      PaintingBinding.instance.imageCache
+        ..maximumSize      = 150        // máximo 150 imágenes descodificadas
+        ..maximumSizeBytes = 50 << 20;  // máximo 50 MB en memoria
+
+      await CacheLocal.init();
 
       _configurarErrorHandlers();
 

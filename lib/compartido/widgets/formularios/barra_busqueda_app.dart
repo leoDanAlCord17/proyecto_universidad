@@ -39,10 +39,12 @@ class BarraBusquedaApp extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 14),
-          const Icon(
-            Icons.search_rounded,
-            color: ColoresApp.textoTerciario,
-            size:  20,
+          const ExcludeSemantics(
+            child: Icon(
+              Icons.search_rounded,
+              color: ColoresApp.textoTerciario,
+              size:  20,
+            ),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -154,26 +156,33 @@ class _BotonCalendario extends StatelessWidget {
   Widget build(BuildContext context) {
     final tieneRango = rangoSeleccionado != null;
 
-    return Material(
-      color:        Colors.transparent,
-      borderRadius: const BorderRadius.only(
-        topRight:    Radius.circular(14),
-        bottomRight: Radius.circular(14),
-      ),
-      child: InkWell(
-        onTap:        () => _alPresionar(context),
+    return Semantics(
+      button: true,
+      label:  tieneRango ? 'Filtro de fechas activo — toca para modificar o quitar'
+                         : 'Filtrar por rango de fechas',
+      child: Material(
+        color:        Colors.transparent,
         borderRadius: const BorderRadius.only(
           topRight:    Radius.circular(14),
           bottomRight: Radius.circular(14),
         ),
-        highlightColor: ColoresApp.acentoClaro,
-        splashColor:    ColoresApp.bordeMedio,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Icon(
-            Icons.calendar_month_rounded,
-            size:  20,
-            color: tieneRango ? ColoresApp.acento : ColoresApp.textoTerciario,
+        child: InkWell(
+          onTap:        () => _alPresionar(context),
+          borderRadius: const BorderRadius.only(
+            topRight:    Radius.circular(14),
+            bottomRight: Radius.circular(14),
+          ),
+          highlightColor: ColoresApp.acentoClaro,
+          splashColor:    ColoresApp.bordeMedio,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: ExcludeSemantics(
+              child: Icon(
+                Icons.calendar_month_rounded,
+                size:  20,
+                color: tieneRango ? ColoresApp.acento : ColoresApp.textoTerciario,
+              ),
+            ),
           ),
         ),
       ),

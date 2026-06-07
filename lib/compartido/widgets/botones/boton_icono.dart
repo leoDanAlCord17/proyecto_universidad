@@ -30,15 +30,22 @@ class BotonIcono extends StatelessWidget {
   Widget build(BuildContext context) {
     final (colorFondo, colorIcono) = _estilos[variante]!;
 
-    final boton = GestureDetector(
-      onTap: alPresionar,
-      child: Container(
-        padding:    EdgeInsets.all(tamanio * 0.55),
-        decoration: BoxDecoration(
-          color:        colorFondo,
-          borderRadius: BorderRadius.circular(12),
+    final boton = Semantics(
+      button: true,
+      label:  tooltip,
+      enabled: alPresionar != null,
+      child: GestureDetector(
+        onTap: alPresionar,
+        child: Container(
+          padding:    EdgeInsets.all(tamanio * 0.55),
+          decoration: BoxDecoration(
+            color:        colorFondo,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: ExcludeSemantics(
+            child: Icon(icono, size: tamanio, color: colorIcono),
+          ),
         ),
-        child: Icon(icono, size: tamanio, color: colorIcono),
       ),
     );
 

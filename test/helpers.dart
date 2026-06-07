@@ -29,6 +29,9 @@ import 'package:uniasist/funcionalidades/panel_control_evento/panel_control_repo
 import 'package:uniasist/funcionalidades/perfil/perfil_repositorio.dart';
 import 'package:uniasist/funcionalidades/roles/rol.dart';
 import 'package:uniasist/funcionalidades/roles/roles_repositorio.dart';
+import 'package:uniasist/funcionalidades/borradores/borradores_repositorio.dart';
+import 'package:uniasist/funcionalidades/revision_usuarios/revision_usuarios_repositorio.dart';
+import 'package:uniasist/funcionalidades/tags/tags_repositorio.dart';
 import 'package:uniasist/funcionalidades/usuarios/usuarios_repositorio.dart';
 
 // ─── Mocks de repositorio ────────────────────────────────────────────────────
@@ -129,6 +132,15 @@ class MockBuscarAsistenteRepositorio extends Mock
 
 class MockCrearEventoRepositorio extends Mock
     implements CrearEventoRepositorio {}
+
+class MockBorradoresRepositorio extends Mock
+    implements BorradoresRepositorio {}
+
+class MockTagsRepositorio extends Mock
+    implements TagsRepositorio {}
+
+class MockRevisionUsuariosRepositorio extends Mock
+    implements RevisionUsuariosRepositorio {}
 
 // ─── Fixtures adicionales ─────────────────────────────────────────────────────
 

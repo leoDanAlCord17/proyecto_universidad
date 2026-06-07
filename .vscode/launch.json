@@ -1,0 +1,36 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Web (Chrome) — dev",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=.env",
+        "--web-renderer=canvaskit"
+      ],
+      "deviceId": "chrome",
+      "program": "lib/main.dart"
+    },
+    {
+      "name": "Android — dev",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=.env"
+      ],
+      "deviceId": "android",
+      "program": "lib/main.dart"
+    },
+    {
+      "name": "iOS — dev",
+      "request": "launch",
+      "type": "dart",
+      "args": [
+        "--dart-define-from-file=.env"
+      ],
+      "deviceId": "ios",
+      "program": "lib/main.dart"
+    }
+  ]
+}

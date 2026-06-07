@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'asistente_item.dart';
 import 'panel_control_estado.dart';
 import 'panel_control_repositorio.dart';
@@ -38,8 +39,13 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
       ),);
       _suscribirStreamAsistencia(eventoId);
     } on FallaServidor catch (e) {
+      reportarError(e);
+      emit(PanelControlError(mensaje: e.mensaje));
+    } on FallaRed catch (e) {
+      reportarError(e);
       emit(PanelControlError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(PanelControlError(mensaje: e.mensaje));
     }
   }
@@ -65,9 +71,11 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
       );
       await _actualizarListaAsistentes(cargado, estaRegistrando: false);
     } on FallaServidor catch (e) {
+      reportarError(e);
       _emitirFalloPanel(cargado, e.mensaje);
       rethrow;
     } on FallaInesperada catch (e) {
+      reportarError(e);
       _emitirFalloPanel(cargado, e.mensaje);
       rethrow;
     }
@@ -93,11 +101,13 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
       }
       emit(const PanelControlEventoCerrado());
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(PanelControlOperacionFallida(
         anterior: cargado.copiarCon(estaCerrando: false),
         mensaje:  e.mensaje,
       ),);
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(PanelControlOperacionFallida(
         anterior: cargado.copiarCon(estaCerrando: false),
         mensaje:  e.mensaje,

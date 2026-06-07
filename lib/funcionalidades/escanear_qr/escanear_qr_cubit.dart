@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'escanear_qr_estado.dart';
 import 'escanear_qr_repositorio.dart';
 
@@ -31,8 +32,10 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
       }
       emit(EscanearQrListo(evento: evento, presentes: presentes));
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(EscanearQrErrorCarga(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(EscanearQrErrorCarga(mensaje: e.mensaje));
     }
   }
@@ -60,9 +63,11 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
         registradoPorId: _adminId,
       );
       _emitirResultado(listo, registrado, nombre: datos.nombre, cedula: datos.cedula, rol: datos.rol);
-    } on FallaServidor catch (_) {
+    } on FallaServidor catch (e) {
+      reportarError(e);
       _programarReset(listo);
-    } on FallaInesperada catch (_) {
+    } on FallaInesperada catch (e) {
+      reportarError(e);
       _programarReset(listo);
     }
   }

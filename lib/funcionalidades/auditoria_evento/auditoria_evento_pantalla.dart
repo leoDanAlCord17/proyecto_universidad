@@ -283,13 +283,15 @@ class _ModalSelectorEvento extends StatefulWidget {
 }
 
 class _ModalSelectorEventoState extends State<_ModalSelectorEvento> {
-  String _busqueda = '';
+  String _busqueda    = '';
+  bool   _cargandoMas = false;
 
   @override
   Widget build(BuildContext context) {
-    final cubit   = context.read<AuditoriaEventoCubit>();
-    final todos   = cubit.todosEventos;
-    final q       = _busqueda.trim().toLowerCase();
+    final cubit     = context.read<AuditoriaEventoCubit>();
+    final todos     = cubit.todosEventos;
+    final hayMas    = cubit.hayMasEventos;
+    final q         = _busqueda.trim().toLowerCase();
     final filtrados = q.isEmpty
         ? todos
         : todos
@@ -334,24 +336,54 @@ class _ModalSelectorEventoState extends State<_ModalSelectorEvento> {
             ),
           ),
           Expanded(
-            child: filtrados.isEmpty
-                ? Center(
-                    child: Text(
-                      'Sin resultados',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: ColoresApp.textoTerciario,
+            child: ListView.separated(
+              padding:          const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              itemCount:        filtrados.length + 1,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (_, i) {
+                if (i < filtrados.length) {
+                  return _FilaEvento(
+                    evento:        filtrados[i],
+                    alSeleccionar: widget.alSeleccionar,
+                  );
+                }
+                if (_cargandoMas) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child:   Center(
+                      child: CircularProgressIndicator(color: ColoresApp.acento),
+                    ),
+                  );
+                }
+                if (hayMas) {
+                  return Center(
+                    child: TextButton.icon(
+                      onPressed: () async {
+                        setState(() => _cargandoMas = true);
+                        await cubit.cargarMasEventos();
+                        if (mounted) setState(() => _cargandoMas = false);
+                      },
+                      icon:  const Icon(Icons.expand_more_rounded),
+                      label: const Text('Cargar más'),
+                    ),
+                  );
+                }
+                if (filtrados.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 32),
+                      child: Text(
+                        'Sin resultados',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: ColoresApp.textoTerciario,
+                        ),
                       ),
                     ),
-                  )
-                : ListView.separated(
-                    padding:         const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                    itemCount:       filtrados.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 8),
-                    itemBuilder:     (_, i) => _FilaEvento(
-                      evento:       filtrados[i],
-                      alSeleccionar: widget.alSeleccionar,
-                    ),
-                  ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
           ),
         ],
       ),

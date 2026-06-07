@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'inicio_estado.dart';
 import 'inicio_repositorio.dart';
 
@@ -24,8 +25,10 @@ class InicioCubit extends Cubit<InicioEstado> {
         revisionHabilitada: revision,
       ),);
     } on FallaServidor catch (falla) {
+      reportarError(falla);
       if (!isClosed) emit(InicioError(falla.mensaje));
     } on FallaInesperada catch (falla) {
+      reportarError(falla);
       if (!isClosed) emit(InicioError(falla.mensaje));
     }
   }

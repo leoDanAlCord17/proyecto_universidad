@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import 'evento_en_curso.dart';
 
@@ -11,44 +12,47 @@ class EventosEnCursoRepositorio {
   final SupabaseClient _supabase;
 
   /// Retorna todos los eventos en curso, marcando cuáles tiene el usuario como colaborador.
-  Future<List<EventoEnCurso>> obtenerEventosEnCurso(String usuarioId) async {
-    try {
-      final rows = await _supabase
-          .from(TablasSupabase.eventos)
-          .select(
-            'id, titulo, lugar, hora_inicio, hora_fin, '
-            'permite_qr_evento, permite_qr_usuario, '
-            'permite_foraneos, modo_registro, alcance',
-          )
-          .eq('estatus', EstatusEvento.enCurso);
+  Future<List<EventoEnCurso>> obtenerEventosEnCurso(String usuarioId) =>
+      conReintentos(() async {
+        try {
+          final rows = await _supabase
+              .from(TablasSupabase.eventos)
+              .select(
+                'id, titulo, lugar, hora_inicio, hora_fin, '
+                'permite_qr_evento, permite_qr_usuario, '
+                'permite_foraneos, modo_registro, alcance',
+              )
+              .eq('estatus', EstatusEvento.enCurso)
+              .timeout(kTimeoutSolicitud);
 
-      if (rows.isEmpty) return [];
+          if (rows.isEmpty) return [];
 
-      final eventoIds = rows.map((r) => r['id'] as String).toList();
+          final eventoIds = rows.map((r) => r['id'] as String).toList();
 
-      final colaboraciones = await _supabase
-          .from(TablasSupabase.eventosUsuariosRoles)
-          .select('evento_id')
-          .eq('usuario_id', usuarioId)
-          .eq('estatus', true)
-          .inFilter('evento_id', eventoIds);
+          final colaboraciones = await _supabase
+              .from(TablasSupabase.eventosUsuariosRoles)
+              .select('evento_id')
+              .eq('usuario_id', usuarioId)
+              .eq('estatus', true)
+              .inFilter('evento_id', eventoIds)
+              .timeout(kTimeoutSolicitud);
 
-      final idsColaborador = {
-        for (final c in colaboraciones) c['evento_id'] as String,
-      };
+          final idsColaborador = {
+            for (final c in colaboraciones) c['evento_id'] as String,
+          };
 
-      return rows.map((json) {
-        final evento = EventoEnCurso.desdeJson(json);
-        return idsColaborador.contains(evento.id)
-            ? evento.copyWith(esColaborador: true)
-            : evento;
-      }).toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+          return rows.map((json) {
+            final evento = EventoEnCurso.desdeJson(json);
+            return idsColaborador.contains(evento.id)
+                ? evento.copyWith(esColaborador: true)
+                : evento;
+          }).toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Inserta un registro de asistencia para un visitante foráneo (sin cuenta).
   Future<void> registrarForaneo({
@@ -74,7 +78,7 @@ class EventosEnCursoRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 

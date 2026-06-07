@@ -70,3 +70,35 @@ final class EventosError extends EventosEstado {
   @override
   List<Object?> get props => [mensaje];
 }
+
+/// La red falló pero hay datos en caché disponibles.
+/// La UI debe mostrar un aviso de "sin conexión" junto a los datos.
+final class EventosSinConexion extends EventosEstado {
+  const EventosSinConexion({
+    required this.enCurso,
+    required this.proximos,
+    this.textoBusqueda = '',
+    this.rangoFechas,
+  });
+
+  final List<EventoConGrupos> enCurso;
+  final List<EventoConGrupos> proximos;
+  final String                textoBusqueda;
+  final DateTimeRange?        rangoFechas;
+
+  EventosSinConexion copiarCon({
+    List<EventoConGrupos>? enCurso,
+    List<EventoConGrupos>? proximos,
+    String?               textoBusqueda,
+    DateTimeRange?        rangoFechas,
+    bool                  limpiarRango = false,
+  }) => EventosSinConexion(
+    enCurso:       enCurso       ?? this.enCurso,
+    proximos:      proximos      ?? this.proximos,
+    textoBusqueda: textoBusqueda ?? this.textoBusqueda,
+    rangoFechas:   limpiarRango ? null : (rangoFechas ?? this.rangoFechas),
+  );
+
+  @override
+  List<Object?> get props => [enCurso, proximos, textoBusqueda, rangoFechas];
+}

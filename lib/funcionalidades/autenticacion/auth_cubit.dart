@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'auth_estado.dart';
 import 'autenticacion_repositorio.dart';
 import 'usuario.dart';
@@ -28,10 +29,8 @@ class AuthCubit extends Cubit<AuthEstado> {
     return super.close();
   }
 
-  /// Revisa si hay una sesión activa al abrir la app.
-  /// Si hay sesión y perfil completo → emite [Autenticado].
-  /// Si hay sesión pero sin perfil → emite [PerfilIncompleto].
-  /// Si no hay sesión o hay un error real de DB → emite [NoAutenticado].
+  /// Revisa si hay sesión activa al arrancar. Aplica timeout de [kTimeoutSolicitud]
+  /// para evitar que el splash quede congelado si Supabase no responde.
   Future<void> verificarSesion() async {
     final sesion = _repositorio.obtenerSesionActual();
 
@@ -41,7 +40,10 @@ class AuthCubit extends Cubit<AuthEstado> {
     }
 
     try {
-      final usuario = await _repositorio.obtenerPerfil(sesion.user.id);
+      final usuario = await _repositorio
+          .obtenerPerfil(sesion.user.id)
+          .timeout(kTimeoutSolicitud);
+
       if (usuario == null) {
         emit(PerfilIncompleto());
       } else if (usuario.estatusAprobacion == EstatusAprobacion.pendiente) {
@@ -52,22 +54,22 @@ class AuthCubit extends Cubit<AuthEstado> {
         emit(Autenticado(usuario));
         await _iniciarControlSesionUnica(usuario.id);
       }
-    } on FallaServidor {
+    } on TimeoutException {
+      log.w('verificarSesion: timeout — redirigiendo a login');
       emit(NoAutenticado());
-    } on FallaInesperada {
+    } on FallaServidor catch (e) {
+      reportarError(e);
+      emit(NoAutenticado());
+    } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(NoAutenticado());
     }
   }
 
-  /// Permite a un usuario rechazado volver a la pantalla de completar perfil.
   void reiniciarParaReintento() => emit(PerfilIncompleto());
 
-  /// Actualiza el estado con el usuario autenticado.
-  void actualizarUsuario(Usuario usuario) {
-    emit(Autenticado(usuario));
-  }
+  void actualizarUsuario(Usuario usuario) => emit(Autenticado(usuario));
 
-  /// Cierra la sesión del usuario y emite [NoAutenticado].
   Future<void> cerrarSesion() async {
     await _repositorio.cerrarSesion();
     emit(NoAutenticado());
@@ -84,16 +86,18 @@ class AuthCubit extends Cubit<AuthEstado> {
           .flujoTokenSesion(usuarioId)
           .listen(_procesarCambioToken);
     } on FallaServidor catch (_) {
-      // El fallo en el token no bloquea la sesión
+      // El fallo en el token no bloquea la sesión principal
     } on FallaInesperada catch (_) {
-      // El fallo en el token no bloquea la sesión
+      // El fallo en el token no bloquea la sesión principal
     }
   }
 
-  void _procesarCambioToken(String? tokenRemoto) {
+  // Async para awaitar cerrarSesion() antes de emitir SesionDesplazada.
+  // Sin await, verificarSesion() podría releer la sesión aún abierta.
+  Future<void> _procesarCambioToken(String? tokenRemoto) async {
     if (tokenRemoto == null || tokenRemoto == _tokenSesionActual) return;
-    _suscripcionSesion?.cancel();
-    _repositorio.cerrarSesion();
+    await _suscripcionSesion?.cancel();
+    await _repositorio.cerrarSesion();
     emit(SesionDesplazada());
   }
 

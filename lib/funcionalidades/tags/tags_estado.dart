@@ -22,15 +22,29 @@ final class TagsCargados extends TagsEstado {
   const TagsCargados({
     required this.tags,
     required this.tagsFiltrados,
+    required this.hayMas,
   });
 
   final List<Tag> tags;
   final List<Tag> tagsFiltrados;
+  final bool      hayMas;
 
-  TagsCargados copiarCon({List<Tag>? tagsFiltrados}) => TagsCargados(
+  TagsCargados copiarCon({List<Tag>? tagsFiltrados, bool? hayMas}) => TagsCargados(
     tags:          tags,
     tagsFiltrados: tagsFiltrados ?? this.tagsFiltrados,
+    hayMas:        hayMas        ?? this.hayMas,
   );
+
+  @override
+  List<Object?> get props => [tags, tagsFiltrados, hayMas];
+}
+
+/// La lista ya muestra resultados y se está cargando la siguiente página.
+final class TagsCargandoMas extends TagsEstado {
+  const TagsCargandoMas({required this.tags, required this.tagsFiltrados});
+
+  final List<Tag> tags;
+  final List<Tag> tagsFiltrados;
 
   @override
   List<Object?> get props => [tags, tagsFiltrados];

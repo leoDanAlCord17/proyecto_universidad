@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import 'usuario.dart';
 
@@ -17,11 +18,11 @@ class AutenticacionRepositorio {
       return await _supabase.auth.signInWithPassword(
         email: correo,
         password: clave,
-      );
+      ).timeout(kTimeoutSolicitud);
     } on AuthException catch (e) {
       throw FallaAutenticacion(TraductorErrores.deAuth(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -32,11 +33,11 @@ class AutenticacionRepositorio {
       return await _supabase.auth.signUp(
         email: correo,
         password: clave,
-      );
+      ).timeout(kTimeoutSolicitud);
     } on AuthException catch (e) {
       throw FallaAutenticacion(TraductorErrores.deAuth(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -47,33 +48,35 @@ class AutenticacionRepositorio {
   /// Lanza [FallaInesperada] si ocurre un error al cerrar sesión.
   Future<void> cerrarSesion() async {
     try {
-      await _supabase.auth.signOut();
+      await _supabase.auth.signOut().timeout(kTimeoutSolicitud);
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
   /// Obtiene el perfil del usuario junto con sus roles y permisos activos.
   /// Retorna [null] si el usuario aún no tiene perfil creado (registro incompleto).
   /// Lanza [FallaServidor] para cualquier otro error de base de datos.
-  Future<Usuario?> obtenerPerfil(String idAuth) async {
-    try {
-      final datos = await _supabase
-          .from(TablasSupabase.usuarios)
-          .select(
-            '*, usuarios_roles!usuarios_roles_usuario_id_fkey(estatus, roles(nombre, estatus, roles_permisos(estatus, permisos(nombre))))',
-          )
-          .eq('auth_id', idAuth)
-          .single();
+  Future<Usuario?> obtenerPerfil(String idAuth) =>
+      conReintentos(() async {
+        try {
+          final datos = await _supabase
+              .from(TablasSupabase.usuarios)
+              .select(
+                '*, usuarios_roles!usuarios_roles_usuario_id_fkey(estatus, roles(nombre, estatus, roles_permisos(estatus, permisos(nombre))))',
+              )
+              .eq('auth_id', idAuth)
+              .single()
+              .timeout(kTimeoutSolicitud);
 
-      return Usuario.desdeJson(datos);
-    } on PostgrestException catch (e) {
-      if (e.code == 'PGRST116') return null; // perfil no creado aún
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+          return Usuario.desdeJson(datos);
+        } on PostgrestException catch (e) {
+          if (e.code == 'PGRST116') return null; // perfil no creado aún
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Envía un correo con enlace para restablecer la contraseña.
   /// Siempre retorna éxito aunque el correo no exista (por seguridad Supabase no lo revela).
@@ -82,11 +85,11 @@ class AutenticacionRepositorio {
       await _supabase.auth.resetPasswordForEmail(
         correo,
         redirectTo: 'com.uniasist.uniasist://reset-password',
-      );
+      ).timeout(kTimeoutSolicitud);
     } on AuthException catch (e) {
       throw FallaAutenticacion(TraductorErrores.deAuth(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -94,11 +97,11 @@ class AutenticacionRepositorio {
   /// Lanza [FallaAutenticacion] si la sesión expiró o la clave es inválida.
   Future<void> actualizarContrasena(String nuevaClave) async {
     try {
-      await _supabase.auth.updateUser(UserAttributes(password: nuevaClave));
+      await _supabase.auth.updateUser(UserAttributes(password: nuevaClave)).timeout(kTimeoutSolicitud);
     } on AuthException catch (e) {
       throw FallaAutenticacion(TraductorErrores.deAuth(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -116,7 +119,7 @@ class AutenticacionRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -138,25 +141,27 @@ class AutenticacionRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
   /// Retorna true si la revisión de usuarios al crear cuenta está habilitada.
   /// Devuelve false ante cualquier error (comportamiento seguro por defecto).
-  Future<bool> verificarRevisionCreacionHabilitada() async {
-    try {
-      final datos = await _supabase
-          .from(TablasSupabase.configuracion)
-          .select('valor')
-          .eq('clave', 'revision_usuario_creacion')
-          .eq('estatus', true)
-          .single();
-      return (datos['valor'] as int?) == 1;
-    } on PostgrestException catch (_) {
-      return false;
-    } catch (_) {
-      return false;
-    }
-  }
+  Future<bool> verificarRevisionCreacionHabilitada() =>
+      conReintentos(() async {
+        try {
+          final datos = await _supabase
+              .from(TablasSupabase.configuracion)
+              .select('valor')
+              .eq('clave', 'revision_usuario_creacion')
+              .eq('estatus', true)
+              .single()
+              .timeout(kTimeoutSolicitud);
+          return (datos['valor'] as int?) == 1;
+        } on PostgrestException catch (_) {
+          return false;
+        } catch (_) {
+          return false;
+        }
+      });
 }

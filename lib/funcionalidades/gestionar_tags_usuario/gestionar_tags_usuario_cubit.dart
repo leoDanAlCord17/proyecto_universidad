@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'gestionar_tags_usuario_estado.dart';
 import 'gestionar_tags_usuario_repositorio.dart';
 
@@ -37,8 +38,10 @@ class GestionarTagsUsuarioCubit extends Cubit<GestionarTagsUsuarioEstado> {
         maxSecundarios:         maxSecundarios,
       ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(GestionarTagsUsuarioError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(GestionarTagsUsuarioError(mensaje: e.mensaje));
     }
   }
@@ -76,8 +79,10 @@ class GestionarTagsUsuarioCubit extends Cubit<GestionarTagsUsuarioEstado> {
       await operacion();
       await cargar(_usuarioId!, adminId: _adminId);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(GestionarTagsUsuarioOperacionFallida(anterior: estadoActual, mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(GestionarTagsUsuarioOperacionFallida(anterior: estadoActual, mensaje: e.mensaje));
     }
   }

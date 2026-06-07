@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'notificacion.dart';
 import 'notificaciones_estado.dart';
 import 'notificaciones_repositorio.dart';
@@ -54,8 +55,10 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
         notificaciones: lista,
       ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(NotificacionesError(e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(NotificacionesError(e.mensaje));
     }
   }

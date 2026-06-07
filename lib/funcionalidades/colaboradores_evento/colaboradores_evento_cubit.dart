@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'colaborador_item.dart';
 import 'colaboradores_evento_estado.dart';
 import 'colaboradores_evento_repositorio.dart';
@@ -25,8 +26,10 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
         busqueda:           '',
       ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(ColaboradoresEventoError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(ColaboradoresEventoError(mensaje: e.mensaje));
     }
   }
@@ -45,8 +48,10 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
       final actual      = _extraerCargado(state) ?? cargado;
       emit(actual.copiarCon(resultadosBusqueda: filtrados, busqueda: query));
     } on FallaServidor catch (e) {
+      reportarError(e);
       _emitirFallo(cargado, e.mensaje);
     } on FallaInesperada catch (e) {
+      reportarError(e);
       _emitirFallo(cargado, e.mensaje);
     }
   }
@@ -69,8 +74,10 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
           .toList();
       emit(actual.copiarCon(resultadosBusqueda: filtrados, idOperando: null));
     } on FallaServidor catch (e) {
+      reportarError(e);
       _emitirFallo(cargado, e.mensaje);
     } on FallaInesperada catch (e) {
+      reportarError(e);
       _emitirFallo(cargado, e.mensaje);
     }
   }
@@ -83,8 +90,10 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
       await _repositorio.quitarColaborador(colaborador.asignacionId);
       await _recargarColaboradores();
     } on FallaServidor catch (e) {
+      reportarError(e);
       _emitirFallo(cargado, e.mensaje);
     } on FallaInesperada catch (e) {
+      reportarError(e);
       _emitirFallo(cargado, e.mensaje);
     }
   }

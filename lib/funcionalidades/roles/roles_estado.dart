@@ -22,19 +22,39 @@ final class RolesCargados extends RolesEstado {
   const RolesCargados({
     required this.roles,
     required this.rolesFiltrados,
+    required this.hayMas,
     this.conteoUsuarios = const {},
   });
 
   final List<Rol>        roles;
   final List<Rol>        rolesFiltrados;
+  final bool             hayMas;
   /// Mapa rolId → cantidad de usuarios activos con ese rol asignado.
   final Map<String, int> conteoUsuarios;
 
-  RolesCargados copiarCon({List<Rol>? rolesFiltrados}) => RolesCargados(
-    roles:          roles,
-    rolesFiltrados: rolesFiltrados ?? this.rolesFiltrados,
-    conteoUsuarios: conteoUsuarios,
-  );
+  RolesCargados copiarCon({List<Rol>? rolesFiltrados, bool? hayMas}) =>
+      RolesCargados(
+        roles:          roles,
+        rolesFiltrados: rolesFiltrados ?? this.rolesFiltrados,
+        hayMas:         hayMas         ?? this.hayMas,
+        conteoUsuarios: conteoUsuarios,
+      );
+
+  @override
+  List<Object?> get props => [roles, rolesFiltrados, hayMas, conteoUsuarios];
+}
+
+/// La lista ya muestra resultados y se está cargando la siguiente página.
+final class RolesCargandoMas extends RolesEstado {
+  const RolesCargandoMas({
+    required this.roles,
+    required this.rolesFiltrados,
+    required this.conteoUsuarios,
+  });
+
+  final List<Rol>        roles;
+  final List<Rol>        rolesFiltrados;
+  final Map<String, int> conteoUsuarios;
 
   @override
   List<Object?> get props => [roles, rolesFiltrados, conteoUsuarios];

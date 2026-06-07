@@ -42,6 +42,12 @@ dependencies:
   shimmer: ^3.0.0
   cached_network_image: ^3.3.1
 
+  # Conectividad (detecta online/offline en web, Android e iOS)
+  connectivity_plus: ^6.0.5
+
+  # Caché local offline con IndexedDB en web y caja nativa en móvil
+  hive_flutter: ^1.1.0
+
   # Logging
   logger: ^2.4.0
 
@@ -60,10 +66,6 @@ flutter:
 
   # ─── ASSETS ───────────────────────────────────────────
   assets:
-    # ADVERTENCIA DE SEGURIDAD: .env se incrusta en texto plano dentro del APK/IPA.
-    # Para builds de producción usa --dart-define-from-file=.env y elimina esta línea.
-    # Comando: flutter build apk --dart-define-from-file=.env
-    - .env
     - assets/fonts/ # Importante para que Flutter vea la carpeta
 
   # ─── FUENTES ──────────────────────────────────────────

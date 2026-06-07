@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import '../autenticacion/autenticacion_repositorio.dart';
 import '../autenticacion/usuario.dart';
 import 'crear_usuario_estado.dart';
@@ -43,8 +44,10 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
       ),);
       emit(const CrearUsuarioExito());
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(CrearUsuarioError(e.mensaje));
-    } on FallaInesperada {
+    } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(const CrearUsuarioError(MensajesError.inesperado));
     }
   }

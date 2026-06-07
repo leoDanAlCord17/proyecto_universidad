@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import '../eventos/evento.dart';
 import 'asistente_item.dart';
@@ -12,77 +13,87 @@ class PanelControlRepositorio {
   final SupabaseClient _supabase;
 
   /// Retorna el evento completo por su ID.
-  Future<Evento> obtenerEvento(String eventoId) async {
-    try {
-      final fila = await _supabase
-          .from(TablasSupabase.eventos)
-          .select()
-          .eq('id', eventoId)
-          .single();
-      return Evento.desdeJson(fila);
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<Evento> obtenerEvento(String eventoId) =>
+      conReintentos(() async {
+        try {
+          final fila = await _supabase
+              .from(TablasSupabase.eventos)
+              .select()
+              .eq('id', eventoId)
+              .single()
+              .timeout(kTimeoutSolicitud);
+          return Evento.desdeJson(fila);
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Retorna los registros reales de asistencia del evento con datos del usuario.
-  Future<List<AsistenteItem>> obtenerAsistentes(String eventoId) async {
-    try {
-      final datos = await _supabase
-          .from(TablasSupabase.asistencia)
-          .select(
-            'id, usuario_id, visitante_primer_nombre, visitante_primer_apellido, '
-            'visitante_numero_identificacion, visitante_contacto, estatus, '
-            'hora_entrada, hora_salida, '
-            'usuarios!usuario_id(primer_nombre, primer_apellido, url_avatar, numero_identificacion), '
-            'registrador:usuarios!entrada_registrada_por(primer_nombre, primer_apellido)',
-          )
-          .eq('evento_id', eventoId)
-          .order('creado_en');
-      return datos.map(AsistenteItem.desdeJson).toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  /// Límite 5 000: los KPIs necesitan el dataset completo; esta cota evita
+  /// consultas desbocadas en instalaciones con aforos extraordinariamente grandes.
+  Future<List<AsistenteItem>> obtenerAsistentes(String eventoId) =>
+      conReintentos(() async {
+        try {
+          final datos = await _supabase
+              .from(TablasSupabase.asistencia)
+              .select(
+                'id, usuario_id, visitante_primer_nombre, visitante_primer_apellido, '
+                'visitante_numero_identificacion, visitante_contacto, estatus, '
+                'hora_entrada, hora_salida, '
+                'usuarios!usuario_id(primer_nombre, primer_apellido, url_avatar, numero_identificacion), '
+                'registrador:usuarios!entrada_registrada_por(primer_nombre, primer_apellido)',
+              )
+              .eq('evento_id', eventoId)
+              .order('creado_en')
+              .limit(5000)
+              .timeout(kTimeoutSolicitud);
+          return datos.map(AsistenteItem.desdeJson).toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Retorna TODOS los usuarios del sistema como ítems sintéticos con
   /// estatus 'esperado'. Se usa para eventos de alcance 'general'.
-  Future<List<AsistenteItem>> obtenerTodosUsuarios() async {
-    try {
-      final rows = await _supabase
-          .from(TablasSupabase.usuarios)
-          .select('id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
-          .order('primer_apellido', ascending: true);
-      return rows
-          .map<AsistenteItem>(_construirItemDesdeUsuario)
-          .toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<List<AsistenteItem>> obtenerTodosUsuarios() =>
+      conReintentos(() async {
+        try {
+          final rows = await _supabase
+              .from(TablasSupabase.usuarios)
+              .select('id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
+              .order('primer_apellido', ascending: true)
+              .timeout(kTimeoutSolicitud);
+          return rows
+              .map<AsistenteItem>(_construirItemDesdeUsuario)
+              .toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Retorna TODOS los miembros de los grupos del evento como ítems sintéticos
   /// con estatus 'esperado'. Se usa para eventos de alcance 'dirigido'.
-  Future<List<AsistenteItem>> obtenerMiembrosGrupo(String eventoId) async {
-    try {
-      final grupos = await _obtenerGruposTags(eventoId);
-      if (grupos.isEmpty) return [];
-      final allTagIds = grupos.values.expand((ids) => ids).toSet().toList();
-      if (allTagIds.isEmpty) return [];
-      final rows = await _consultarUsuariosTags(allTagIds);
-      return _construirListaMiembros(rows, grupos);
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<List<AsistenteItem>> obtenerMiembrosGrupo(String eventoId) =>
+      conReintentos(() async {
+        try {
+          final grupos = await _obtenerGruposTags(eventoId);
+          if (grupos.isEmpty) return [];
+          final allTagIds = grupos.values.expand((ids) => ids).toSet().toList();
+          if (allTagIds.isEmpty) return [];
+          final rows = await _consultarUsuariosTags(allTagIds);
+          return _construirListaMiembros(rows, grupos);
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Stream en tiempo real de cambios en la tabla asistencia para el evento.
   /// Se usa como disparador para recargar los datos completos con joins.
@@ -104,7 +115,7 @@ class PanelControlRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -133,7 +144,7 @@ class PanelControlRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -156,7 +167,7 @@ class PanelControlRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'tipos_evento_estado.dart';
 import 'tipos_evento_repositorio.dart';
 
@@ -15,8 +16,10 @@ class TiposEventoCubit extends Cubit<TiposEventoEstado> {
       final items = await _repositorio.obtenerTiposEvento();
       emit(TiposEventoCargados(items: items, filtrados: items));
     } on FallaServidor catch (falla) {
+      reportarError(falla);
       emit(TiposEventoError(mensaje: falla.mensaje));
     } on FallaInesperada catch (falla) {
+      reportarError(falla);
       emit(TiposEventoError(mensaje: falla.mensaje));
     }
   }
@@ -46,6 +49,7 @@ class TiposEventoCubit extends Cubit<TiposEventoEstado> {
       await _repositorio.desactivarTipoEvento(id);
       await cargar();
     } on FallaServidor catch (falla) {
+      reportarError(falla);
       emit(TiposEventoCargados(
         items:            estadoActual.items,
         filtrados:        estadoActual.filtrados,
@@ -53,6 +57,7 @@ class TiposEventoCubit extends Cubit<TiposEventoEstado> {
         errorOperacion:   falla.mensaje,
       ),);
     } on FallaInesperada catch (falla) {
+      reportarError(falla);
       emit(TiposEventoCargados(
         items:            estadoActual.items,
         filtrados:        estadoActual.filtrados,

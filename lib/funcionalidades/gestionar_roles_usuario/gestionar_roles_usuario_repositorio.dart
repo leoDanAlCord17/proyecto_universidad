@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import 'rol_item.dart';
 
@@ -11,63 +12,70 @@ class GestionarRolesUsuarioRepositorio {
   final SupabaseClient _supabase;
 
   /// Retorna nombre completo y correo del usuario.
-  Future<({String nombre, String correo})> obtenerInfoUsuario(String usuarioId) async {
-    try {
-      final fila = await _supabase
-          .from(TablasSupabase.usuarios)
-          .select('primer_nombre, primer_apellido, correo')
-          .eq('id', usuarioId)
-          .single();
-      final nombre = '${fila['primer_nombre']} ${fila['primer_apellido']}';
-      return (nombre: nombre, correo: fila['correo'] as String? ?? '');
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<({String nombre, String correo})> obtenerInfoUsuario(String usuarioId) =>
+      conReintentos(() async {
+        try {
+          final fila = await _supabase
+              .from(TablasSupabase.usuarios)
+              .select('primer_nombre, primer_apellido, correo')
+              .eq('id', usuarioId)
+              .single()
+              .timeout(kTimeoutSolicitud);
+          final nombre = '${fila['primer_nombre']} ${fila['primer_apellido']}';
+          return (nombre: nombre, correo: fila['correo'] as String? ?? '');
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Retorna los roles activos actualmente asignados al usuario.
-  Future<List<RolItem>> obtenerRolesUsuario(String usuarioId) async {
-    try {
-      final asignaciones = await _supabase
-          .from(TablasSupabase.usuariosRoles)
-          .select('rol_id')
-          .eq('usuario_id', usuarioId)
-          .eq('estatus', true);
+  Future<List<RolItem>> obtenerRolesUsuario(String usuarioId) =>
+      conReintentos(() async {
+        try {
+          final asignaciones = await _supabase
+              .from(TablasSupabase.usuariosRoles)
+              .select('rol_id')
+              .eq('usuario_id', usuarioId)
+              .eq('estatus', true)
+              .timeout(kTimeoutSolicitud);
 
-      if (asignaciones.isEmpty) return [];
+          if (asignaciones.isEmpty) return [];
 
-      final rolIds = asignaciones.map((r) => r['rol_id'] as String).toList();
-      final roles  = await _supabase
-          .from(TablasSupabase.roles)
-          .select('id, nombre, descripcion')
-          .inFilter('id', rolIds)
-          .eq('estatus', true);
+          final rolIds = asignaciones.map((r) => r['rol_id'] as String).toList();
+          final roles  = await _supabase
+              .from(TablasSupabase.roles)
+              .select('id, nombre, descripcion')
+              .inFilter('id', rolIds)
+              .eq('estatus', true)
+              .timeout(kTimeoutSolicitud);
 
-      return roles.map(RolItem.desdeJson).toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+          return roles.map(RolItem.desdeJson).toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Retorna todos los roles activos del sistema.
-  Future<List<RolItem>> obtenerRolesActivos() async {
-    try {
-      final datos = await _supabase
-          .from(TablasSupabase.roles)
-          .select('id, nombre, descripcion')
-          .eq('estatus', true)
-          .order('nombre');
-      return datos.map(RolItem.desdeJson).toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<List<RolItem>> obtenerRolesActivos() =>
+      conReintentos(() async {
+        try {
+          final datos = await _supabase
+              .from(TablasSupabase.roles)
+              .select('id, nombre, descripcion')
+              .eq('estatus', true)
+              .order('nombre')
+              .timeout(kTimeoutSolicitud);
+          return datos.map(RolItem.desdeJson).toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Asigna un rol al usuario. Usa upsert para reactivar si ya existía desactivado.
   Future<void> asignarRol(String usuarioId, String rolId, String? adminId) async {
@@ -84,7 +92,7 @@ class GestionarRolesUsuarioRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -104,7 +112,7 @@ class GestionarRolesUsuarioRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 }

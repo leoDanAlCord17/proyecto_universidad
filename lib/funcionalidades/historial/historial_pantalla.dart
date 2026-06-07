@@ -90,16 +90,24 @@ class _HistorialPantallaState extends State<HistorialPantalla>
   }
 
   Widget _construirVista(BuildContext context, HistorialEstado estado) {
-    final cargado              = estado is HistorialCargado ? estado : null;
-    final filtrados            = cargado != null ? _filtrar(cargado.items) : <HistorialItem>[];
-    final asistidosFiltrados   = filtrados.where((i) => i.esAsistido).toList();
-    final salieronFiltrados    = filtrados.where((i) => i.esSalidaAnticipada).toList();
-    final ausentesFiltrados    = filtrados.where((i) => i.esAusente).toList();
-    final hayBusquedaActiva    = _busquedaCtrl.text.trim().isNotEmpty || _rango != null;
+    // Tanto HistorialCargado como HistorialCargandoMas tienen items visibles
+    final itemsActuales = switch (estado) {
+      HistorialCargado(:final items)     => items,
+      HistorialCargandoMas(:final items) => items,
+      _                                  => null,
+    };
+    final hayMas      = estado is HistorialCargado && estado.hayMas;
+    final cargandoMas = estado is HistorialCargandoMas;
+
+    final filtrados          = itemsActuales != null ? _filtrar(itemsActuales) : <HistorialItem>[];
+    final asistidosFiltrados = filtrados.where((i) => i.esAsistido).toList();
+    final salieronFiltrados  = filtrados.where((i) => i.esSalidaAnticipada).toList();
+    final ausentesFiltrados  = filtrados.where((i) => i.esAusente).toList();
+    final hayBusquedaActiva  = _busquedaCtrl.text.trim().isNotEmpty || _rango != null;
 
     final authEstado = context.read<AuthCubit>().state;
     final nombre     = authEstado is Autenticado ? authEstado.usuario.nombreCompleto : '';
-    final todosItems = cargado?.items ?? [];
+    final todosItems = itemsActuales ?? [];
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
@@ -117,16 +125,18 @@ class _HistorialPantallaState extends State<HistorialPantalla>
                   ? () => _exportar(todosItems, nombre)
                   : null,
             ),
-            if (cargado != null) ..._construirControles(filtrados),
+            if (itemsActuales != null) ..._construirControles(filtrados),
             Expanded(
               child: _Cuerpo(
-                estado:         estado,
-                tabController:  _tabController,
-                todos:          filtrados,
-                asistidos:      asistidosFiltrados,
-                salieron:       salieronFiltrados,
-                ausentes:       ausentesFiltrados,
+                estado:            estado,
+                tabController:     _tabController,
+                todos:             filtrados,
+                asistidos:         asistidosFiltrados,
+                salieron:          salieronFiltrados,
+                ausentes:          ausentesFiltrados,
                 hayBusquedaActiva: hayBusquedaActiva,
+                hayMas:            hayMas,
+                cargandoMas:       cargandoMas,
               ),
             ),
           ],
@@ -389,6 +399,8 @@ class _Cuerpo extends StatelessWidget {
     required this.salieron,
     required this.ausentes,
     required this.hayBusquedaActiva,
+    required this.hayMas,
+    required this.cargandoMas,
   });
 
   // ── Configuraciones de estado vacío ─────────────────────────────────────────
@@ -428,6 +440,8 @@ class _Cuerpo extends StatelessWidget {
   final List<HistorialItem> salieron;
   final List<HistorialItem> ausentes;
   final bool                hayBusquedaActiva;
+  final bool                hayMas;
+  final bool                cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -435,12 +449,14 @@ class _Cuerpo extends StatelessWidget {
       HistorialInicial() || HistorialCargando() => const Center(
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
-      HistorialCargado() => TabBarView(
+      HistorialCargado() || HistorialCargandoMas() => TabBarView(
           controller: tabController,
           children: [
             _ListaHistorial(
               items:       todos,
               vaciaConfig: hayBusquedaActiva ? _vaciaResultados : _vaciaTodos,
+              hayMas:      hayMas,
+              cargandoMas: cargandoMas,
             ),
             _ListaHistorial(
               items:       asistidos,
@@ -472,24 +488,65 @@ class _Cuerpo extends StatelessWidget {
 // ─── Lista de eventos ─────────────────────────────────────────────────────────
 
 class _ListaHistorial extends StatelessWidget {
-  const _ListaHistorial({required this.items, required this.vaciaConfig});
+  const _ListaHistorial({
+    required this.items,
+    required this.vaciaConfig,
+    this.hayMas      = false,
+    this.cargandoMas = false,
+  });
 
   final List<HistorialItem> items;
   final _VaciaConfig        vaciaConfig;
+  final bool                hayMas;
+  final bool                cargandoMas;
 
   @override
   Widget build(BuildContext context) {
-    if (items.isEmpty) {
+    if (items.isEmpty && !cargandoMas) {
       return _VistaVacia(config: vaciaConfig);
     }
 
+    // El item extra al final es el indicador de "Cargar más"
+    final totalItems = items.length + (hayMas || cargandoMas ? 1 : 0);
+
     return ListView.builder(
       padding:     const EdgeInsets.fromLTRB(20, 16, 20, 32),
-      itemCount:   items.length,
-      itemBuilder: (context, i) => Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child:   _TarjetaHistorial(item: items[i]),
-      ),
+      itemCount:   totalItems,
+      itemBuilder: (context, i) {
+        if (i == items.length) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: cargandoMas
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: ColoresApp.acento,
+                      ),
+                    ),
+                  )
+                : Center(
+                    child: TextButton.icon(
+                      onPressed: () =>
+                          context.read<HistorialCubit>().cargarMas(),
+                      icon:  const Icon(
+                        Icons.expand_more_rounded,
+                        color: ColoresApp.acento,
+                      ),
+                      label: const Text(
+                        'Cargar más',
+                        style: TextStyle(color: ColoresApp.acento),
+                      ),
+                    ),
+                  ),
+          );
+        }
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child:   _TarjetaHistorial(item: items[i]),
+        );
+      },
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'crear_rol_estado.dart';
 import 'crear_rol_repositorio.dart';
 import 'permiso_opcion.dart';
@@ -17,8 +18,10 @@ class CrearRolCubit extends Cubit<CrearRolEstado> {
       final permisos = await _repositorio.obtenerPermisos();
       emit(CrearRolCargado(permisos: permisos, permisosVisibles: permisos));
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(CrearRolError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(CrearRolError(mensaje: e.mensaje));
     }
   }
@@ -63,8 +66,10 @@ class CrearRolCubit extends Cubit<CrearRolEstado> {
         descripcionInicial:       resultado.rol['descripcion'] as String? ?? '',
       ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(CrearRolError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(CrearRolError(mensaje: e.mensaje));
     }
   }
@@ -88,8 +93,10 @@ class CrearRolCubit extends Cubit<CrearRolEstado> {
       );
       emit(const CrearRolGuardado());
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(CrearRolError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(CrearRolError(mensaje: e.mensaje));
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'usuario_item.dart';
 import 'usuarios_estado.dart';
 import 'usuarios_repositorio.dart';
@@ -9,25 +10,69 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
   UsuariosCubit(this._repositorio) : super(const UsuariosInicial());
 
   final UsuariosRepositorio _repositorio;
-  String _busqueda = '';
+
+  String            _busqueda = '';
+  List<UsuarioItem> _todos    = [];
+  int               _offset   = 0;
 
   // ── Carga inicial ──────────────────────────────────────────────────────────
 
   Future<void> cargar() async {
+    _offset = 0;
+    _todos  = [];
     emit(const UsuariosCargando());
     try {
-      final usuarios = await _repositorio.obtenerUsuarios();
+      final resultado = await _repositorio.obtenerUsuarios(offset: 0);
       if (isClosed) return;
+      _todos   = resultado.usuarios;
+      _offset  = resultado.usuarios.length;
       emit(UsuariosCargados(
-        usuarios:          usuarios,
-        usuariosFiltrados: _aplicarFiltro(usuarios, _busqueda),
+        usuarios:          _todos,
+        usuariosFiltrados: _aplicarFiltro(_todos, _busqueda),
+        hayMas:            resultado.hayMas,
       ),);
     } on FallaServidor catch (e) {
       if (isClosed) return;
+      reportarError(e);
+      emit(UsuariosError(mensaje: e.mensaje));
+    } on FallaRed catch (e) {
+      if (isClosed) return;
+      reportarError(e);
       emit(UsuariosError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
       if (isClosed) return;
+      reportarError(e);
       emit(UsuariosError(mensaje: e.mensaje));
+    }
+  }
+
+  Future<void> cargarMas() async {
+    final estado = state;
+    if (estado is! UsuariosCargados || !estado.hayMas) return;
+
+    emit(UsuariosCargandoMas(
+      usuarios:          estado.usuarios,
+      usuariosFiltrados: estado.usuariosFiltrados,
+      seleccionados:     estado.seleccionados,
+      modoSeleccion:     estado.modoSeleccion,
+    ),);
+    try {
+      final resultado = await _repositorio.obtenerUsuarios(offset: _offset);
+      if (isClosed) return;
+      _todos   = [...estado.usuarios, ...resultado.usuarios];
+      _offset += resultado.usuarios.length;
+      emit(UsuariosCargados(
+        usuarios:          _todos,
+        usuariosFiltrados: _busqueda.trim().isEmpty
+            ? _todos
+            : _aplicarFiltro(_todos, _busqueda),
+        hayMas:            resultado.hayMas,
+        seleccionados:     estado.seleccionados,
+        modoSeleccion:     estado.modoSeleccion,
+      ),);
+    } catch (_) {
+      if (isClosed) return;
+      emit(estado);
     }
   }
 
@@ -40,8 +85,10 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
       await _repositorio.suspenderUsuario(usuarioId);
       await cargar();
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(UsuariosOperacionFallida(anterior: cargados, mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(UsuariosOperacionFallida(anterior: cargados, mensaje: e.mensaje));
     }
   }
@@ -49,16 +96,31 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
   // ── Filtrado ───────────────────────────────────────────────────────────────
 
   void filtrar(String texto) {
-    final estadoActual = _extraerCargados(state);
-    if (estadoActual == null) return;
     _busqueda = texto;
-    if (texto.trim().isEmpty) {
-      emit(estadoActual.copiarCon(usuariosFiltrados: estadoActual.usuarios));
-      return;
+    final estado = state;
+    final filtrados = switch (estado) {
+      UsuariosCargados()    => texto.trim().isEmpty
+          ? estado.usuarios
+          : _aplicarFiltro(estado.usuarios, texto),
+      UsuariosCargandoMas() => texto.trim().isEmpty
+          ? estado.usuarios
+          : _aplicarFiltro(estado.usuarios, texto),
+      _                     => null,
+    };
+    if (filtrados == null) return;
+    switch (estado) {
+      case UsuariosCargados():
+        emit(estado.copiarCon(usuariosFiltrados: filtrados));
+      case UsuariosCargandoMas():
+        emit(UsuariosCargandoMas(
+          usuarios:          estado.usuarios,
+          usuariosFiltrados: filtrados,
+          seleccionados:     estado.seleccionados,
+          modoSeleccion:     estado.modoSeleccion,
+        ),);
+      default:
+        break;
     }
-    emit(estadoActual.copiarCon(
-      usuariosFiltrados: _aplicarFiltro(estadoActual.usuarios, texto),
-    ),);
   }
 
   // ── Selección múltiple ─────────────────────────────────────────────────────
@@ -122,9 +184,11 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
       await cargar();
     } on FallaServidor catch (e) {
       if (isClosed) return;
+      reportarError(e);
       _emitirErrorLote(e.mensaje);
     } on FallaInesperada catch (e) {
       if (isClosed) return;
+      reportarError(e);
       _emitirErrorLote(e.mensaje);
     }
   }
@@ -141,9 +205,11 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
       await cargar();
     } on FallaServidor catch (e) {
       if (isClosed) return;
+      reportarError(e);
       _emitirErrorLote(e.mensaje);
     } on FallaInesperada catch (e) {
       if (isClosed) return;
+      reportarError(e);
       _emitirErrorLote(e.mensaje);
     }
   }
@@ -160,9 +226,11 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
       await cargar();
     } on FallaServidor catch (e) {
       if (isClosed) return;
+      reportarError(e);
       _emitirErrorLote(e.mensaje);
     } on FallaInesperada catch (e) {
       if (isClosed) return;
+      reportarError(e);
       _emitirErrorLote(e.mensaje);
     }
   }
@@ -178,6 +246,13 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
   UsuariosCargados? _extraerCargados(UsuariosEstado estado) => switch (estado) {
     UsuariosCargados()         => estado,
     UsuariosOperacionFallida() => estado.anterior,
+    UsuariosCargandoMas()      => UsuariosCargados(
+      usuarios:          estado.usuarios,
+      usuariosFiltrados: estado.usuariosFiltrados,
+      seleccionados:     estado.seleccionados,
+      modoSeleccion:     estado.modoSeleccion,
+      hayMas:            true,
+    ),
     _                          => null,
   };
 

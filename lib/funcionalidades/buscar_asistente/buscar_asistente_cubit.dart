@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'buscar_asistente_estado.dart';
 import 'buscar_asistente_repositorio.dart';
 import 'resultado_busqueda.dart';
@@ -42,8 +43,10 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
         cantidadTotal:     0,
       ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(BuscarAsistenteError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(BuscarAsistenteError(mensaje: e.mensaje));
     }
   }
@@ -60,8 +63,10 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
       _ultimosUsuarios = await _repositorio.buscarUsuarios(query);
       _emitirResultados(cargado);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(BuscarAsistenteOperacionFallida(anterior: cargado, mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(BuscarAsistenteOperacionFallida(anterior: cargado, mensaje: e.mensaje));
     }
   }
@@ -82,8 +87,10 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
       final actual = _extraerCargado(state) ?? cargado;
       emit(actual.copiarCon(estaRegistrando: false, usuarioIdRegistrando: null));
     } on FallaServidor catch (e) {
+      reportarError(e);
       _emitirFalloRegistro(cargado, e.mensaje);
     } on FallaInesperada catch (e) {
+      reportarError(e);
       _emitirFalloRegistro(cargado, e.mensaje);
     } finally {
       _idsCargando.remove(resultado.usuarioId);
@@ -107,9 +114,11 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
       );
       emit(cargado.copiarCon(estaMarcandoSalida: false));
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(BuscarAsistenteOperacionFallida(
         anterior: cargado.copiarCon(estaMarcandoSalida: false), mensaje: e.mensaje,),);
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(BuscarAsistenteOperacionFallida(
         anterior: cargado.copiarCon(estaMarcandoSalida: false), mensaje: e.mensaje,),);
     }

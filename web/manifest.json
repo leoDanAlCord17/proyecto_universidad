@@ -1,23 +1,28 @@
 {
-    "name": "uniasist",
-    "short_name": "uniasist",
-    "start_url": ".",
+    "name": "UniAsist",
+    "short_name": "UniAsist",
+    "description": "Sistema de gestión de asistencia universitaria: eventos, escaneo QR y estadísticas.",
+    "lang": "es",
+    "start_url": "/",
+    "scope": "/",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
+    "background_color": "#EEEDF5",
+    "theme_color": "#5B3FD4",
     "prefer_related_applications": false,
+    "categories": ["education", "productivity"],
     "icons": [
         {
             "src": "icons/Icon-192.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
             "src": "icons/Icon-512.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any"
         },
         {
             "src": "icons/Icon-maskable-192.png",
@@ -30,6 +35,22 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Mis Eventos",
+            "short_name": "Eventos",
+            "description": "Ver eventos activos y próximos",
+            "url": "/eventos",
+            "icons": [{ "src": "icons/Icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Escanear QR",
+            "short_name": "Escanear",
+            "description": "Registrar asistencia por QR",
+            "url": "/escanear",
+            "icons": [{ "src": "icons/Icon-192.png", "sizes": "192x192" }]
         }
     ]
 }

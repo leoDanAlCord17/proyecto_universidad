@@ -63,7 +63,7 @@ abstract class ColoresApp {
   static const bordeExito     = Color(0x401A9462);   // verde 40%
   static const bordeError     = Color(0x40C23B3B);   // rojo  40%
 
-  static const blanco = Color.fromARGB(255, 255, 255, 255);
+  static const blanco = Color(0xFFFFFFFF);
 
   // ─── ESCÁNER QR (tema oscuro) ─────────────────────────────────────
   static const scannerFondo       = Color(0xFF0D0D1A);  // fondo cámara

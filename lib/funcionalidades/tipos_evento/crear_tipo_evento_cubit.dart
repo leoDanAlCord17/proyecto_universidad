@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'crear_tipo_evento_estado.dart';
 import 'tipos_evento_repositorio.dart';
 
@@ -23,8 +24,10 @@ class CrearTipoEventoCubit extends Cubit<CrearTipoEventoEstado> {
         descripcionInicial: (datos['descripcion'] as String?) ?? '',
       ),);
     } on FallaServidor catch (falla) {
+      reportarError(falla);
       emit(CrearTipoEventoError(mensaje: falla.mensaje));
     } on FallaInesperada catch (falla) {
+      reportarError(falla);
       emit(CrearTipoEventoError(mensaje: falla.mensaje));
     }
   }
@@ -51,8 +54,10 @@ class CrearTipoEventoCubit extends Cubit<CrearTipoEventoEstado> {
       }
       emit(const CrearTipoEventoGuardado());
     } on FallaServidor catch (falla) {
+      reportarError(falla);
       emit(CrearTipoEventoError(mensaje: falla.mensaje));
     } on FallaInesperada catch (falla) {
+      reportarError(falla);
       emit(CrearTipoEventoError(mensaje: falla.mensaje));
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'crear_tag_estado.dart';
 import 'crear_tag_repositorio.dart';
 
@@ -24,8 +25,10 @@ class CrearTagCubit extends Cubit<CrearTagEstado> {
         tipoSeleccionado:   tag['tipo']        as String?,
       ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(CrearTagError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(CrearTagError(mensaje: e.mensaje));
     }
   }
@@ -72,8 +75,10 @@ class CrearTagCubit extends Cubit<CrearTagEstado> {
       await _persistirTag(estado: e, nombre: nombre, descripcion: descripcion, tipo: tipo, creadorId: creadorId);
       emit(const CrearTagGuardado());
     } on FallaServidor catch (err) {
+      reportarError(err);
       emit(e.copiarCon(estaGuardando: false, errorValidacion: err.mensaje));
     } on FallaInesperada catch (err) {
+      reportarError(err);
       emit(e.copiarCon(estaGuardando: false, errorValidacion: err.mensaje));
     }
   }

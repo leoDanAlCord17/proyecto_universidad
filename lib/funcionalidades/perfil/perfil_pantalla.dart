@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
+import '../../compartido/widgets/utilidades/banner_sin_conexion.dart';
 import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
 import '../../compartido/widgets/navegacion/barra_navegacion_app.dart';
 import '../../compartido/widgets/qr/tarjeta_qr_usuario.dart';
@@ -88,6 +89,15 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
                       color:  ColoresApp.acento,
                     ),
                     _Cabecera(usuario: usuario),
+                    if (perfilEstado is PerfilSinConexion)
+                      BannerSinConexion(
+                        onReintentar: () {
+                          final auth = context.read<AuthCubit>().state;
+                          if (auth is Autenticado && auth.usuario.id != null) {
+                            context.read<PerfilCubit>().cargar(auth.usuario.id!);
+                          }
+                        },
+                      ),
                     Expanded(
                       child: SingleChildScrollView(
                         child: Padding(
@@ -160,13 +170,15 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
   }
 
   String? _tagPrincipal() => switch (context.watch<PerfilCubit>().state) {
-    PerfilCargado(:final tagPrincipal) => tagPrincipal,
-    _ => null,
+    PerfilCargado(:final tagPrincipal)     => tagPrincipal,
+    PerfilSinConexion(:final tagPrincipal) => tagPrincipal,
+    _                                      => null,
   };
 
   List<String> _tagsSecundarios() => switch (context.watch<PerfilCubit>().state) {
-    PerfilCargado(:final tagsSecundarios) => tagsSecundarios,
-    _ => [],
+    PerfilCargado(:final tagsSecundarios)     => tagsSecundarios,
+    PerfilSinConexion(:final tagsSecundarios) => tagsSecundarios,
+    _                                         => [],
   };
 }
 
@@ -498,8 +510,9 @@ class _Cabecera extends StatelessWidget {
               BlocBuilder<PerfilCubit, PerfilEstado>(
                 builder: (context, estado) {
                   final tagPrincipal = switch (estado) {
-                    PerfilCargado(:final tagPrincipal) => tagPrincipal,
-                    _ => null,
+                    PerfilCargado(:final tagPrincipal)     => tagPrincipal,
+                    PerfilSinConexion(:final tagPrincipal) => tagPrincipal,
+                    _                                      => null,
                   };
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,

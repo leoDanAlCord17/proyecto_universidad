@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'crear_evento_estado.dart';
 import 'crear_evento_repositorio.dart';
 import 'grupo_audiencia.dart';
@@ -27,8 +28,10 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
         maxTagsSecundarios: maxTagsSecundarios,
       ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(CrearEventoError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(CrearEventoError(mensaje: e.mensaje));
     }
   }
@@ -43,8 +46,10 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
       final grupos             = await _repositorio.obtenerGruposEvento(eventoId);
       emit(_estadoDesdeEvento(eventoId, tiposEvento, tags, maxTagsSecundarios, evento, grupos));
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(CrearEventoError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(CrearEventoError(mensaje: e.mensaje));
     }
   }
@@ -194,8 +199,10 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
         esBorrador: estatus == EstatusEvento.borrador,
       ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(CrearEventoError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(CrearEventoError(mensaje: e.mensaje));
     }
   }

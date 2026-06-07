@@ -22,6 +22,12 @@ const _evento2 = EventoParaAuditoria(
   estatus: 'finalizado',
 );
 
+const _evento3 = EventoParaAuditoria(
+  id:      'ev-3',
+  titulo:  'Seminario',
+  estatus: 'finalizado',
+);
+
 RegistroAuditoria _reg(String id, String estatus) => RegistroAuditoria(
   id:          id,
   nombre:      'Test $id',
@@ -51,7 +57,7 @@ void main() {
       'emite [CargandoLista, ListaCargada] cuando el repositorio devuelve datos',
       build: () {
         when(() => repositorio.obtenerEventos())
-            .thenAnswer((_) async => [_evento1, _evento2]);
+            .thenAnswer((_) async => (eventos: [_evento1, _evento2], hayMas: false));
         return AuditoriaEventoCubit(repositorio);
       },
       act: (c) => c.iniciar(),
@@ -65,14 +71,26 @@ void main() {
       'todosEventos se llena después de iniciar con éxito',
       build: () {
         when(() => repositorio.obtenerEventos())
-            .thenAnswer((_) async => [_evento1, _evento2]);
+            .thenAnswer((_) async => (eventos: [_evento1, _evento2], hayMas: false));
         return AuditoriaEventoCubit(repositorio);
       },
       act: (c) => c.iniciar(),
       verify: (c) {
         expect(c.todosEventos.length, 2);
         expect(c.todosEventos.first.id, 'ev-1');
+        expect(c.hayMasEventos, false);
       },
+    );
+
+    blocTest<AuditoriaEventoCubit, AuditoriaEventoEstado>(
+      'hayMasEventos=true cuando el repo indica más páginas',
+      build: () {
+        when(() => repositorio.obtenerEventos())
+            .thenAnswer((_) async => (eventos: [_evento1, _evento2], hayMas: true));
+        return AuditoriaEventoCubit(repositorio);
+      },
+      act: (c) => c.iniciar(),
+      verify: (c) => expect(c.hayMasEventos, true),
     );
 
     blocTest<AuditoriaEventoCubit, AuditoriaEventoEstado>(
@@ -104,6 +122,66 @@ void main() {
         isA<AuditoriaEventoError>(),
       ],
     );
+  });
+
+  // ── cargarMasEventos ───────────────────────────────────────────────────────
+
+  group('AuditoriaEventoCubit.cargarMasEventos', () {
+    test('no hace nada si hayMasEventos es false', () async {
+      when(() => repositorio.obtenerEventos())
+          .thenAnswer((_) async => (eventos: [_evento1], hayMas: false));
+      final cubit = AuditoriaEventoCubit(repositorio);
+      await cubit.iniciar();
+      final estadoAntes = cubit.state;
+
+      await cubit.cargarMasEventos();
+
+      expect(cubit.todosEventos.length, 1);
+      expect(cubit.state, estadoAntes);
+      await cubit.close();
+    });
+
+    test('acumula eventos sin emitir nuevo estado cubit', () async {
+      var llamadas = 0;
+      when(() => repositorio.obtenerEventos(offset: any(named: 'offset')))
+          .thenAnswer((_) async {
+        llamadas++;
+        return llamadas == 1
+            ? (eventos: [_evento1, _evento2], hayMas: true)
+            : (eventos: [_evento3], hayMas: false);
+      });
+      final cubit = AuditoriaEventoCubit(repositorio);
+      await cubit.iniciar();
+      expect(cubit.hayMasEventos, true);
+      final estadoTrasIniciar = cubit.state;
+
+      await cubit.cargarMasEventos();
+
+      expect(cubit.todosEventos.length, 3);
+      expect(cubit.hayMasEventos, false);
+      // El estado cubit no cambia — la modal reactúa vía setState propio.
+      expect(cubit.state, estadoTrasIniciar);
+      await cubit.close();
+    });
+
+    test('no modifica todosEventos si el repositorio lanza excepción', () async {
+      var llamadas = 0;
+      when(() => repositorio.obtenerEventos(offset: any(named: 'offset')))
+          .thenAnswer((_) async {
+        llamadas++;
+        if (llamadas == 1) return (eventos: [_evento1], hayMas: true);
+        throw const FallaServidor('Fallo de red');
+      });
+      final cubit = AuditoriaEventoCubit(repositorio);
+      await cubit.iniciar();
+
+      await cubit.cargarMasEventos();
+
+      expect(cubit.todosEventos.length, 1);
+      // hayMasEventos sigue true para permitir reintentar.
+      expect(cubit.hayMasEventos, true);
+      await cubit.close();
+    });
   });
 
   group('AuditoriaEventoCubit.seleccionarEvento', () {

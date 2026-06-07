@@ -22,6 +22,7 @@ final class UsuariosCargados extends UsuariosEstado {
   const UsuariosCargados({
     required this.usuarios,
     required this.usuariosFiltrados,
+    required this.hayMas,
     this.seleccionados      = const {},
     this.modoSeleccion      = false,
     this.estaEjecutandoLote = false,
@@ -30,6 +31,7 @@ final class UsuariosCargados extends UsuariosEstado {
 
   final List<UsuarioItem> usuarios;
   final List<UsuarioItem> usuariosFiltrados;
+  final bool              hayMas;
   final Set<String>       seleccionados;
   final bool              modoSeleccion;
   final bool              estaEjecutandoLote;
@@ -37,6 +39,7 @@ final class UsuariosCargados extends UsuariosEstado {
 
   UsuariosCargados copiarCon({
     List<UsuarioItem>? usuariosFiltrados,
+    bool?              hayMas,
     Set<String>?       seleccionados,
     bool?              modoSeleccion,
     bool?              estaEjecutandoLote,
@@ -46,6 +49,7 @@ final class UsuariosCargados extends UsuariosEstado {
       UsuariosCargados(
         usuarios:            usuarios,
         usuariosFiltrados:   usuariosFiltrados  ?? this.usuariosFiltrados,
+        hayMas:              hayMas             ?? this.hayMas,
         seleccionados:       seleccionados      ?? this.seleccionados,
         modoSeleccion:       modoSeleccion      ?? this.modoSeleccion,
         estaEjecutandoLote:  estaEjecutandoLote ?? this.estaEjecutandoLote,
@@ -54,9 +58,27 @@ final class UsuariosCargados extends UsuariosEstado {
 
   @override
   List<Object?> get props => [
-    usuarios, usuariosFiltrados, seleccionados,
+    usuarios, usuariosFiltrados, hayMas, seleccionados,
     modoSeleccion, estaEjecutandoLote, errorLote,
   ];
+}
+
+/// La lista muestra los resultados ya cargados mientras se obtiene la siguiente página.
+final class UsuariosCargandoMas extends UsuariosEstado {
+  const UsuariosCargandoMas({
+    required this.usuarios,
+    required this.usuariosFiltrados,
+    required this.seleccionados,
+    required this.modoSeleccion,
+  });
+
+  final List<UsuarioItem> usuarios;
+  final List<UsuarioItem> usuariosFiltrados;
+  final Set<String>       seleccionados;
+  final bool              modoSeleccion;
+
+  @override
+  List<Object?> get props => [usuarios, usuariosFiltrados, seleccionados, modoSeleccion];
 }
 
 final class UsuariosError extends UsuariosEstado {

@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
+import 'revision_usuario_item.dart';
 import 'revision_usuarios_estado.dart';
 import 'revision_usuarios_repositorio.dart';
 
@@ -10,20 +12,60 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
 
   final RevisionUsuariosRepositorio _repositorio;
 
-  /// Carga los usuarios pendientes de aprobación.
+  List<RevisionUsuarioItem> _todos  = [];
+  int                       _offset = 0;
+
   Future<void> cargar() async {
+    _offset = 0;
+    _todos  = [];
     emit(const RevisionUsuariosCargando());
     try {
-      final usuarios = await _repositorio.obtenerPendientes();
-      emit(RevisionUsuariosCargados(usuarios: usuarios));
+      final resultado = await _repositorio.obtenerPendientes(offset: _offset);
+      if (isClosed) return;
+      _todos   = resultado.usuarios;
+      _offset += resultado.usuarios.length;
+      emit(RevisionUsuariosCargados(
+        usuarios: _todos,
+        hayMas:   resultado.hayMas,
+      ),);
     } on FallaServidor catch (falla) {
+      if (isClosed) return;
+      reportarError(falla);
+      emit(RevisionUsuariosError(falla.mensaje));
+    } on FallaRed catch (falla) {
+      if (isClosed) return;
+      reportarError(falla);
       emit(RevisionUsuariosError(falla.mensaje));
     } on FallaInesperada catch (falla) {
+      if (isClosed) return;
+      reportarError(falla);
       emit(RevisionUsuariosError(falla.mensaje));
     }
   }
 
-  /// Aprueba al usuario cambiando su estatus a aprobado.
+  Future<void> cargarMas() async {
+    final estado = state;
+    if (estado is! RevisionUsuariosCargados || !estado.hayMas) return;
+
+    emit(RevisionUsuariosCargandoMas(usuarios: estado.usuarios));
+    try {
+      final resultado = await _repositorio.obtenerPendientes(offset: _offset);
+      if (isClosed) return;
+      _todos   = [...estado.usuarios, ...resultado.usuarios];
+      _offset += resultado.usuarios.length;
+      emit(RevisionUsuariosCargados(
+        usuarios: _todos,
+        hayMas:   resultado.hayMas,
+      ),);
+    } catch (_) {
+      if (isClosed) return;
+      emit(RevisionUsuariosCargados(
+        usuarios: estado.usuarios,
+        hayMas:   estado.hayMas,
+      ),);
+    }
+  }
+
   Future<void> aprobar(String usuarioId) async {
     final estadoActual = state;
     if (estadoActual is! RevisionUsuariosCargados) return;
@@ -35,11 +77,13 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
       await _repositorio.aprobar(usuarioId);
       await cargar();
     } on FallaServidor catch (falla) {
+      reportarError(falla);
       emit(estadoActual.copiarCon(
         limpiarProcessando: true,
         errorOperacion:     falla.mensaje,
       ),);
     } on FallaInesperada catch (falla) {
+      reportarError(falla);
       emit(estadoActual.copiarCon(
         limpiarProcessando: true,
         errorOperacion:     falla.mensaje,
@@ -47,7 +91,6 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
     }
   }
 
-  /// Rechaza la solicitud de un usuario pendiente.
   Future<void> rechazar(String usuarioId) async {
     final estadoActual = state;
     if (estadoActual is! RevisionUsuariosCargados) return;
@@ -59,11 +102,13 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
       await _repositorio.rechazar(usuarioId);
       await cargar();
     } on FallaServidor catch (falla) {
+      reportarError(falla);
       emit(estadoActual.copiarCon(
         limpiarProcessando: true,
         errorOperacion:     falla.mensaje,
       ),);
     } on FallaInesperada catch (falla) {
+      reportarError(falla);
       emit(estadoActual.copiarCon(
         limpiarProcessando: true,
         errorOperacion:     falla.mensaje,

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'eventos_en_curso_estado.dart';
 import 'eventos_en_curso_repositorio.dart';
 
@@ -39,8 +40,10 @@ class EventosEnCursoCubit extends Cubit<EventosEnCursoEstado> {
         _suscribir(e.id);
       }
     } on FallaServidor catch (f) {
+      reportarError(f);
       if (!isClosed) emit(EventosEnCursoError(f.mensaje));
     } on FallaInesperada catch (f) {
+      reportarError(f);
       if (!isClosed) emit(EventosEnCursoError(f.mensaje));
     }
   }

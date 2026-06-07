@@ -1,12 +1,15 @@
+import 'dart:async' show TimeoutException;
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'constantes.dart';
+import 'errores.dart';
 
 /// Convierte errores técnicos de Supabase en mensajes legibles para el usuario.
 ///
 /// Uso en repositorios:
 ///   on AuthException catch (e)      { throw FallaAutenticacion(TraductorErrores.deAuth(e)); }
 ///   on PostgrestException catch (e) { throw FallaServidor(TraductorErrores.dePostgres(e)); }
-///   catch (e)                       { throw FallaInesperada(TraductorErrores.deInesperado(e)); }
+///   catch (e)                       { TraductorErrores.lanzarInesperado(e); }
 class TraductorErrores {
   TraductorErrores._();
 
@@ -40,16 +43,20 @@ class TraductorErrores {
     };
   }
 
-  /// Último recurso para errores no clasificados.
-  /// Detecta errores de red para dar un mensaje más útil.
-  static String deInesperado(Object e) {
+  /// Lanza [FallaRed] si el error es de red o timeout,
+  /// o [FallaInesperada] para cualquier otro error no clasificado.
+  /// El tipo de retorno Never garantiza que el bloque catch siempre termina.
+  static Never lanzarInesperado(Object e) {
+    if (e is TimeoutException) {
+      throw const FallaRed(MensajesError.timeout);
+    }
     final texto = e.toString().toLowerCase();
     if (texto.contains('socketexception') ||
         texto.contains('network')         ||
         texto.contains('connection')) {
-      return MensajesError.conexion;
+      throw const FallaRed(MensajesError.conexion);
     }
-    return MensajesError.inesperado;
+    throw const FallaInesperada(MensajesError.inesperado);
   }
 
   // Fallback por contenido del mensaje cuando el statusCode no alcanza

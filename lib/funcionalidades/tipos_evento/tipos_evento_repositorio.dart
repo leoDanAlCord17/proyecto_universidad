@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import 'tipo_evento_item.dart';
 
@@ -11,35 +12,39 @@ class TiposEventoRepositorio {
   final SupabaseClient _cliente;
 
   /// Retorna todos los tipos de evento activos.
-  Future<List<TipoEventoItem>> obtenerTiposEvento() async {
-    try {
-      final datos = await _cliente
-          .from(TablasSupabase.tiposEvento)
-          .select()
-          .eq('estatus', true)
-          .order('nombre');
-      return (datos as List).map((e) => TipoEventoItem.desdeJson(e)).toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<List<TipoEventoItem>> obtenerTiposEvento() =>
+      conReintentos(() async {
+        try {
+          final datos = await _cliente
+              .from(TablasSupabase.tiposEvento)
+              .select()
+              .eq('estatus', true)
+              .order('nombre')
+              .timeout(kTimeoutSolicitud);
+          return (datos as List).map((e) => TipoEventoItem.desdeJson(e)).toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Retorna los datos crudos de un tipo de evento por su ID.
-  Future<Map<String, dynamic>> obtenerTipoEvento(String id) async {
-    try {
-      return await _cliente
-          .from(TablasSupabase.tiposEvento)
-          .select()
-          .eq('id', id)
-          .single();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<Map<String, dynamic>> obtenerTipoEvento(String id) =>
+      conReintentos(() async {
+        try {
+          return await _cliente
+              .from(TablasSupabase.tiposEvento)
+              .select()
+              .eq('id', id)
+              .single()
+              .timeout(kTimeoutSolicitud);
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Inserta un nuevo tipo de evento.
   Future<void> crearTipoEvento({
@@ -62,7 +67,7 @@ class TiposEventoRepositorio {
       }
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -88,7 +93,7 @@ class TiposEventoRepositorio {
       }
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -104,7 +109,7 @@ class TiposEventoRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 

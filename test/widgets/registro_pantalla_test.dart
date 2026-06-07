@@ -60,9 +60,14 @@ void main() {
       );
 
       await tester.pumpWidget(_marco(registroCubit, authCubit));
-      await tester.pump();
+      await tester.pump(); // BlocConsumer listener fires → Overlay.insert
+      await tester.pump(); // Overlay rebuilds con la nueva entrada
 
       expect(find.text('Las contraseñas no coinciden.'), findsOneWidget);
+
+      // AvisoApp tiene timers de hasta 2900 ms; hay que drenarlos para que
+      // el test framework no falle con "Timer is still pending".
+      await tester.pump(const Duration(seconds: 3));
     });
 
     testWidgets('llama registrarse con los valores escritos al presionar Continuar',

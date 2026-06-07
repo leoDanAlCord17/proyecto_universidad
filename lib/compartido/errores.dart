@@ -13,8 +13,15 @@ class FallaAutenticacion implements Exception {
   final String mensaje;
 }
 
+/// Error de red o conectividad.
+/// Se lanza cuando no hay conexión a internet o el host no responde.
+class FallaRed implements Exception {
+  const FallaRed(this.mensaje);
+  final String mensaje;
+}
+
 /// Error no clasificado o inesperado.
-/// Se lanza como último recurso cuando el error no es de Supabase.
+/// Se lanza como último recurso cuando el error no es de Supabase ni de red.
 class FallaInesperada implements Exception {
   const FallaInesperada(this.mensaje);
   final String mensaje;

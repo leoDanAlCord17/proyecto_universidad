@@ -44,30 +44,40 @@ class _CampoTextoAppState extends State<CampoTextoApp> {
           style: estilo.titleSmall,
         ),
         const SizedBox(height: 8),
-        TextFormField(
-          controller: widget.controller,
-          obscureText: _estaOscurecido,
-          readOnly: widget.soloLectura,
-          style: estilo.bodyMedium?.copyWith(color: ColoresApp.textoPrimario),
-          decoration: InputDecoration(
-            hintText: widget.hintText,
-            // LÓGICA DEL OJO: Solo aparece si 'esContrasena' es true
-            suffixIcon: widget.esContrasena
-                ? IconButton(
-                    icon: Icon(
-                      _estaOscurecido
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
-                      color: ColoresApp.textoTerciario,
-                      size: 20,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _estaOscurecido = !_estaOscurecido;
-                      });
-                    },
-                  )
-                : null,
+        Semantics(
+          label: widget.etiqueta,
+          textField: true,
+          child: TextFormField(
+            controller: widget.controller,
+            obscureText: _estaOscurecido,
+            readOnly: widget.soloLectura,
+            style: estilo.bodyMedium?.copyWith(color: ColoresApp.textoPrimario),
+            decoration: InputDecoration(
+              hintText: widget.hintText,
+              suffixIcon: widget.esContrasena
+                  ? Semantics(
+                      button: true,
+                      label: _estaOscurecido
+                          ? 'Mostrar contraseña'
+                          : 'Ocultar contraseña',
+                      excludeSemantics: true,
+                      child: IconButton(
+                        icon: Icon(
+                          _estaOscurecido
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: ColoresApp.textoTerciario,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _estaOscurecido = !_estaOscurecido;
+                          });
+                        },
+                      ),
+                    )
+                  : null,
+            ),
           ),
         ),
       ],

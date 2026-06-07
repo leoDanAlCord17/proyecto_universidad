@@ -59,9 +59,12 @@ void main() {
       );
 
       await tester.pumpWidget(_marco(loginCubit, authCubit));
-      await tester.pump();
+      await tester.pump(); // BlocConsumer listener fires → Overlay.insert
+      await tester.pump(); // Overlay rebuilds con la nueva entrada
 
       expect(find.text('Correo o contraseña incorrectos.'), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 3)); // drena timers de AvisoApp
     });
 
     testWidgets('llama ingresar con los valores escritos al presionar el botón',

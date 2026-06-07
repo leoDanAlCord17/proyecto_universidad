@@ -72,9 +72,20 @@ class _RevisionUsuariosPantallaState
     BuildContext context,
     RevisionUsuariosEstado estado,
   ) {
-    final estadoMostrar = estado is RevisionUsuariosCargados
-        ? estado.copiarCon(usuarios: _aplicarFiltro(estado.usuarios))
-        : estado;
+    final (estadoMostrar, cargandoMas) = switch (estado) {
+      RevisionUsuariosCargados() => (
+          estado.copiarCon(usuarios: _aplicarFiltro(estado.usuarios)),
+          false,
+        ),
+      RevisionUsuariosCargandoMas() => (
+          RevisionUsuariosCargados(
+            usuarios: _aplicarFiltro(estado.usuarios),
+            hayMas:   true,
+          ),
+          true,
+        ),
+      _ => (estado, false),
+    };
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
@@ -95,7 +106,11 @@ class _RevisionUsuariosPantallaState
               ),
             ),
             Expanded(
-              child: _Cuerpo(estado: estadoMostrar, busqueda: _busqueda),
+              child: _Cuerpo(
+                estado:      estadoMostrar,
+                busqueda:    _busqueda,
+                cargandoMas: cargandoMas,
+              ),
             ),
           ],
         ),
@@ -137,19 +152,26 @@ class _BarraTitulo extends StatelessWidget {
 // ─── Cuerpo según estado ──────────────────────────────────────────────────────
 
 class _Cuerpo extends StatelessWidget {
-  const _Cuerpo({required this.estado, required this.busqueda});
+  const _Cuerpo({
+    required this.estado,
+    required this.busqueda,
+    this.cargandoMas = false,
+  });
 
   final RevisionUsuariosEstado estado;
   final String                 busqueda;
+  final bool                   cargandoMas;
 
   @override
   Widget build(BuildContext context) {
     return switch (estado) {
-      RevisionUsuariosInicial() || RevisionUsuariosCargando() => const Center(
+      RevisionUsuariosInicial()    ||
+      RevisionUsuariosCargando()   ||
+      RevisionUsuariosCargandoMas() => const Center(
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
       final RevisionUsuariosCargados cargados =>
-          _Lista(estado: cargados, busqueda: busqueda),
+          _Lista(estado: cargados, busqueda: busqueda, cargandoMas: cargandoMas),
       final RevisionUsuariosError error =>
           VistaErrorApp(mensaje: error.mensaje, alReintentar: () => context.read<RevisionUsuariosCubit>().cargar()),
     };
@@ -159,10 +181,15 @@ class _Cuerpo extends StatelessWidget {
 // ─── Lista de usuarios pendientes ─────────────────────────────────────────────
 
 class _Lista extends StatelessWidget {
-  const _Lista({required this.estado, required this.busqueda});
+  const _Lista({
+    required this.estado,
+    required this.busqueda,
+    this.cargandoMas = false,
+  });
 
   final RevisionUsuariosCargados estado;
   final String                   busqueda;
+  final bool                     cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -221,6 +248,19 @@ class _Lista extends StatelessWidget {
                 },
               ),
             ),),
+            if (cargandoMas)
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Center(
+                  child: CircularProgressIndicator(color: ColoresApp.acento),
+                ),
+              )
+            else if (estado.hayMas)
+              TextButton.icon(
+                onPressed: () => context.read<RevisionUsuariosCubit>().cargarMas(),
+                icon:  const Icon(Icons.expand_more_rounded),
+                label: const Text('Cargar más'),
+              ),
           ],
         ),
         if (estado.usuarioIdProcessando != null)

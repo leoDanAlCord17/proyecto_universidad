@@ -1,6 +1,9 @@
+import 'dart:async' show TimeoutException;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uniasist/compartido/constantes.dart';
+import 'package:uniasist/compartido/errores.dart';
 import 'package:uniasist/compartido/traductor_errores.dart';
 
 void main() {
@@ -116,34 +119,49 @@ void main() {
     });
   });
 
-  group('TraductorErrores.deInesperado', () {
-    test('contiene "SocketException" → error de conexión', () {
+  group('TraductorErrores.lanzarInesperado', () {
+    test('TimeoutException → lanza FallaRed con mensaje de timeout', () {
       expect(
-        TraductorErrores.deInesperado(
+        () => TraductorErrores.lanzarInesperado(TimeoutException('timed out')),
+        throwsA(
+          isA<FallaRed>().having((e) => e.mensaje, 'mensaje', MensajesError.timeout),
+        ),
+      );
+    });
+
+    test('contiene "SocketException" → lanza FallaRed con mensaje de conexión', () {
+      expect(
+        () => TraductorErrores.lanzarInesperado(
           Exception('SocketException: connection refused'),
         ),
-        MensajesError.conexion,
+        throwsA(
+          isA<FallaRed>().having((e) => e.mensaje, 'mensaje', MensajesError.conexion),
+        ),
       );
     });
 
-    test('contiene "network" → error de conexión', () {
+    test('contiene "network" → lanza FallaRed con mensaje de conexión', () {
       expect(
-        TraductorErrores.deInesperado(Exception('network error')),
-        MensajesError.conexion,
+        () => TraductorErrores.lanzarInesperado(Exception('network error')),
+        throwsA(
+          isA<FallaRed>().having((e) => e.mensaje, 'mensaje', MensajesError.conexion),
+        ),
       );
     });
 
-    test('contiene "connection" → error de conexión', () {
+    test('contiene "connection" → lanza FallaRed con mensaje de conexión', () {
       expect(
-        TraductorErrores.deInesperado(Exception('connection timeout')),
-        MensajesError.conexion,
+        () => TraductorErrores.lanzarInesperado(Exception('connection timeout')),
+        throwsA(
+          isA<FallaRed>().having((e) => e.mensaje, 'mensaje', MensajesError.conexion),
+        ),
       );
     });
 
-    test('error genérico → error inesperado', () {
+    test('error genérico → lanza FallaInesperada', () {
       expect(
-        TraductorErrores.deInesperado(Exception('some other error')),
-        MensajesError.inesperado,
+        () => TraductorErrores.lanzarInesperado(Exception('some other error')),
+        throwsA(isA<FallaInesperada>()),
       );
     });
   });

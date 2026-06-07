@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import 'tag_item.dart';
 
@@ -11,86 +12,96 @@ class GestionarTagsUsuarioRepositorio {
   final SupabaseClient _supabase;
 
   /// Retorna nombre completo y correo del usuario.
-  Future<({String nombre, String correo})> obtenerInfoUsuario(String usuarioId) async {
-    try {
-      final fila = await _supabase
-          .from(TablasSupabase.usuarios)
-          .select('primer_nombre, primer_apellido, correo')
-          .eq('id', usuarioId)
-          .single();
-      final nombre = '${fila['primer_nombre']} ${fila['primer_apellido']}';
-      return (nombre: nombre, correo: fila['correo'] as String? ?? '');
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<({String nombre, String correo})> obtenerInfoUsuario(String usuarioId) =>
+      conReintentos(() async {
+        try {
+          final fila = await _supabase
+              .from(TablasSupabase.usuarios)
+              .select('primer_nombre, primer_apellido, correo')
+              .eq('id', usuarioId)
+              .single()
+              .timeout(kTimeoutSolicitud);
+          final nombre = '${fila['primer_nombre']} ${fila['primer_apellido']}';
+          return (nombre: nombre, correo: fila['correo'] as String? ?? '');
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Retorna los tags actualmente activos del usuario separados por tipo.
   Future<({TagItem? tagPrincipal, List<TagItem> tagsSecundarios})> obtenerTagsUsuario(
     String usuarioId,
-  ) async {
-    try {
-      final datos = await _supabase
-          .from(TablasSupabase.usuariosTags)
-          .select('tags(id, nombre, tipo)')
-          .eq('usuario_id', usuarioId)
-          .eq('estatus', true);
+  ) =>
+      conReintentos(() async {
+        try {
+          final datos = await _supabase
+              .from(TablasSupabase.usuariosTags)
+              .select('tags(id, nombre, tipo)')
+              .eq('usuario_id', usuarioId)
+              .eq('estatus', true)
+              .timeout(kTimeoutSolicitud);
 
-      TagItem?      principal;
-      final         secundarios  = <TagItem>[];
+          TagItem?      principal;
+          final         secundarios  = <TagItem>[];
 
-      for (final fila in datos) {
-        final tagData = fila['tags'] as Map<String, dynamic>?;
-        if (tagData == null) continue;
-        final tag = TagItem.desdeJson(tagData);
-        if (tag.esPrincipal) {
-          principal = tag;
-        } else {
-          secundarios.add(tag);
+          for (final fila in datos) {
+            final tagData = fila['tags'] as Map<String, dynamic>?;
+            if (tagData == null) continue;
+            final tag = TagItem.desdeJson(tagData);
+            if (tag.esPrincipal) {
+              principal = tag;
+            } else {
+              secundarios.add(tag);
+            }
+          }
+          return (tagPrincipal: principal, tagsSecundarios: secundarios);
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
         }
-      }
-      return (tagPrincipal: principal, tagsSecundarios: secundarios);
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+      });
 
-  /// Retorna todos los tags activos del sistema.
-  Future<List<TagItem>> obtenerTagsActivos() async {
-    try {
-      final datos = await _supabase
-          .from(TablasSupabase.tags)
-          .select('id, nombre, tipo')
-          .eq('estatus', true)
-          .order('nombre');
-      return datos.map(TagItem.desdeJson).toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  /// Retorna los tags activos del sistema (techo de 200 — picker, no paginado).
+  Future<List<TagItem>> obtenerTagsActivos() =>
+      conReintentos(() async {
+        try {
+          final datos = await _supabase
+              .from(TablasSupabase.tags)
+              .select('id, nombre, tipo')
+              .eq('estatus', true)
+              .order('tipo')
+              .order('nombre')
+              .limit(200)
+              .timeout(kTimeoutSolicitud);
+          return datos.map(TagItem.desdeJson).toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Retorna el límite de tags secundarios por usuario desde configuracion_int.
-  Future<int> obtenerMaxTagsSecundarios() async {
-    try {
-      final fila = await _supabase
-          .from(TablasSupabase.configuracion)
-          .select('valor')
-          .eq('clave', 'max_tags_secundarios_por_usuario')
-          .eq('estatus', true)
-          .maybeSingle();
-      return (fila?['valor'] as int?) ?? 3;
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<int> obtenerMaxTagsSecundarios() =>
+      conReintentos(() async {
+        try {
+          final fila = await _supabase
+              .from(TablasSupabase.configuracion)
+              .select('valor')
+              .eq('clave', 'max_tags_secundarios_por_usuario')
+              .eq('estatus', true)
+              .maybeSingle()
+              .timeout(kTimeoutSolicitud);
+          return (fila?['valor'] as int?) ?? 3;
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Inserta un nuevo registro de asignación de tag.
   /// Siempre crea un registro nuevo para preservar trazabilidad.
@@ -105,7 +116,7 @@ class GestionarTagsUsuarioRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -125,7 +136,7 @@ class GestionarTagsUsuarioRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 }

@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
+import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import 'colaborador_item.dart';
 
@@ -11,54 +12,59 @@ class ColaboradoresEventoRepositorio {
   final SupabaseClient _supabase;
 
   /// Retorna los colaboradores activos asignados al evento.
-  Future<List<ColaboradorItem>> obtenerColaboradores(String eventoId) async {
-    try {
-      final rolId        = await _rolColaboradorId();
-      final asignaciones = await _supabase
-          .from(TablasSupabase.eventosUsuariosRoles)
-          .select('id, usuario_id, asignado_por')
-          .eq('evento_id', eventoId)
-          .eq('rol_id', rolId)
-          .eq('estatus', true);
-      if (asignaciones.isEmpty) return [];
-      final usuarioIds    = asignaciones.map((a) => a['usuario_id'] as String).toList();
-      final asignadoPorIds = asignaciones
-          .map((a) => a['asignado_por'] as String?)
-          .whereType<String>()
-          .toSet()
-          .toList();
-      final todosIds = {...usuarioIds, ...asignadoPorIds}.toList();
-      final usuarios = await _supabase
-          .from(TablasSupabase.usuarios)
-          .select('id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
-          .inFilter('id', todosIds);
-      return _combinarDatos(asignaciones, usuarios);
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<List<ColaboradorItem>> obtenerColaboradores(String eventoId) =>
+      conReintentos(() async {
+        try {
+          final rolId        = await _rolColaboradorId();
+          final asignaciones = await _supabase
+              .from(TablasSupabase.eventosUsuariosRoles)
+              .select('id, usuario_id, asignado_por')
+              .eq('evento_id', eventoId)
+              .eq('rol_id', rolId)
+              .eq('estatus', true)
+              .timeout(kTimeoutSolicitud);
+          if (asignaciones.isEmpty) return [];
+          final usuarioIds    = asignaciones.map((a) => a['usuario_id'] as String).toList();
+          final asignadoPorIds = asignaciones
+              .map((a) => a['asignado_por'] as String?)
+              .whereType<String>()
+              .toSet()
+              .toList();
+          final todosIds = {...usuarioIds, ...asignadoPorIds}.toList();
+          final usuarios = await _supabase
+              .from(TablasSupabase.usuarios)
+              .select('id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
+              .inFilter('id', todosIds)
+              .timeout(kTimeoutSolicitud);
+          return _combinarDatos(asignaciones, usuarios);
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Busca usuarios del sistema cuyo nombre o apellido coincida con [query].
-  Future<List<UsuarioParaAsignar>> buscarUsuarios(String query) async {
-    try {
-      final q = query.trim();
-      if (q.length < 2) return [];
-      final qSanitizado = q.length > 100 ? q.substring(0, 100) : q;
-      final filas = await _supabase
-          .from(TablasSupabase.usuarios)
-          .select('id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
-          .or('primer_nombre.ilike.%$qSanitizado%,primer_apellido.ilike.%$qSanitizado%')
-          .order('primer_apellido', ascending: true)
-          .limit(30);
-      return filas.map(UsuarioParaAsignar.desdeJson).toList();
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
-    }
-  }
+  Future<List<UsuarioParaAsignar>> buscarUsuarios(String query) =>
+      conReintentos(() async {
+        try {
+          final q = query.trim();
+          if (q.length < 2) return [];
+          final qSanitizado = q.length > 100 ? q.substring(0, 100) : q;
+          final filas = await _supabase
+              .from(TablasSupabase.usuarios)
+              .select('id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
+              .or('primer_nombre.ilike.%$qSanitizado%,primer_apellido.ilike.%$qSanitizado%')
+              .order('primer_apellido', ascending: true)
+              .limit(30)
+              .timeout(kTimeoutSolicitud);
+          return filas.map(UsuarioParaAsignar.desdeJson).toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Asigna un usuario como colaborador del evento. Si ya existía un registro
   /// inactivo, lo reactiva vía upsert.
@@ -84,7 +90,7 @@ class ColaboradoresEventoRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 
@@ -98,7 +104,7 @@ class ColaboradoresEventoRepositorio {
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
-      throw FallaInesperada(TraductorErrores.deInesperado(e));
+      TraductorErrores.lanzarInesperado(e);
     }
   }
 

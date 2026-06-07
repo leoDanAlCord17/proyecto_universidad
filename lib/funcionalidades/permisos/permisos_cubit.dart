@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'permisos_estado.dart';
 import 'permisos_repositorio.dart';
 
@@ -15,8 +16,10 @@ class PermisosCubit extends Cubit<PermisosEstado> {
       final permisos = await _repositorio.obtenerPermisos();
       emit(PermisosCargados(permisos: permisos, permisosFiltrados: permisos));
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(PermisosError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(PermisosError(mensaje: e.mensaje));
     }
   }

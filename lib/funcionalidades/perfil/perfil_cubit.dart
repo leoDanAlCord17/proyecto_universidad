@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import '../autenticacion/usuario.dart';
 import 'perfil_estado.dart';
 import 'perfil_repositorio.dart';
@@ -14,8 +15,8 @@ class PerfilCubit extends Cubit<PerfilEstado> {
   Future<void> cargar(String usuarioId) async {
     emit(const PerfilCargando());
     try {
-      final tags         = await _repositorio.obtenerTags(usuarioId);
-      final puedeEditar  = await _repositorio.obtenerPuedeEditarPerfil();
+      final tags        = await _repositorio.obtenerTags(usuarioId);
+      final puedeEditar = await _repositorio.obtenerPuedeEditarPerfil();
       if (isClosed) return;
       emit(PerfilCargado(
         tagPrincipal:      tags.tagPrincipal,
@@ -24,10 +25,24 @@ class PerfilCubit extends Cubit<PerfilEstado> {
       ),);
     } on FallaServidor catch (e) {
       if (isClosed) return;
-      emit(PerfilError(e.mensaje));
+      reportarError(e);
+      _emitirDesdeCache(usuarioId, e.mensaje);
     } on FallaInesperada catch (e) {
       if (isClosed) return;
-      emit(PerfilError(e.mensaje));
+      reportarError(e);
+      _emitirDesdeCache(usuarioId, e.mensaje);
+    }
+  }
+
+  void _emitirDesdeCache(String usuarioId, String mensajeError) {
+    final cache = _repositorio.obtenerTagsDesdeCache(usuarioId);
+    if (cache != null) {
+      emit(PerfilSinConexion(
+        tagPrincipal:    cache.tagPrincipal,
+        tagsSecundarios: cache.tagsSecundarios,
+      ),);
+    } else {
+      emit(PerfilError(mensajeError));
     }
   }
 
@@ -76,9 +91,11 @@ class PerfilCubit extends Cubit<PerfilEstado> {
         estadoAnterior:     estadoActual.copiarCon(estaGuardando: false),
       ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(estadoActual.copiarCon(estaGuardando: false, limpiarError: true));
       emit((state as PerfilCargado).copiarCon(errorGuardado: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(estadoActual.copiarCon(estaGuardando: false, limpiarError: true));
       emit((state as PerfilCargado).copiarCon(errorGuardado: e.mensaje));
     }

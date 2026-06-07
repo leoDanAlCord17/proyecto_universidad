@@ -69,6 +69,13 @@ class _UsuariosPantallaState extends State<UsuariosPantalla> {
     final cargados = switch (estado) {
       UsuariosCargados()         => estado,
       UsuariosOperacionFallida() => estado.anterior,
+      UsuariosCargandoMas()      => UsuariosCargados(
+        usuarios:          estado.usuarios,
+        usuariosFiltrados: estado.usuariosFiltrados,
+        seleccionados:     estado.seleccionados,
+        modoSeleccion:     estado.modoSeleccion,
+        hayMas:            true,
+      ),
       _                          => null,
     };
     final modoSeleccion       = cargados?.modoSeleccion      ?? false;
@@ -263,9 +270,11 @@ class _CabeceraTitulo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final total = estado is UsuariosCargados
-        ? (estado as UsuariosCargados).usuariosFiltrados.length
-        : null;
+    final total = switch (estado) {
+      UsuariosCargados(:final usuariosFiltrados)    => usuariosFiltrados.length,
+      UsuariosCargandoMas(:final usuariosFiltrados) => usuariosFiltrados.length,
+      _                                             => null,
+    };
     return Column(
       mainAxisAlignment:  MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,9 +314,19 @@ class _Cuerpo extends StatelessWidget {
       UsuariosInicial() || UsuariosCargando() => const Center(
         child: CircularProgressIndicator(color: ColoresApp.acento),
       ),
-      UsuariosCargados()          => _Lista(estado: e),
-      UsuariosOperacionFallida()  => _Lista(estado: e.anterior),
-      UsuariosError()             => _VistaError(mensaje: e.mensaje),
+      UsuariosCargados()         => _Lista(estado: e),
+      UsuariosCargandoMas()      => _Lista(
+        estado: UsuariosCargados(
+          usuarios:          e.usuarios,
+          usuariosFiltrados: e.usuariosFiltrados,
+          seleccionados:     e.seleccionados,
+          modoSeleccion:     e.modoSeleccion,
+          hayMas:            true,
+        ),
+        cargandoMas: true,
+      ),
+      UsuariosOperacionFallida() => _Lista(estado: e.anterior),
+      UsuariosError()            => _VistaError(mensaje: e.mensaje),
     };
   }
 }
@@ -315,9 +334,10 @@ class _Cuerpo extends StatelessWidget {
 // ─── Lista de usuarios ────────────────────────────────────────────────────────
 
 class _Lista extends StatelessWidget {
-  const _Lista({required this.estado});
+  const _Lista({required this.estado, this.cargandoMas = false});
 
   final UsuariosCargados estado;
+  final bool             cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -349,6 +369,21 @@ class _Lista extends StatelessWidget {
             estaSeleccionado: estado.seleccionados.contains(u.id),
           ),
         ),),
+        if (cargandoMas)
+          const Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Center(
+              child: CircularProgressIndicator(color: ColoresApp.acento),
+            ),
+          )
+        else if (estado.hayMas && !estado.modoSeleccion)
+          Center(
+            child: TextButton.icon(
+              onPressed: () => context.read<UsuariosCubit>().cargarMas(),
+              icon:  const Icon(Icons.expand_more_rounded),
+              label: const Text('Cargar más'),
+            ),
+          ),
       ],
     );
   }

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/widgets/botones/boton_contorno_icono.dart';
+import '../../compartido/widgets/utilidades/banner_sin_conexion.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_navegacion_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
@@ -101,8 +102,11 @@ class _EventosPantallaState extends State<EventosPantalla>
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
               child: BlocSelector<EventosCubit, EventosEstado, DateTimeRange?>(
-                selector: (estado) =>
-                    estado is EventosCargado ? estado.rangoFechas : null,
+                selector: (estado) => switch (estado) {
+                  EventosCargado()     => estado.rangoFechas,
+                  EventosSinConexion() => estado.rangoFechas,
+                  _                    => null,
+                },
                 builder: (context, rango) => BarraBusquedaApp(
                   controlador:        _busquedaCtrl,
                   hintText:           'Buscar eventos...',
@@ -119,17 +123,22 @@ class _EventosPantallaState extends State<EventosPantalla>
             Expanded(
               child: BlocBuilder<EventosCubit, EventosEstado>(
                 builder: (context, estado) => switch (estado) {
-                  EventosInicial()  => const SizedBox.shrink(),
-                  EventosCargando() => const Center(
+                  EventosInicial()     => const SizedBox.shrink(),
+                  EventosCargando()    => const Center(
                     child: CircularProgressIndicator(color: ColoresApp.acento),
                   ),
-                  EventosError()    => _VistaError(
+                  EventosError()       => _VistaError(
                     mensaje:      estado.mensaje,
                     onReintentar: _cargar,
                   ),
-                  EventosCargado()  => _VistaContenido(
+                  EventosCargado()     => _VistaContenido(
                     enCurso:  estado.enCurso,
                     proximos: estado.proximos,
+                  ),
+                  EventosSinConexion() => _VistaSinConexion(
+                    enCurso:      estado.enCurso,
+                    proximos:     estado.proximos,
+                    onReintentar: _cargar,
                   ),
                 },
               ),
@@ -493,6 +502,32 @@ class _VistaError extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ─── Vista sin conexión (datos desde caché) ───────────────────────────────────
+
+class _VistaSinConexion extends StatelessWidget {
+  const _VistaSinConexion({
+    required this.enCurso,
+    required this.proximos,
+    required this.onReintentar,
+  });
+
+  final List<EventoConGrupos> enCurso;
+  final List<EventoConGrupos> proximos;
+  final VoidCallback           onReintentar;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        BannerSinConexion(onReintentar: onReintentar),
+        Expanded(
+          child: _VistaContenido(enCurso: enCurso, proximos: proximos),
+        ),
+      ],
     );
   }
 }

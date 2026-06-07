@@ -60,6 +60,20 @@ final class PerfilError extends PerfilEstado {
   @override List<Object?> get props => [mensaje];
 }
 
+/// La red falló pero hay tags cacheados disponibles.
+/// Editar perfil no está disponible en este estado.
+final class PerfilSinConexion extends PerfilEstado {
+  const PerfilSinConexion({
+    this.tagPrincipal,
+    this.tagsSecundarios = const [],
+  });
+
+  final String?      tagPrincipal;
+  final List<String> tagsSecundarios;
+
+  @override List<Object?> get props => [tagPrincipal, tagsSecundarios];
+}
+
 /// Estado transitorio emitido al guardar con éxito.
 /// El BlocListener en la pantalla lo captura para actualizar el AuthCubit
 /// y luego llama a [PerfilCubit.volverACargado].

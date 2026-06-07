@@ -18,8 +18,21 @@ final class HistorialCargando extends HistorialEstado {
   List<Object?> get props => [];
 }
 
+/// Página cargada correctamente. [hayMas] indica si existen más registros.
 final class HistorialCargado extends HistorialEstado {
-  const HistorialCargado({required this.items});
+  const HistorialCargado({required this.items, required this.hayMas});
+
+  final List<HistorialItem> items;
+  final bool                hayMas;
+
+  @override
+  List<Object?> get props => [items, hayMas];
+}
+
+/// La lista ya muestra resultados y se está cargando la siguiente página.
+/// [items] contiene los registros ya cargados para no perder la vista actual.
+final class HistorialCargandoMas extends HistorialEstado {
+  const HistorialCargandoMas({required this.items});
 
   final List<HistorialItem> items;
 

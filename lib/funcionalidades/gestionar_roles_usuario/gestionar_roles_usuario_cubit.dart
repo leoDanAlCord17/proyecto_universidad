@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'gestionar_roles_usuario_estado.dart';
 import 'gestionar_roles_usuario_repositorio.dart';
 
@@ -32,8 +33,10 @@ class GestionarRolesUsuarioCubit extends Cubit<GestionarRolesUsuarioEstado> {
             .toList(),
       ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(GestionarRolesUsuarioError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(GestionarRolesUsuarioError(mensaje: e.mensaje));
     }
   }
@@ -52,8 +55,10 @@ class GestionarRolesUsuarioCubit extends Cubit<GestionarRolesUsuarioEstado> {
       await operacion();
       await cargar(_usuarioId!, adminId: _adminId);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(GestionarRolesUsuarioOperacionFallida(anterior: estadoActual, mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(GestionarRolesUsuarioOperacionFallida(anterior: estadoActual, mensaje: e.mensaje));
     }
   }

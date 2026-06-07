@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'editar_usuario_estado.dart';
 import 'editar_usuario_repositorio.dart';
 
@@ -24,8 +25,10 @@ class EditarUsuarioCubit extends Cubit<EditarUsuarioEstado> {
         telefonoInicial:             data['telefono']              as String?,
       ),);
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(EditarUsuarioError(mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(EditarUsuarioError(mensaje: e.mensaje));
     }
   }
@@ -73,8 +76,10 @@ class EditarUsuarioCubit extends Cubit<EditarUsuarioEstado> {
       );
       emit(const EditarUsuarioGuardado());
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(estadoActual.copiarCon(estaGuardando: false, errorValidacion: e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(estadoActual.copiarCon(estaGuardando: false, errorValidacion: e.mensaje));
     }
   }

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/logger.dart';
 import 'estadisticas_estado.dart';
 import 'estadisticas_modelo.dart';
 import 'estadisticas_repositorio.dart';
@@ -17,8 +18,10 @@ class EstadisticasCubit extends Cubit<EstadisticasEstado> {
     try {
       emit(await _resolverTodo(filtros));
     } on FallaServidor catch (e) {
+      reportarError(e);
       emit(EstadisticasError(e.mensaje));
     } on FallaInesperada catch (e) {
+      reportarError(e);
       emit(EstadisticasError(e.mensaje));
     }
   }
