@@ -20,7 +20,7 @@ class LoginPantalla extends StatefulWidget {
 }
 
 class _LoginPantallaState extends State<LoginPantalla> {
-  final _correoController    = TextEditingController();
+  final _correoController = TextEditingController();
   final _contrasenaController = TextEditingController();
 
   @override
@@ -40,9 +40,9 @@ class _LoginPantallaState extends State<LoginPantalla> {
           if (estado is LoginExito) context.read<AuthCubit>().verificarSesion();
         },
         builder: (context, estado) => _CuerpoLogin(
-          correoController:    _correoController,
+          correoController: _correoController,
           contrasenaController: _contrasenaController,
-          estaCargando:        estado is LoginCargando,
+          estaCargando: estado is LoginCargando,
         ),
       ),
     );
@@ -73,32 +73,33 @@ class _CuerpoLogin extends StatelessWidget {
             const _CabeceraLogin(),
             const SizedBox(height: 45),
             CampoTextoApp(
-              etiqueta:   'Correo institucional',
-              hintText:   'maria.gonzalez@uni.edu',
+              etiqueta: 'Correo institucional',
+              hintText: 'maria.gonzalez@uni.edu',
               controller: correoController,
             ),
             const SizedBox(height: 20),
             CampoTextoApp(
-              etiqueta:     'Contraseña',
-              hintText:     '••••••••',
-              controller:   contrasenaController,
+              etiqueta: 'Contraseña',
+              hintText: '••••••••',
+              controller: contrasenaController,
               esContrasena: true,
             ),
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () => context.push(Rutas.recuperarContrasena),
-                child: Text('¿Olvidaste tu contraseña?', style: estiloTexto.labelLarge),
+                child: Text('¿Olvidaste tu contraseña?',
+                    style: estiloTexto.labelLarge),
               ),
             ),
             const SizedBox(height: 35),
             BotonApp(
-              texto:        'Iniciar sesión',
+              texto: 'Iniciar sesión',
               estaCargando: estaCargando,
-              alPresionar:  () => context.read<LoginCubit>().ingresar(
-                correoController.text,
-                contrasenaController.text,
-              ),
+              alPresionar: () => context.read<LoginCubit>().ingresar(
+                    correoController.text,
+                    contrasenaController.text,
+                  ),
             ),
             const SizedBox(height: 30),
             const _PieLogin(),
@@ -119,16 +120,18 @@ class _CabeceraLogin extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding:    const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color:        ColoresApp.acento,
+            color: ColoresApp.acento,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: const Icon(Icons.people_alt_outlined, size: 45, color: ColoresApp.blanco),
+          child: const Icon(Icons.people_alt_outlined,
+              size: 45, color: ColoresApp.blanco),
         ),
         const SizedBox(height: 30),
         Text('Bienvenido', style: estiloTexto.displaySmall),
-        Text('Sistema de asistencia universitaria', style: estiloTexto.bodyMedium),
+        Text('Sistema de asistencia universitaria',
+            style: estiloTexto.bodyMedium),
       ],
     );
   }

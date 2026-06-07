@@ -49,7 +49,7 @@ class TarjetaEvento extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TarjetaApp(
-      variante:    VarianteTarjeta.normal,
+      variante: VarianteTarjeta.normal,
       alPresionar: alPresionar,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,21 +66,22 @@ class TarjetaEvento extends StatelessWidget {
                   children: [
                     Text(
                       titulo,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color:      colorTitulo,
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                color: colorTitulo,
+                                fontWeight: FontWeight.w800,
+                              ),
                     ),
                     if (descripcion != null && descripcion!.isNotEmpty) ...[
                       const SizedBox(height: 5),
                       Text(
                         descripcion!,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color:  ColoresApp.textoSecundario,
-                          height: 1.45,
-                        ),
-                        maxLines:  2,
-                        overflow:  TextOverflow.ellipsis,
+                              color: ColoresApp.textoSecundario,
+                              height: 1.45,
+                            ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                     if (lugar != null) ...[
@@ -114,7 +115,7 @@ class TarjetaEvento extends StatelessWidget {
 class _FilaSuperior extends StatelessWidget {
   const _FilaSuperior({required this.estatus, this.horario});
 
-  final String  estatus;
+  final String estatus;
   final String? horario;
 
   @override
@@ -128,9 +129,9 @@ class _FilaSuperior extends StatelessWidget {
           Text(
             horario!,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color:      ColoresApp.textoSecundario,
-              fontWeight: FontWeight.w500,
-            ),
+                  color: ColoresApp.textoSecundario,
+                  fontWeight: FontWeight.w500,
+                ),
           ),
       ],
     );
@@ -147,23 +148,23 @@ class _BotonPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap:          alPresionar,
-        borderRadius:   BorderRadius.circular(10),
-        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        onTap: alPresionar,
+        borderRadius: BorderRadius.circular(10),
+        splashColor: ColoresApp.blanco.withValues(alpha: 0.3),
         highlightColor: ColoresApp.blanco.withValues(alpha: 0.1),
         child: Ink(
           decoration: BoxDecoration(
-            gradient:     ColoresApp.degradadoPrincipal,
+            gradient: ColoresApp.degradadoPrincipal,
             borderRadius: BorderRadius.circular(10),
           ),
           padding: const EdgeInsets.all(8),
           child: const Icon(
             Icons.tune_rounded,
             color: ColoresApp.blanco,
-            size:  16,
+            size: 16,
           ),
         ),
       ),
@@ -185,7 +186,7 @@ class _FilaLugar extends StatelessWidget {
       children: [
         Icon(
           Icons.location_on_outlined,
-          size:  14,
+          size: 14,
           color: colorLugar ?? ColoresApp.textoSecundario,
         ),
         const SizedBox(width: 4),
@@ -193,8 +194,8 @@ class _FilaLugar extends StatelessWidget {
           child: Text(
             lugar,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: colorLugar ?? ColoresApp.textoSecundario,
-            ),
+                  color: colorLugar ?? ColoresApp.textoSecundario,
+                ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -210,7 +211,7 @@ class _FilaContador extends StatelessWidget {
   const _FilaContador({required this.texto, required this.color});
 
   final String texto;
-  final Color  color;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +219,7 @@ class _FilaContador extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width:  8,
+          width: 8,
           height: 8,
           decoration: BoxDecoration(
             color: color,
@@ -229,9 +230,9 @@ class _FilaContador extends StatelessWidget {
         Text(
           texto,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color:      color,
-            fontWeight: FontWeight.w700,
-          ),
+                color: color,
+                fontWeight: FontWeight.w700,
+              ),
         ),
       ],
     );

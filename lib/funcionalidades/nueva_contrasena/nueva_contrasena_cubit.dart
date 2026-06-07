@@ -5,7 +5,8 @@ import '../autenticacion/autenticacion_repositorio.dart';
 import 'nueva_contrasena_estado.dart';
 
 class NuevaContrasenaCubit extends Cubit<NuevaContrasenaEstado> {
-  NuevaContrasenaCubit(this._repositorio) : super(const NuevaContrasenaInicial());
+  NuevaContrasenaCubit(this._repositorio)
+      : super(const NuevaContrasenaInicial());
 
   final AutenticacionRepositorio _repositorio;
 
@@ -14,11 +15,13 @@ class NuevaContrasenaCubit extends Cubit<NuevaContrasenaEstado> {
     required String confirmacion,
   }) async {
     if (nuevaClave.length < 6) {
-      emit(const NuevaContrasenaError(mensaje: 'La contraseña debe tener al menos 6 caracteres.'));
+      emit(const NuevaContrasenaError(
+          mensaje: 'La contraseña debe tener al menos 6 caracteres.'));
       return;
     }
     if (nuevaClave != confirmacion) {
-      emit(const NuevaContrasenaError(mensaje: 'Las contraseñas no coinciden.'));
+      emit(
+          const NuevaContrasenaError(mensaje: 'Las contraseñas no coinciden.'));
       return;
     }
     emit(const NuevaContrasenaGuardando());

@@ -9,19 +9,19 @@ import 'package:uniasist/funcionalidades/eventos/evento.dart';
 import '../../helpers.dart';
 
 Evento _eventoConQr(bool permiteQrEvento) => Evento(
-      id:                      eventoEjemplo.id,
-      titulo:                  eventoEjemplo.titulo,
-      modoRegistro:            eventoEjemplo.modoRegistro,
-      estatus:                 eventoEjemplo.estatus,
-      creadoEn:                eventoEjemplo.creadoEn,
-      actualizadoEn:           eventoEjemplo.actualizadoEn,
-      permiteQrEvento:         permiteQrEvento,
-      permiteQrUsuario:        eventoEjemplo.permiteQrUsuario,
-      permiteManualAdmin:      eventoEjemplo.permiteManualAdmin,
-      requiereCicloCompleto:   eventoEjemplo.requiereCicloCompleto,
+      id: eventoEjemplo.id,
+      titulo: eventoEjemplo.titulo,
+      modoRegistro: eventoEjemplo.modoRegistro,
+      estatus: eventoEjemplo.estatus,
+      creadoEn: eventoEjemplo.creadoEn,
+      actualizadoEn: eventoEjemplo.actualizadoEn,
+      permiteQrEvento: permiteQrEvento,
+      permiteQrUsuario: eventoEjemplo.permiteQrUsuario,
+      permiteManualAdmin: eventoEjemplo.permiteManualAdmin,
+      requiereCicloCompleto: eventoEjemplo.requiereCicloCompleto,
       permiteSalidaAnticipada: eventoEjemplo.permiteSalidaAnticipada,
-      marcarAusentesAuto:      eventoEjemplo.marcarAusentesAuto,
-      permiteForaneos:         eventoEjemplo.permiteForaneos,
+      marcarAusentesAuto: eventoEjemplo.marcarAusentesAuto,
+      permiteForaneos: eventoEjemplo.permiteForaneos,
     );
 
 void main() {
@@ -216,4 +216,3 @@ void main() {
     );
   });
 }
-

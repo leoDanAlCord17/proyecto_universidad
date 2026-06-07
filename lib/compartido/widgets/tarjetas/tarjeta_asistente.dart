@@ -15,8 +15,8 @@ class TarjetaAsistente extends StatelessWidget {
     this.urlFoto,
     this.textoBoton,
     this.alPresionarBoton,
-    this.varianteBoton      = VarianteBoton.primario,
-    this.estaCargandoBoton  = false,
+    this.varianteBoton = VarianteBoton.primario,
+    this.estaCargandoBoton = false,
     this.colorNombre,
     this.colorDetalle,
     this.accionTrailing,
@@ -55,7 +55,7 @@ class TarjetaAsistente extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TarjetaApp(
-      variante:    VarianteTarjeta.normal,
+      variante: VarianteTarjeta.normal,
       alPresionar: alPresionar,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -64,13 +64,15 @@ class TarjetaAsistente extends StatelessWidget {
             children: [
               AvatarUsuario(iniciales: iniciales, urlFoto: urlFoto),
               const SizedBox(width: 12),
-              Expanded(child: _InfoAsistente(
-                nombre:       nombre,
-                detalle:      detalle,
-                subtitulo:    subtitulo,
-                colorNombre:  colorNombre,
-                colorDetalle: colorDetalle,
-              ),),
+              Expanded(
+                child: _InfoAsistente(
+                  nombre: nombre,
+                  detalle: detalle,
+                  subtitulo: subtitulo,
+                  colorNombre: colorNombre,
+                  colorDetalle: colorDetalle,
+                ),
+              ),
               const SizedBox(width: 8),
               accionTrailing ?? InsigniaEstado(estatus: estatus),
             ],
@@ -78,9 +80,9 @@ class TarjetaAsistente extends StatelessWidget {
           if (textoBoton != null) ...[
             const SizedBox(height: 12),
             BotonApp(
-              texto:        textoBoton!,
-              alPresionar:  estaCargandoBoton ? null : alPresionarBoton,
-              variante:     varianteBoton,
+              texto: textoBoton!,
+              alPresionar: estaCargandoBoton ? null : alPresionarBoton,
+              variante: varianteBoton,
               estaCargando: estaCargandoBoton,
             ),
           ],
@@ -99,11 +101,11 @@ class _InfoAsistente extends StatelessWidget {
     this.colorDetalle,
   });
 
-  final String  nombre;
+  final String nombre;
   final String? detalle;
   final String? subtitulo;
-  final Color?  colorNombre;
-  final Color?  colorDetalle;
+  final Color? colorNombre;
+  final Color? colorDetalle;
 
   @override
   Widget build(BuildContext context) {
@@ -114,17 +116,17 @@ class _InfoAsistente extends StatelessWidget {
         Text(
           nombre,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color:      colorNombre,
-            fontWeight: FontWeight.w700,
-          ),
+                color: colorNombre,
+                fontWeight: FontWeight.w700,
+              ),
         ),
         if (detalle != null) ...[
           const SizedBox(height: 2),
           Text(
             detalle!,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: colorDetalle,
-            ),
+                  color: colorDetalle,
+                ),
           ),
         ],
         if (subtitulo != null) ...[
@@ -132,9 +134,9 @@ class _InfoAsistente extends StatelessWidget {
           Text(
             subtitulo!,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontSize: 11,
-              color:    colorDetalle?.withValues(alpha: 0.7),
-            ),
+                  fontSize: 11,
+                  color: colorDetalle?.withValues(alpha: 0.7),
+                ),
           ),
         ],
       ],

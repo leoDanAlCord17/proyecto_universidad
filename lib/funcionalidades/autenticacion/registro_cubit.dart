@@ -7,7 +7,6 @@ import 'autenticacion_repositorio.dart';
 import 'registro_estado.dart';
 
 class RegistroCubit extends Cubit<RegistroEstado> {
-
   RegistroCubit(this._repositorio) : super(RegistroInicial());
   final AutenticacionRepositorio _repositorio;
 

@@ -26,17 +26,18 @@ final class RolesCargados extends RolesEstado {
     this.conteoUsuarios = const {},
   });
 
-  final List<Rol>        roles;
-  final List<Rol>        rolesFiltrados;
-  final bool             hayMas;
+  final List<Rol> roles;
+  final List<Rol> rolesFiltrados;
+  final bool hayMas;
+
   /// Mapa rolId → cantidad de usuarios activos con ese rol asignado.
   final Map<String, int> conteoUsuarios;
 
   RolesCargados copiarCon({List<Rol>? rolesFiltrados, bool? hayMas}) =>
       RolesCargados(
-        roles:          roles,
+        roles: roles,
         rolesFiltrados: rolesFiltrados ?? this.rolesFiltrados,
-        hayMas:         hayMas         ?? this.hayMas,
+        hayMas: hayMas ?? this.hayMas,
         conteoUsuarios: conteoUsuarios,
       );
 
@@ -52,8 +53,8 @@ final class RolesCargandoMas extends RolesEstado {
     required this.conteoUsuarios,
   });
 
-  final List<Rol>        roles;
-  final List<Rol>        rolesFiltrados;
+  final List<Rol> roles;
+  final List<Rol> rolesFiltrados;
   final Map<String, int> conteoUsuarios;
 
   @override

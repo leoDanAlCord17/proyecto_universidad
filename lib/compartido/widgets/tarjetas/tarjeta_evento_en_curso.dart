@@ -18,23 +18,25 @@ class TarjetaEventoEnCurso extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final evento          = eventoEnCurso;
-    final titulo          = evento.lugar != null ? '${evento.titulo} · ${evento.lugar}' : evento.titulo;
-    final authEstado      = context.read<AuthCubit>().state;
-    final tienePanel      = authEstado is Autenticado &&
+    final evento = eventoEnCurso;
+    final titulo = evento.lugar != null
+        ? '${evento.titulo} · ${evento.lugar}'
+        : evento.titulo;
+    final authEstado = context.read<AuthCubit>().state;
+    final tienePanel = authEstado is Autenticado &&
         authEstado.usuario.tienePermiso(Permisos.eventosPanelControl);
-    final esColaborador   = evento.esColaborador;
+    final esColaborador = evento.esColaborador;
 
     return Container(
       decoration: BoxDecoration(
-        color:        ColoresApp.acentoClaro,
+        color: ColoresApp.acentoClaro,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: ColoresApp.acentoBorde, width: 1),
         boxShadow: const [
           BoxShadow(
-            color:      ColoresApp.sombraAcento,
+            color: ColoresApp.sombraAcento,
             blurRadius: 16,
-            offset:     Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
@@ -56,9 +58,9 @@ class TarjetaEventoEnCurso extends StatelessWidget {
                         Text(
                           evento.rangoHorario,
                           style: const TextStyle(
-                            fontSize:   13,
+                            fontSize: 13,
                             fontWeight: FontWeight.w500,
-                            color:      ColoresApp.textoTerciario,
+                            color: ColoresApp.textoTerciario,
                           ),
                         ),
                     ],
@@ -67,15 +69,15 @@ class TarjetaEventoEnCurso extends StatelessWidget {
                   Text(
                     titulo,
                     style: const TextStyle(
-                      fontSize:   20,
+                      fontSize: 20,
                       fontWeight: FontWeight.w800,
-                      height:     1.2,
+                      height: 1.2,
                     ),
                   ),
                   if (tienePanel) ...[
                     const SizedBox(height: 10),
                     _ContadorPresentes(
-                      presentes:   evento.totalPresentes,
+                      presentes: evento.totalPresentes,
                       registrados: evento.totalRegistrados,
                     ),
                   ],
@@ -84,7 +86,10 @@ class TarjetaEventoEnCurso extends StatelessWidget {
             ),
             if (tienePanel) _BarraProgreso(valor: evento.progreso),
             const SizedBox(height: 14),
-            _FilaBotones(eventoEnCurso: evento, tienePanel: tienePanel, esColaborador: esColaborador),
+            _FilaBotones(
+                eventoEnCurso: evento,
+                tienePanel: tienePanel,
+                esColaborador: esColaborador),
             const SizedBox(height: 16),
           ],
         ),
@@ -103,15 +108,15 @@ class _ChipEnCurso extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
-        color:        ColoresApp.verdeClaro,
+        color: ColoresApp.verdeClaro,
         borderRadius: BorderRadius.circular(20),
       ),
       child: const Text(
         'En curso',
         style: TextStyle(
-          fontSize:   12,
+          fontSize: 12,
           fontWeight: FontWeight.w700,
-          color:      ColoresApp.verde,
+          color: ColoresApp.verde,
         ),
       ),
     );
@@ -134,7 +139,7 @@ class _ContadorPresentes extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width:  9,
+          width: 9,
           height: 9,
           decoration: const BoxDecoration(
             color: ColoresApp.verde,
@@ -150,17 +155,17 @@ class _ContadorPresentes extends StatelessWidget {
                     ? '$presentes / $registrados '
                     : '$presentes ',
                 style: const TextStyle(
-                  fontSize:   14,
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color:      ColoresApp.verde,
+                  color: ColoresApp.verde,
                 ),
               ),
               const TextSpan(
                 text: 'presentes',
                 style: TextStyle(
-                  fontSize:   14,
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color:      ColoresApp.textoSecundario,
+                  color: ColoresApp.textoSecundario,
                 ),
               ),
             ],
@@ -213,30 +218,43 @@ class _FilaBotones extends StatelessWidget {
   });
 
   final EventoEnCurso eventoEnCurso;
-  final bool          tienePanel;
-  final bool          esColaborador;
+  final bool tienePanel;
+  final bool esColaborador;
 
-  List<_DatoBoton> _botonesAccion(BuildContext context, {required bool conDetalles}) {
+  List<_DatoBoton> _botonesAccion(BuildContext context,
+      {required bool conDetalles}) {
     final evento = eventoEnCurso;
-    final id     = evento.id;
+    final id = evento.id;
     return [
       if (evento.permiteQrUsuario)
-        _DatoBoton('Escanear\n QR', () => context.push(Rutas.escanearQrUsuarioUrl(id))),
+        _DatoBoton('Escanear\n QR',
+            () => context.push(Rutas.escanearQrUsuarioUrl(id))),
       if (evento.permiteQrEvento)
-        _DatoBoton('QR \nevento', () => ModalQrEvento.mostrar(context, eventoId: id, horaFin: evento.horaFin)),
+        _DatoBoton(
+            'QR \nevento',
+            () => ModalQrEvento.mostrar(context,
+                eventoId: id, horaFin: evento.horaFin)),
       if (evento.permiteForaneos)
-        _DatoBoton('Usuario\nforáneo', () => ModalForaneo.mostrar(
-          context,
-          onRegistrar: ({required primerNombre, required primerApellido, required cedula, contacto}) =>
-              context.read<EventosEnCursoCubit>().registrarForaneo(
-                eventoId:       id,
-                primerNombre:   primerNombre,
-                primerApellido: primerApellido,
-                cedula:         cedula,
-                contacto:       contacto,
-              ),
-        ),),
-      _DatoBoton('Buscar\nusuario', () => context.push(Rutas.buscarAsistenteUrl(id))),
+        _DatoBoton(
+          'Usuario\nforáneo',
+          () => ModalForaneo.mostrar(
+            context,
+            onRegistrar: (
+                    {required primerNombre,
+                    required primerApellido,
+                    required cedula,
+                    contacto}) =>
+                context.read<EventosEnCursoCubit>().registrarForaneo(
+                      eventoId: id,
+                      primerNombre: primerNombre,
+                      primerApellido: primerApellido,
+                      cedula: cedula,
+                      contacto: contacto,
+                    ),
+          ),
+        ),
+      _DatoBoton(
+          'Buscar\nusuario', () => context.push(Rutas.buscarAsistenteUrl(id))),
       if (conDetalles)
         _DatoBoton('Detalles', () => context.push(Rutas.panelControlUrl(id))),
     ];
@@ -275,10 +293,10 @@ class _EtiquetasModoRegistro extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final evento    = eventoEnCurso;
+    final evento = eventoEnCurso;
     final etiquetas = <String>[
       if (evento.modoRegistro == ModoRegistro.administrador) 'Manual',
-      if (evento.permiteQrEvento)  'Auto-Registro',
+      if (evento.permiteQrEvento) 'Auto-Registro',
       if (evento.permiteQrUsuario) 'Qr-Registro',
     ];
 
@@ -305,16 +323,16 @@ class _ChipModo extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
-        color:        Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(20),
-        border:       Border.all(color: ColoresApp.acentoBorde, width: 1),
+        border: Border.all(color: ColoresApp.acentoBorde, width: 1),
       ),
       child: Text(
         texto,
         style: const TextStyle(
-          fontSize:   12,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
-          color:      ColoresApp.acento,
+          color: ColoresApp.acento,
         ),
       ),
     );
@@ -323,7 +341,7 @@ class _ChipModo extends StatelessWidget {
 
 class _DatoBoton {
   const _DatoBoton(this.texto, this.accion);
-  final String       texto;
+  final String texto;
   final VoidCallback accion;
 }
 
@@ -335,15 +353,15 @@ class _BotonAccion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        ColoresApp.acento,
+      color: ColoresApp.acento,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap:          dato.accion,
-        borderRadius:   BorderRadius.circular(12),
-        splashColor:    ColoresApp.blanco.withValues(alpha: 0.25),
+        onTap: dato.accion,
+        borderRadius: BorderRadius.circular(12),
+        splashColor: ColoresApp.blanco.withValues(alpha: 0.25),
         highlightColor: ColoresApp.blanco.withValues(alpha: 0.1),
         child: SizedBox(
-          width:  88,
+          width: 88,
           height: 58,
           child: Center(
             child: Padding(
@@ -352,10 +370,10 @@ class _BotonAccion extends StatelessWidget {
                 dato.texto,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color:      ColoresApp.blanco,
-                  fontSize:   12,
+                  color: ColoresApp.blanco,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  height:     1.35,
+                  height: 1.35,
                 ),
               ),
             ),

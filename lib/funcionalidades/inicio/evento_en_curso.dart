@@ -3,21 +3,21 @@ import 'package:equatable/equatable.dart';
 import '../../compartido/constantes.dart';
 
 class EventoEnCurso extends Equatable {
-
   factory EventoEnCurso.desdeJson(Map<String, dynamic> json) => EventoEnCurso(
-    id:               json['id']               as String,
-    titulo:           json['titulo']            as String,
-    lugar:            json['lugar']             as String?,
-    horaInicio:       json['hora_inicio']       as String?,
-    horaFin:          json['hora_fin']          as String?,
-    permiteQrEvento:  (json['permite_qr_evento']  as bool?) ?? true,
-    permiteQrUsuario: (json['permite_qr_usuario'] as bool?) ?? true,
-    permiteForaneos:  (json['permite_foraneos']   as bool?) ?? false,
-    modoRegistro:     json['modo_registro']     as String? ?? ModoRegistro.administrador,
-    alcance:          json['alcance']           as String? ?? AlcanceEvento.general,
-    totalPresentes:   0,
-    totalRegistrados: 0,
-  );
+        id: json['id'] as String,
+        titulo: json['titulo'] as String,
+        lugar: json['lugar'] as String?,
+        horaInicio: json['hora_inicio'] as String?,
+        horaFin: json['hora_fin'] as String?,
+        permiteQrEvento: (json['permite_qr_evento'] as bool?) ?? true,
+        permiteQrUsuario: (json['permite_qr_usuario'] as bool?) ?? true,
+        permiteForaneos: (json['permite_foraneos'] as bool?) ?? false,
+        modoRegistro:
+            json['modo_registro'] as String? ?? ModoRegistro.administrador,
+        alcance: json['alcance'] as String? ?? AlcanceEvento.general,
+        totalPresentes: 0,
+        totalRegistrados: 0,
+      );
   const EventoEnCurso({
     required this.id,
     required this.titulo,
@@ -34,19 +34,19 @@ class EventoEnCurso extends Equatable {
     this.esColaborador = false,
   });
 
-  final String  id;
-  final String  titulo;
+  final String id;
+  final String titulo;
   final String? lugar;
   final String? horaInicio;
   final String? horaFin;
-  final bool    permiteQrEvento;
-  final bool    permiteQrUsuario;
-  final bool    permiteForaneos;
-  final String  modoRegistro;
-  final String  alcance;
-  final int     totalPresentes;
-  final int     totalRegistrados;
-  final bool    esColaborador;
+  final bool permiteQrEvento;
+  final bool permiteQrUsuario;
+  final bool permiteForaneos;
+  final String modoRegistro;
+  final String alcance;
+  final int totalPresentes;
+  final int totalRegistrados;
+  final bool esColaborador;
 
   bool get esGeneral => alcance == AlcanceEvento.general;
 
@@ -59,7 +59,7 @@ class EventoEnCurso extends Equatable {
   String get rangoHorario {
     if (horaInicio == null) return '';
     final inicio = _recortarSegundos(horaInicio!);
-    final fin    = horaFin != null ? ' – ${_recortarSegundos(horaFin!)}' : '';
+    final fin = horaFin != null ? ' – ${_recortarSegundos(horaFin!)}' : '';
     return '$inicio$fin';
   }
 
@@ -69,30 +69,40 @@ class EventoEnCurso extends Equatable {
   }
 
   EventoEnCurso copyWith({
-    int?  totalPresentes,
-    int?  totalRegistrados,
+    int? totalPresentes,
+    int? totalRegistrados,
     bool? esColaborador,
   }) =>
       EventoEnCurso(
-        id:               id,
-        titulo:           titulo,
-        lugar:            lugar,
-        horaInicio:       horaInicio,
-        horaFin:          horaFin,
-        permiteQrEvento:  permiteQrEvento,
+        id: id,
+        titulo: titulo,
+        lugar: lugar,
+        horaInicio: horaInicio,
+        horaFin: horaFin,
+        permiteQrEvento: permiteQrEvento,
         permiteQrUsuario: permiteQrUsuario,
-        permiteForaneos:  permiteForaneos,
-        modoRegistro:     modoRegistro,
-        alcance:          alcance,
-        totalPresentes:   totalPresentes   ?? this.totalPresentes,
+        permiteForaneos: permiteForaneos,
+        modoRegistro: modoRegistro,
+        alcance: alcance,
+        totalPresentes: totalPresentes ?? this.totalPresentes,
         totalRegistrados: totalRegistrados ?? this.totalRegistrados,
-        esColaborador:    esColaborador    ?? this.esColaborador,
+        esColaborador: esColaborador ?? this.esColaborador,
       );
 
   @override
   List<Object?> get props => [
-    id, titulo, lugar, horaInicio, horaFin,
-    permiteQrEvento, permiteQrUsuario, permiteForaneos,
-    modoRegistro, alcance, totalPresentes, totalRegistrados, esColaborador,
-  ];
+        id,
+        titulo,
+        lugar,
+        horaInicio,
+        horaFin,
+        permiteQrEvento,
+        permiteQrUsuario,
+        permiteForaneos,
+        modoRegistro,
+        alcance,
+        totalPresentes,
+        totalRegistrados,
+        esColaborador,
+      ];
 }

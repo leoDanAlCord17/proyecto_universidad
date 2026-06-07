@@ -14,9 +14,9 @@ class UsuarioRechazadoPantalla extends StatelessWidget {
     final estilos = Theme.of(context).textTheme;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -33,7 +33,7 @@ class UsuarioRechazadoPantalla extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: estilos.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color:      ColoresApp.textoPrimario,
+                    color: ColoresApp.textoPrimario,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -41,13 +41,13 @@ class UsuarioRechazadoPantalla extends StatelessWidget {
                   'Tu solicitud de acceso fue rechazada por el administrador. Puedes volver a intentarlo completando tu perfil de nuevo.',
                   textAlign: TextAlign.center,
                   style: estilos.bodyMedium?.copyWith(
-                    color:  ColoresApp.textoSecundario,
+                    color: ColoresApp.textoSecundario,
                     height: 1.5,
                   ),
                 ),
                 const Spacer(),
                 BotonApp(
-                  texto:       'Intentar de nuevo',
+                  texto: 'Intentar de nuevo',
                   alPresionar: () =>
                       context.read<AuthCubit>().reiniciarParaReintento(),
                 ),
@@ -58,9 +58,9 @@ class UsuarioRechazadoPantalla extends StatelessWidget {
                     onPressed: () => context.read<AuthCubit>().cerrarSesion(),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: ColoresApp.textoSecundario,
-                      side:    const BorderSide(color: ColoresApp.bordeMedio),
+                      side: const BorderSide(color: ColoresApp.bordeMedio),
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape:   RoundedRectangleBorder(
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
@@ -82,16 +82,16 @@ class _Icono extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:       96,
-      height:      96,
-      decoration:  BoxDecoration(
-        color:        ColoresApp.rojoClaro,
+      width: 96,
+      height: 96,
+      decoration: BoxDecoration(
+        color: ColoresApp.rojoClaro,
         borderRadius: BorderRadius.circular(24),
       ),
       child: const Icon(
         Icons.person_off_outlined,
         color: ColoresApp.rojo,
-        size:  48,
+        size: 48,
       ),
     );
   }

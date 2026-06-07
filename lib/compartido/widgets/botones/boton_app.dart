@@ -26,9 +26,9 @@ class BotonApp extends StatelessWidget {
   final bool estaCargando;
   final double ancho;
 
-  static const _colorAcento  = ColoresApp.acento;
+  static const _colorAcento = ColoresApp.acento;
   static const _colorAcento2 = ColoresApp.acento2;
-  static const _colorBorde   = ColoresApp.acentoBorde;
+  static const _colorBorde = ColoresApp.acentoBorde;
 
   @override
   Widget build(BuildContext context) {
@@ -42,19 +42,19 @@ class BotonApp extends StatelessWidget {
   Widget _construirBoton() {
     return switch (variante) {
       VarianteBoton.primario => _BotonPrimario(
-          texto:       texto,
-          icono:       icono,
+          texto: texto,
+          icono: icono,
           alPresionar: estaCargando ? null : alPresionar,
           estaCargando: estaCargando,
         ),
       VarianteBoton.ghost => _BotonGhost(
-          texto:       texto,
-          icono:       icono,
+          texto: texto,
+          icono: icono,
           alPresionar: estaCargando ? null : alPresionar,
         ),
       VarianteBoton.rojo => _BotonRojo(
-          texto:       texto,
-          icono:       icono,
+          texto: texto,
+          icono: icono,
           alPresionar: estaCargando ? null : alPresionar,
         ),
     };
@@ -79,23 +79,23 @@ class _ContenidoBoton extends StatelessWidget {
       return Text(
         texto,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-          color:      colorTexto,
-          fontSize:   15,
-        ),
+              color: colorTexto,
+              fontSize: 15,
+            ),
       );
     }
     return Row(
-      mainAxisSize:       MainAxisSize.min,
-      mainAxisAlignment:  MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(icono, size: 17, color: colorTexto),
         const SizedBox(width: 8),
         Text(
           texto,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color:    colorTexto,
-            fontSize: 15,
-          ),
+                color: colorTexto,
+                fontSize: 15,
+              ),
         ),
       ],
     );
@@ -124,17 +124,17 @@ class _BotonPrimario extends StatelessWidget {
             ? null
             : const LinearGradient(
                 colors: [BotonApp._colorAcento, BotonApp._colorAcento2],
-                begin:  Alignment.topLeft,
-                end:    Alignment.bottomRight,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-        color:        alPresionar == null ? ColoresApp.superficieTerciar : null,
+        color: alPresionar == null ? ColoresApp.superficieTerciar : null,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ElevatedButton(
         onPressed: alPresionar,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
-          shadowColor:     Colors.transparent,
+          shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -143,16 +143,17 @@ class _BotonPrimario extends StatelessWidget {
             ? Semantics(
                 label: 'Cargando',
                 child: const SizedBox(
-                  width: 22, height: 22,
+                  width: 22,
+                  height: 22,
                   child: CircularProgressIndicator(
-                    color:       ColoresApp.blanco,
+                    color: ColoresApp.blanco,
                     strokeWidth: 2.5,
                   ),
                 ),
               )
             : _ContenidoBoton(
-                texto:      texto,
-                icono:      icono,
+                texto: texto,
+                icono: icono,
                 colorTexto: ColoresApp.blanco,
               ),
       ),
@@ -184,8 +185,8 @@ class _BotonGhost extends StatelessWidget {
         ),
       ),
       child: _ContenidoBoton(
-        texto:      texto,
-        icono:      icono,
+        texto: texto,
+        icono: icono,
         colorTexto: BotonApp._colorAcento,
       ),
     );
@@ -210,14 +211,14 @@ class _BotonRojo extends StatelessWidget {
       onPressed: alPresionar,
       style: ElevatedButton.styleFrom(
         backgroundColor: ColoresApp.rojo,
-        shadowColor:     Colors.transparent,
+        shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
       child: _ContenidoBoton(
-        texto:      texto,
-        icono:      icono,
+        texto: texto,
+        icono: icono,
         colorTexto: ColoresApp.blanco,
       ),
     );

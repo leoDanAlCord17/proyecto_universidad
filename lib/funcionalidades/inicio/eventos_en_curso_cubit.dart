@@ -23,11 +23,11 @@ class EventosEnCursoCubit extends Cubit<EventosEnCursoEstado> {
     String? contacto,
   }) =>
       _repositorio.registrarForaneo(
-        eventoId:       eventoId,
-        primerNombre:   primerNombre,
+        eventoId: eventoId,
+        primerNombre: primerNombre,
         primerApellido: primerApellido,
-        cedula:         cedula,
-        contacto:       contacto,
+        cedula: cedula,
+        contacto: contacto,
       );
 
   Future<void> cargar(String usuarioId) async {
@@ -65,10 +65,11 @@ class EventosEnCursoCubit extends Cubit<EventosEnCursoEstado> {
     if (indice == -1) return;
     final presentes = rows.where((r) {
       final s = r['estatus'] as String? ?? '';
-      return s == EstatusAsistencia.presente || s == EstatusAsistencia.completado;
+      return s == EstatusAsistencia.presente ||
+          s == EstatusAsistencia.completado;
     }).length;
     final esGeneral = estado.eventos[indice].esGeneral;
-    final total     = esGeneral
+    final total = esGeneral
         ? 0
         : rows.where((r) => r['estatus'] != EstatusAsistencia.anulado).length;
     final actualizados = estado.eventos.map((e) {

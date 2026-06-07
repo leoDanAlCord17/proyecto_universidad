@@ -23,9 +23,9 @@ class BarraEstadistica extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final barra       = colorBarra       ?? ColoresApp.verde;
-    final colorTexto  = colorEtiqueta    ?? ColoresApp.textoPrimario;
-    final colorPct    = colorPorcentaje  ?? ColoresApp.verde;
+    final barra = colorBarra ?? ColoresApp.verde;
+    final colorTexto = colorEtiqueta ?? ColoresApp.textoPrimario;
+    final colorPct = colorPorcentaje ?? ColoresApp.verde;
     final porcentajeSeguro = porcentaje.clamp(0.0, 1.0);
 
     return Column(
@@ -38,15 +38,15 @@ class BarraEstadistica extends StatelessWidget {
             Text(
               etiqueta,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: colorTexto,
-              ),
+                    color: colorTexto,
+                  ),
             ),
             Text(
               '${(porcentajeSeguro * 100).round()}%',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color:      colorPct,
-                fontWeight: FontWeight.w700,
-              ),
+                    color: colorPct,
+                    fontWeight: FontWeight.w700,
+                  ),
             ),
           ],
         ),
@@ -54,10 +54,10 @@ class BarraEstadistica extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(30),
           child: LinearProgressIndicator(
-            value:            porcentajeSeguro,
-            minHeight:        8,
-            backgroundColor:  ColoresApp.superficieTerciar,
-            valueColor:       AlwaysStoppedAnimation<Color>(barra),
+            value: porcentajeSeguro,
+            minHeight: 8,
+            backgroundColor: ColoresApp.superficieTerciar,
+            valueColor: AlwaysStoppedAnimation<Color>(barra),
           ),
         ),
       ],

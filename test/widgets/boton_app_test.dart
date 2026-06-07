@@ -19,8 +19,8 @@ void main() {
         await tester.pumpWidget(
           enMarcoApp(
             BotonApp(
-              texto:        'Cargar',
-              alPresionar:  () {},
+              texto: 'Cargar',
+              alPresionar: () {},
               estaCargando: true,
             ),
           ),
@@ -35,7 +35,7 @@ void main() {
       await tester.pumpWidget(
         enMarcoApp(
           BotonApp(
-            texto:       'Presionar',
+            texto: 'Presionar',
             alPresionar: () => presionado = true,
           ),
         ),
@@ -52,8 +52,8 @@ void main() {
         await tester.pumpWidget(
           enMarcoApp(
             BotonApp(
-              texto:        'Presionar',
-              alPresionar:  () => presionado = true,
+              texto: 'Presionar',
+              alPresionar: () => presionado = true,
               estaCargando: true,
             ),
           ),
@@ -73,9 +73,9 @@ void main() {
       await tester.pumpWidget(
         enMarcoApp(
           BotonApp(
-            texto:       'Con ícono',
+            texto: 'Con ícono',
             alPresionar: () {},
-            icono:       Icons.check,
+            icono: Icons.check,
           ),
         ),
       );
@@ -87,9 +87,9 @@ void main() {
       await tester.pumpWidget(
         enMarcoApp(
           BotonApp(
-            texto:       'Ghost',
+            texto: 'Ghost',
             alPresionar: () {},
-            variante:    VarianteBoton.ghost,
+            variante: VarianteBoton.ghost,
           ),
         ),
       );
@@ -100,9 +100,9 @@ void main() {
       await tester.pumpWidget(
         enMarcoApp(
           BotonApp(
-            texto:       'Eliminar',
+            texto: 'Eliminar',
             alPresionar: () {},
-            variante:    VarianteBoton.rojo,
+            variante: VarianteBoton.rojo,
           ),
         ),
       );

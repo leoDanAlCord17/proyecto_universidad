@@ -19,28 +19,31 @@ final class CrearTipoEventoCargando extends CrearTipoEventoEstado {
 final class CrearTipoEventoCargado extends CrearTipoEventoEstado {
   const CrearTipoEventoCargado({
     this.tipoEventoId,
-    this.nombreInicial      = '',
+    this.nombreInicial = '',
     this.descripcionInicial = '',
-    this.estaGuardando      = false,
+    this.estaGuardando = false,
   });
 
   final String? tipoEventoId;
-  final String  nombreInicial;
-  final String  descripcionInicial;
-  final bool    estaGuardando;
+  final String nombreInicial;
+  final String descripcionInicial;
+  final bool estaGuardando;
 
   CrearTipoEventoCargado copiarCon({bool? estaGuardando}) =>
       CrearTipoEventoCargado(
-        tipoEventoId:       tipoEventoId,
-        nombreInicial:      nombreInicial,
+        tipoEventoId: tipoEventoId,
+        nombreInicial: nombreInicial,
         descripcionInicial: descripcionInicial,
-        estaGuardando:      estaGuardando ?? this.estaGuardando,
+        estaGuardando: estaGuardando ?? this.estaGuardando,
       );
 
   @override
   List<Object?> get props => [
-    tipoEventoId, nombreInicial, descripcionInicial, estaGuardando,
-  ];
+        tipoEventoId,
+        nombreInicial,
+        descripcionInicial,
+        estaGuardando,
+      ];
 }
 
 final class CrearTipoEventoGuardado extends CrearTipoEventoEstado {

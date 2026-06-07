@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:uniasist/configuracion/colores_app.dart';
 
 class CampoTextoApp extends StatefulWidget {
-
   const CampoTextoApp({
     super.key,
     required this.etiqueta,

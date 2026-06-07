@@ -19,13 +19,13 @@ class CrearUsuarioPantalla extends StatefulWidget {
 }
 
 class _CrearUsuarioPantallaState extends State<CrearUsuarioPantalla> {
-  final _primerNombreController         = TextEditingController();
-  final _segundoNombreController        = TextEditingController();
-  final _primerApellidoController       = TextEditingController();
-  final _segundoApellidoController      = TextEditingController();
+  final _primerNombreController = TextEditingController();
+  final _segundoNombreController = TextEditingController();
+  final _primerApellidoController = TextEditingController();
+  final _segundoApellidoController = TextEditingController();
   final _numeroIdentificacionController = TextEditingController();
-  final _correoController               = TextEditingController();
-  final _telefonoController             = TextEditingController();
+  final _correoController = TextEditingController();
+  final _telefonoController = TextEditingController();
 
   @override
   void didChangeDependencies() {
@@ -54,17 +54,18 @@ class _CrearUsuarioPantallaState extends State<CrearUsuarioPantalla> {
       body: BlocConsumer<CrearUsuarioCubit, CrearUsuarioEstado>(
         listener: (context, estado) {
           if (estado is CrearUsuarioError) context.mostrarError(estado.mensaje);
-          if (estado is CrearUsuarioExito) context.read<AuthCubit>().verificarSesion();
+          if (estado is CrearUsuarioExito)
+            context.read<AuthCubit>().verificarSesion();
         },
         builder: (context, estado) => _CuerpoCrearUsuario(
-          primerNombreController:         _primerNombreController,
-          segundoNombreController:        _segundoNombreController,
-          primerApellidoController:       _primerApellidoController,
-          segundoApellidoController:      _segundoApellidoController,
+          primerNombreController: _primerNombreController,
+          segundoNombreController: _segundoNombreController,
+          primerApellidoController: _primerApellidoController,
+          segundoApellidoController: _segundoApellidoController,
           numeroIdentificacionController: _numeroIdentificacionController,
-          correoController:               _correoController,
-          telefonoController:             _telefonoController,
-          estaCargando:                   estado is CrearUsuarioCargando,
+          correoController: _correoController,
+          telefonoController: _telefonoController,
+          estaCargando: estado is CrearUsuarioCargando,
         ),
       ),
     );
@@ -105,45 +106,47 @@ class _CuerpoCrearUsuario extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             _FilaNombres(
-              primerNombreController:  primerNombreController,
+              primerNombreController: primerNombreController,
               segundoNombreController: segundoNombreController,
             ),
             const SizedBox(height: 20),
             _FilaApellidos(
-              primerApellidoController:  primerApellidoController,
+              primerApellidoController: primerApellidoController,
               segundoApellidoController: segundoApellidoController,
             ),
             const SizedBox(height: 20),
             CampoTextoApp(
-              etiqueta:   'Número de Identificación',
-              hintText:   'DNI / Cédula / Pasaporte',
+              etiqueta: 'Número de Identificación',
+              hintText: 'DNI / Cédula / Pasaporte',
               controller: numeroIdentificacionController,
             ),
             const SizedBox(height: 20),
             CampoTextoApp(
-              etiqueta:    'Correo Electrónico',
-              hintText:    'usuario@gmail.com',
-              controller:  correoController,
+              etiqueta: 'Correo Electrónico',
+              hintText: 'usuario@gmail.com',
+              controller: correoController,
               soloLectura: true,
             ),
             const SizedBox(height: 20),
             CampoTextoApp(
-              etiqueta:   'Teléfono',
-              hintText:   '+58 000 000 0000',
+              etiqueta: 'Teléfono',
+              hintText: '+58 000 000 0000',
               controller: telefonoController,
             ),
             const SizedBox(height: 40),
             BotonApp(
-              texto:        'Finalizar Registro',
+              texto: 'Finalizar Registro',
               estaCargando: estaCargando,
-              alPresionar:  () => context.read<CrearUsuarioCubit>().guardarPerfil(
-                primerNombre:         primerNombreController.text,
-                primerApellido:       primerApellidoController.text,
-                segundoNombre:        segundoNombreController.text,
-                segundoApellido:      segundoApellidoController.text,
-                numeroIdentificacion: numeroIdentificacionController.text,
-                telefono:             telefonoController.text,
-              ),
+              alPresionar: () => context
+                  .read<CrearUsuarioCubit>()
+                  .guardarPerfil(
+                    primerNombre: primerNombreController.text,
+                    primerApellido: primerApellidoController.text,
+                    segundoNombre: segundoNombreController.text,
+                    segundoApellido: segundoApellidoController.text,
+                    numeroIdentificacion: numeroIdentificacionController.text,
+                    telefono: telefonoController.text,
+                  ),
             ),
           ],
         ),
@@ -192,16 +195,16 @@ class _FilaNombres extends StatelessWidget {
       children: [
         Expanded(
           child: CampoTextoApp(
-            etiqueta:   'Primer Nombre',
-            hintText:   'Ej. Leo',
+            etiqueta: 'Primer Nombre',
+            hintText: 'Ej. Leo',
             controller: primerNombreController,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: CampoTextoApp(
-            etiqueta:   'Segundo Nombre',
-            hintText:   'Ej. Daniel',
+            etiqueta: 'Segundo Nombre',
+            hintText: 'Ej. Daniel',
             controller: segundoNombreController,
           ),
         ),
@@ -226,16 +229,16 @@ class _FilaApellidos extends StatelessWidget {
       children: [
         Expanded(
           child: CampoTextoApp(
-            etiqueta:   'Primer Apellido',
-            hintText:   'Ej. Alvarez',
+            etiqueta: 'Primer Apellido',
+            hintText: 'Ej. Alvarez',
             controller: primerApellidoController,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: CampoTextoApp(
-            etiqueta:   'Segundo Apellido',
-            hintText:   'Ej. Cordero',
+            etiqueta: 'Segundo Apellido',
+            hintText: 'Ej. Cordero',
             controller: segundoApellidoController,
           ),
         ),

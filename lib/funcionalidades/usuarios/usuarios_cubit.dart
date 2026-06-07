@@ -11,26 +11,28 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
 
   final UsuariosRepositorio _repositorio;
 
-  String            _busqueda = '';
-  List<UsuarioItem> _todos    = [];
-  int               _offset   = 0;
+  String _busqueda = '';
+  List<UsuarioItem> _todos = [];
+  int _offset = 0;
 
   // ── Carga inicial ──────────────────────────────────────────────────────────
 
   Future<void> cargar() async {
     _offset = 0;
-    _todos  = [];
+    _todos = [];
     emit(const UsuariosCargando());
     try {
       final resultado = await _repositorio.obtenerUsuarios(offset: 0);
       if (isClosed) return;
-      _todos   = resultado.usuarios;
-      _offset  = resultado.usuarios.length;
-      emit(UsuariosCargados(
-        usuarios:          _todos,
-        usuariosFiltrados: _aplicarFiltro(_todos, _busqueda),
-        hayMas:            resultado.hayMas,
-      ),);
+      _todos = resultado.usuarios;
+      _offset = resultado.usuarios.length;
+      emit(
+        UsuariosCargados(
+          usuarios: _todos,
+          usuariosFiltrados: _aplicarFiltro(_todos, _busqueda),
+          hayMas: resultado.hayMas,
+        ),
+      );
     } on FallaServidor catch (e) {
       if (isClosed) return;
       reportarError(e);
@@ -50,26 +52,30 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
     final estado = state;
     if (estado is! UsuariosCargados || !estado.hayMas) return;
 
-    emit(UsuariosCargandoMas(
-      usuarios:          estado.usuarios,
-      usuariosFiltrados: estado.usuariosFiltrados,
-      seleccionados:     estado.seleccionados,
-      modoSeleccion:     estado.modoSeleccion,
-    ),);
+    emit(
+      UsuariosCargandoMas(
+        usuarios: estado.usuarios,
+        usuariosFiltrados: estado.usuariosFiltrados,
+        seleccionados: estado.seleccionados,
+        modoSeleccion: estado.modoSeleccion,
+      ),
+    );
     try {
       final resultado = await _repositorio.obtenerUsuarios(offset: _offset);
       if (isClosed) return;
-      _todos   = [...estado.usuarios, ...resultado.usuarios];
+      _todos = [...estado.usuarios, ...resultado.usuarios];
       _offset += resultado.usuarios.length;
-      emit(UsuariosCargados(
-        usuarios:          _todos,
-        usuariosFiltrados: _busqueda.trim().isEmpty
-            ? _todos
-            : _aplicarFiltro(_todos, _busqueda),
-        hayMas:            resultado.hayMas,
-        seleccionados:     estado.seleccionados,
-        modoSeleccion:     estado.modoSeleccion,
-      ),);
+      emit(
+        UsuariosCargados(
+          usuarios: _todos,
+          usuariosFiltrados: _busqueda.trim().isEmpty
+              ? _todos
+              : _aplicarFiltro(_todos, _busqueda),
+          hayMas: resultado.hayMas,
+          seleccionados: estado.seleccionados,
+          modoSeleccion: estado.modoSeleccion,
+        ),
+      );
     } catch (_) {
       if (isClosed) return;
       emit(estado);
@@ -99,25 +105,27 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
     _busqueda = texto;
     final estado = state;
     final filtrados = switch (estado) {
-      UsuariosCargados()    => texto.trim().isEmpty
+      UsuariosCargados() => texto.trim().isEmpty
           ? estado.usuarios
           : _aplicarFiltro(estado.usuarios, texto),
       UsuariosCargandoMas() => texto.trim().isEmpty
           ? estado.usuarios
           : _aplicarFiltro(estado.usuarios, texto),
-      _                     => null,
+      _ => null,
     };
     if (filtrados == null) return;
     switch (estado) {
       case UsuariosCargados():
         emit(estado.copiarCon(usuariosFiltrados: filtrados));
       case UsuariosCargandoMas():
-        emit(UsuariosCargandoMas(
-          usuarios:          estado.usuarios,
-          usuariosFiltrados: filtrados,
-          seleccionados:     estado.seleccionados,
-          modoSeleccion:     estado.modoSeleccion,
-        ),);
+        emit(
+          UsuariosCargandoMas(
+            usuarios: estado.usuarios,
+            usuariosFiltrados: filtrados,
+            seleccionados: estado.seleccionados,
+            modoSeleccion: estado.modoSeleccion,
+          ),
+        );
       default:
         break;
     }
@@ -129,10 +137,12 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
   void activarSeleccion(String usuarioId) {
     final cargados = _extraerCargados(state);
     if (cargados == null) return;
-    emit(cargados.copiarCon(
-      modoSeleccion: true,
-      seleccionados: {usuarioId},
-    ),);
+    emit(
+      cargados.copiarCon(
+        modoSeleccion: true,
+        seleccionados: {usuarioId},
+      ),
+    );
   }
 
   /// Alterna la selección de un usuario. Sale del modo selección si quedan 0.
@@ -145,21 +155,25 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
     } else {
       nuevos.add(usuarioId);
     }
-    emit(cargados.copiarCon(
-      seleccionados: nuevos,
-      modoSeleccion: nuevos.isNotEmpty,
-    ),);
+    emit(
+      cargados.copiarCon(
+        seleccionados: nuevos,
+        modoSeleccion: nuevos.isNotEmpty,
+      ),
+    );
   }
 
   /// Sale del modo selección limpiando toda selección.
   void salirModoSeleccion() {
     final cargados = _extraerCargados(state);
     if (cargados == null) return;
-    emit(cargados.copiarCon(
-      modoSeleccion: false,
-      seleccionados: {},
-      limpiarError:  true,
-    ),);
+    emit(
+      cargados.copiarCon(
+        modoSeleccion: false,
+        seleccionados: {},
+        limpiarError: true,
+      ),
+    );
   }
 
   // ── Selectores para modales ────────────────────────────────────────────────
@@ -167,8 +181,8 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
   Future<List<({String id, String nombre})>> cargarRolesParaSelector() =>
       _repositorio.obtenerRolesActivos();
 
-  Future<List<({String id, String nombre, String tipo})>> cargarTagsParaSelector() =>
-      _repositorio.obtenerTagsActivos();
+  Future<List<({String id, String nombre, String tipo})>>
+      cargarTagsParaSelector() => _repositorio.obtenerTagsActivos();
 
   // ── Acciones en lote ───────────────────────────────────────────────────────
 
@@ -244,25 +258,29 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
   }
 
   UsuariosCargados? _extraerCargados(UsuariosEstado estado) => switch (estado) {
-    UsuariosCargados()         => estado,
-    UsuariosOperacionFallida() => estado.anterior,
-    UsuariosCargandoMas()      => UsuariosCargados(
-      usuarios:          estado.usuarios,
-      usuariosFiltrados: estado.usuariosFiltrados,
-      seleccionados:     estado.seleccionados,
-      modoSeleccion:     estado.modoSeleccion,
-      hayMas:            true,
-    ),
-    _                          => null,
-  };
+        UsuariosCargados() => estado,
+        UsuariosOperacionFallida() => estado.anterior,
+        UsuariosCargandoMas() => UsuariosCargados(
+            usuarios: estado.usuarios,
+            usuariosFiltrados: estado.usuariosFiltrados,
+            seleccionados: estado.seleccionados,
+            modoSeleccion: estado.modoSeleccion,
+            hayMas: true,
+          ),
+        _ => null,
+      };
 
-  List<UsuarioItem> _aplicarFiltro(List<UsuarioItem> usuarios, String busqueda) {
+  List<UsuarioItem> _aplicarFiltro(
+      List<UsuarioItem> usuarios, String busqueda) {
     if (busqueda.trim().isEmpty) return usuarios;
     final q = busqueda.toLowerCase();
-    return usuarios.where((u) =>
-        u.nombreCompleto.toLowerCase().contains(q)                        ||
-        u.correo.toLowerCase().contains(q)                                ||
-        (u.numeroIdentificacion?.toLowerCase().contains(q) ?? false),
-    ).toList();
+    return usuarios
+        .where(
+          (u) =>
+              u.nombreCompleto.toLowerCase().contains(q) ||
+              u.correo.toLowerCase().contains(q) ||
+              (u.numeroIdentificacion?.toLowerCase().contains(q) ?? false),
+        )
+        .toList();
   }
 }

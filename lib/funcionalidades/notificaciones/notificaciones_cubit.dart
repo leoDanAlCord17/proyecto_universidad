@@ -23,20 +23,21 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
     _usuarioId = usuarioId;
 
     _subContador?.cancel();
-    _subContador = _repositorio
-        .streamCantidadNoLeidas(usuarioId)
-        .listen(
-          (cantidad) {
-            final anterior = state is NotificacionesCargadas
-                ? (state as NotificacionesCargadas).notificaciones
-                : <Notificacion>[];
-            emit(NotificacionesCargadas(
-              cantidad:       cantidad,
-              notificaciones: anterior,
-            ),);
-          },
-          onError: (_) => emit(const NotificacionesCargadas(cantidad: 0, notificaciones: [])),
+    _subContador = _repositorio.streamCantidadNoLeidas(usuarioId).listen(
+      (cantidad) {
+        final anterior = state is NotificacionesCargadas
+            ? (state as NotificacionesCargadas).notificaciones
+            : <Notificacion>[];
+        emit(
+          NotificacionesCargadas(
+            cantidad: cantidad,
+            notificaciones: anterior,
+          ),
         );
+      },
+      onError: (_) =>
+          emit(const NotificacionesCargadas(cantidad: 0, notificaciones: [])),
+    );
   }
 
   /// Carga la lista completa de notificaciones (al abrir la pantalla).
@@ -50,10 +51,12 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
     emit(NotificacionesCargando());
     try {
       final lista = await _repositorio.obtenerTodas(_usuarioId!);
-      emit(NotificacionesCargadas(
-        cantidad:       cantidadActual,
-        notificaciones: lista,
-      ),);
+      emit(
+        NotificacionesCargadas(
+          cantidad: cantidadActual,
+          notificaciones: lista,
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(NotificacionesError(e.mensaje));

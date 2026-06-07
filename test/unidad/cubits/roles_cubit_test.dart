@@ -11,25 +11,25 @@ import '../../helpers.dart';
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 const _rAdmin = Rol(
-  id:          'r-1',
-  nombre:      'Administrador',
+  id: 'r-1',
+  nombre: 'Administrador',
   descripcion: 'Gestiona todo el sistema',
-  esSistema:   true,
+  esSistema: true,
 );
 const _rEstudiante = Rol(
-  id:          'r-2',
-  nombre:      'Estudiante',
+  id: 'r-2',
+  nombre: 'Estudiante',
   descripcion: 'Usuario estándar',
-  esSistema:   false,
+  esSistema: false,
 );
 const _rDocente = Rol(
-  id:          'r-3',
-  nombre:      'Docente',
+  id: 'r-3',
+  nombre: 'Docente',
   descripcion: 'Profesor del programa',
-  esSistema:   false,
+  esSistema: false,
 );
 
-const _roles   = [_rAdmin, _rEstudiante, _rDocente];
+const _roles = [_rAdmin, _rEstudiante, _rDocente];
 const _conteos = {'r-1': 10, 'r-2': 25};
 
 typedef _Resultado = ({List<Rol> roles, bool hayMas});
@@ -50,11 +50,11 @@ void main() {
   }
 
   RolesCargados cargados({bool hayMas = false}) => RolesCargados(
-    roles:          _roles,
-    rolesFiltrados: _roles,
-    hayMas:         hayMas,
-    conteoUsuarios: _conteos,
-  );
+        roles: _roles,
+        rolesFiltrados: _roles,
+        hayMas: hayMas,
+        conteoUsuarios: _conteos,
+      );
 
   // ── cargarRoles ────────────────────────────────────────────────────────────
 
@@ -75,10 +75,10 @@ void main() {
       expect: () => [
         isA<RolesCargando>(),
         isA<RolesCargados>()
-            .having((e) => e.roles.length,   'roles.length',   3)
+            .having((e) => e.roles.length, 'roles.length', 3)
             .having((e) => e.conteoUsuarios, 'conteoUsuarios', _conteos)
             .having((e) => e.rolesFiltrados, 'rolesFiltrados', _roles)
-            .having((e) => e.hayMas,         'hayMas',         false),
+            .having((e) => e.hayMas, 'hayMas', false),
       ],
     );
 
@@ -165,9 +165,9 @@ void main() {
       'texto vacío después de filtrar restaura todos los roles',
       build: build,
       seed: () => const RolesCargados(
-        roles:          _roles,
+        roles: _roles,
         rolesFiltrados: [_rAdmin],
-        hayMas:         false,
+        hayMas: false,
         conteoUsuarios: _conteos,
       ),
       act: (c) => c.filtrar(''),
@@ -209,9 +209,9 @@ void main() {
       'texto solo espacios después de filtrar restaura todos los roles',
       build: build,
       seed: () => const RolesCargados(
-        roles:          _roles,
+        roles: _roles,
         rolesFiltrados: [_rEstudiante],
-        hayMas:         false,
+        hayMas: false,
         conteoUsuarios: _conteos,
       ),
       act: (c) => c.filtrar('   '),

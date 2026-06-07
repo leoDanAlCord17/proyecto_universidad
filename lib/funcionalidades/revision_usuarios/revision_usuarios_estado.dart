@@ -27,31 +27,31 @@ final class RevisionUsuariosCargados extends RevisionUsuariosEstado {
   });
 
   final List<RevisionUsuarioItem> usuarios;
-  final bool                      hayMas;
-  final String?                   usuarioIdProcessando;
-  final String?                   errorOperacion;
+  final bool hayMas;
+  final String? usuarioIdProcessando;
+  final String? errorOperacion;
 
   RevisionUsuariosCargados copiarCon({
     List<RevisionUsuarioItem>? usuarios,
-    bool?                      hayMas,
-    String?                    usuarioIdProcessando,
-    bool                       limpiarProcessando = false,
-    String?                    errorOperacion,
-    bool                       limpiarError       = false,
+    bool? hayMas,
+    String? usuarioIdProcessando,
+    bool limpiarProcessando = false,
+    String? errorOperacion,
+    bool limpiarError = false,
   }) =>
       RevisionUsuariosCargados(
-        usuarios:             usuarios ?? this.usuarios,
-        hayMas:               hayMas   ?? this.hayMas,
+        usuarios: usuarios ?? this.usuarios,
+        hayMas: hayMas ?? this.hayMas,
         usuarioIdProcessando: limpiarProcessando
             ? null
             : (usuarioIdProcessando ?? this.usuarioIdProcessando),
-        errorOperacion: limpiarError
-            ? null
-            : (errorOperacion ?? this.errorOperacion),
+        errorOperacion:
+            limpiarError ? null : (errorOperacion ?? this.errorOperacion),
       );
 
   @override
-  List<Object?> get props => [usuarios, hayMas, usuarioIdProcessando, errorOperacion];
+  List<Object?> get props =>
+      [usuarios, hayMas, usuarioIdProcessando, errorOperacion];
 }
 
 /// La lista ya muestra resultados y se está cargando la siguiente página.

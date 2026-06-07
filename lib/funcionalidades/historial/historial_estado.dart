@@ -23,7 +23,7 @@ final class HistorialCargado extends HistorialEstado {
   const HistorialCargado({required this.items, required this.hayMas});
 
   final List<HistorialItem> items;
-  final bool                hayMas;
+  final bool hayMas;
 
   @override
   List<Object?> get props => [items, hayMas];

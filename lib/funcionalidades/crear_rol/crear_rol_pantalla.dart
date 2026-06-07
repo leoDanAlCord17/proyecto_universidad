@@ -27,10 +27,10 @@ class CrearRolPantalla extends StatefulWidget {
 }
 
 class _CrearRolPantallaState extends State<CrearRolPantalla> {
-  final _nombreCtrl      = TextEditingController();
+  final _nombreCtrl = TextEditingController();
   final _descripcionCtrl = TextEditingController();
-  bool _estaIniciado     = false;
-  bool _estaPrelleno     = false;
+  bool _estaIniciado = false;
+  bool _estaPrelleno = false;
 
   @override
   void didChangeDependencies() {
@@ -55,11 +55,14 @@ class _CrearRolPantallaState extends State<CrearRolPantalla> {
     if (estado is CrearRolGuardado) {
       context.pop();
     } else if (estado is CrearRolError) {
-      AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
-    } else if (estado is CrearRolCargado && estado.rolId != null && !_estaPrelleno) {
-      _estaPrelleno          = true;
-      _nombreCtrl.text       = estado.nombreInicial;
-      _descripcionCtrl.text  = estado.descripcionInicial;
+      AvisoApp.mostrar(context,
+          texto: estado.mensaje, estilo: EstiloAviso.error);
+    } else if (estado is CrearRolCargado &&
+        estado.rolId != null &&
+        !_estaPrelleno) {
+      _estaPrelleno = true;
+      _nombreCtrl.text = estado.nombreInicial;
+      _descripcionCtrl.text = estado.descripcionInicial;
     }
   }
 
@@ -67,18 +70,18 @@ class _CrearRolPantallaState extends State<CrearRolPantalla> {
     if (estado.permisosSeleccionadosIds.isEmpty) {
       final confirmo = await DialogoConfirmacion.mostrar(
         context,
-        titulo:         'Sin permisos',
-        descripcion:    '¿Deseas guardar este rol sin permisos asignados?',
+        titulo: 'Sin permisos',
+        descripcion: '¿Deseas guardar este rol sin permisos asignados?',
         textoConfirmar: 'Guardar así',
-        textoCancelar:  'Cancelar',
+        textoCancelar: 'Cancelar',
       );
       if (confirmo != true || !context.mounted) return;
     }
     unawaited(
       context.read<CrearRolCubit>().guardar(
-        nombre:      _nombreCtrl.text.trim(),
-        descripcion: _descripcionCtrl.text.trim(),
-      ),
+            nombre: _nombreCtrl.text.trim(),
+            descripcion: _descripcionCtrl.text.trim(),
+          ),
     );
   }
 
@@ -86,16 +89,16 @@ class _CrearRolPantallaState extends State<CrearRolPantalla> {
   Widget build(BuildContext context) {
     return BlocConsumer<CrearRolCubit, CrearRolEstado>(
       listener: _escucharEstado,
-      builder:  _construirVista,
+      builder: _construirVista,
     );
   }
 
   Widget _construirVista(BuildContext context, CrearRolEstado estado) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -109,19 +112,29 @@ class _CrearRolPantallaState extends State<CrearRolPantalla> {
                   children: [
                     const BotonRegresar(),
                     const SizedBox(width: 12),
-                    Text(widget.rolId != null ? 'Editar rol' : 'Crear rol',
+                    Text(
+                      widget.rolId != null ? 'Editar rol' : 'Crear rol',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontSize: 20, fontWeight: FontWeight.w700,
-                        color: ColoresApp.textoPrimario,
-                      ),),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: ColoresApp.textoPrimario,
+                          ),
+                    ),
                   ],
                 ),
               ),
             ),
-            Expanded(child: _Cuerpo(estado: estado, nombreCtrl: _nombreCtrl, descripcionCtrl: _descripcionCtrl)),
-            _BarraInferior(estado: estado, alGuardar: () {
-              if (estado is CrearRolCargado) _alGuardar(context, estado);
-            },),
+            Expanded(
+                child: _Cuerpo(
+                    estado: estado,
+                    nombreCtrl: _nombreCtrl,
+                    descripcionCtrl: _descripcionCtrl)),
+            _BarraInferior(
+              estado: estado,
+              alGuardar: () {
+                if (estado is CrearRolCargado) _alGuardar(context, estado);
+              },
+            ),
           ],
         ),
       ),
@@ -132,11 +145,14 @@ class _CrearRolPantallaState extends State<CrearRolPantalla> {
 // ─── Cuerpo ───────────────────────────────────────────────────────────────────
 
 class _Cuerpo extends StatelessWidget {
-  const _Cuerpo({required this.estado, required this.nombreCtrl, required this.descripcionCtrl});
+  const _Cuerpo(
+      {required this.estado,
+      required this.nombreCtrl,
+      required this.descripcionCtrl});
 
-  final CrearRolEstado          estado;
-  final TextEditingController   nombreCtrl;
-  final TextEditingController   descripcionCtrl;
+  final CrearRolEstado estado;
+  final TextEditingController nombreCtrl;
+  final TextEditingController descripcionCtrl;
 
   @override
   Widget build(BuildContext context) {
@@ -145,8 +161,9 @@ class _Cuerpo extends StatelessWidget {
       CrearRolInicial() || CrearRolCargando() => const Center(
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
-      CrearRolCargado() => _Formulario(estado: e, nombreCtrl: nombreCtrl, descripcionCtrl: descripcionCtrl),
-      CrearRolGuardado() || CrearRolError()   => const SizedBox.shrink(),
+      CrearRolCargado() => _Formulario(
+          estado: e, nombreCtrl: nombreCtrl, descripcionCtrl: descripcionCtrl),
+      CrearRolGuardado() || CrearRolError() => const SizedBox.shrink(),
     };
   }
 }
@@ -154,11 +171,14 @@ class _Cuerpo extends StatelessWidget {
 // ─── Formulario ───────────────────────────────────────────────────────────────
 
 class _Formulario extends StatelessWidget {
-  const _Formulario({required this.estado, required this.nombreCtrl, required this.descripcionCtrl});
+  const _Formulario(
+      {required this.estado,
+      required this.nombreCtrl,
+      required this.descripcionCtrl});
 
-  final CrearRolCargado         estado;
-  final TextEditingController   nombreCtrl;
-  final TextEditingController   descripcionCtrl;
+  final CrearRolCargado estado;
+  final TextEditingController nombreCtrl;
+  final TextEditingController descripcionCtrl;
 
   @override
   Widget build(BuildContext context) {
@@ -168,24 +188,30 @@ class _Formulario extends StatelessWidget {
         _SeccionInfo(nombreCtrl: nombreCtrl, descripcionCtrl: descripcionCtrl),
         const SizedBox(height: 20),
         BarraBusquedaApp(
-          hintText:  'Buscar permisos...',
+          hintText: 'Buscar permisos...',
           alCambiar: (t) => context.read<CrearRolCubit>().filtrarPermisos(t),
         ),
         const SizedBox(height: 16),
-        Text('PERMISOS DEL SISTEMA',
+        Text(
+          'PERMISOS DEL SISTEMA',
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: ColoresApp.textoTerciario, letterSpacing: 0.8,
-            fontSize: 13, fontWeight: FontWeight.w900,
-          ),),
+                color: ColoresApp.textoTerciario,
+                letterSpacing: 0.8,
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+              ),
+        ),
         const SizedBox(height: 12),
-        ...estado.permisosVisibles.map((p) => Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: _ItemPermiso(
-            permiso:       p,
-            estaAgregado:  estado.permisosSeleccionadosIds.contains(p.id),
-            alToggle:      () => context.read<CrearRolCubit>().togglePermiso(p.id),
+        ...estado.permisosVisibles.map(
+          (p) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _ItemPermiso(
+              permiso: p,
+              estaAgregado: estado.permisosSeleccionadosIds.contains(p.id),
+              alToggle: () => context.read<CrearRolCubit>().togglePermiso(p.id),
+            ),
           ),
-        ),),
+        ),
       ],
     );
   }
@@ -204,24 +230,37 @@ class _SeccionInfo extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 8, offset: Offset(0, 2)),
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 8,
+              offset: Offset(0, 2)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('INFORMACIÓN DEL ROL',
+          Text(
+            'INFORMACIÓN DEL ROL',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: ColoresApp.acento, letterSpacing: 0.8,
-              fontSize: 14, fontWeight: FontWeight.w800,
-            ),),
+                  color: ColoresApp.acento,
+                  letterSpacing: 0.8,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
           const SizedBox(height: 16),
-          CampoTextoApp(etiqueta: 'Nombre*',     hintText: 'Ej. Coordinador', controller: nombreCtrl),
+          CampoTextoApp(
+              etiqueta: 'Nombre*',
+              hintText: 'Ej. Coordinador',
+              controller: nombreCtrl),
           const SizedBox(height: 16),
-          CampoTextoApp(etiqueta: 'Descripción*', hintText: 'Para usuarios estándar del sistema', controller: descripcionCtrl),
+          CampoTextoApp(
+              etiqueta: 'Descripción*',
+              hintText: 'Para usuarios estándar del sistema',
+              controller: descripcionCtrl),
         ],
       ),
     );
@@ -231,21 +270,27 @@ class _SeccionInfo extends StatelessWidget {
 // ─── Item de permiso ──────────────────────────────────────────────────────────
 
 class _ItemPermiso extends StatelessWidget {
-  const _ItemPermiso({required this.permiso, required this.estaAgregado, required this.alToggle});
+  const _ItemPermiso(
+      {required this.permiso,
+      required this.estaAgregado,
+      required this.alToggle});
 
   final PermisoOpcion permiso;
-  final bool          estaAgregado;
-  final VoidCallback  alToggle;
+  final bool estaAgregado;
+  final VoidCallback alToggle;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [
-          BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 8, offset: Offset(0, 2)),
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 8,
+              offset: Offset(0, 2)),
         ],
       ),
       child: Row(
@@ -254,22 +299,31 @@ class _ItemPermiso extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(permiso.nombre,
+                Text(
+                  permiso.nombre,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600, color: ColoresApp.textoPrimario, fontSize: 16,
-                  ),),
+                        fontWeight: FontWeight.w600,
+                        color: ColoresApp.textoPrimario,
+                        fontSize: 16,
+                      ),
+                ),
                 if (permiso.descripcion.isNotEmpty) ...[
                   const SizedBox(height: 4),
-                  Text(permiso.descripcion,
+                  Text(
+                    permiso.descripcion,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: ColoresApp.textoSecundario, fontSize: 13,
-                    ),),
+                          color: ColoresApp.textoSecundario,
+                          fontSize: 13,
+                        ),
+                  ),
                 ],
               ],
             ),
           ),
           const SizedBox(width: 12),
-          estaAgregado ? _BotonQuitar(alPresionar: alToggle) : _BotonAgregar(alPresionar: alToggle),
+          estaAgregado
+              ? _BotonQuitar(alPresionar: alToggle)
+              : _BotonAgregar(alPresionar: alToggle),
         ],
       ),
     );
@@ -285,12 +339,12 @@ class _BotonAgregar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap:          alPresionar,
-        borderRadius:   BorderRadius.circular(10),
-        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        onTap: alPresionar,
+        borderRadius: BorderRadius.circular(10),
+        splashColor: ColoresApp.blanco.withValues(alpha: 0.3),
         highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
@@ -298,8 +352,13 @@ class _BotonAgregar extends StatelessWidget {
             gradient: ColoresApp.degradadoPrincipal,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Text('Agregar',
-            style: TextStyle(color: ColoresApp.blanco, fontSize: 14, fontWeight: FontWeight.w600),),
+          child: const Text(
+            'Agregar',
+            style: TextStyle(
+                color: ColoresApp.blanco,
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
+          ),
         ),
       ),
     );
@@ -315,21 +374,26 @@ class _BotonQuitar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap:          alPresionar,
-        borderRadius:   BorderRadius.circular(10),
-        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        onTap: alPresionar,
+        borderRadius: BorderRadius.circular(10),
+        splashColor: ColoresApp.blanco.withValues(alpha: 0.3),
         highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
           decoration: BoxDecoration(
-            color:        ColoresApp.rojo,
+            color: ColoresApp.rojo,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Text('Quitar',
-            style: TextStyle(color: ColoresApp.blanco, fontSize: 14, fontWeight: FontWeight.w600),),
+          child: const Text(
+            'Quitar',
+            style: TextStyle(
+                color: ColoresApp.blanco,
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
+          ),
         ),
       ),
     );
@@ -342,20 +406,21 @@ class _BarraInferior extends StatelessWidget {
   const _BarraInferior({required this.estado, required this.alGuardar});
 
   final CrearRolEstado estado;
-  final VoidCallback   alGuardar;
+  final VoidCallback alGuardar;
 
   @override
   Widget build(BuildContext context) {
-    final estaCargando = estado is CrearRolCargado && (estado as CrearRolCargado).estaGuardando;
+    final estaCargando =
+        estado is CrearRolCargado && (estado as CrearRolCargado).estaGuardando;
     final puedeGuardar = estado is CrearRolCargado && !estaCargando;
     return SafeArea(
       top: false,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
         child: BotonApp(
-          texto:        'Guardar',
+          texto: 'Guardar',
           estaCargando: estaCargando,
-          alPresionar:  puedeGuardar ? alGuardar : null,
+          alPresionar: puedeGuardar ? alGuardar : null,
         ),
       ),
     );

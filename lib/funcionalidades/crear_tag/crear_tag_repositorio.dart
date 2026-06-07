@@ -15,7 +15,7 @@ class CrearTagRepositorio {
   Future<bool> existeDuplicado({
     required String nombre,
     required String tipo,
-    String?         excludeId,
+    String? excludeId,
   }) =>
       conReintentos(() async {
         try {
@@ -27,7 +27,8 @@ class CrearTagRepositorio {
               .timeout(kTimeoutSolicitud);
           final lista = resultado as List;
           if (excludeId == null) return lista.isNotEmpty;
-          return lista.any((r) => (r as Map<String, dynamic>)['id'] != excludeId);
+          return lista
+              .any((r) => (r as Map<String, dynamic>)['id'] != excludeId);
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -45,8 +46,7 @@ class CrearTagRepositorio {
     }
   }
 
-  Future<Map<String, dynamic>> obtenerTag(String id) =>
-      conReintentos(() async {
+  Future<Map<String, dynamic>> obtenerTag(String id) => conReintentos(() async {
         try {
           return await _supabase
               .from(TablasSupabase.tags)
@@ -62,7 +62,7 @@ class CrearTagRepositorio {
       });
 
   Future<void> actualizarTag({
-    required String              id,
+    required String id,
     required Map<String, dynamic> datos,
   }) async {
     try {

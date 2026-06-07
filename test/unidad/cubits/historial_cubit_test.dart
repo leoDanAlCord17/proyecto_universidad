@@ -11,10 +11,10 @@ import '../../helpers.dart';
 typedef _Resultado = ({List<HistorialItem> items, bool hayMas});
 
 const _itemDos = HistorialItem(
-  id:           'historial-id-2',
-  eventoId:     'evento-id-2',
+  id: 'historial-id-2',
+  eventoId: 'evento-id-2',
   eventoTitulo: 'Conferencia Dart',
-  estatus:      'presente',
+  estatus: 'presente',
 );
 
 void main() {
@@ -54,8 +54,8 @@ void main() {
         expect: () => [
           isA<HistorialCargando>(),
           isA<HistorialCargado>()
-              .having((e) => e.items, 'items', [historialItemEjemplo])
-              .having((e) => e.hayMas, 'hayMas', false),
+              .having((e) => e.items, 'items', [historialItemEjemplo]).having(
+                  (e) => e.hayMas, 'hayMas', false),
         ],
         verify: (_) =>
             verify(() => repositorio.obtenerHistorial('user-1', offset: 0))
@@ -242,12 +242,12 @@ void main() {
         expect: () => [
           isA<HistorialCargando>(),
           isA<HistorialCargado>()
-              .having((e) => e.items, 'items', [historialItemEjemplo])
-              .having((e) => e.hayMas, 'hayMas', true),
+              .having((e) => e.items, 'items', [historialItemEjemplo]).having(
+                  (e) => e.hayMas, 'hayMas', true),
           isA<HistorialCargandoMas>(),
           isA<HistorialCargado>()
-              .having((e) => e.items, 'items', [historialItemEjemplo])
-              .having((e) => e.hayMas, 'hayMas', true),
+              .having((e) => e.items, 'items', [historialItemEjemplo]).having(
+                  (e) => e.hayMas, 'hayMas', true),
         ],
       );
     });

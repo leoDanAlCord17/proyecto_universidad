@@ -11,8 +11,7 @@ class CrearRolRepositorio {
 
   final SupabaseClient _supabase;
 
-  Future<List<PermisoOpcion>> obtenerPermisos() =>
-      conReintentos(() async {
+  Future<List<PermisoOpcion>> obtenerPermisos() => conReintentos(() async {
         try {
           final res = await _supabase
               .from(TablasSupabase.permisos)
@@ -46,7 +45,7 @@ class CrearRolRepositorio {
   }
 
   Future<void> asignarPermisos({
-    required String       rolId,
+    required String rolId,
     required List<String> permisosIds,
   }) async {
     try {
@@ -78,7 +77,10 @@ class CrearRolRepositorio {
               .eq('rol_id', id)
               .eq('estatus', true)
               .timeout(kTimeoutSolicitud);
-          final ids = (perms as List).cast<Map<String, dynamic>>().map((r) => r['permiso_id'] as String).toList();
+          final ids = (perms as List)
+              .cast<Map<String, dynamic>>()
+              .map((r) => r['permiso_id'] as String)
+              .toList();
           return (rol: rol, permisosIds: ids);
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
@@ -88,15 +90,14 @@ class CrearRolRepositorio {
       });
 
   Future<void> actualizarRol({
-    required String              id,
+    required String id,
     required Map<String, dynamic> datos,
   }) async {
     try {
       final actualizadoPor = await _resolverUsuarioId();
       await _supabase
           .from(TablasSupabase.roles)
-          .update({...datos, 'actualizado_por': actualizadoPor})
-          .eq('id', id);
+          .update({...datos, 'actualizado_por': actualizadoPor}).eq('id', id);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -107,13 +108,15 @@ class CrearRolRepositorio {
   /// Sincroniza permisos usando diff: solo elimina los removidos e inserta los nuevos.
   /// Evita borrar todo y reinsertar, que deja el rol sin permisos si el insert falla.
   Future<void> sincronizarPermisos({
-    required String       rolId,
+    required String rolId,
     required List<String> nuevosIds,
     required List<String> anterioresIds,
   }) async {
     try {
-      final aDesactivar = anterioresIds.where((id) => !nuevosIds.contains(id)).toList();
-      final aActivar    = nuevosIds.where((id) => !anterioresIds.contains(id)).toList();
+      final aDesactivar =
+          anterioresIds.where((id) => !nuevosIds.contains(id)).toList();
+      final aActivar =
+          nuevosIds.where((id) => !anterioresIds.contains(id)).toList();
 
       if (aDesactivar.isNotEmpty) {
         final actualizadoPor = await _resolverUsuarioId();

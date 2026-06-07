@@ -7,7 +7,6 @@ import '../../compartido/traductor_errores.dart';
 import 'usuario.dart';
 
 class AutenticacionRepositorio {
-
   AutenticacionRepositorio(this._supabase);
   final SupabaseClient _supabase;
 
@@ -15,10 +14,12 @@ class AutenticacionRepositorio {
   /// Lanza [FallaAutenticacion] si las credenciales son incorrectas.
   Future<AuthResponse> iniciarSesion(String correo, String clave) async {
     try {
-      return await _supabase.auth.signInWithPassword(
-        email: correo,
-        password: clave,
-      ).timeout(kTimeoutSolicitud);
+      return await _supabase.auth
+          .signInWithPassword(
+            email: correo,
+            password: clave,
+          )
+          .timeout(kTimeoutSolicitud);
     } on AuthException catch (e) {
       throw FallaAutenticacion(TraductorErrores.deAuth(e));
     } catch (e) {
@@ -30,10 +31,12 @@ class AutenticacionRepositorio {
   /// Lanza [FallaAutenticacion] si el correo ya está en uso o la clave es inválida.
   Future<AuthResponse> registrarse(String correo, String clave) async {
     try {
-      return await _supabase.auth.signUp(
-        email: correo,
-        password: clave,
-      ).timeout(kTimeoutSolicitud);
+      return await _supabase.auth
+          .signUp(
+            email: correo,
+            password: clave,
+          )
+          .timeout(kTimeoutSolicitud);
     } on AuthException catch (e) {
       throw FallaAutenticacion(TraductorErrores.deAuth(e));
     } catch (e) {
@@ -57,8 +60,7 @@ class AutenticacionRepositorio {
   /// Obtiene el perfil del usuario junto con sus roles y permisos activos.
   /// Retorna [null] si el usuario aún no tiene perfil creado (registro incompleto).
   /// Lanza [FallaServidor] para cualquier otro error de base de datos.
-  Future<Usuario?> obtenerPerfil(String idAuth) =>
-      conReintentos(() async {
+  Future<Usuario?> obtenerPerfil(String idAuth) => conReintentos(() async {
         try {
           final datos = await _supabase
               .from(TablasSupabase.usuarios)
@@ -82,10 +84,12 @@ class AutenticacionRepositorio {
   /// Siempre retorna éxito aunque el correo no exista (por seguridad Supabase no lo revela).
   Future<void> enviarCorreoRecuperacion(String correo) async {
     try {
-      await _supabase.auth.resetPasswordForEmail(
-        correo,
-        redirectTo: 'com.uniasist.uniasist://reset-password',
-      ).timeout(kTimeoutSolicitud);
+      await _supabase.auth
+          .resetPasswordForEmail(
+            correo,
+            redirectTo: 'com.uniasist.uniasist://reset-password',
+          )
+          .timeout(kTimeoutSolicitud);
     } on AuthException catch (e) {
       throw FallaAutenticacion(TraductorErrores.deAuth(e));
     } catch (e) {
@@ -97,7 +101,9 @@ class AutenticacionRepositorio {
   /// Lanza [FallaAutenticacion] si la sesión expiró o la clave es inválida.
   Future<void> actualizarContrasena(String nuevaClave) async {
     try {
-      await _supabase.auth.updateUser(UserAttributes(password: nuevaClave)).timeout(kTimeoutSolicitud);
+      await _supabase.auth
+          .updateUser(UserAttributes(password: nuevaClave))
+          .timeout(kTimeoutSolicitud);
     } on AuthException catch (e) {
       throw FallaAutenticacion(TraductorErrores.deAuth(e));
     } catch (e) {
@@ -113,9 +119,9 @@ class AutenticacionRepositorio {
   /// Registra o actualiza el token de sesión activa del usuario.
   Future<void> actualizarTokenSesion(String usuarioId, String token) async {
     try {
-      await _supabase
-          .from(TablasSupabase.sesionesActivas)
-          .upsert({'usuario_id': usuarioId, 'token': token}, onConflict: 'usuario_id');
+      await _supabase.from(TablasSupabase.sesionesActivas).upsert(
+          {'usuario_id': usuarioId, 'token': token},
+          onConflict: 'usuario_id');
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -124,12 +130,11 @@ class AutenticacionRepositorio {
   }
 
   /// Stream que emite el token de sesión activo. Detecta inicio de sesión en otro dispositivo.
-  Stream<String?> flujoTokenSesion(String usuarioId) =>
-      _supabase
-          .from(TablasSupabase.sesionesActivas)
-          .stream(primaryKey: ['usuario_id'])
-          .eq('usuario_id', usuarioId)
-          .map((filas) => filas.isEmpty ? null : filas.first['token'] as String?);
+  Stream<String?> flujoTokenSesion(String usuarioId) => _supabase
+      .from(TablasSupabase.sesionesActivas)
+      .stream(primaryKey: ['usuario_id'])
+      .eq('usuario_id', usuarioId)
+      .map((filas) => filas.isEmpty ? null : filas.first['token'] as String?);
 
   /// Crea o actualiza el perfil del usuario en la tabla 'usuarios'.
   /// Usa upsert con conflicto en auth_id para soportar el reintento de usuarios rechazados.
@@ -147,8 +152,7 @@ class AutenticacionRepositorio {
 
   /// Retorna true si la revisión de usuarios al crear cuenta está habilitada.
   /// Devuelve false ante cualquier error (comportamiento seguro por defecto).
-  Future<bool> verificarRevisionCreacionHabilitada() =>
-      conReintentos(() async {
+  Future<bool> verificarRevisionCreacionHabilitada() => conReintentos(() async {
         try {
           final datos = await _supabase
               .from(TablasSupabase.configuracion)

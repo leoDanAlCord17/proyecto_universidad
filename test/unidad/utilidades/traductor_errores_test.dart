@@ -77,11 +77,13 @@ void main() {
   group('TraductorErrores.dePostgres', () {
     test('código 23505 → registro duplicado', () {
       const e = PostgrestException(message: 'duplicate key', code: '23505');
-      expect(TraductorErrores.dePostgres(e), 'Ya existe un registro con esos datos.');
+      expect(TraductorErrores.dePostgres(e),
+          'Ya existe un registro con esos datos.');
     });
 
     test('código 23503 → referencia inexistente', () {
-      const e = PostgrestException(message: 'foreign key violation', code: '23503');
+      const e =
+          PostgrestException(message: 'foreign key violation', code: '23503');
       expect(
         TraductorErrores.dePostgres(e),
         'La operación no es válida: referencia inexistente.',
@@ -89,7 +91,8 @@ void main() {
     });
 
     test('código 23502 → datos obligatorios faltantes', () {
-      const e = PostgrestException(message: 'not null violation', code: '23502');
+      const e =
+          PostgrestException(message: 'not null violation', code: '23502');
       expect(TraductorErrores.dePostgres(e), 'Faltan datos obligatorios.');
     });
 
@@ -124,18 +127,21 @@ void main() {
       expect(
         () => TraductorErrores.lanzarInesperado(TimeoutException('timed out')),
         throwsA(
-          isA<FallaRed>().having((e) => e.mensaje, 'mensaje', MensajesError.timeout),
+          isA<FallaRed>()
+              .having((e) => e.mensaje, 'mensaje', MensajesError.timeout),
         ),
       );
     });
 
-    test('contiene "SocketException" → lanza FallaRed con mensaje de conexión', () {
+    test('contiene "SocketException" → lanza FallaRed con mensaje de conexión',
+        () {
       expect(
         () => TraductorErrores.lanzarInesperado(
           Exception('SocketException: connection refused'),
         ),
         throwsA(
-          isA<FallaRed>().having((e) => e.mensaje, 'mensaje', MensajesError.conexion),
+          isA<FallaRed>()
+              .having((e) => e.mensaje, 'mensaje', MensajesError.conexion),
         ),
       );
     });
@@ -144,16 +150,19 @@ void main() {
       expect(
         () => TraductorErrores.lanzarInesperado(Exception('network error')),
         throwsA(
-          isA<FallaRed>().having((e) => e.mensaje, 'mensaje', MensajesError.conexion),
+          isA<FallaRed>()
+              .having((e) => e.mensaje, 'mensaje', MensajesError.conexion),
         ),
       );
     });
 
     test('contiene "connection" → lanza FallaRed con mensaje de conexión', () {
       expect(
-        () => TraductorErrores.lanzarInesperado(Exception('connection timeout')),
+        () =>
+            TraductorErrores.lanzarInesperado(Exception('connection timeout')),
         throwsA(
-          isA<FallaRed>().having((e) => e.mensaje, 'mensaje', MensajesError.conexion),
+          isA<FallaRed>()
+              .having((e) => e.mensaje, 'mensaje', MensajesError.conexion),
         ),
       );
     });

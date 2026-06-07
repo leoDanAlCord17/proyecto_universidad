@@ -6,36 +6,36 @@ class BotonContornoIcono extends StatelessWidget {
     super.key,
     required this.icono,
     required this.alPresionar,
-    this.tamanio    = 40,
+    this.tamanio = 40,
     this.colorIcono = ColoresApp.textoSecundario,
   });
 
-  final IconData      icono;
+  final IconData icono;
   final VoidCallback? alPresionar;
-  final double        tamanio;
-  final Color         colorIcono;
+  final double tamanio;
+  final Color colorIcono;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:  tamanio,
+      width: tamanio,
       height: tamanio,
       child: Material(
-        color:        Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(10),
         child: InkWell(
-          onTap:          alPresionar ?? () {},
-          borderRadius:   BorderRadius.circular(10),
+          onTap: alPresionar ?? () {},
+          borderRadius: BorderRadius.circular(10),
           highlightColor: ColoresApp.superficieTerciar,
-          splashColor:    ColoresApp.bordeMedio,
+          splashColor: ColoresApp.bordeMedio,
           child: Ink(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              border:       Border.all(color: ColoresApp.bordeMedio),
+              border: Border.all(color: ColoresApp.bordeMedio),
             ),
             child: Icon(
               icono,
-              size:  tamanio * 0.55,
+              size: tamanio * 0.55,
               color: colorIcono,
             ),
           ),

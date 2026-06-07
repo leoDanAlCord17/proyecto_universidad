@@ -42,7 +42,7 @@ class _PanelControlPantallaState extends State<PanelControlPantalla> {
     if (_estaCargado) return;
     _estaCargado = true;
     final authEstado = context.read<AuthCubit>().state;
-    final adminId    = authEstado is Autenticado ? authEstado.usuario.id : null;
+    final adminId = authEstado is Autenticado ? authEstado.usuario.id : null;
     context.read<PanelControlCubit>().cargar(widget.eventoId, adminId: adminId);
   }
 
@@ -50,15 +50,17 @@ class _PanelControlPantallaState extends State<PanelControlPantalla> {
   Widget build(BuildContext context) {
     return BlocConsumer<PanelControlCubit, PanelControlEstado>(
       listener: _escucharEstado,
-      builder:  _construirCuerpo,
+      builder: _construirCuerpo,
     );
   }
 
   void _escucharEstado(BuildContext context, PanelControlEstado state) {
     if (state is PanelControlOperacionFallida) {
-      AvisoApp.mostrar(context, texto: state.mensaje, estilo: EstiloAviso.error);
+      AvisoApp.mostrar(context,
+          texto: state.mensaje, estilo: EstiloAviso.error);
     } else if (state is PanelControlEventoCerrado) {
-      AvisoApp.mostrar(context, texto: 'Evento cerrado exitosamente.', estilo: EstiloAviso.exito);
+      AvisoApp.mostrar(context,
+          texto: 'Evento cerrado exitosamente.', estilo: EstiloAviso.exito);
       context.pop();
     }
   }
@@ -66,15 +68,17 @@ class _PanelControlPantallaState extends State<PanelControlPantalla> {
   Widget _construirCuerpo(BuildContext context, PanelControlEstado state) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
-        statusBarBrightness:     Brightness.dark,
+        statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
         body: Column(
           children: [
-            Container(height: MediaQuery.paddingOf(context).top, color: ColoresApp.acento),
+            Container(
+                height: MediaQuery.paddingOf(context).top,
+                color: ColoresApp.acento),
             Expanded(child: _construirContenido(state)),
           ],
         ),
@@ -83,17 +87,17 @@ class _PanelControlPantallaState extends State<PanelControlPantalla> {
   }
 
   Widget _construirContenido(PanelControlEstado state) => switch (state) {
-    PanelControlInicial()          => const SizedBox.shrink(),
-    PanelControlCargando()         => const Center(
-        child: CircularProgressIndicator(color: ColoresApp.acento),
-      ),
-    PanelControlCargado()          => _ContenidoCargado(estado: state),
-    PanelControlOperacionFallida() => _ContenidoCargado(estado: state.anterior),
-    PanelControlError()            => VistaErrorApp(mensaje: state.mensaje),
-    PanelControlEventoCerrado()    => const SizedBox.shrink(),
-  };
+        PanelControlInicial() => const SizedBox.shrink(),
+        PanelControlCargando() => const Center(
+            child: CircularProgressIndicator(color: ColoresApp.acento),
+          ),
+        PanelControlCargado() => _ContenidoCargado(estado: state),
+        PanelControlOperacionFallida() =>
+          _ContenidoCargado(estado: state.anterior),
+        PanelControlError() => VistaErrorApp(mensaje: state.mensaje),
+        PanelControlEventoCerrado() => const SizedBox.shrink(),
+      };
 }
-
 
 // ─── Contenido principal cargado ─────────────────────────────────────────────
 
@@ -158,18 +162,18 @@ class _EncabezadoEvento extends StatelessWidget {
           Text(
             evento.titulo,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color:      ColoresApp.blanco,
-              fontSize:   22,
-              fontWeight: FontWeight.w800,
-            ),
+                  color: ColoresApp.blanco,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                ),
           ),
           if (evento.lugar != null) ...[
             const SizedBox(height: 4),
             Text(
               evento.lugar!,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: ColoresApp.blanco.withValues(alpha: 0.7),
-              ),
+                    color: ColoresApp.blanco.withValues(alpha: 0.7),
+                  ),
             ),
           ],
           const SizedBox(height: 18),
@@ -186,19 +190,19 @@ class _BotonRegresar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        ColoresApp.blanco.withValues(alpha: 0.2),
+      color: ColoresApp.blanco.withValues(alpha: 0.2),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap:          () => context.pop(),
-        borderRadius:   BorderRadius.circular(12),
-        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        onTap: () => context.pop(),
+        borderRadius: BorderRadius.circular(12),
+        splashColor: ColoresApp.blanco.withValues(alpha: 0.3),
         highlightColor: ColoresApp.blanco.withValues(alpha: 0.1),
         child: const Padding(
           padding: EdgeInsets.all(8),
-          child:   Icon(
+          child: Icon(
             Icons.arrow_back_ios_new_rounded,
             color: ColoresApp.blanco,
-            size:  18,
+            size: 18,
           ),
         ),
       ),
@@ -216,9 +220,9 @@ class _ChipsInfoEvento extends StatelessWidget {
     if (hora == null) return '--:--';
     final p = hora.split(':');
     if (p.length < 2) return hora;
-    final h24  = int.tryParse(p[0]) ?? 0;
-    final min  = p[1].padLeft(2, '0');
-    final h12  = h24 % 12 == 0 ? 12 : h24 % 12;
+    final h24 = int.tryParse(p[0]) ?? 0;
+    final min = p[1].padLeft(2, '0');
+    final h12 = h24 % 12 == 0 ? 12 : h24 % 12;
     final ampm = h24 < 12 ? 'AM' : 'PM';
     return '$h12:$min $ampm';
   }
@@ -229,8 +233,8 @@ class _ChipsInfoEvento extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _ChipInfo(etiqueta: 'INICIO',    valor: _formatearHora(e.horaInicio)),
-        _ChipInfo(etiqueta: 'CIERRE',    valor: _formatearHora(e.horaFin)),
+        _ChipInfo(etiqueta: 'INICIO', valor: _formatearHora(e.horaInicio)),
+        _ChipInfo(etiqueta: 'CIERRE', valor: _formatearHora(e.horaFin)),
         _ChipInfo(
           etiqueta: 'PRESENTES',
           valor: estado.esEventoDirigido
@@ -256,20 +260,20 @@ class _ChipInfo extends StatelessWidget {
         Text(
           etiqueta,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color:         ColoresApp.blanco.withValues(alpha: 0.6),
-            fontSize:      12,
-            fontWeight:   FontWeight.w800,
-            letterSpacing: 0.6,
-          ),
+                color: ColoresApp.blanco.withValues(alpha: 0.6),
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.6,
+              ),
         ),
         const SizedBox(height: 3),
         Text(
           valor,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color:      ColoresApp.blanco,
-            fontSize:   19,
-            fontWeight: FontWeight.w800,
-          ),
+                color: ColoresApp.blanco,
+                fontSize: 19,
+                fontWeight: FontWeight.w800,
+              ),
         ),
       ],
     );
@@ -288,47 +292,48 @@ class _BotonConfiguracion extends StatelessWidget {
   }
 
   List<OpcionPanel> _opciones(BuildContext context) => [
-    OpcionPanel(
-      icono:       Icons.group_add_rounded,
-      colorFondo:  ColoresApp.acentoClaro,
-      colorIcono:  ColoresApp.acento,
-      titulo:      'Colaboradores',
-      descripcion: 'Asigna usuarios para ayudar a gestionar este evento',
-      alPresionar: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        context.push(Rutas.colaboradoresEventoUrl(estado.evento.id));
-      },
-    ),
-    OpcionPanel(
-      icono:       Icons.event_busy_rounded,
-      colorFondo:  ColoresApp.rojoClaro,
-      colorIcono:  ColoresApp.rojo,
-      titulo:      'Cerrar evento',
-      descripcion: 'Finaliza y cierra el evento en curso',
-      alPresionar: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        _DialogoCerrarEvento.mostrar(
-          context,
-          tituloEvento: estado.evento.titulo,
-          alConfirmar:  context.read<PanelControlCubit>().cerrarEvento,
-        );
-      },
-    ),
-  ];
+        OpcionPanel(
+          icono: Icons.group_add_rounded,
+          colorFondo: ColoresApp.acentoClaro,
+          colorIcono: ColoresApp.acento,
+          titulo: 'Colaboradores',
+          descripcion: 'Asigna usuarios para ayudar a gestionar este evento',
+          alPresionar: () {
+            Navigator.of(context, rootNavigator: true).pop();
+            context.push(Rutas.colaboradoresEventoUrl(estado.evento.id));
+          },
+        ),
+        OpcionPanel(
+          icono: Icons.event_busy_rounded,
+          colorFondo: ColoresApp.rojoClaro,
+          colorIcono: ColoresApp.rojo,
+          titulo: 'Cerrar evento',
+          descripcion: 'Finaliza y cierra el evento en curso',
+          alPresionar: () {
+            Navigator.of(context, rootNavigator: true).pop();
+            _DialogoCerrarEvento.mostrar(
+              context,
+              tituloEvento: estado.evento.titulo,
+              alConfirmar: context.read<PanelControlCubit>().cerrarEvento,
+            );
+          },
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        ColoresApp.blanco.withValues(alpha: 0.2),
+      color: ColoresApp.blanco.withValues(alpha: 0.2),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap:          () => _abrirOpciones(context),
-        borderRadius:   BorderRadius.circular(12),
-        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        onTap: () => _abrirOpciones(context),
+        borderRadius: BorderRadius.circular(12),
+        splashColor: ColoresApp.blanco.withValues(alpha: 0.3),
         highlightColor: ColoresApp.blanco.withValues(alpha: 0.1),
         child: const Padding(
           padding: EdgeInsets.all(8),
-          child:   Icon(Icons.settings_outlined, color: ColoresApp.blanco, size: 20),
+          child:
+              Icon(Icons.settings_outlined, color: ColoresApp.blanco, size: 20),
         ),
       ),
     );
@@ -359,21 +364,45 @@ class _EstadisticasDirigido extends StatelessWidget {
       children: [
         Row(
           children: [
-            Expanded(child: _TarjetaEstadistica(valor: estado.presentesEsperados, etiqueta: 'Llegaron',   color: ColoresApp.verde)),
+            Expanded(
+                child: _TarjetaEstadistica(
+                    valor: estado.presentesEsperados,
+                    etiqueta: 'Llegaron',
+                    color: ColoresApp.verde)),
             const SizedBox(width: 10),
-            Expanded(child: _TarjetaEstadistica(valor: estado.pendientes,         etiqueta: 'Pendientes', color: ColoresApp.ambar)),
+            Expanded(
+                child: _TarjetaEstadistica(
+                    valor: estado.pendientes,
+                    etiqueta: 'Pendientes',
+                    color: ColoresApp.ambar)),
             const SizedBox(width: 10),
-            Expanded(child: _TarjetaEstadistica(valor: estado.ausentes,           etiqueta: 'Ausentes',   color: ColoresApp.rojo)),
+            Expanded(
+                child: _TarjetaEstadistica(
+                    valor: estado.ausentes,
+                    etiqueta: 'Ausentes',
+                    color: ColoresApp.rojo)),
           ],
         ),
         const SizedBox(height: 10),
         Row(
           children: [
-            Expanded(child: _TarjetaEstadistica(valor: estado.presentesNoEsperados, etiqueta: 'No esperados', color: ColoresApp.teal)),
+            Expanded(
+                child: _TarjetaEstadistica(
+                    valor: estado.presentesNoEsperados,
+                    etiqueta: 'No esperados',
+                    color: ColoresApp.teal)),
             const SizedBox(width: 10),
-            Expanded(child: _TarjetaEstadistica(valor: estado.presentesForaneos,    etiqueta: 'Foráneos',     color: ColoresApp.teal)),
+            Expanded(
+                child: _TarjetaEstadistica(
+                    valor: estado.presentesForaneos,
+                    etiqueta: 'Foráneos',
+                    color: ColoresApp.teal)),
             const SizedBox(width: 10),
-            Expanded(child: _TarjetaEstadistica(valor: estado.totalPresentes,       etiqueta: 'Total en sala', color: ColoresApp.textoPrimario)),
+            Expanded(
+                child: _TarjetaEstadistica(
+                    valor: estado.totalPresentes,
+                    etiqueta: 'Total en sala',
+                    color: ColoresApp.textoPrimario)),
           ],
         ),
       ],
@@ -390,11 +419,23 @@ class _EstadisticasGeneral extends StatelessWidget {
     final delSistema = estado.totalPresentes - estado.presentesForaneos;
     return Row(
       children: [
-        Expanded(child: _TarjetaEstadistica(valor: delSistema,              etiqueta: 'Del sistema', color: ColoresApp.verde)),
+        Expanded(
+            child: _TarjetaEstadistica(
+                valor: delSistema,
+                etiqueta: 'Del sistema',
+                color: ColoresApp.verde)),
         const SizedBox(width: 10),
-        Expanded(child: _TarjetaEstadistica(valor: estado.presentesForaneos, etiqueta: 'Foráneos',   color: ColoresApp.teal)),
+        Expanded(
+            child: _TarjetaEstadistica(
+                valor: estado.presentesForaneos,
+                etiqueta: 'Foráneos',
+                color: ColoresApp.teal)),
         const SizedBox(width: 10),
-        Expanded(child: _TarjetaEstadistica(valor: estado.totalPresentes,    etiqueta: 'Total',      color: ColoresApp.textoPrimario)),
+        Expanded(
+            child: _TarjetaEstadistica(
+                valor: estado.totalPresentes,
+                etiqueta: 'Total',
+                color: ColoresApp.textoPrimario)),
       ],
     );
   }
@@ -409,20 +450,20 @@ class _SeccionTasas extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final convocatoria = estado.tasaConvocatoria!;
-    final ocupacion    = estado.tasaOcupacion!;
+    final ocupacion = estado.tasaOcupacion!;
     return TarjetaApp(
       variante: VarianteTarjeta.normal,
       child: Column(
         children: [
           BarraEstadistica(
-            etiqueta:   'Tasa convocatoria',
+            etiqueta: 'Tasa convocatoria',
             porcentaje: convocatoria,
           ),
           const SizedBox(height: 16),
           BarraEstadistica(
-            etiqueta:        'Tasa ocupación',
-            porcentaje:      ocupacion,
-            colorBarra:      ColoresApp.acento,
+            etiqueta: 'Tasa ocupación',
+            porcentaje: ocupacion,
+            colorBarra: ColoresApp.acento,
             colorPorcentaje: ColoresApp.acento,
           ),
         ],
@@ -438,9 +479,9 @@ class _TarjetaEstadistica extends StatelessWidget {
     required this.color,
   });
 
-  final int    valor;
+  final int valor;
   final String etiqueta;
-  final Color  color;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -452,26 +493,27 @@ class _TarjetaEstadistica extends StatelessWidget {
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 350),
             transitionBuilder: (child, animation) => ScaleTransition(
-              scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+              scale:
+                  CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
               child: FadeTransition(opacity: animation, child: child),
             ),
             child: Text(
               '$valor',
               key: ValueKey(valor),
               style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                color:      color,
-                fontSize:   28,
-                fontWeight: FontWeight.w800,
-              ),
+                    color: color,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                  ),
             ),
           ),
           const SizedBox(height: 2),
           Text(
             etiqueta,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontSize:   13,
-              fontWeight: FontWeight.w600,
-            ),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
           ),
         ],
       ),
@@ -507,14 +549,15 @@ class _BotonesAccion extends StatelessWidget {
     final botones = <_BotonAccion>[
       if (evento.permiteQrEvento)
         _BotonAccion(
-          icono:       Icons.qr_code_scanner_rounded,
-          etiqueta:    'QR\nEvento',
-          alPresionar: () => ModalQrEvento.mostrar(context, eventoId: evento.id, horaFin: evento.horaFin),
+          icono: Icons.qr_code_scanner_rounded,
+          etiqueta: 'QR\nEvento',
+          alPresionar: () => ModalQrEvento.mostrar(context,
+              eventoId: evento.id, horaFin: evento.horaFin),
         ),
       if (evento.permiteQrUsuario)
         _BotonAccion(
-          icono:       Icons.qr_code_rounded,
-          etiqueta:    'QR\nUsuario',
+          icono: Icons.qr_code_rounded,
+          etiqueta: 'QR\nUsuario',
           alPresionar: () async {
             await context.push(Rutas.escanearQrUsuarioUrl(evento.id));
             if (context.mounted) {
@@ -524,8 +567,8 @@ class _BotonesAccion extends StatelessWidget {
         ),
       if (evento.permiteManualAdmin)
         _BotonAccion(
-          icono:       Icons.person_search_rounded,
-          etiqueta:    'Buscar\nusuario',
+          icono: Icons.person_search_rounded,
+          etiqueta: 'Buscar\nusuario',
           alPresionar: () async {
             await context.push(Rutas.buscarAsistenteUrl(evento.id));
             if (context.mounted) {
@@ -535,17 +578,21 @@ class _BotonesAccion extends StatelessWidget {
         ),
       if (evento.permiteForaneos)
         _BotonAccion(
-          icono:       Icons.person_add_rounded,
-          etiqueta:    'Foráneo',
+          icono: Icons.person_add_rounded,
+          etiqueta: 'Foráneo',
           alPresionar: () => ModalForaneo.mostrar(
             context,
-            onRegistrar: ({required primerNombre, required primerApellido, required cedula, contacto}) =>
+            onRegistrar: (
+                    {required primerNombre,
+                    required primerApellido,
+                    required cedula,
+                    contacto}) =>
                 context.read<PanelControlCubit>().registrarForaneo(
-                  primerNombre:   primerNombre,
-                  primerApellido: primerApellido,
-                  cedula:         cedula,
-                  contacto:       contacto,
-                ),
+                      primerNombre: primerNombre,
+                      primerApellido: primerApellido,
+                      cedula: cedula,
+                      contacto: contacto,
+                    ),
           ),
         ),
     ];
@@ -558,7 +605,8 @@ class _BotonesAccion extends StatelessWidget {
       if (i < botones.length - 1) items.add(const SizedBox(width: 8));
     }
     return IntrinsicHeight(
-      child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: items),
+      child:
+          Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: items),
     );
   }
 }
@@ -569,8 +617,8 @@ class _BotonAccion extends StatelessWidget {
     required this.etiqueta,
     this.alPresionar,
   });
-  final IconData      icono;
-  final String        etiqueta;
+  final IconData icono;
+  final String etiqueta;
   final VoidCallback? alPresionar;
 
   @override
@@ -581,31 +629,31 @@ class _BotonAccion extends StatelessWidget {
         borderRadius: radio,
         boxShadow: [
           BoxShadow(
-            color:      ColoresApp.sombraTarjeta,
+            color: ColoresApp.sombraTarjeta,
             blurRadius: 4,
-            offset:     Offset(0, 1),
+            offset: Offset(0, 1),
           ),
         ],
       ),
       child: Material(
-        color:        ColoresApp.blanco,
+        color: ColoresApp.blanco,
         borderRadius: radio,
         child: InkWell(
-          onTap:           alPresionar,
-          borderRadius:    radio,
-          splashColor:     ColoresApp.acentoClaro,
-          highlightColor:  ColoresApp.acentoClaro.withValues(alpha: 0.6),
+          onTap: alPresionar,
+          borderRadius: radio,
+          splashColor: ColoresApp.acentoClaro,
+          highlightColor: ColoresApp.acentoClaro.withValues(alpha: 0.6),
           child: Ink(
             decoration: const BoxDecoration(
-              color:        ColoresApp.blanco,
+              color: ColoresApp.blanco,
               borderRadius: radio,
-              border:       Border.fromBorderSide(
+              border: Border.fromBorderSide(
                 BorderSide(color: ColoresApp.bordesuave),
               ),
             ),
             padding: const EdgeInsets.all(14),
             child: Column(
-              mainAxisSize:      MainAxisSize.min,
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(icono, size: 26, color: ColoresApp.acento),
@@ -613,9 +661,9 @@ class _BotonAccion extends StatelessWidget {
                 Text(
                   etiqueta,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontSize:   11,
-                  ),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 11,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -642,11 +690,12 @@ class _SeccionUsuarios extends StatelessWidget {
         const _EncabezadoSeccion(titulo: 'USUARIOS REGISTRADOS'),
         const SizedBox(height: 12),
         _FiltrosTabs(
-          estado:    estado,
+          estado: estado,
           onFiltrar: context.read<PanelControlCubit>().cambiarFiltro,
         ),
         const SizedBox(height: 12),
-        if (estado.filtroActivo == FiltroAsistentes.pendientes && filtrados.isNotEmpty) ...[
+        if (estado.filtroActivo == FiltroAsistentes.pendientes &&
+            filtrados.isNotEmpty) ...[
           _BotonCopiarLista(asistentes: filtrados),
           const SizedBox(height: 8),
         ],
@@ -665,14 +714,14 @@ class _SeccionUsuarios extends StatelessWidget {
             (a) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: TarjetaAsistente(
-                iniciales:      a.iniciales,
-                nombre:         a.nombre,
-                estatus:        a.estatus,
-                detalle:        a.etiquetaDetalle,
-                subtitulo:      a.registradoPorNombre != null
+                iniciales: a.iniciales,
+                nombre: a.nombre,
+                estatus: a.estatus,
+                detalle: a.etiquetaDetalle,
+                subtitulo: a.registradoPorNombre != null
                     ? 'Reg. por: ${a.registradoPorNombre}'
                     : null,
-                urlFoto:        a.urlFoto,
+                urlFoto: a.urlFoto,
                 accionTrailing: a.estatus == EstatusAsistencia.esperado
                     ? _BotonRegistrar(eventoId: estado.evento.id)
                     : null,
@@ -693,24 +742,24 @@ class _BotonRegistrar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
-        onTap:        () => context.push(Rutas.buscarAsistenteUrl(eventoId)),
+        onTap: () => context.push(Rutas.buscarAsistenteUrl(eventoId)),
         borderRadius: BorderRadius.circular(20),
-        splashColor:  ColoresApp.blanco.withValues(alpha: 0.3),
+        splashColor: ColoresApp.blanco.withValues(alpha: 0.3),
         child: Ink(
           decoration: BoxDecoration(
-            gradient:     ColoresApp.degradadoPrincipal,
+            gradient: ColoresApp.degradadoPrincipal,
             borderRadius: BorderRadius.circular(20),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
           child: Text(
             'Registrar',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color:      ColoresApp.blanco,
-              fontWeight: FontWeight.w700,
-            ),
+                  color: ColoresApp.blanco,
+                  fontWeight: FontWeight.w700,
+                ),
           ),
         ),
       ),
@@ -726,26 +775,28 @@ class _FiltrosTabs extends StatelessWidget {
     required this.onFiltrar,
   });
 
-  final PanelControlCargado             estado;
+  final PanelControlCargado estado;
   final void Function(FiltroAsistentes) onFiltrar;
 
   static const _etiquetas = {
-    FiltroAsistentes.todos:        'Todos',
-    FiltroAsistentes.esperados:    'Esperados',
-    FiltroAsistentes.pendientes:   'Sin llegar',
-    FiltroAsistentes.noEsperados:  'No esperados',
-    FiltroAsistentes.registrados:  'Llegaron',
-    FiltroAsistentes.abandono:     'Abandono',
-    FiltroAsistentes.foraneos:     'Foráneos',
+    FiltroAsistentes.todos: 'Todos',
+    FiltroAsistentes.esperados: 'Esperados',
+    FiltroAsistentes.pendientes: 'Sin llegar',
+    FiltroAsistentes.noEsperados: 'No esperados',
+    FiltroAsistentes.registrados: 'Llegaron',
+    FiltroAsistentes.abandono: 'Abandono',
+    FiltroAsistentes.foraneos: 'Foráneos',
   };
 
   List<FiltroAsistentes> _filtrosVisibles() {
     if (!estado.esEventoDirigido) {
       return FiltroAsistentes.values
-          .where((f) =>
-              f != FiltroAsistentes.esperados    &&
-              f != FiltroAsistentes.pendientes   &&
-              f != FiltroAsistentes.noEsperados,)
+          .where(
+            (f) =>
+                f != FiltroAsistentes.esperados &&
+                f != FiltroAsistentes.pendientes &&
+                f != FiltroAsistentes.noEsperados,
+          )
           .toList();
     }
     return FiltroAsistentes.values.toList();
@@ -761,8 +812,8 @@ class _FiltrosTabs extends StatelessWidget {
             padding: const EdgeInsets.only(right: 8),
             child: _ChipFiltro(
               etiqueta: _etiquetas[filtro]!,
-              activo:   filtro == estado.filtroActivo,
-              onTap:    () => onFiltrar(filtro),
+              activo: filtro == estado.filtroActivo,
+              onTap: () => onFiltrar(filtro),
             ),
           );
         }).toList(),
@@ -778,48 +829,50 @@ class _ChipFiltro extends StatelessWidget {
     required this.onTap,
   });
 
-  final String       etiqueta;
-  final bool         activo;
+  final String etiqueta;
+  final bool activo;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(30),
       child: InkWell(
-        onTap:        onTap,
+        onTap: onTap,
         borderRadius: BorderRadius.circular(30),
         child: activo
             ? Ink(
                 decoration: BoxDecoration(
-                  gradient:     ColoresApp.degradadoPrincipal,
+                  gradient: ColoresApp.degradadoPrincipal,
                   borderRadius: BorderRadius.circular(30),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
                 child: Text(
                   etiqueta,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color:      ColoresApp.blanco,
-                    fontSize:   13,
-                    fontWeight: FontWeight.w700,
-                  ),
+                        color: ColoresApp.blanco,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                 ),
               )
             : Container(
                 decoration: BoxDecoration(
-                  border:       Border.all(color: ColoresApp.bordeMedio),
+                  border: Border.all(color: ColoresApp.bordeMedio),
                   borderRadius: BorderRadius.circular(30),
-                  color:        ColoresApp.superficiePrimaria,
+                  color: ColoresApp.superficiePrimaria,
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
                 child: Text(
                   etiqueta,
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color:      ColoresApp.textoSecundario,
-                    fontSize:   13,
-                    fontWeight: FontWeight.w700,
-                  ),
+                        color: ColoresApp.textoSecundario,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                 ),
               ),
       ),
@@ -845,16 +898,16 @@ class _SeccionAlertaPendientes extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width:  42,
+              width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color:        ColoresApp.ambarClaro,
+                color: ColoresApp.ambarClaro,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(
                 Icons.person_off_rounded,
                 color: ColoresApp.ambar,
-                size:  22,
+                size: 22,
               ),
             ),
             const SizedBox(width: 14),
@@ -865,15 +918,15 @@ class _SeccionAlertaPendientes extends StatelessWidget {
                   Text(
                     '${estado.pendientes} sin llegar',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color:      ColoresApp.textoPrimario,
-                    ),
+                          fontWeight: FontWeight.w700,
+                          color: ColoresApp.textoPrimario,
+                        ),
                   ),
                   Text(
                     'Audiencia que aún no ha llegado al evento',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: ColoresApp.textoSecundario,
-                    ),
+                          color: ColoresApp.textoSecundario,
+                        ),
                   ),
                 ],
               ),
@@ -885,7 +938,8 @@ class _SeccionAlertaPendientes extends StatelessWidget {
                   .cambiarFiltro(FiltroAsistentes.pendientes),
               style: TextButton.styleFrom(
                 foregroundColor: ColoresApp.acento,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               child: const Text(
                 'Ver lista',
@@ -911,7 +965,7 @@ class _BotonCopiarLista extends StatelessWidget {
     if (!context.mounted) return;
     AvisoApp.mostrar(
       context,
-      texto:  'Lista copiada al portapapeles',
+      texto: 'Lista copiada al portapapeles',
       estilo: EstiloAviso.exito,
     );
   }
@@ -922,7 +976,7 @@ class _BotonCopiarLista extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: TextButton.icon(
         onPressed: () => _copiar(context),
-        icon:  const Icon(Icons.copy_all_rounded, size: 15),
+        icon: const Icon(Icons.copy_all_rounded, size: 15),
         label: const Text('Copiar lista'),
         style: TextButton.styleFrom(
           foregroundColor: ColoresApp.textoSecundario,
@@ -945,11 +999,11 @@ class _EncabezadoSeccion extends StatelessWidget {
     return Text(
       titulo,
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-        color:         ColoresApp.textoSecundario,
-        fontWeight:    FontWeight.w800,
-        fontSize: 12,
-        letterSpacing: 0.8,
-      ),
+            color: ColoresApp.textoSecundario,
+            fontWeight: FontWeight.w800,
+            fontSize: 12,
+            letterSpacing: 0.8,
+          ),
     );
   }
 }
@@ -962,19 +1016,19 @@ class _DialogoCerrarEvento extends StatefulWidget {
     required this.alConfirmar,
   });
 
-  final String       tituloEvento;
+  final String tituloEvento;
   final VoidCallback alConfirmar;
 
   static void mostrar(
     BuildContext context, {
-    required String       tituloEvento,
+    required String tituloEvento,
     required VoidCallback alConfirmar,
   }) {
     showDialog<void>(
       context: context,
       builder: (_) => _DialogoCerrarEvento(
         tituloEvento: tituloEvento,
-        alConfirmar:  alConfirmar,
+        alConfirmar: alConfirmar,
       ),
     );
   }
@@ -985,7 +1039,7 @@ class _DialogoCerrarEvento extends StatefulWidget {
 
 class _DialogoCerrarEventoState extends State<_DialogoCerrarEvento> {
   final _controlador = TextEditingController();
-  bool  _coincidenNombres    = false;
+  bool _coincidenNombres = false;
 
   @override
   void initState() {
@@ -995,7 +1049,8 @@ class _DialogoCerrarEventoState extends State<_DialogoCerrarEvento> {
 
   void _actualizarCoincidencia() {
     final coincide = _controlador.text.trim() == widget.tituloEvento.trim();
-    if (coincide != _coincidenNombres) setState(() => _coincidenNombres = coincide);
+    if (coincide != _coincidenNombres)
+      setState(() => _coincidenNombres = coincide);
   }
 
   @override
@@ -1009,22 +1064,22 @@ class _DialogoCerrarEventoState extends State<_DialogoCerrarEvento> {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding:    const EdgeInsets.symmetric(horizontal: 28),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
       child: Container(
         decoration: BoxDecoration(
-          color:        ColoresApp.superficiePrimaria,
+          color: ColoresApp.superficiePrimaria,
           borderRadius: BorderRadius.circular(20),
           boxShadow: const [
             BoxShadow(
-              color:      ColoresApp.sombraGeneral,
+              color: ColoresApp.sombraGeneral,
               blurRadius: 24,
-              offset:     Offset(0, 8),
+              offset: Offset(0, 8),
             ),
           ],
         ),
         padding: const EdgeInsets.all(24),
         child: Column(
-          mainAxisSize:       MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -1034,17 +1089,19 @@ class _DialogoCerrarEventoState extends State<_DialogoCerrarEvento> {
             const SizedBox(height: 10),
             RichText(
               text: TextSpan(
-                style: Theme.of(context).textTheme.labelSmall
+                style: Theme.of(context)
+                    .textTheme
+                    .labelSmall
                     ?.copyWith(fontSize: 14, height: 1.5),
                 children: [
                   const TextSpan(text: 'Escribe el nombre '),
                   TextSpan(
-                    text:  widget.tituloEvento,
+                    text: widget.tituloEvento,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontSize:   14,
-                      fontWeight: FontWeight.w700,
-                      color:      ColoresApp.textoPrimario,
-                    ),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: ColoresApp.textoPrimario,
+                        ),
                   ),
                   const TextSpan(text: ' para confirmar el cierre.'),
                 ],
@@ -1052,14 +1109,14 @@ class _DialogoCerrarEventoState extends State<_DialogoCerrarEvento> {
             ),
             const SizedBox(height: 16),
             CampoTextoApp(
-              etiqueta:   'Nombre del evento',
-              hintText:   widget.tituloEvento,
+              etiqueta: 'Nombre del evento',
+              hintText: widget.tituloEvento,
               controller: _controlador,
             ),
             const SizedBox(height: 20),
             BotonApp(
-              variante:    VarianteBoton.rojo,
-              texto:       'Confirmar cierre',
+              variante: VarianteBoton.rojo,
+              texto: 'Confirmar cierre',
               alPresionar: _coincidenNombres
                   ? () {
                       Navigator.of(context).pop();
@@ -1069,8 +1126,8 @@ class _DialogoCerrarEventoState extends State<_DialogoCerrarEvento> {
             ),
             const SizedBox(height: 10),
             BotonApp(
-              variante:    VarianteBoton.ghost,
-              texto:       'Cancelar',
+              variante: VarianteBoton.ghost,
+              texto: 'Cancelar',
               alPresionar: () => Navigator.of(context).pop(),
             ),
           ],

@@ -15,16 +15,16 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
   final PanelControlRepositorio _repositorio;
   String? _eventoId;
   String? _adminId;
-  List<AsistenteItem> _audiencia      = [];
-  bool                _estaRecargando = false;
+  List<AsistenteItem> _audiencia = [];
+  bool _estaRecargando = false;
   StreamSubscription<List<Map<String, dynamic>>>? _suscripcionAsistencia;
 
   Future<void> cargar(String eventoId, {String? adminId}) async {
     _eventoId = eventoId;
-    _adminId  = adminId;
+    _adminId = adminId;
     emit(const PanelControlCargando());
     try {
-      final evento     = await _repositorio.obtenerEvento(eventoId);
+      final evento = await _repositorio.obtenerEvento(eventoId);
       final asistentes = await _repositorio.obtenerAsistentes(eventoId);
 
       _audiencia = evento.alcance == AlcanceEvento.dirigido
@@ -32,11 +32,13 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
           : <AsistenteItem>[];
 
       final asistentesConFlag = _marcarEsperados(asistentes, _audiencia);
-      emit(PanelControlCargado(
-        evento:         evento,
-        asistentes:     asistentesConFlag,
-        listaEsperados: _mergarConAsistencia(_audiencia, asistentesConFlag),
-      ),);
+      emit(
+        PanelControlCargado(
+          evento: evento,
+          asistentes: asistentesConFlag,
+          listaEsperados: _mergarConAsistencia(_audiencia, asistentesConFlag),
+        ),
+      );
       _suscribirStreamAsistencia(eventoId);
     } on FallaServidor catch (e) {
       reportarError(e);
@@ -62,11 +64,11 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
     emit(cargado.copiarCon(estaRegistrando: true));
     try {
       await _repositorio.registrarForaneo(
-        eventoId:        _eventoId!,
-        primerNombre:    primerNombre,
-        primerApellido:  primerApellido,
-        cedula:          cedula,
-        contacto:        contacto,
+        eventoId: _eventoId!,
+        primerNombre: primerNombre,
+        primerApellido: primerApellido,
+        cedula: cedula,
+        contacto: contacto,
         registradoPorId: _adminId,
       );
       await _actualizarListaAsistentes(cargado, estaRegistrando: false);
@@ -102,16 +104,20 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
       emit(const PanelControlEventoCerrado());
     } on FallaServidor catch (e) {
       reportarError(e);
-      emit(PanelControlOperacionFallida(
-        anterior: cargado.copiarCon(estaCerrando: false),
-        mensaje:  e.mensaje,
-      ),);
+      emit(
+        PanelControlOperacionFallida(
+          anterior: cargado.copiarCon(estaCerrando: false),
+          mensaje: e.mensaje,
+        ),
+      );
     } on FallaInesperada catch (e) {
       reportarError(e);
-      emit(PanelControlOperacionFallida(
-        anterior: cargado.copiarCon(estaCerrando: false),
-        mensaje:  e.mensaje,
-      ),);
+      emit(
+        PanelControlOperacionFallida(
+          anterior: cargado.copiarCon(estaCerrando: false),
+          mensaje: e.mensaje,
+        ),
+      );
     }
   }
 
@@ -153,32 +159,34 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
     PanelControlCargado base, {
     bool estaRegistrando = false,
   }) async {
-    final asistentes        = await _repositorio.obtenerAsistentes(_eventoId!);
+    final asistentes = await _repositorio.obtenerAsistentes(_eventoId!);
     final asistentesConFlag = _marcarEsperados(asistentes, _audiencia);
-    final actual            = _extraerCargado(state) ?? base;
-    emit(actual.copiarCon(
-      asistentes:      asistentesConFlag,
-      listaEsperados:  _mergarConAsistencia(_audiencia, asistentesConFlag),
-      estaRegistrando: estaRegistrando,
-    ),);
+    final actual = _extraerCargado(state) ?? base;
+    emit(
+      actual.copiarCon(
+        asistentes: asistentesConFlag,
+        listaEsperados: _mergarConAsistencia(_audiencia, asistentesConFlag),
+        estaRegistrando: estaRegistrando,
+      ),
+    );
   }
 
   void _emitirFalloPanel(PanelControlCargado base, String mensaje) {
     final actual = _extraerCargado(state) ?? base;
-    emit(PanelControlOperacionFallida(
-      anterior: actual.copiarCon(estaRegistrando: false),
-      mensaje:  mensaje,
-    ),);
+    emit(
+      PanelControlOperacionFallida(
+        anterior: actual.copiarCon(estaRegistrando: false),
+        mensaje: mensaje,
+      ),
+    );
   }
 
   List<AsistenteItem> _marcarEsperados(
     List<AsistenteItem> asistentes,
     List<AsistenteItem> audiencia,
   ) {
-    final idsEsperados = audiencia
-        .map((a) => a.usuarioId)
-        .whereType<String>()
-        .toSet();
+    final idsEsperados =
+        audiencia.map((a) => a.usuarioId).whereType<String>().toSet();
     return asistentes.map((a) {
       if (a.usuarioId != null && idsEsperados.contains(a.usuarioId)) {
         return a.copiarCon(eraEsperado: true);
@@ -203,8 +211,8 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
 
   PanelControlCargado? _extraerCargado(PanelControlEstado estado) =>
       switch (estado) {
-        PanelControlCargado()          => estado,
+        PanelControlCargado() => estado,
         PanelControlOperacionFallida() => estado.anterior,
-        _                              => null,
+        _ => null,
       };
 }

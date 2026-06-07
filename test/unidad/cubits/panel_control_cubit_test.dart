@@ -18,49 +18,49 @@ Evento _crearEvento({
   bool marcarAusentesAuto = false,
 }) =>
     Evento(
-      id:                      id,
-      titulo:                  'Charla',
-      modoRegistro:            ModoRegistro.auto,
-      estatus:                 EstatusEvento.enCurso,
-      alcance:                 alcance,
-      creadoEn:                DateTime.utc(2025),
-      actualizadoEn:           DateTime.utc(2025),
-      permiteQrEvento:         true,
-      permiteQrUsuario:        true,
-      permiteManualAdmin:      true,
-      requiereCicloCompleto:   false,
+      id: id,
+      titulo: 'Charla',
+      modoRegistro: ModoRegistro.auto,
+      estatus: EstatusEvento.enCurso,
+      alcance: alcance,
+      creadoEn: DateTime.utc(2025),
+      actualizadoEn: DateTime.utc(2025),
+      permiteQrEvento: true,
+      permiteQrUsuario: true,
+      permiteManualAdmin: true,
+      requiereCicloCompleto: false,
       permiteSalidaAnticipada: false,
-      marcarAusentesAuto:      marcarAusentesAuto,
-      permiteForaneos:         false,
+      marcarAusentesAuto: marcarAusentesAuto,
+      permiteForaneos: false,
     );
 
 const _asistentePresenteEsperado = AsistenteItem(
-  id:          'a-1',
-  usuarioId:   'u-1',
-  nombre:      'Leo Alvarez',
-  iniciales:   'LA',
-  estatus:     EstatusAsistencia.presente,
-  esForaneo:   false,
+  id: 'a-1',
+  usuarioId: 'u-1',
+  nombre: 'Leo Alvarez',
+  iniciales: 'LA',
+  estatus: EstatusAsistencia.presente,
+  esForaneo: false,
   eraEsperado: true,
 );
 
 const _asistenteForaneo = AsistenteItem(
-  id:          'a-2',
-  usuarioId:   null,
-  nombre:      'Visitante',
-  iniciales:   'V',
-  estatus:     EstatusAsistencia.presente,
-  esForaneo:   true,
+  id: 'a-2',
+  usuarioId: null,
+  nombre: 'Visitante',
+  iniciales: 'V',
+  estatus: EstatusAsistencia.presente,
+  esForaneo: true,
   eraEsperado: false,
 );
 
 const _asistenteEsperadoPendiente = AsistenteItem(
-  id:          'a-3',
-  usuarioId:   'u-3',
-  nombre:      'Carlos Ruiz',
-  iniciales:   'CR',
-  estatus:     EstatusAsistencia.esperado,
-  esForaneo:   false,
+  id: 'a-3',
+  usuarioId: 'u-3',
+  nombre: 'Carlos Ruiz',
+  iniciales: 'CR',
+  estatus: EstatusAsistencia.esperado,
+  esForaneo: false,
   eraEsperado: true,
 );
 
@@ -86,8 +86,8 @@ void main() {
       'emite [Cargando, Cargado] para evento dirigido con audiencia',
       build: build,
       setUp: () {
-        when(() => repositorio.obtenerEvento(any()))
-            .thenAnswer((_) async => _crearEvento(alcance: AlcanceEvento.dirigido));
+        when(() => repositorio.obtenerEvento(any())).thenAnswer(
+            (_) async => _crearEvento(alcance: AlcanceEvento.dirigido));
         when(() => repositorio.obtenerAsistentes(any()))
             .thenAnswer((_) async => [_asistentePresenteEsperado]);
         when(() => repositorio.obtenerMiembrosGrupo(any()))
@@ -197,8 +197,7 @@ void main() {
             .thenAnswer((_) async => _crearEvento());
         when(() => repositorio.obtenerAsistentes(any()))
             .thenAnswer((_) async => []);
-        when(() => repositorio.cerrarEvento(any()))
-            .thenAnswer((_) async {});
+        when(() => repositorio.cerrarEvento(any())).thenAnswer((_) async {});
       },
       act: (c) async {
         await c.cargar('evento-1');
@@ -224,8 +223,7 @@ void main() {
             .thenAnswer((_) async => _crearEvento(marcarAusentesAuto: true));
         when(() => repositorio.obtenerAsistentes(any()))
             .thenAnswer((_) async => []);
-        when(() => repositorio.cerrarEvento(any()))
-            .thenAnswer((_) async {});
+        when(() => repositorio.cerrarEvento(any())).thenAnswer((_) async {});
         when(() => repositorio.marcarAusentesAuto(any()))
             .thenAnswer((_) async {});
       },
@@ -269,8 +267,8 @@ void main() {
 
     setUp(() {
       estado = PanelControlCargado(
-        evento:         _crearEvento(alcance: AlcanceEvento.dirigido),
-        asistentes:     const [
+        evento: _crearEvento(alcance: AlcanceEvento.dirigido),
+        asistentes: const [
           _asistentePresenteEsperado,
           _asistenteForaneo,
           _asistenteEsperadoPendiente,
@@ -318,8 +316,8 @@ void main() {
   group('PanelControlCubit contadores', () {
     test('totalPresentes cuenta presente, completado y salioAnticipado', () {
       final e = PanelControlCargado(
-        evento:         _crearEvento(),
-        asistentes:     const [
+        evento: _crearEvento(),
+        asistentes: const [
           _asistentePresenteEsperado,
           _asistenteForaneo,
           _asistenteEsperadoPendiente,
@@ -331,8 +329,8 @@ void main() {
 
     test('pendientes cuenta esperados sin registrar en listaEsperados', () {
       final e = PanelControlCargado(
-        evento:         _crearEvento(alcance: AlcanceEvento.dirigido),
-        asistentes:     const [],
+        evento: _crearEvento(alcance: AlcanceEvento.dirigido),
+        asistentes: const [],
         listaEsperados: const [_asistenteEsperadoPendiente],
       );
       expect(e.pendientes, 1);
@@ -340,8 +338,8 @@ void main() {
 
     test('tasaConvocatoria es null para evento general', () {
       final e = PanelControlCargado(
-        evento:         _crearEvento(),
-        asistentes:     const [],
+        evento: _crearEvento(),
+        asistentes: const [],
         listaEsperados: const [],
       );
       expect(e.tasaConvocatoria, isNull);
@@ -349,8 +347,8 @@ void main() {
 
     test('tasaConvocatoria calcula correctamente para evento dirigido', () {
       final e = PanelControlCargado(
-        evento:         _crearEvento(alcance: AlcanceEvento.dirigido),
-        asistentes:     const [_asistentePresenteEsperado],
+        evento: _crearEvento(alcance: AlcanceEvento.dirigido),
+        asistentes: const [_asistentePresenteEsperado],
         listaEsperados: const [
           _asistentePresenteEsperado,
           _asistenteEsperadoPendiente,

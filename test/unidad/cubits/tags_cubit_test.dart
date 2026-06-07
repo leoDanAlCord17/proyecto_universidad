@@ -11,37 +11,37 @@ import '../../helpers.dart';
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 const _t1 = Tag(
-  id:           'tag-1',
-  nombre:       'Ingeniería',
-  tipo:         'principal',
-  estatus:      true,
-  descripcion:  'Facultad de Ingeniería',
+  id: 'tag-1',
+  nombre: 'Ingeniería',
+  tipo: 'principal',
+  estatus: true,
+  descripcion: 'Facultad de Ingeniería',
   totalUsuarios: 10,
 );
 const _t2 = Tag(
-  id:           'tag-2',
-  nombre:       'Sistemas',
-  tipo:         'secundario',
-  estatus:      true,
-  descripcion:  'Carrera de Sistemas',
+  id: 'tag-2',
+  nombre: 'Sistemas',
+  tipo: 'secundario',
+  estatus: true,
+  descripcion: 'Carrera de Sistemas',
   totalUsuarios: 5,
 );
 const _t3 = Tag(
-  id:           'tag-3',
-  nombre:       'Medicina',
-  tipo:         'principal',
-  estatus:      false,
-  descripcion:  'Facultad de Medicina',
+  id: 'tag-3',
+  nombre: 'Medicina',
+  tipo: 'principal',
+  estatus: false,
+  descripcion: 'Facultad de Medicina',
   totalUsuarios: 0,
 );
 
 const _lista = [_t1, _t2, _t3];
 
 TagsCargados _cargados() => const TagsCargados(
-  tags:          _lista,
-  tagsFiltrados: _lista,
-  hayMas:        false,
-);
+      tags: _lista,
+      tagsFiltrados: _lista,
+      hayMas: false,
+    );
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
@@ -72,9 +72,9 @@ void main() {
       expect: () => [
         isA<TagsCargando>(),
         isA<TagsCargados>()
-            .having((e) => e.tags.length,          'tags.length',          3)
+            .having((e) => e.tags.length, 'tags.length', 3)
             .having((e) => e.tagsFiltrados.length, 'tagsFiltrados.length', 3)
-            .having((e) => e.hayMas,               'hayMas',               false),
+            .having((e) => e.hayMas, 'hayMas', false),
       ],
     );
 
@@ -88,8 +88,7 @@ void main() {
       act: (c) => c.cargarTags(),
       expect: () => [
         isA<TagsCargando>(),
-        isA<TagsCargados>()
-            .having((e) => e.hayMas, 'hayMas', true),
+        isA<TagsCargados>().having((e) => e.hayMas, 'hayMas', true),
       ],
     );
 
@@ -148,16 +147,16 @@ void main() {
             .thenAnswer((_) async => (tags: [_t3], hayMas: false));
       },
       seed: () => const TagsCargados(
-        tags:          [_t1, _t2],
+        tags: [_t1, _t2],
         tagsFiltrados: [_t1, _t2],
-        hayMas:        true,
+        hayMas: true,
       ),
       act: (c) => c.cargarMas(),
       expect: () => [
         isA<TagsCargandoMas>(),
         isA<TagsCargados>()
             .having((e) => e.tags.length, 'tags.length', 3)
-            .having((e) => e.hayMas,      'hayMas',      false),
+            .having((e) => e.hayMas, 'hayMas', false),
       ],
     );
 
@@ -169,16 +168,16 @@ void main() {
             .thenThrow(const FallaServidor('Error de red'));
       },
       seed: () => const TagsCargados(
-        tags:          [_t1, _t2],
+        tags: [_t1, _t2],
         tagsFiltrados: [_t1, _t2],
-        hayMas:        true,
+        hayMas: true,
       ),
       act: (c) => c.cargarMas(),
       expect: () => [
         isA<TagsCargandoMas>(),
         isA<TagsCargados>()
             .having((e) => e.tags.length, 'tags.length', 2)
-            .having((e) => e.hayMas,      'hayMas',      true),
+            .having((e) => e.hayMas, 'hayMas', true),
       ],
     );
   });
@@ -239,14 +238,13 @@ void main() {
       'texto vacío restaura todos los tags',
       build: build,
       seed: () => const TagsCargados(
-        tags:          _lista,
+        tags: _lista,
         tagsFiltrados: [_t1],
-        hayMas:        false,
+        hayMas: false,
       ),
       act: (c) => c.filtrar(''),
       expect: () => [
-        isA<TagsCargados>()
-            .having((e) => e.tagsFiltrados.length, 'length', 3),
+        isA<TagsCargados>().having((e) => e.tagsFiltrados.length, 'length', 3),
       ],
     );
 
@@ -276,8 +274,7 @@ void main() {
       'llama al repo y recarga en éxito',
       build: build,
       setUp: () {
-        when(() => repositorio.activarTag(any()))
-            .thenAnswer((_) async {});
+        when(() => repositorio.activarTag(any())).thenAnswer((_) async {});
         when(() => repositorio.obtenerTags())
             .thenAnswer((_) async => (tags: _lista, hayMas: false));
       },
@@ -317,8 +314,7 @@ void main() {
       'llama al repo y recarga en éxito',
       build: build,
       setUp: () {
-        when(() => repositorio.desactivarTag(any()))
-            .thenAnswer((_) async {});
+        when(() => repositorio.desactivarTag(any())).thenAnswer((_) async {});
         when(() => repositorio.obtenerTags())
             .thenAnswer((_) async => (tags: _lista, hayMas: false));
       },

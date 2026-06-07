@@ -32,13 +32,17 @@ class TiposEventoCubit extends Cubit<TiposEventoEstado> {
       return;
     }
     final busqueda = texto.toLowerCase();
-    emit(estadoActual.copiarCon(
-      filtrados: estadoActual.items
-          .where((tipo) =>
-              tipo.nombre.toLowerCase().contains(busqueda) ||
-              tipo.descripcion.toLowerCase().contains(busqueda),)
-          .toList(),
-    ),);
+    emit(
+      estadoActual.copiarCon(
+        filtrados: estadoActual.items
+            .where(
+              (tipo) =>
+                  tipo.nombre.toLowerCase().contains(busqueda) ||
+                  tipo.descripcion.toLowerCase().contains(busqueda),
+            )
+            .toList(),
+      ),
+    );
   }
 
   Future<void> desactivar(String id) async {
@@ -50,20 +54,24 @@ class TiposEventoCubit extends Cubit<TiposEventoEstado> {
       await cargar();
     } on FallaServidor catch (falla) {
       reportarError(falla);
-      emit(TiposEventoCargados(
-        items:            estadoActual.items,
-        filtrados:        estadoActual.filtrados,
-        estaDesactivando: false,
-        errorOperacion:   falla.mensaje,
-      ),);
+      emit(
+        TiposEventoCargados(
+          items: estadoActual.items,
+          filtrados: estadoActual.filtrados,
+          estaDesactivando: false,
+          errorOperacion: falla.mensaje,
+        ),
+      );
     } on FallaInesperada catch (falla) {
       reportarError(falla);
-      emit(TiposEventoCargados(
-        items:            estadoActual.items,
-        filtrados:        estadoActual.filtrados,
-        estaDesactivando: false,
-        errorOperacion:   falla.mensaje,
-      ),);
+      emit(
+        TiposEventoCargados(
+          items: estadoActual.items,
+          filtrados: estadoActual.filtrados,
+          estaDesactivando: false,
+          errorOperacion: falla.mensaje,
+        ),
+      );
     }
   }
 }

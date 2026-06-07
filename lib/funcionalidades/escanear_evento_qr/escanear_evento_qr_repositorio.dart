@@ -19,8 +19,7 @@ class EscanearEventoQrRepositorio {
   bool esUuidValido(String valor) => _regexUuid.hasMatch(valor);
 
   /// Obtiene el evento por su UUID. Retorna null si no existe.
-  Future<Evento?> obtenerEvento(String eventoId) =>
-      conReintentos(() async {
+  Future<Evento?> obtenerEvento(String eventoId) => conReintentos(() async {
         try {
           final fila = await _supabase
               .from(TablasSupabase.eventos)
@@ -50,11 +49,13 @@ class EscanearEventoQrRepositorio {
 
           final mapa = <int, Set<String>>{};
           for (final f in filas) {
-            mapa.putIfAbsent(f['grupo_index'] as int, () => {}).add(f['tag_id'] as String);
+            mapa
+                .putIfAbsent(f['grupo_index'] as int, () => {})
+                .add(f['tag_id'] as String);
           }
 
           final todosTagIds = mapa.values.expand((s) => s).toSet().toList();
-          final userTags    = await _supabase
+          final userTags = await _supabase
               .from(TablasSupabase.usuariosTags)
               .select('tag_id')
               .eq('usuario_id', usuarioId)
@@ -86,7 +87,8 @@ class EscanearEventoQrRepositorio {
           .maybeSingle();
 
       if (existing != null) {
-        if ((existing['estatus'] as String?) != EstatusAsistencia.esperado) return false;
+        if ((existing['estatus'] as String?) != EstatusAsistencia.esperado)
+          return false;
         await _actualizarAsistencia(existing['id'] as String);
       } else {
         await _insertarAsistencia(eventoId: eventoId, usuarioId: usuarioId);
@@ -101,24 +103,19 @@ class EscanearEventoQrRepositorio {
   }
 
   Future<void> _actualizarAsistencia(String asistenciaId) =>
-      _supabase
-          .from(TablasSupabase.asistencia)
-          .update({
-            'estatus':      EstatusAsistencia.presente,
-            'hora_entrada': DateTime.now().toUtc().toIso8601String(),
-          })
-          .eq('id', asistenciaId);
+      _supabase.from(TablasSupabase.asistencia).update({
+        'estatus': EstatusAsistencia.presente,
+        'hora_entrada': DateTime.now().toUtc().toIso8601String(),
+      }).eq('id', asistenciaId);
 
   Future<void> _insertarAsistencia({
     required String eventoId,
     required String usuarioId,
   }) =>
-      _supabase
-          .from(TablasSupabase.asistencia)
-          .insert({
-            'evento_id':    eventoId,
-            'usuario_id':   usuarioId,
-            'estatus':      EstatusAsistencia.presente,
-            'hora_entrada': DateTime.now().toUtc().toIso8601String(),
-          });
+      _supabase.from(TablasSupabase.asistencia).insert({
+        'evento_id': eventoId,
+        'usuario_id': usuarioId,
+        'estatus': EstatusAsistencia.presente,
+        'hora_entrada': DateTime.now().toUtc().toIso8601String(),
+      });
 }

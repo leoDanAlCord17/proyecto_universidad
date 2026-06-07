@@ -27,8 +27,8 @@ void main() {
 
   setUp(() {
     registrarFallbacks();
-    repositorio  = MockAutenticacionRepositorio();
-    authCubit    = MockAuthCubit();
+    repositorio = MockAutenticacionRepositorio();
+    authCubit = MockAuthCubit();
     authResponse = MockAuthResponse();
     when(() => authCubit.verificarSesion()).thenAnswer((_) async {});
     when(() => authCubit.state).thenReturn(NoAutenticado());
@@ -93,8 +93,8 @@ void main() {
     testWidgets(
         'error del servidor: cubit emite RegistroError con mensaje del repo',
         (tester) async {
-      when(() => repositorio.registrarse(any(), any()))
-          .thenAnswer((_) async => throw const FallaAutenticacion('Este correo ya está registrado.'));
+      when(() => repositorio.registrarse(any(), any())).thenAnswer((_) async =>
+          throw const FallaAutenticacion('Este correo ya está registrado.'));
 
       final cubit = RegistroCubit(repositorio);
 

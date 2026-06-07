@@ -22,13 +22,15 @@ class ColaboradoresEventoPantalla extends StatefulWidget {
   final String eventoId;
 
   @override
-  State<ColaboradoresEventoPantalla> createState() => _ColaboradoresEventoPantallaState();
+  State<ColaboradoresEventoPantalla> createState() =>
+      _ColaboradoresEventoPantallaState();
 }
 
-class _ColaboradoresEventoPantallaState extends State<ColaboradoresEventoPantalla> {
+class _ColaboradoresEventoPantallaState
+    extends State<ColaboradoresEventoPantalla> {
   final _controladorBusqueda = TextEditingController();
   Timer? _debounce;
-  bool   _estaCargado = false;
+  bool _estaCargado = false;
 
   @override
   void didChangeDependencies() {
@@ -36,8 +38,10 @@ class _ColaboradoresEventoPantallaState extends State<ColaboradoresEventoPantall
     if (_estaCargado) return;
     _estaCargado = true;
     final authEstado = context.read<AuthCubit>().state;
-    final adminId    = authEstado is Autenticado ? authEstado.usuario.id : null;
-    context.read<ColaboradoresEventoCubit>().iniciar(widget.eventoId, adminId: adminId);
+    final adminId = authEstado is Autenticado ? authEstado.usuario.id : null;
+    context
+        .read<ColaboradoresEventoCubit>()
+        .iniciar(widget.eventoId, adminId: adminId);
   }
 
   @override
@@ -59,22 +63,24 @@ class _ColaboradoresEventoPantallaState extends State<ColaboradoresEventoPantall
   Widget build(BuildContext context) {
     return BlocConsumer<ColaboradoresEventoCubit, ColaboradoresEventoEstado>(
       listener: _escucharEstado,
-      builder:  _construirCuerpo,
+      builder: _construirCuerpo,
     );
   }
 
   void _escucharEstado(BuildContext context, ColaboradoresEventoEstado estado) {
     if (estado is ColaboradoresEventoOperacionFallida) {
-      AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
+      AvisoApp.mostrar(context,
+          texto: estado.mensaje, estilo: EstiloAviso.error);
     }
   }
 
-  Widget _construirCuerpo(BuildContext context, ColaboradoresEventoEstado estado) {
+  Widget _construirCuerpo(
+      BuildContext context, ColaboradoresEventoEstado estado) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -97,21 +103,23 @@ class _ColaboradoresEventoPantallaState extends State<ColaboradoresEventoPantall
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: BarraBusquedaApp(
         controlador: _controladorBusqueda,
-        hintText:    'Buscar usuario para agregar...',
-        alCambiar:   _onBusqueda,
+        hintText: 'Buscar usuario para agregar...',
+        alCambiar: _onBusqueda,
       ),
     );
   }
 
-  Widget _construirContenido(ColaboradoresEventoEstado estado) => switch (estado) {
-    ColaboradoresEventoInicial()          => const SizedBox.shrink(),
-    ColaboradoresEventoCargando()         => const Center(
-        child: CircularProgressIndicator(color: ColoresApp.acento),
-      ),
-    ColaboradoresEventoCargado()          => _Contenido(estado: estado),
-    ColaboradoresEventoOperacionFallida() => _Contenido(estado: estado.anterior),
-    ColaboradoresEventoError()            => VistaErrorApp(mensaje: estado.mensaje),
-  };
+  Widget _construirContenido(ColaboradoresEventoEstado estado) =>
+      switch (estado) {
+        ColaboradoresEventoInicial() => const SizedBox.shrink(),
+        ColaboradoresEventoCargando() => const Center(
+            child: CircularProgressIndicator(color: ColoresApp.acento),
+          ),
+        ColaboradoresEventoCargado() => _Contenido(estado: estado),
+        ColaboradoresEventoOperacionFallida() =>
+          _Contenido(estado: estado.anterior),
+        ColaboradoresEventoError() => VistaErrorApp(mensaje: estado.mensaje),
+      };
 }
 
 // ─── Encabezado ───────────────────────────────────────────────────────────────
@@ -129,10 +137,10 @@ class _CabeceraTitulo extends StatelessWidget {
         Text(
           'Colaboradores',
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontSize:   20,
-            fontWeight: FontWeight.w700,
-            color:      ColoresApp.textoPrimario,
-          ),
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: ColoresApp.textoPrimario,
+              ),
         ),
       ],
     );
@@ -186,17 +194,17 @@ class _Contenido extends StatelessWidget {
 class _ItemColaborador extends StatelessWidget {
   const _ItemColaborador({required this.item, required this.estado});
 
-  final ColaboradorItem            item;
+  final ColaboradorItem item;
   final ColaboradoresEventoCargado estado;
 
   @override
   Widget build(BuildContext context) {
-    final cubit      = context.read<ColaboradoresEventoCubit>();
+    final cubit = context.read<ColaboradoresEventoCubit>();
     final esCargando = estado.idOperando == item.asignacionId;
     return Container(
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
-        border:       Border.all(color: ColoresApp.bordeMedio),
+        color: ColoresApp.superficiePrimaria,
+        border: Border.all(color: ColoresApp.bordeMedio),
         borderRadius: BorderRadius.circular(14),
       ),
       padding: const EdgeInsets.all(14),
@@ -213,11 +221,11 @@ class _ItemColaborador extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           _BotonAccion(
-            texto:       'Quitar',
-            colorFondo:  ColoresApp.rojoClaro,
-            colorTexto:  ColoresApp.rojo,
+            texto: 'Quitar',
+            colorFondo: ColoresApp.rojoClaro,
+            colorTexto: ColoresApp.rojo,
             colorRipple: ColoresApp.rojo,
-            esCargando:  esCargando,
+            esCargando: esCargando,
             alPresionar: esCargando ? null : () => cubit.quitar(item),
           ),
         ],
@@ -231,17 +239,17 @@ class _ItemColaborador extends StatelessWidget {
 class _ItemBusqueda extends StatelessWidget {
   const _ItemBusqueda({required this.usuario, required this.estado});
 
-  final UsuarioParaAsignar         usuario;
+  final UsuarioParaAsignar usuario;
   final ColaboradoresEventoCargado estado;
 
   @override
   Widget build(BuildContext context) {
-    final cubit      = context.read<ColaboradoresEventoCubit>();
+    final cubit = context.read<ColaboradoresEventoCubit>();
     final esCargando = estado.idOperando == usuario.id;
     return Container(
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
-        border:       Border.all(color: ColoresApp.bordeMedio),
+        color: ColoresApp.superficiePrimaria,
+        border: Border.all(color: ColoresApp.bordeMedio),
         borderRadius: BorderRadius.circular(14),
       ),
       padding: const EdgeInsets.all(14),
@@ -257,11 +265,11 @@ class _ItemBusqueda extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           _BotonAccion(
-            texto:       'Agregar',
-            colorFondo:  ColoresApp.acentoClaro,
-            colorTexto:  ColoresApp.acento,
+            texto: 'Agregar',
+            colorFondo: ColoresApp.acentoClaro,
+            colorTexto: ColoresApp.acento,
             colorRipple: ColoresApp.acento,
-            esCargando:  esCargando,
+            esCargando: esCargando,
             alPresionar: esCargando ? null : () => cubit.asignar(usuario),
           ),
         ],
@@ -274,22 +282,22 @@ class _ItemBusqueda extends StatelessWidget {
 
 class _Avatar extends StatelessWidget {
   const _Avatar({required this.iniciales, this.urlFoto});
-  final String  iniciales;
+  final String iniciales;
   final String? urlFoto;
 
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-      radius:          20,
+      radius: 20,
       backgroundColor: ColoresApp.acentoClaro,
       backgroundImage: urlFoto != null ? NetworkImage(urlFoto!) : null,
       child: urlFoto == null
           ? Text(
               iniciales,
               style: const TextStyle(
-                fontSize:   13,
+                fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color:      ColoresApp.acento,
+                color: ColoresApp.acento,
               ),
             )
           : null,
@@ -299,7 +307,7 @@ class _Avatar extends StatelessWidget {
 
 class _InfoUsuario extends StatelessWidget {
   const _InfoUsuario({required this.nombre, this.detalle, this.asignadoPor});
-  final String  nombre;
+  final String nombre;
   final String? detalle;
   final String? asignadoPor;
 
@@ -307,7 +315,7 @@ class _InfoUsuario extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize:       MainAxisSize.min,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           nombre,
@@ -318,7 +326,7 @@ class _InfoUsuario extends StatelessWidget {
             detalle!,
             style: const TextStyle(
               fontSize: 12,
-              color:    ColoresApp.textoSecundario,
+              color: ColoresApp.textoSecundario,
             ),
           ),
         if (asignadoPor != null)
@@ -326,7 +334,7 @@ class _InfoUsuario extends StatelessWidget {
             'Registrado por: $asignadoPor',
             style: const TextStyle(
               fontSize: 11,
-              color:    ColoresApp.textoTerciario,
+              color: ColoresApp.textoTerciario,
             ),
           ),
       ],
@@ -344,37 +352,37 @@ class _BotonAccion extends StatelessWidget {
     this.alPresionar,
   });
 
-  final String        texto;
-  final Color         colorFondo;
-  final Color         colorTexto;
-  final Color         colorRipple;
-  final bool          esCargando;
+  final String texto;
+  final Color colorFondo;
+  final Color colorTexto;
+  final Color colorRipple;
+  final bool esCargando;
   final VoidCallback? alPresionar;
 
   @override
   Widget build(BuildContext context) {
     if (esCargando) {
       return SizedBox(
-        width:  20,
+        width: 20,
         height: 20,
         child: CircularProgressIndicator(strokeWidth: 2, color: colorTexto),
       );
     }
     return Material(
-      color:        colorFondo,
+      color: colorFondo,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
-        onTap:        alPresionar,
+        onTap: alPresionar,
         borderRadius: BorderRadius.circular(8),
-        splashColor:  colorRipple.withValues(alpha: 0.2),
+        splashColor: colorRipple.withValues(alpha: 0.2),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           child: Text(
             texto,
             style: TextStyle(
-              fontSize:   12,
+              fontSize: 12,
               fontWeight: FontWeight.w600,
-              color:      colorTexto,
+              color: colorTexto,
             ),
           ),
         ),
@@ -392,11 +400,11 @@ class _EncabezadoSeccion extends StatelessWidget {
     return Text(
       titulo,
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-        color:         ColoresApp.textoSecundario,
-        fontWeight:    FontWeight.w800,
-        fontSize:      12,
-        letterSpacing: 0.8,
-      ),
+            color: ColoresApp.textoSecundario,
+            fontWeight: FontWeight.w800,
+            fontSize: 12,
+            letterSpacing: 0.8,
+          ),
     );
   }
 }
@@ -413,8 +421,8 @@ class _EstadoSinColaboradores extends StatelessWidget {
       child: Text(
         'Este evento aún no tiene colaboradores asignados.',
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: ColoresApp.textoTerciario,
-        ),
+              color: ColoresApp.textoTerciario,
+            ),
       ),
     );
   }
@@ -430,10 +438,9 @@ class _EstadoSinResultados extends StatelessWidget {
       child: Text(
         'Sin resultados.',
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: ColoresApp.textoTerciario,
-        ),
+              color: ColoresApp.textoTerciario,
+            ),
       ),
     );
   }
 }
-

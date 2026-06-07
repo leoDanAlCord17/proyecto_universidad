@@ -37,25 +37,27 @@ class FilaRol extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TarjetaApp(
-      variante:    VarianteTarjeta.normal,
+      variante: VarianteTarjeta.normal,
       alPresionar: alPresionar,
       child: Row(
         children: [
-          Expanded(child: _InfoRol(
-            nombre:           nombre,
-            descripcion:      descripcion,
-            colorNombre:      colorNombre,
-            colorDescripcion: colorDescripcion,
-          ),),
+          Expanded(
+            child: _InfoRol(
+              nombre: nombre,
+              descripcion: descripcion,
+              colorNombre: colorNombre,
+              colorDescripcion: colorDescripcion,
+            ),
+          ),
           const SizedBox(width: 12),
           if (esSistema)
             const _InsigniaSistema()
           else if (textoBoton != null)
             BotonApp(
-              texto:       textoBoton!,
-              variante:    varianteBoton,
+              texto: textoBoton!,
+              variante: varianteBoton,
               alPresionar: alPresionarBoton,
-              ancho:       90,
+              ancho: 90,
             ),
         ],
       ),
@@ -85,17 +87,17 @@ class _InfoRol extends StatelessWidget {
         Text(
           nombre,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color:      colorNombre,
-            fontWeight: FontWeight.w700,
-          ),
+                color: colorNombre,
+                fontWeight: FontWeight.w700,
+              ),
         ),
         if (descripcion != null) ...[
           const SizedBox(height: 2),
           Text(
             descripcion!,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: colorDescripcion,
-            ),
+                  color: colorDescripcion,
+                ),
           ),
         ],
       ],
@@ -111,14 +113,14 @@ class _InsigniaSistema extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficieTerciar,
+        color: ColoresApp.superficieTerciar,
         borderRadius: BorderRadius.circular(30),
       ),
       child: Text(
         'Sistema',
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: ColoresApp.textoSecundario,
-        ),
+              color: ColoresApp.textoSecundario,
+            ),
       ),
     );
   }

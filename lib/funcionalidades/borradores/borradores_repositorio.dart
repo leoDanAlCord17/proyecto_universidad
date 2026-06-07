@@ -42,10 +42,10 @@ class BorradoresRepositorio {
   Future<void> publicarEvento(String eventoId) async {
     try {
       final actualizadoPor = await _resolverUsuarioId();
-      await _cliente
-          .from(TablasSupabase.eventos)
-          .update({'estatus': EstatusEvento.programado, 'actualizado_por': actualizadoPor})
-          .eq('id', eventoId);
+      await _cliente.from(TablasSupabase.eventos).update({
+        'estatus': EstatusEvento.programado,
+        'actualizado_por': actualizadoPor
+      }).eq('id', eventoId);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {

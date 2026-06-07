@@ -14,16 +14,18 @@ class InicioCubit extends Cubit<InicioEstado> {
   Future<void> cargarTags(String usuarioId) async {
     emit(const InicioTagsCargando());
     try {
-      final tagsF     = _repositorio.obtenerTags(usuarioId);
+      final tagsF = _repositorio.obtenerTags(usuarioId);
       final revisionF = _repositorio.obtenerRevisionHabilitada();
-      final tags      = await tagsF;
-      final revision  = await revisionF;
+      final tags = await tagsF;
+      final revision = await revisionF;
       if (isClosed) return;
-      emit(InicioTagsCargados(
-        tagPrincipal:       tags.tagPrincipal,
-        tagsSecundarios:    tags.tagsSecundarios,
-        revisionHabilitada: revision,
-      ),);
+      emit(
+        InicioTagsCargados(
+          tagPrincipal: tags.tagPrincipal,
+          tagsSecundarios: tags.tagsSecundarios,
+          revisionHabilitada: revision,
+        ),
+      );
     } on FallaServidor catch (falla) {
       reportarError(falla);
       if (!isClosed) emit(InicioError(falla.mensaje));

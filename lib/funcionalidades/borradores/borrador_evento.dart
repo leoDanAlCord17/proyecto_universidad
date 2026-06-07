@@ -1,15 +1,14 @@
 class BorradorEvento {
-
   factory BorradorEvento.desdeJson(Map<String, dynamic> json) {
     return BorradorEvento(
-      id:          json['id'] as String,
-      titulo:      json['titulo'] as String? ?? '',
+      id: json['id'] as String,
+      titulo: json['titulo'] as String? ?? '',
       descripcion: json['descripcion'] as String? ?? '',
       fechaInicio: json['fecha_inicio'] != null
           ? DateTime.tryParse(json['fecha_inicio'] as String)
           : null,
-      horaInicio:  json['hora_inicio'] as String?,
-      horaFin:     json['hora_fin'] as String?,
+      horaInicio: json['hora_inicio'] as String?,
+      horaFin: json['hora_fin'] as String?,
     );
   }
   const BorradorEvento({
@@ -21,10 +20,10 @@ class BorradorEvento {
     this.horaFin,
   });
 
-  final String    id;
-  final String    titulo;
-  final String    descripcion;
+  final String id;
+  final String titulo;
+  final String descripcion;
   final DateTime? fechaInicio;
-  final String?   horaInicio;
-  final String?   horaFin;
+  final String? horaInicio;
+  final String? horaFin;
 }

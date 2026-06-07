@@ -19,38 +19,43 @@ final class CrearTagCargando extends CrearTagEstado {
 final class CrearTagCargado extends CrearTagEstado {
   const CrearTagCargado({
     this.tagId,
-    this.nombreInicial      = '',
+    this.nombreInicial = '',
     this.descripcionInicial = '',
     this.tipoSeleccionado,
-    this.estaGuardando      = false,
-    this.errorValidacion    = '',
+    this.estaGuardando = false,
+    this.errorValidacion = '',
   });
 
   final String? tagId;
-  final String  nombreInicial;
-  final String  descripcionInicial;
+  final String nombreInicial;
+  final String descripcionInicial;
   final String? tipoSeleccionado;
-  final bool    estaGuardando;
-  final String  errorValidacion;
+  final bool estaGuardando;
+  final String errorValidacion;
 
   CrearTagCargado copiarCon({
     String? tipoSeleccionado,
-    bool?   estaGuardando,
+    bool? estaGuardando,
     String? errorValidacion,
-  }) => CrearTagCargado(
-    tagId:              tagId,
-    nombreInicial:      nombreInicial,
-    descripcionInicial: descripcionInicial,
-    tipoSeleccionado:   tipoSeleccionado ?? this.tipoSeleccionado,
-    estaGuardando:      estaGuardando    ?? this.estaGuardando,
-    errorValidacion:    errorValidacion  ?? this.errorValidacion,
-  );
+  }) =>
+      CrearTagCargado(
+        tagId: tagId,
+        nombreInicial: nombreInicial,
+        descripcionInicial: descripcionInicial,
+        tipoSeleccionado: tipoSeleccionado ?? this.tipoSeleccionado,
+        estaGuardando: estaGuardando ?? this.estaGuardando,
+        errorValidacion: errorValidacion ?? this.errorValidacion,
+      );
 
   @override
   List<Object?> get props => [
-    tagId, nombreInicial, descripcionInicial,
-    tipoSeleccionado, estaGuardando, errorValidacion,
-  ];
+        tagId,
+        nombreInicial,
+        descripcionInicial,
+        tipoSeleccionado,
+        estaGuardando,
+        errorValidacion,
+      ];
 }
 
 final class CrearTagGuardado extends CrearTagEstado {

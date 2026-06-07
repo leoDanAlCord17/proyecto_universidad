@@ -22,9 +22,9 @@ class ModalForaneo extends StatefulWidget {
     }) onRegistrar,
   }) {
     showDialog<void>(
-      context:      context,
+      context: context,
       barrierColor: ColoresApp.sombraBarrera,
-      builder:      (_) => ModalForaneo(onRegistrar: onRegistrar),
+      builder: (_) => ModalForaneo(onRegistrar: onRegistrar),
     );
   }
 
@@ -33,9 +33,9 @@ class ModalForaneo extends StatefulWidget {
 }
 
 class _ModalForaneoState extends State<ModalForaneo> {
-  final _nombreCtrl   = TextEditingController();
+  final _nombreCtrl = TextEditingController();
   final _apellidoCtrl = TextEditingController();
-  final _cedulaCtrl   = TextEditingController();
+  final _cedulaCtrl = TextEditingController();
   final _contactoCtrl = TextEditingController();
   bool _guardando = false;
 
@@ -49,19 +49,19 @@ class _ModalForaneoState extends State<ModalForaneo> {
   }
 
   Future<void> _registrar() async {
-    final nombre   = _nombreCtrl.text.trim();
+    final nombre = _nombreCtrl.text.trim();
     final apellido = _apellidoCtrl.text.trim();
-    final cedula   = _cedulaCtrl.text.trim();
+    final cedula = _cedulaCtrl.text.trim();
     if (nombre.isEmpty || apellido.isEmpty || cedula.isEmpty) return;
     setState(() => _guardando = true);
     try {
       await widget.onRegistrar(
-        primerNombre:   nombre,
+        primerNombre: nombre,
         primerApellido: apellido,
-        cedula:         cedula,
-        contacto:       _contactoCtrl.text.trim().isNotEmpty
-                            ? _contactoCtrl.text.trim()
-                            : null,
+        cedula: cedula,
+        contacto: _contactoCtrl.text.trim().isNotEmpty
+            ? _contactoCtrl.text.trim()
+            : null,
       );
       if (mounted) Navigator.of(context).pop();
     } catch (_) {
@@ -72,12 +72,12 @@ class _ModalForaneoState extends State<ModalForaneo> {
   @override
   Widget build(BuildContext context) {
     return _CuerpoModal(
-      guardando:    _guardando,
-      nombreCtrl:   _nombreCtrl,
+      guardando: _guardando,
+      nombreCtrl: _nombreCtrl,
       apellidoCtrl: _apellidoCtrl,
-      cedulaCtrl:   _cedulaCtrl,
+      cedulaCtrl: _cedulaCtrl,
       contactoCtrl: _contactoCtrl,
-      onRegistrar:  _registrar,
+      onRegistrar: _registrar,
     );
   }
 }
@@ -94,40 +94,48 @@ class _CuerpoModal extends StatelessWidget {
     required this.onRegistrar,
   });
 
-  final bool                  guardando;
+  final bool guardando;
   final TextEditingController nombreCtrl;
   final TextEditingController apellidoCtrl;
   final TextEditingController cedulaCtrl;
   final TextEditingController contactoCtrl;
-  final VoidCallback          onRegistrar;
+  final VoidCallback onRegistrar;
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding:    const EdgeInsets.symmetric(horizontal: 20),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         decoration: BoxDecoration(
-          color:        ColoresApp.superficiePrimaria,
+          color: ColoresApp.superficiePrimaria,
           borderRadius: BorderRadius.circular(20),
           boxShadow: const [
-            BoxShadow(color: ColoresApp.sombraGeneral, blurRadius: 24, offset: Offset(0, 8)),
+            BoxShadow(
+                color: ColoresApp.sombraGeneral,
+                blurRadius: 24,
+                offset: Offset(0, 8)),
           ],
         ),
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
         child: Column(
-          mainAxisSize:       MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const _Encabezado(),
             const SizedBox(height: 16),
-            _FilaNombreApellido(nombreCtrl: nombreCtrl, apellidoCtrl: apellidoCtrl),
-            const SizedBox(height: 12),
-            TextFormField(controller: cedulaCtrl, decoration: const InputDecoration(hintText: 'Cédula o pasaporte *')),
+            _FilaNombreApellido(
+                nombreCtrl: nombreCtrl, apellidoCtrl: apellidoCtrl),
             const SizedBox(height: 12),
             TextFormField(
-              controller:  contactoCtrl,
-              decoration:  const InputDecoration(hintText: 'Contacto (opcional)'),
+                controller: cedulaCtrl,
+                decoration:
+                    const InputDecoration(hintText: 'Cédula o pasaporte *')),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: contactoCtrl,
+              decoration:
+                  const InputDecoration(hintText: 'Contacto (opcional)'),
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 20),
@@ -153,26 +161,31 @@ class _Encabezado extends StatelessWidget {
         Text(
           'REGISTRAR INVITADO FORÁNEO',
           style: texto.labelSmall?.copyWith(
-            color: ColoresApp.textoSecundario, fontWeight: FontWeight.w800,
-            letterSpacing: 0.8, fontSize: 11,
+            color: ColoresApp.textoSecundario,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.8,
+            fontSize: 11,
           ),
         ),
         const SizedBox(height: 14),
         Row(
           children: [
             Container(
-              width: 40, height: 40,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color:        ColoresApp.superficieTerciar,
+                color: ColoresApp.superficieTerciar,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.person_outline_rounded, size: 22, color: ColoresApp.textoSecundario),
+              child: const Icon(Icons.person_outline_rounded,
+                  size: 22, color: ColoresApp.textoSecundario),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 'Persona sin cuenta en el\nsistema',
-                style: texto.titleSmall?.copyWith(fontWeight: FontWeight.w700, fontSize: 14),
+                style: texto.titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w700, fontSize: 14),
               ),
             ),
           ],
@@ -185,7 +198,8 @@ class _Encabezado extends StatelessWidget {
 // ─── Fila nombre / apellido ───────────────────────────────────────────────────
 
 class _FilaNombreApellido extends StatelessWidget {
-  const _FilaNombreApellido({required this.nombreCtrl, required this.apellidoCtrl});
+  const _FilaNombreApellido(
+      {required this.nombreCtrl, required this.apellidoCtrl});
   final TextEditingController nombreCtrl;
   final TextEditingController apellidoCtrl;
 
@@ -193,17 +207,21 @@ class _FilaNombreApellido extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: TextFormField(
-          controller:             nombreCtrl,
-          decoration:             const InputDecoration(hintText: 'Primer nombre'),
-          textCapitalization:     TextCapitalization.words,
-        ),),
+        Expanded(
+          child: TextFormField(
+            controller: nombreCtrl,
+            decoration: const InputDecoration(hintText: 'Primer nombre'),
+            textCapitalization: TextCapitalization.words,
+          ),
+        ),
         const SizedBox(width: 10),
-        Expanded(child: TextFormField(
-          controller:             apellidoCtrl,
-          decoration:             const InputDecoration(hintText: 'Primer apellido'),
-          textCapitalization:     TextCapitalization.words,
-        ),),
+        Expanded(
+          child: TextFormField(
+            controller: apellidoCtrl,
+            decoration: const InputDecoration(hintText: 'Primer apellido'),
+            textCapitalization: TextCapitalization.words,
+          ),
+        ),
       ],
     );
   }
@@ -213,7 +231,7 @@ class _FilaNombreApellido extends StatelessWidget {
 
 class _BotonRegistrar extends StatelessWidget {
   const _BotonRegistrar({required this.guardando, required this.onTap});
-  final bool         guardando;
+  final bool guardando;
   final VoidCallback onTap;
 
   @override
@@ -222,30 +240,37 @@ class _BotonRegistrar extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: Material(
-        color:        ColoresApp.textoPrimario,
+        color: ColoresApp.textoPrimario,
         borderRadius: BorderRadius.circular(14),
         child: InkWell(
-          onTap:        guardando ? null : onTap,
+          onTap: guardando ? null : onTap,
           borderRadius: BorderRadius.circular(14),
-          splashColor:  ColoresApp.blanco.withValues(alpha: 0.15),
+          splashColor: ColoresApp.blanco.withValues(alpha: 0.15),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
             child: guardando
-                ? const Center(child: SizedBox(
-                    width: 20, height: 20,
-                    child: CircularProgressIndicator(color: ColoresApp.blanco, strokeWidth: 2),
-                  ),)
+                ? const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          color: ColoresApp.blanco, strokeWidth: 2),
+                    ),
+                  )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.check_rounded, color: ColoresApp.blanco, size: 18),
+                      const Icon(Icons.check_rounded,
+                          color: ColoresApp.blanco, size: 18),
                       const SizedBox(width: 10),
                       Flexible(
                         child: Text(
                           'Registrar como invitado y\nmarcar entrada',
                           style: texto.titleSmall?.copyWith(
-                            color: ColoresApp.blanco, fontWeight: FontWeight.w700,
-                            fontSize: 14, height: 1.3,
+                            color: ColoresApp.blanco,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            height: 1.3,
                           ),
                           textAlign: TextAlign.center,
                         ),

@@ -25,7 +25,7 @@ void main() {
   setUp(() {
     registrarFallbacks();
     registroCubit = MockRegistroCubit();
-    authCubit     = MockAuthCubit();
+    authCubit = MockAuthCubit();
     when(() => authCubit.verificarSesion()).thenAnswer((_) async {});
   });
 
@@ -36,9 +36,9 @@ void main() {
       await tester.pumpWidget(_marco(registroCubit, authCubit));
 
       expect(find.text('Correo institucional'), findsOneWidget);
-      expect(find.text('Contraseña'),           findsOneWidget);
+      expect(find.text('Contraseña'), findsOneWidget);
       expect(find.text('Confirmar contraseña'), findsOneWidget);
-      expect(find.text('Continuar'),            findsOneWidget);
+      expect(find.text('Continuar'), findsOneWidget);
     });
 
     testWidgets('muestra CircularProgressIndicator cuando RegistroCargando',
@@ -48,7 +48,7 @@ void main() {
       await tester.pumpWidget(_marco(registroCubit, authCubit));
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text('Continuar'),                 findsNothing);
+      expect(find.text('Continuar'), findsNothing);
     });
 
     testWidgets('muestra SnackBar con el mensaje cuando RegistroError',
@@ -70,7 +70,8 @@ void main() {
       await tester.pump(const Duration(seconds: 3));
     });
 
-    testWidgets('llama registrarse con los valores escritos al presionar Continuar',
+    testWidgets(
+        'llama registrarse con los valores escritos al presionar Continuar',
         (tester) async {
       when(() => registroCubit.state).thenReturn(RegistroInicial());
       when(() => registroCubit.registrarse(any(), any(), any()))
@@ -86,7 +87,8 @@ void main() {
       await tester.ensureVisible(find.text('Continuar'));
       await tester.tap(find.text('Continuar'));
 
-      verify(() => registroCubit.registrarse('leo@uni.edu', 'clave123', 'clave123'))
+      verify(() =>
+              registroCubit.registrarse('leo@uni.edu', 'clave123', 'clave123'))
           .called(1);
     });
 

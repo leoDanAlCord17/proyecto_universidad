@@ -28,21 +28,22 @@ final class TiposEventoCargados extends TiposEventoEstado {
 
   final List<TipoEventoItem> items;
   final List<TipoEventoItem> filtrados;
-  final bool                 estaDesactivando;
-  final String?              errorOperacion;
+  final bool estaDesactivando;
+  final String? errorOperacion;
 
   TiposEventoCargados copiarCon({
     List<TipoEventoItem>? filtrados,
-    bool?                 estaDesactivando,
+    bool? estaDesactivando,
   }) =>
       TiposEventoCargados(
-        items:            items,
-        filtrados:        filtrados        ?? this.filtrados,
+        items: items,
+        filtrados: filtrados ?? this.filtrados,
         estaDesactivando: estaDesactivando ?? this.estaDesactivando,
       );
 
   @override
-  List<Object?> get props => [items, filtrados, estaDesactivando, errorOperacion];
+  List<Object?> get props =>
+      [items, filtrados, estaDesactivando, errorOperacion];
 }
 
 final class TiposEventoError extends TiposEventoEstado {

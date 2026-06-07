@@ -26,13 +26,14 @@ final class GestionarRolesUsuarioCargado extends GestionarRolesUsuarioEstado {
     required this.rolesDisponibles,
   });
 
-  final String       nombreUsuario;
-  final String       correoUsuario;
+  final String nombreUsuario;
+  final String correoUsuario;
   final List<RolItem> rolesActivos;
   final List<RolItem> rolesDisponibles;
 
   @override
-  List<Object?> get props => [nombreUsuario, correoUsuario, rolesActivos, rolesDisponibles];
+  List<Object?> get props =>
+      [nombreUsuario, correoUsuario, rolesActivos, rolesDisponibles];
 }
 
 final class GestionarRolesUsuarioError extends GestionarRolesUsuarioEstado {
@@ -42,13 +43,14 @@ final class GestionarRolesUsuarioError extends GestionarRolesUsuarioEstado {
   List<Object?> get props => [mensaje];
 }
 
-final class GestionarRolesUsuarioOperacionFallida extends GestionarRolesUsuarioEstado {
+final class GestionarRolesUsuarioOperacionFallida
+    extends GestionarRolesUsuarioEstado {
   const GestionarRolesUsuarioOperacionFallida({
     required this.anterior,
     required this.mensaje,
   });
   final GestionarRolesUsuarioCargado anterior;
-  final String                       mensaje;
+  final String mensaje;
   @override
   List<Object?> get props => [anterior, mensaje];
 }

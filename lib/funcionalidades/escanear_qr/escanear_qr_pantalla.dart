@@ -22,14 +22,14 @@ class EscanearQrPantalla extends StatefulWidget {
 
 class _EscanearQrPantallaState extends State<EscanearQrPantalla> {
   late final MobileScannerController _controladorCamara;
-  bool    _estaCargado = false;
+  bool _estaCargado = false;
   String? _ultimoQr;
 
   @override
   void initState() {
     super.initState();
     _controladorCamara = MobileScannerController(
-      facing:  CameraFacing.back,
+      facing: CameraFacing.back,
       formats: const [BarcodeFormat.qrCode],
     );
   }
@@ -39,7 +39,7 @@ class _EscanearQrPantallaState extends State<EscanearQrPantalla> {
     super.didChangeDependencies();
     if (_estaCargado) return;
     _estaCargado = true;
-    final auth    = context.read<AuthCubit>().state;
+    final auth = context.read<AuthCubit>().state;
     final adminId = auth is Autenticado ? auth.usuario.id : null;
     context.read<EscanearQrCubit>().iniciar(widget.eventoId, adminId: adminId);
   }
@@ -62,9 +62,9 @@ class _EscanearQrPantallaState extends State<EscanearQrPantalla> {
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
-        statusBarBrightness:     Brightness.dark,
+        statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.scannerFondo,
@@ -75,9 +75,11 @@ class _EscanearQrPantallaState extends State<EscanearQrPantalla> {
             MobileScanner(controller: _controladorCamara, onDetect: _onDetect),
             BlocConsumer<EscanearQrCubit, EscanearQrEstado>(
               listener: (ctx, state) {
-                if (state is EscanearQrListo)        _ultimoQr = null;
-                if (state is EscanearQrConfirmado)   HapticFeedback.mediumImpact();
-                if (state is EscanearQrYaRegistrado) HapticFeedback.lightImpact();
+                if (state is EscanearQrListo) _ultimoQr = null;
+                if (state is EscanearQrConfirmado)
+                  HapticFeedback.mediumImpact();
+                if (state is EscanearQrYaRegistrado)
+                  HapticFeedback.lightImpact();
               },
               builder: _construirOverlay,
             ),
@@ -88,33 +90,37 @@ class _EscanearQrPantallaState extends State<EscanearQrPantalla> {
   }
 
   Widget _construirOverlay(BuildContext context, EscanearQrEstado state) {
-    final evento       = _eventoDeEstado(state);
-    final presentes    = _presentesDeEstado(state);
-    final estaCargando = state is EscanearQrCargando || state is EscanearQrInicial;
-    final errorMsg     = state is EscanearQrErrorCarga ? state.mensaje : null;
+    final evento = _eventoDeEstado(state);
+    final presentes = _presentesDeEstado(state);
+    final estaCargando =
+        state is EscanearQrCargando || state is EscanearQrInicial;
+    final errorMsg = state is EscanearQrErrorCarga ? state.mensaje : null;
 
     return Column(
       children: [
-        Container(height: MediaQuery.paddingOf(context).top, color: ColoresApp.scannerFondo),
+        Container(
+            height: MediaQuery.paddingOf(context).top,
+            color: ColoresApp.scannerFondo),
         evento != null
             ? _Header(
-                evento:      evento,
-                presentes:   presentes,
-                onBack:      () => context.pop(),
+                evento: evento,
+                presentes: presentes,
+                onBack: () => context.pop(),
                 controlador: _controladorCamara,
               )
             : _HeaderPlaceholder(
-                onBack:      () => context.pop(),
+                onBack: () => context.pop(),
                 controlador: _controladorCamara,
               ),
-        _construirAreaEscaneo(state, estaCargando: estaCargando, errorMsg: errorMsg),
+        _construirAreaEscaneo(state,
+            estaCargando: estaCargando, errorMsg: errorMsg),
       ],
     );
   }
 
   Widget _construirAreaEscaneo(
     EscanearQrEstado state, {
-    required bool    estaCargando,
+    required bool estaCargando,
     required String? errorMsg,
   }) {
     return Expanded(
@@ -125,7 +131,8 @@ class _EscanearQrPantallaState extends State<EscanearQrPantalla> {
           if (estaCargando)
             const ColoredBox(
               color: ColoresApp.scannerFondo,
-              child: Center(child: CircularProgressIndicator(color: ColoresApp.acento)),
+              child: Center(
+                  child: CircularProgressIndicator(color: ColoresApp.acento)),
             ),
           if (errorMsg != null)
             ColoredBox(
@@ -140,26 +147,28 @@ class _EscanearQrPantallaState extends State<EscanearQrPantalla> {
   Widget _construirMarcoEscaneo(EscanearQrEstado state) {
     return LayoutBuilder(
       builder: (ctx, constraints) {
-        final size     = constraints.biggest;
+        final size = constraints.biggest;
         final scanSize = size.width * 0.70;
-        final ventana  = Rect.fromCenter(
+        final ventana = Rect.fromCenter(
           center: Offset(size.width / 2, size.height * 0.42),
-          width:  scanSize,
+          width: scanSize,
           height: scanSize,
         );
         return Stack(
           fit: StackFit.expand,
           children: [
             CustomPaint(
-              size:    size,
-              painter: _PintorMarco(ventanaRect: ventana, procesando: state is EscanearQrProcesando),
+              size: size,
+              painter: _PintorMarco(
+                  ventanaRect: ventana,
+                  procesando: state is EscanearQrProcesando),
             ),
             if (_tieneResultado(state))
               Positioned(
-                left:   16,
-                right:  16,
+                left: 16,
+                right: 16,
                 bottom: 32,
-                child:  _TarjetaResultado(state: state),
+                child: _TarjetaResultado(state: state),
               ),
           ],
         );
@@ -173,22 +182,22 @@ class _EscanearQrPantallaState extends State<EscanearQrPantalla> {
       s is EscanearQrNoValido;
 
   static Evento? _eventoDeEstado(EscanearQrEstado s) => switch (s) {
-    EscanearQrListo()        => s.evento,
-    EscanearQrProcesando()   => s.evento,
-    EscanearQrConfirmado()   => s.evento,
-    EscanearQrYaRegistrado() => s.evento,
-    EscanearQrNoValido()     => s.evento,
-    _                        => null,
-  };
+        EscanearQrListo() => s.evento,
+        EscanearQrProcesando() => s.evento,
+        EscanearQrConfirmado() => s.evento,
+        EscanearQrYaRegistrado() => s.evento,
+        EscanearQrNoValido() => s.evento,
+        _ => null,
+      };
 
   static int _presentesDeEstado(EscanearQrEstado s) => switch (s) {
-    EscanearQrListo()        => s.presentes,
-    EscanearQrProcesando()   => s.presentes,
-    EscanearQrConfirmado()   => s.presentes,
-    EscanearQrYaRegistrado() => s.presentes,
-    EscanearQrNoValido()     => s.presentes,
-    _                        => 0,
-  };
+        EscanearQrListo() => s.presentes,
+        EscanearQrProcesando() => s.presentes,
+        EscanearQrConfirmado() => s.presentes,
+        EscanearQrYaRegistrado() => s.presentes,
+        EscanearQrNoValido() => s.presentes,
+        _ => 0,
+      };
 }
 
 // ─── Header placeholder ────────────────────────────────────────────────────────
@@ -198,13 +207,13 @@ class _HeaderPlaceholder extends StatelessWidget {
     required this.onBack,
     required this.controlador,
   });
-  final VoidCallback            onBack;
+  final VoidCallback onBack;
   final MobileScannerController controlador;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color:   ColoresApp.scannerFondo,
+      color: ColoresApp.scannerFondo,
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
       child: Row(
         children: [
@@ -227,15 +236,16 @@ class _Header extends StatelessWidget {
     required this.controlador,
   });
 
-  final Evento                  evento;
-  final int                     presentes;
-  final VoidCallback            onBack;
+  final Evento evento;
+  final int presentes;
+  final VoidCallback onBack;
   final MobileScannerController controlador;
 
   String _subtitulo() {
     final partes = <String>[];
     if (evento.horaInicio != null && evento.horaFin != null) {
-      partes.add('${_formatearHora(evento.horaInicio!)}–${_formatearHora(evento.horaFin!)}');
+      partes.add(
+          '${_formatearHora(evento.horaInicio!)}–${_formatearHora(evento.horaFin!)}');
     }
     if (evento.lugar != null) partes.add(evento.lugar!);
     return partes.join(' · ');
@@ -244,9 +254,9 @@ class _Header extends StatelessWidget {
   String _formatearHora(String hora) {
     final p = hora.split(':');
     if (p.length < 2) return hora;
-    final h24  = int.tryParse(p[0]) ?? 0;
-    final min  = p[1].padLeft(2, '0');
-    final h12  = h24 % 12 == 0 ? 12 : h24 % 12;
+    final h24 = int.tryParse(p[0]) ?? 0;
+    final min = p[1].padLeft(2, '0');
+    final h12 = h24 % 12 == 0 ? 12 : h24 % 12;
     final ampm = h24 < 12 ? 'AM' : 'PM';
     return '$h12:$min $ampm';
   }
@@ -258,16 +268,20 @@ class _Header extends StatelessWidget {
         Row(
           children: [
             Container(
-              width:  8,
+              width: 8,
               height: 8,
-              decoration: const BoxDecoration(color: ColoresApp.verde, shape: BoxShape.circle),
+              decoration: const BoxDecoration(
+                  color: ColoresApp.verde, shape: BoxShape.circle),
             ),
             const SizedBox(width: 7),
             Expanded(
               child: Text(
                 evento.titulo,
                 style: const TextStyle(
-                  color: ColoresApp.blanco, fontSize: 16, fontWeight: FontWeight.w700, height: 1.2,
+                  color: ColoresApp.blanco,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -279,7 +293,10 @@ class _Header extends StatelessWidget {
           const SizedBox(height: 3),
           Text(
             _subtitulo(),
-            style: TextStyle(color: ColoresApp.blanco.withValues(alpha: 0.55), fontSize: 12, height: 1.2),
+            style: TextStyle(
+                color: ColoresApp.blanco.withValues(alpha: 0.55),
+                fontSize: 12,
+                height: 1.2),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -291,7 +308,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color:   ColoresApp.scannerFondo,
+      color: ColoresApp.scannerFondo,
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
       child: Row(
         children: [
@@ -316,15 +333,16 @@ class _BotonVolver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        ColoresApp.blanco.withValues(alpha: 0.1),
+      color: ColoresApp.blanco.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap:        onTap,
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        splashColor:  ColoresApp.blanco.withValues(alpha: 0.2),
+        splashColor: ColoresApp.blanco.withValues(alpha: 0.2),
         child: const Padding(
           padding: EdgeInsets.all(8),
-          child: Icon(Icons.arrow_back_ios_new_rounded, color: ColoresApp.blanco, size: 18),
+          child: Icon(Icons.arrow_back_ios_new_rounded,
+              color: ColoresApp.blanco, size: 18),
         ),
       ),
     );
@@ -343,17 +361,18 @@ class _BotonLinterna extends StatelessWidget {
       valueListenable: controlador,
       builder: (_, scannerState, __) {
         final torchState = scannerState.torchState;
-        if (torchState == TorchState.unavailable) return const SizedBox.shrink();
+        if (torchState == TorchState.unavailable)
+          return const SizedBox.shrink();
         final encendida = torchState == TorchState.on;
         return Material(
-          color:        encendida
+          color: encendida
               ? ColoresApp.ambar.withValues(alpha: 0.25)
               : ColoresApp.blanco.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
-            onTap:        controlador.toggleTorch,
+            onTap: controlador.toggleTorch,
             borderRadius: BorderRadius.circular(12),
-            splashColor:  ColoresApp.blanco.withValues(alpha: 0.2),
+            splashColor: ColoresApp.blanco.withValues(alpha: 0.2),
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: Icon(
@@ -361,7 +380,7 @@ class _BotonLinterna extends StatelessWidget {
                     ? Icons.flashlight_on_rounded
                     : Icons.flashlight_off_rounded,
                 color: encendida ? ColoresApp.ambar : ColoresApp.blanco,
-                size:  20,
+                size: 20,
               ),
             ),
           ),
@@ -382,35 +401,37 @@ class _ChipContadorPresentes extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color:        ColoresApp.verde.withValues(alpha: 0.15),
+        color: ColoresApp.verde.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border:       Border.all(color: ColoresApp.verde.withValues(alpha: 0.3)),
+        border: Border.all(color: ColoresApp.verde.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width:  6,
+            width: 6,
             height: 6,
             decoration: const BoxDecoration(
-              color: ColoresApp.verde, shape: BoxShape.circle,
+              color: ColoresApp.verde,
+              shape: BoxShape.circle,
             ),
           ),
           const SizedBox(width: 5),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 350),
             transitionBuilder: (child, animation) => ScaleTransition(
-              scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+              scale:
+                  CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
               child: FadeTransition(opacity: animation, child: child),
             ),
             child: Text(
               '$presentes',
               key: ValueKey(presentes),
               style: const TextStyle(
-                color:      ColoresApp.verde,
+                color: ColoresApp.verde,
                 fontWeight: FontWeight.w800,
-                fontSize:   14,
-                height:     1.0,
+                fontSize: 14,
+                height: 1.0,
               ),
             ),
           ),
@@ -434,25 +455,31 @@ class _PintorMarco extends CustomPainter {
     final r = ventanaRect;
 
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, r.top), overlay);
-    canvas.drawRect(Rect.fromLTWH(0, r.bottom, size.width, size.height - r.bottom), overlay);
+    canvas.drawRect(
+        Rect.fromLTWH(0, r.bottom, size.width, size.height - r.bottom),
+        overlay);
     canvas.drawRect(Rect.fromLTWH(0, r.top, r.left, r.height), overlay);
-    canvas.drawRect(Rect.fromLTWH(r.right, r.top, size.width - r.right, r.height), overlay);
+    canvas.drawRect(
+        Rect.fromLTWH(r.right, r.top, size.width - r.right, r.height), overlay);
 
     final cornerPaint = Paint()
-      ..color       = procesando ? ColoresApp.ambar : ColoresApp.scannerEsquina
+      ..color = procesando ? ColoresApp.ambar : ColoresApp.scannerEsquina
       ..strokeWidth = 3.5
-      ..style       = PaintingStyle.stroke
-      ..strokeCap   = StrokeCap.round;
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
 
-    _esquina(canvas, cornerPaint, r.topLeft,     esArriba: true,  esIzquierda: true);
-    _esquina(canvas, cornerPaint, r.topRight,    esArriba: true,  esIzquierda: false);
-    _esquina(canvas, cornerPaint, r.bottomLeft,  esArriba: false, esIzquierda: true);
-    _esquina(canvas, cornerPaint, r.bottomRight, esArriba: false, esIzquierda: false);
+    _esquina(canvas, cornerPaint, r.topLeft, esArriba: true, esIzquierda: true);
+    _esquina(canvas, cornerPaint, r.topRight,
+        esArriba: true, esIzquierda: false);
+    _esquina(canvas, cornerPaint, r.bottomLeft,
+        esArriba: false, esIzquierda: true);
+    _esquina(canvas, cornerPaint, r.bottomRight,
+        esArriba: false, esIzquierda: false);
   }
 
   void _esquina(
     Canvas canvas,
-    Paint  p,
+    Paint p,
     Offset c, {
     required bool esArriba,
     required bool esIzquierda,
@@ -460,16 +487,16 @@ class _PintorMarco extends CustomPainter {
     const len = 28.0;
     const rad = 10.0;
     final dx = esIzquierda ? 1.0 : -1.0;
-    final dy = esArriba    ? 1.0 : -1.0;
+    final dy = esArriba ? 1.0 : -1.0;
 
     final path = Path()
       ..moveTo(c.dx + dx * len, c.dy)
       ..lineTo(c.dx + dx * rad, c.dy)
       ..arcToPoint(
-          Offset(c.dx, c.dy + dy * rad),
-          radius:    const Radius.circular(rad),
-          clockwise: esIzquierda == esArriba,
-        )
+        Offset(c.dx, c.dy + dy * rad),
+        radius: const Radius.circular(rad),
+        clockwise: esIzquierda == esArriba,
+      )
       ..lineTo(c.dx, c.dy + dy * len);
 
     canvas.drawPath(path, p);
@@ -492,10 +519,12 @@ class _TarjetaResultado extends StatelessWidget {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
       child: switch (state) {
-        final EscanearQrConfirmado   s => _CardConfirmado(key: const ValueKey('conf'), state: s),
-        final EscanearQrYaRegistrado s => _CardYaRegistrado(key: const ValueKey('ya'), state: s),
-        EscanearQrNoValido()           => const _CardNoValido(key: ValueKey('inv')),
-        _                              => const SizedBox.shrink(key: ValueKey('none')),
+        final EscanearQrConfirmado s =>
+          _CardConfirmado(key: const ValueKey('conf'), state: s),
+        final EscanearQrYaRegistrado s =>
+          _CardYaRegistrado(key: const ValueKey('ya'), state: s),
+        EscanearQrNoValido() => const _CardNoValido(key: ValueKey('inv')),
+        _ => const SizedBox.shrink(key: ValueKey('none')),
       },
     );
   }
@@ -512,15 +541,20 @@ class _CardConfirmado extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width:      22,
-          height:     22,
-          decoration: const BoxDecoration(color: ColoresApp.verde, shape: BoxShape.circle),
-          child: const Icon(Icons.check_rounded, color: ColoresApp.blanco, size: 14),
+          width: 22,
+          height: 22,
+          decoration: const BoxDecoration(
+              color: ColoresApp.verde, shape: BoxShape.circle),
+          child: const Icon(Icons.check_rounded,
+              color: ColoresApp.blanco, size: 14),
         ),
         const SizedBox(width: 8),
         const Text(
           'QR detectado',
-          style: TextStyle(color: ColoresApp.verde, fontWeight: FontWeight.w700, fontSize: 13),
+          style: TextStyle(
+              color: ColoresApp.verde,
+              fontWeight: FontWeight.w700,
+              fontSize: 13),
         ),
       ],
     );
@@ -528,9 +562,10 @@ class _CardConfirmado extends StatelessWidget {
 
   Widget _construirBotonConfirmado() {
     return Container(
-      width:      double.infinity,
-      padding:    const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(color: ColoresApp.verde, borderRadius: BorderRadius.circular(14)),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+          color: ColoresApp.verde, borderRadius: BorderRadius.circular(14)),
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -538,7 +573,10 @@ class _CardConfirmado extends StatelessWidget {
           SizedBox(width: 8),
           Text(
             '✓ Entrada confirmada',
-            style: TextStyle(color: ColoresApp.blanco, fontWeight: FontWeight.w700, fontSize: 15),
+            style: TextStyle(
+                color: ColoresApp.blanco,
+                fontWeight: FontWeight.w700,
+                fontSize: 15),
           ),
         ],
       ),
@@ -549,15 +587,16 @@ class _CardConfirmado extends StatelessWidget {
   Widget build(BuildContext context) {
     final subPartes = <String>[
       if (state.cedula != null) state.cedula!,
-      if (state.rol    != null) state.rol!,
+      if (state.rol != null) state.rol!,
     ];
 
     return Container(
-      padding:    const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:        ColoresApp.scannerVerdeOscuro,
+        color: ColoresApp.scannerVerdeOscuro,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: ColoresApp.verde.withValues(alpha: 0.35), width: 1),
+        border: Border.all(
+            color: ColoresApp.verde.withValues(alpha: 0.35), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -568,14 +607,19 @@ class _CardConfirmado extends StatelessWidget {
           Text(
             state.nombre,
             style: const TextStyle(
-              color: ColoresApp.blanco, fontWeight: FontWeight.w800, fontSize: 20, height: 1.2,
+              color: ColoresApp.blanco,
+              fontWeight: FontWeight.w800,
+              fontSize: 20,
+              height: 1.2,
             ),
           ),
           if (subPartes.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
               subPartes.join(' · '),
-              style: TextStyle(color: ColoresApp.blanco.withValues(alpha: 0.55), fontSize: 13),
+              style: TextStyle(
+                  color: ColoresApp.blanco.withValues(alpha: 0.55),
+                  fontSize: 13),
             ),
           ],
           const SizedBox(height: 16),
@@ -596,19 +640,22 @@ class _CardYaRegistrado extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding:    const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:        ColoresApp.scannerAmbarOscuro,
+        color: ColoresApp.scannerAmbarOscuro,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: ColoresApp.ambar.withValues(alpha: 0.5), width: 1),
+        border: Border.all(
+            color: ColoresApp.ambar.withValues(alpha: 0.5), width: 1),
       ),
       child: Row(
         children: [
           Container(
-            width:      42,
-            height:     42,
-            decoration: const BoxDecoration(color: ColoresApp.ambar, shape: BoxShape.circle),
-            child: const Icon(Icons.replay_rounded, color: ColoresApp.blanco, size: 22),
+            width: 42,
+            height: 42,
+            decoration: const BoxDecoration(
+                color: ColoresApp.ambar, shape: BoxShape.circle),
+            child: const Icon(Icons.replay_rounded,
+                color: ColoresApp.blanco, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -619,15 +666,19 @@ class _CardYaRegistrado extends StatelessWidget {
                 const Text(
                   'Ya registrado',
                   style: TextStyle(
-                    color: ColoresApp.ambar, fontWeight: FontWeight.w700, fontSize: 13,
+                    color: ColoresApp.ambar,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   state.nombre,
                   style: const TextStyle(
-                    color: ColoresApp.blanco, fontWeight: FontWeight.w800,
-                    fontSize: 15, height: 1.2,
+                    color: ColoresApp.blanco,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    height: 1.2,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -636,13 +687,17 @@ class _CardYaRegistrado extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     state.cedula!,
-                    style: TextStyle(color: ColoresApp.blanco.withValues(alpha: 0.5), fontSize: 12),
+                    style: TextStyle(
+                        color: ColoresApp.blanco.withValues(alpha: 0.5),
+                        fontSize: 12),
                   ),
                 ],
                 const SizedBox(height: 3),
                 Text(
                   'Esta persona ya marcó su entrada',
-                  style: TextStyle(color: ColoresApp.blanco.withValues(alpha: 0.4), fontSize: 11),
+                  style: TextStyle(
+                      color: ColoresApp.blanco.withValues(alpha: 0.4),
+                      fontSize: 11),
                 ),
               ],
             ),
@@ -661,19 +716,22 @@ class _CardNoValido extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding:    const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:        ColoresApp.scannerRojoOscuro,
+        color: ColoresApp.scannerRojoOscuro,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: ColoresApp.rojo.withValues(alpha: 0.35), width: 1),
+        border: Border.all(
+            color: ColoresApp.rojo.withValues(alpha: 0.35), width: 1),
       ),
       child: Row(
         children: [
           Container(
-            width:      42,
-            height:     42,
-            decoration: const BoxDecoration(color: ColoresApp.rojo, shape: BoxShape.circle),
-            child: const Icon(Icons.close_rounded, color: ColoresApp.blanco, size: 22),
+            width: 42,
+            height: 42,
+            decoration: const BoxDecoration(
+                color: ColoresApp.rojo, shape: BoxShape.circle),
+            child: const Icon(Icons.close_rounded,
+                color: ColoresApp.blanco, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -683,12 +741,17 @@ class _CardNoValido extends StatelessWidget {
               children: [
                 const Text(
                   'QR no válido',
-                  style: TextStyle(color: ColoresApp.rojo, fontWeight: FontWeight.w700, fontSize: 15),
+                  style: TextStyle(
+                      color: ColoresApp.rojo,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   'Este código no pertenece a ningún usuario.',
-                  style: TextStyle(color: ColoresApp.blanco.withValues(alpha: 0.5), fontSize: 12),
+                  style: TextStyle(
+                      color: ColoresApp.blanco.withValues(alpha: 0.5),
+                      fontSize: 12),
                 ),
               ],
             ),

@@ -18,12 +18,14 @@ class CrearTagCubit extends Cubit<CrearTagEstado> {
     emit(const CrearTagCargando());
     try {
       final tag = await _repositorio.obtenerTag(tagId);
-      emit(CrearTagCargado(
-        tagId:              tagId,
-        nombreInicial:      tag['nombre']      as String? ?? '',
-        descripcionInicial: tag['descripcion'] as String? ?? '',
-        tipoSeleccionado:   tag['tipo']        as String?,
-      ),);
+      emit(
+        CrearTagCargado(
+          tagId: tagId,
+          nombreInicial: tag['nombre'] as String? ?? '',
+          descripcionInicial: tag['descripcion'] as String? ?? '',
+          tipoSeleccionado: tag['tipo'] as String?,
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(CrearTagError(mensaje: e.mensaje));
@@ -40,10 +42,10 @@ class CrearTagCubit extends Cubit<CrearTagEstado> {
   }
 
   Future<void> guardar({
-    required String  nombre,
-    required String  descripcion,
+    required String nombre,
+    required String descripcion,
     required String? tipo,
-    required String  creadorId,
+    required String creadorId,
   }) async {
     final e = state;
     if (e is! CrearTagCargado) return;
@@ -60,19 +62,26 @@ class CrearTagCubit extends Cubit<CrearTagEstado> {
     emit(e.copiarCon(estaGuardando: true, errorValidacion: ''));
     try {
       final duplicado = await _repositorio.existeDuplicado(
-        nombre:    nombre,
-        tipo:      tipo,
+        nombre: nombre,
+        tipo: tipo,
         excludeId: e.tagId,
       );
       if (duplicado) {
         final tipoDisplay = tipo == 'principal' ? 'Principal' : 'Secundario';
-        emit(e.copiarCon(
-          estaGuardando:   false,
-          errorValidacion: 'Ya existe un tag "$nombre" de tipo $tipoDisplay.',
-        ),);
+        emit(
+          e.copiarCon(
+            estaGuardando: false,
+            errorValidacion: 'Ya existe un tag "$nombre" de tipo $tipoDisplay.',
+          ),
+        );
         return;
       }
-      await _persistirTag(estado: e, nombre: nombre, descripcion: descripcion, tipo: tipo, creadorId: creadorId);
+      await _persistirTag(
+          estado: e,
+          nombre: nombre,
+          descripcion: descripcion,
+          tipo: tipo,
+          creadorId: creadorId);
       emit(const CrearTagGuardado());
     } on FallaServidor catch (err) {
       reportarError(err);
@@ -85,10 +94,10 @@ class CrearTagCubit extends Cubit<CrearTagEstado> {
 
   Future<void> _persistirTag({
     required CrearTagCargado estado,
-    required String          nombre,
-    required String          descripcion,
-    required String          tipo,
-    required String          creadorId,
+    required String nombre,
+    required String descripcion,
+    required String tipo,
+    required String creadorId,
   }) async {
     final datos = {'nombre': nombre, 'descripcion': descripcion, 'tipo': tipo};
     if (estado.tagId != null) {

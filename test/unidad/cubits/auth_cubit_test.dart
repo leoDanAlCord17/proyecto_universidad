@@ -15,8 +15,8 @@ void main() {
   setUp(() {
     registrarFallbacks();
     repositorio = MockAutenticacionRepositorio();
-    sesion      = MockSession();
-    mockUser    = MockUser();
+    sesion = MockSession();
+    mockUser = MockUser();
     when(() => mockUser.id).thenReturn('auth-id-1');
     when(() => sesion.user).thenReturn(mockUser);
     // AuthCubit constructor suscribe inmediatamente a este stream

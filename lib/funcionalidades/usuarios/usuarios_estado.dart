@@ -23,44 +23,49 @@ final class UsuariosCargados extends UsuariosEstado {
     required this.usuarios,
     required this.usuariosFiltrados,
     required this.hayMas,
-    this.seleccionados      = const {},
-    this.modoSeleccion      = false,
+    this.seleccionados = const {},
+    this.modoSeleccion = false,
     this.estaEjecutandoLote = false,
     this.errorLote,
   });
 
   final List<UsuarioItem> usuarios;
   final List<UsuarioItem> usuariosFiltrados;
-  final bool              hayMas;
-  final Set<String>       seleccionados;
-  final bool              modoSeleccion;
-  final bool              estaEjecutandoLote;
-  final String?           errorLote;
+  final bool hayMas;
+  final Set<String> seleccionados;
+  final bool modoSeleccion;
+  final bool estaEjecutandoLote;
+  final String? errorLote;
 
   UsuariosCargados copiarCon({
     List<UsuarioItem>? usuariosFiltrados,
-    bool?              hayMas,
-    Set<String>?       seleccionados,
-    bool?              modoSeleccion,
-    bool?              estaEjecutandoLote,
-    String?            errorLote,
-    bool               limpiarError = false,
+    bool? hayMas,
+    Set<String>? seleccionados,
+    bool? modoSeleccion,
+    bool? estaEjecutandoLote,
+    String? errorLote,
+    bool limpiarError = false,
   }) =>
       UsuariosCargados(
-        usuarios:            usuarios,
-        usuariosFiltrados:   usuariosFiltrados  ?? this.usuariosFiltrados,
-        hayMas:              hayMas             ?? this.hayMas,
-        seleccionados:       seleccionados      ?? this.seleccionados,
-        modoSeleccion:       modoSeleccion      ?? this.modoSeleccion,
-        estaEjecutandoLote:  estaEjecutandoLote ?? this.estaEjecutandoLote,
-        errorLote:           limpiarError ? null : (errorLote ?? this.errorLote),
+        usuarios: usuarios,
+        usuariosFiltrados: usuariosFiltrados ?? this.usuariosFiltrados,
+        hayMas: hayMas ?? this.hayMas,
+        seleccionados: seleccionados ?? this.seleccionados,
+        modoSeleccion: modoSeleccion ?? this.modoSeleccion,
+        estaEjecutandoLote: estaEjecutandoLote ?? this.estaEjecutandoLote,
+        errorLote: limpiarError ? null : (errorLote ?? this.errorLote),
       );
 
   @override
   List<Object?> get props => [
-    usuarios, usuariosFiltrados, hayMas, seleccionados,
-    modoSeleccion, estaEjecutandoLote, errorLote,
-  ];
+        usuarios,
+        usuariosFiltrados,
+        hayMas,
+        seleccionados,
+        modoSeleccion,
+        estaEjecutandoLote,
+        errorLote,
+      ];
 }
 
 /// La lista muestra los resultados ya cargados mientras se obtiene la siguiente página.
@@ -74,11 +79,12 @@ final class UsuariosCargandoMas extends UsuariosEstado {
 
   final List<UsuarioItem> usuarios;
   final List<UsuarioItem> usuariosFiltrados;
-  final Set<String>       seleccionados;
-  final bool              modoSeleccion;
+  final Set<String> seleccionados;
+  final bool modoSeleccion;
 
   @override
-  List<Object?> get props => [usuarios, usuariosFiltrados, seleccionados, modoSeleccion];
+  List<Object?> get props =>
+      [usuarios, usuariosFiltrados, seleccionados, modoSeleccion];
 }
 
 final class UsuariosError extends UsuariosEstado {
@@ -97,7 +103,7 @@ final class UsuariosOperacionFallida extends UsuariosEstado {
   });
 
   final UsuariosCargados anterior;
-  final String           mensaje;
+  final String mensaje;
 
   @override
   List<Object?> get props => [anterior, mensaje];

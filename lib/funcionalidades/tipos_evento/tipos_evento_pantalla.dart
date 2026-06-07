@@ -42,8 +42,11 @@ class _TiposEventoPantallaState extends State<TiposEventoPantalla> {
           curr is TiposEventoCargados && curr.errorOperacion != null,
       listener: (context, estado) {
         if (estado is TiposEventoCargados && estado.errorOperacion != null) {
-          AvisoApp.mostrar(context,
-              texto: estado.errorOperacion!, estilo: EstiloAviso.error,);
+          AvisoApp.mostrar(
+            context,
+            texto: estado.errorOperacion!,
+            estilo: EstiloAviso.error,
+          );
         }
       },
       builder: _construirVista,
@@ -53,9 +56,9 @@ class _TiposEventoPantallaState extends State<TiposEventoPantalla> {
   Widget _construirVista(BuildContext context, TiposEventoEstado estado) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -65,7 +68,7 @@ class _TiposEventoPantallaState extends State<TiposEventoPantalla> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: BarraBusquedaApp(
-                hintText:  'Buscar tipos de evento...',
+                hintText: 'Buscar tipos de evento...',
                 alCambiar: (texto) =>
                     context.read<TiposEventoCubit>().filtrar(texto),
               ),
@@ -96,10 +99,10 @@ class _BarraTitulo extends StatelessWidget {
             Text(
               'Tipos de evento',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontSize:   20,
-                fontWeight: FontWeight.w700,
-                color:      ColoresApp.textoPrimario,
-              ),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: ColoresApp.textoPrimario,
+                  ),
             ),
           ],
         ),
@@ -117,24 +120,26 @@ class _BotonCrear extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: () async {
           await context.push(Rutas.crearTipoEvento);
-          if (context.mounted) unawaited(context.read<TiposEventoCubit>().cargar());
+          if (context.mounted)
+            unawaited(context.read<TiposEventoCubit>().cargar());
         },
-        borderRadius:   BorderRadius.circular(12),
-        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+        splashColor: ColoresApp.blanco.withValues(alpha: 0.3),
         highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
-          width:  40,
+          width: 40,
           height: 40,
           decoration: BoxDecoration(
-            gradient:     ColoresApp.degradadoPrincipal,
+            gradient: ColoresApp.degradadoPrincipal,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Icon(Icons.add_rounded, color: ColoresApp.blanco, size: 22),
+          child:
+              const Icon(Icons.add_rounded, color: ColoresApp.blanco, size: 22),
         ),
       ),
     );
@@ -155,7 +160,9 @@ class _Cuerpo extends StatelessWidget {
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
       final TiposEventoCargados cargados => _Lista(estado: cargados),
-      final TiposEventoError error       => VistaErrorApp(mensaje: error.mensaje, alReintentar: () => context.read<TiposEventoCubit>().cargar()),
+      final TiposEventoError error => VistaErrorApp(
+          mensaje: error.mensaje,
+          alReintentar: () => context.read<TiposEventoCubit>().cargar()),
     };
   }
 }
@@ -176,8 +183,8 @@ class _Lista extends StatelessWidget {
         child: Text(
           'No hay tipos de evento',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: ColoresApp.textoTerciario,
-          ),
+                color: ColoresApp.textoTerciario,
+              ),
         ),
       );
     }
@@ -191,34 +198,39 @@ class _Lista extends StatelessWidget {
             Text(
               'TIPOS DE EVENTO',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color:         ColoresApp.textoTerciario,
-                letterSpacing: 0.8,
-                fontSize:      13,
-                fontWeight:    FontWeight.w900,
-              ),
+                    color: ColoresApp.textoTerciario,
+                    letterSpacing: 0.8,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                  ),
             ),
             const SizedBox(height: 12),
-            ...items.map((tipo) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: _TarjetaTipoEvento(
-                tipo: tipo,
-                alEditar: () async {
-                  await context.push(Rutas.editarTipoEventoUrl(tipo.id));
-                  if (context.mounted) unawaited(context.read<TiposEventoCubit>().cargar());
-                },
-                alDesactivar: () async {
-                  final confirmo = await DialogoConfirmacion.mostrar(
-                    context,
-                    titulo:         'Desactivar tipo de evento',
-                    descripcion:    '¿Deseas desactivar "${tipo.nombre}"? Dejará de estar disponible al crear eventos.',
-                    textoConfirmar: 'Desactivar',
-                    textoCancelar:  'Cancelar',
-                  );
-                  if (confirmo != true || !context.mounted) return;
-                  unawaited(context.read<TiposEventoCubit>().desactivar(tipo.id));
-                },
+            ...items.map(
+              (tipo) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _TarjetaTipoEvento(
+                  tipo: tipo,
+                  alEditar: () async {
+                    await context.push(Rutas.editarTipoEventoUrl(tipo.id));
+                    if (context.mounted)
+                      unawaited(context.read<TiposEventoCubit>().cargar());
+                  },
+                  alDesactivar: () async {
+                    final confirmo = await DialogoConfirmacion.mostrar(
+                      context,
+                      titulo: 'Desactivar tipo de evento',
+                      descripcion:
+                          '¿Deseas desactivar "${tipo.nombre}"? Dejará de estar disponible al crear eventos.',
+                      textoConfirmar: 'Desactivar',
+                      textoCancelar: 'Cancelar',
+                    );
+                    if (confirmo != true || !context.mounted) return;
+                    unawaited(
+                        context.read<TiposEventoCubit>().desactivar(tipo.id));
+                  },
+                ),
               ),
-            ),),
+            ),
           ],
         ),
         if (estado.estaDesactivando)
@@ -243,21 +255,21 @@ class _TarjetaTipoEvento extends StatelessWidget {
   });
 
   final TipoEventoItem tipo;
-  final VoidCallback   alEditar;
-  final VoidCallback   alDesactivar;
+  final VoidCallback alEditar;
+  final VoidCallback alDesactivar;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [
           BoxShadow(
-            color:      ColoresApp.sombraTarjeta,
+            color: ColoresApp.sombraTarjeta,
             blurRadius: 8,
-            offset:     Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -270,19 +282,19 @@ class _TarjetaTipoEvento extends StatelessWidget {
                 Text(
                   tipo.nombre,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color:      ColoresApp.textoPrimario,
-                    fontSize:   16,
-                  ),
+                        fontWeight: FontWeight.w600,
+                        color: ColoresApp.textoPrimario,
+                        fontSize: 16,
+                      ),
                 ),
                 if (tipo.descripcion.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
                     tipo.descripcion,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color:    ColoresApp.textoSecundario,
-                      fontSize: 13,
-                    ),
+                          color: ColoresApp.textoSecundario,
+                          fontSize: 13,
+                        ),
                   ),
                 ],
               ],
@@ -313,24 +325,24 @@ class _BotonEditar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap:          alPresionar,
-        borderRadius:   BorderRadius.circular(10),
-        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        onTap: alPresionar,
+        borderRadius: BorderRadius.circular(10),
+        splashColor: ColoresApp.blanco.withValues(alpha: 0.3),
         highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           decoration: BoxDecoration(
-            gradient:     ColoresApp.degradadoPrincipal,
+            gradient: ColoresApp.degradadoPrincipal,
             borderRadius: BorderRadius.circular(10),
           ),
           child: const Text(
             'Editar',
             style: TextStyle(
-              color:      ColoresApp.blanco,
-              fontSize:   14,
+              color: ColoresApp.blanco,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -350,25 +362,25 @@ class _BotonDesactivar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap:          alPresionar,
-        borderRadius:   BorderRadius.circular(10),
-        splashColor:    ColoresApp.rojo.withValues(alpha: 0.2),
+        onTap: alPresionar,
+        borderRadius: BorderRadius.circular(10),
+        splashColor: ColoresApp.rojo.withValues(alpha: 0.2),
         highlightColor: ColoresApp.rojo.withValues(alpha: 0.1),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
           decoration: BoxDecoration(
-            color:        ColoresApp.rojoClaro,
+            color: ColoresApp.rojoClaro,
             borderRadius: BorderRadius.circular(10),
-            border:       Border.all(color: ColoresApp.bordeError),
+            border: Border.all(color: ColoresApp.bordeError),
           ),
           child: const Text(
             'Desactivar',
             style: TextStyle(
-              color:      ColoresApp.rojo,
-              fontSize:   14,
+              color: ColoresApp.rojo,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -377,4 +389,3 @@ class _BotonDesactivar extends StatelessWidget {
     );
   }
 }
-

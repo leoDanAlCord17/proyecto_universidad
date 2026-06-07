@@ -13,45 +13,46 @@ class HistorialExportador {
   HistorialExportador._();
 
   // ── Paleta del documento ─────────────────────────────────────────────────────
-  static final _azul       = PdfColor.fromHex('#5B3FD4');
-  static final _azulFondo  = PdfColor.fromHex('#EDE9FB');
-  static final _grisOs     = PdfColor.fromHex('#1C1830');
-  static final _grisMed    = PdfColor.fromHex('#6B6480');
-  static final _grisCla    = PdfColor.fromHex('#F4F3F9');
-  static final _bordTabla  = PdfColor.fromHex('#E8E6F2');
-  static final _verde      = PdfColor.fromHex('#1A9462');
+  static final _azul = PdfColor.fromHex('#5B3FD4');
+  static final _azulFondo = PdfColor.fromHex('#EDE9FB');
+  static final _grisOs = PdfColor.fromHex('#1C1830');
+  static final _grisMed = PdfColor.fromHex('#6B6480');
+  static final _grisCla = PdfColor.fromHex('#F4F3F9');
+  static final _bordTabla = PdfColor.fromHex('#E8E6F2');
+  static final _verde = PdfColor.fromHex('#1A9462');
   static final _verdeFondo = PdfColor.fromHex('#E2F5EE');
-  static final _ambar      = PdfColor.fromHex('#B97010');
+  static final _ambar = PdfColor.fromHex('#B97010');
   static final _ambarFondo = PdfColor.fromHex('#FDF2E0');
-  static final _rojo       = PdfColor.fromHex('#C23B3B');
-  static final _rojoFondo  = PdfColor.fromHex('#FBEAEA');
+  static final _rojo = PdfColor.fromHex('#C23B3B');
+  static final _rojoFondo = PdfColor.fromHex('#FBEAEA');
 
   static Future<void> generarYCompartirPdf({
-    required String              nombreUsuario,
+    required String nombreUsuario,
     required List<HistorialItem> items,
   }) async {
     final doc = pw.Document();
 
     final totalAsistio = items.where((i) => i.esAsistido).length;
-    final totalSalio   = items.where((i) => i.esSalidaAnticipada).length;
+    final totalSalio = items.where((i) => i.esSalidaAnticipada).length;
     final totalAusente = items.where((i) => i.esAusente).length;
-    final pctAsistio   = items.isEmpty ? 0 : (totalAsistio * 100 ~/ items.length);
-    final pctAusente   = items.isEmpty ? 0 : (totalAusente * 100 ~/ items.length);
+    final pctAsistio = items.isEmpty ? 0 : (totalAsistio * 100 ~/ items.length);
+    final pctAusente = items.isEmpty ? 0 : (totalAusente * 100 ~/ items.length);
 
-    final now      = DateTime.now();
+    final now = DateTime.now();
     final fechaGen = '${_d2(now.day)}/${_d2(now.month)}/${now.year}';
 
     doc.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
-        margin:     const pw.EdgeInsets.symmetric(horizontal: 36, vertical: 36),
-        footer:     (_) => _pie(fechaGen),
-        build:      (_) => [
+        margin: const pw.EdgeInsets.symmetric(horizontal: 36, vertical: 36),
+        footer: (_) => _pie(fechaGen),
+        build: (_) => [
           _encabezado(nombreUsuario, fechaGen),
           pw.SizedBox(height: 22),
           _tituloSeccion('Resumen'),
           pw.SizedBox(height: 8),
-          _bloqueResumen(items.length, totalAsistio, pctAsistio, totalSalio, totalAusente, pctAusente),
+          _bloqueResumen(items.length, totalAsistio, pctAsistio, totalSalio,
+              totalAusente, pctAusente),
           pw.SizedBox(height: 26),
           _tituloSeccion('Detalle de eventos'),
           pw.SizedBox(height: 8),
@@ -60,9 +61,10 @@ class HistorialExportador {
       ),
     );
 
-    final bytes   = await doc.save();
-    final dir     = await getTemporaryDirectory();
-    final archivo = File('${dir.path}/historial_uniasist_${now.millisecondsSinceEpoch}.pdf');
+    final bytes = await doc.save();
+    final dir = await getTemporaryDirectory();
+    final archivo = File(
+        '${dir.path}/historial_uniasist_${now.millisecondsSinceEpoch}.pdf');
     await archivo.writeAsBytes(bytes);
 
     await Share.shareXFiles(
@@ -73,11 +75,10 @@ class HistorialExportador {
 
   // ── Secciones ────────────────────────────────────────────────────────────────
 
-  static pw.Widget _encabezado(String nombre, String fecha) =>
-      pw.Container(
-        padding:    const pw.EdgeInsets.all(20),
+  static pw.Widget _encabezado(String nombre, String fecha) => pw.Container(
+        padding: const pw.EdgeInsets.all(20),
         decoration: pw.BoxDecoration(
-          color:        _azul,
+          color: _azul,
           borderRadius: const pw.BorderRadius.all(pw.Radius.circular(10)),
         ),
         child: pw.Column(
@@ -86,9 +87,9 @@ class HistorialExportador {
             pw.Text(
               'UniAsist',
               style: pw.TextStyle(
-                fontSize:   22,
+                fontSize: 22,
                 fontWeight: pw.FontWeight.bold,
-                color:      PdfColors.white,
+                color: PdfColors.white,
               ),
             ),
             pw.SizedBox(height: 2),
@@ -103,14 +104,15 @@ class HistorialExportador {
                 pw.Text(
                   nombre,
                   style: pw.TextStyle(
-                    fontSize:   13,
+                    fontSize: 13,
                     fontWeight: pw.FontWeight.bold,
-                    color:      PdfColors.white,
+                    color: PdfColors.white,
                   ),
                 ),
                 pw.Text(
                   'Generado el $fecha',
-                  style: const pw.TextStyle(fontSize: 10, color: PdfColors.white),
+                  style:
+                      const pw.TextStyle(fontSize: 10, color: PdfColors.white),
                 ),
               ],
             ),
@@ -118,13 +120,12 @@ class HistorialExportador {
         ),
       );
 
-  static pw.Widget _tituloSeccion(String texto) =>
-      pw.Text(
+  static pw.Widget _tituloSeccion(String texto) => pw.Text(
         texto,
         style: pw.TextStyle(
-          fontSize:   13,
+          fontSize: 13,
           fontWeight: pw.FontWeight.bold,
-          color:      _grisOs,
+          color: _grisOs,
         ),
       );
 
@@ -138,24 +139,25 @@ class HistorialExportador {
   ) =>
       pw.Row(
         children: [
-          _tarjeta('Total',       '$total',                _azul,  _azulFondo),
+          _tarjeta('Total', '$total', _azul, _azulFondo),
           pw.SizedBox(width: 8),
-          _tarjeta('Asistí',      '$asistio ($pctAsistio%)', _verde, _verdeFondo),
+          _tarjeta('Asistí', '$asistio ($pctAsistio%)', _verde, _verdeFondo),
           pw.SizedBox(width: 8),
-          _tarjeta('Salió antes', '$salio',                _ambar, _ambarFondo),
+          _tarjeta('Salió antes', '$salio', _ambar, _ambarFondo),
           pw.SizedBox(width: 8),
-          _tarjeta('Ausencias',   '$ausente ($pctAusente%)', _rojo,  _rojoFondo),
+          _tarjeta('Ausencias', '$ausente ($pctAusente%)', _rojo, _rojoFondo),
         ],
       );
 
-  static pw.Widget _tarjeta(String label, String valor, PdfColor color, PdfColor fondo) =>
+  static pw.Widget _tarjeta(
+          String label, String valor, PdfColor color, PdfColor fondo) =>
       pw.Expanded(
         child: pw.Container(
           padding: const pw.EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           decoration: pw.BoxDecoration(
-            color:        fondo,
+            color: fondo,
             borderRadius: const pw.BorderRadius.all(pw.Radius.circular(8)),
-            border:       pw.Border.all(color: color, width: 0.5),
+            border: pw.Border.all(color: color, width: 0.5),
           ),
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -163,9 +165,9 @@ class HistorialExportador {
               pw.Text(
                 valor,
                 style: pw.TextStyle(
-                  fontSize:   15,
+                  fontSize: 15,
                   fontWeight: pw.FontWeight.bold,
-                  color:      color,
+                  color: color,
                 ),
               ),
               pw.SizedBox(height: 3),
@@ -202,17 +204,17 @@ class HistorialExportador {
         pw.TableRow(
           decoration: pw.BoxDecoration(color: _azul),
           children: [
-            _celda('Evento',   cabecera: true),
-            _celda('Fecha',    cabecera: true),
-            _celda('Lugar',    cabecera: true),
-            _celda('Estado',   cabecera: true),
-            _celda('Entrada',  cabecera: true),
-            _celda('Salida',   cabecera: true),
+            _celda('Evento', cabecera: true),
+            _celda('Fecha', cabecera: true),
+            _celda('Lugar', cabecera: true),
+            _celda('Estado', cabecera: true),
+            _celda('Entrada', cabecera: true),
+            _celda('Salida', cabecera: true),
           ],
         ),
         ...items.asMap().entries.map((e) {
           final fondo = e.key.isEven ? _grisCla : PdfColors.white;
-          final item  = e.value;
+          final item = e.value;
           final (etiq, color, fondoEstatus) = _estatusConfig(item.estatus);
           return pw.TableRow(
             decoration: pw.BoxDecoration(color: fondo),
@@ -222,7 +224,7 @@ class HistorialExportador {
               _celda(item.eventoLugar ?? '—'),
               _celdaBadge(etiq, color, fondoEstatus),
               _celda(item.horaEntrada ?? '—'),
-              _celda(item.horaSalida  ?? '—'),
+              _celda(item.horaSalida ?? '—'),
             ],
           );
         }),
@@ -230,8 +232,7 @@ class HistorialExportador {
     );
   }
 
-  static pw.Widget _pie(String fecha) =>
-      pw.Padding(
+  static pw.Widget _pie(String fecha) => pw.Padding(
         padding: const pw.EdgeInsets.only(top: 8),
         child: pw.Row(
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -250,16 +251,15 @@ class HistorialExportador {
 
   // ── Helpers de celdas ────────────────────────────────────────────────────────
 
-  static pw.Widget _celda(String texto, {bool cabecera = false}) =>
-      pw.Padding(
+  static pw.Widget _celda(String texto, {bool cabecera = false}) => pw.Padding(
         padding: const pw.EdgeInsets.symmetric(vertical: 5, horizontal: 5),
         child: pw.Text(
           texto,
           maxLines: 2,
           style: pw.TextStyle(
-            fontSize:   cabecera ? 9 : 8,
+            fontSize: cabecera ? 9 : 8,
             fontWeight: cabecera ? pw.FontWeight.bold : pw.FontWeight.normal,
-            color:      cabecera ? PdfColors.white : _grisOs,
+            color: cabecera ? PdfColors.white : _grisOs,
           ),
         ),
       );
@@ -270,16 +270,16 @@ class HistorialExportador {
         child: pw.Container(
           padding: const pw.EdgeInsets.symmetric(vertical: 2, horizontal: 4),
           decoration: pw.BoxDecoration(
-            color:        fondo,
+            color: fondo,
             borderRadius: const pw.BorderRadius.all(pw.Radius.circular(4)),
-            border:       pw.Border.all(color: color, width: 0.5),
+            border: pw.Border.all(color: color, width: 0.5),
           ),
           child: pw.Text(
             texto,
             style: pw.TextStyle(
-              fontSize:   7,
+              fontSize: 7,
               fontWeight: pw.FontWeight.bold,
-              color:      color,
+              color: color,
             ),
           ),
         ),
@@ -289,11 +289,15 @@ class HistorialExportador {
 
   static (String, PdfColor, PdfColor) _estatusConfig(String estatus) =>
       switch (estatus) {
-        EstatusAsistencia.presente        => ('Presente',    _verde, _verdeFondo),
-        EstatusAsistencia.completado      => ('Completado',  _verde, _verdeFondo),
-        EstatusAsistencia.salioAnticipado => ('Salió antes', _ambar, _ambarFondo),
-        EstatusAsistencia.ausente         => ('Ausente',     _rojo,  _rojoFondo),
-        _                                  => ('—',           _grisMed, _grisCla),
+        EstatusAsistencia.presente => ('Presente', _verde, _verdeFondo),
+        EstatusAsistencia.completado => ('Completado', _verde, _verdeFondo),
+        EstatusAsistencia.salioAnticipado => (
+            'Salió antes',
+            _ambar,
+            _ambarFondo
+          ),
+        EstatusAsistencia.ausente => ('Ausente', _rojo, _rojoFondo),
+        _ => ('—', _grisMed, _grisCla),
       };
 
   static String _d2(int n) => n.toString().padLeft(2, '0');

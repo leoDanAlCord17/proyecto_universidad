@@ -5,7 +5,8 @@ import '../autenticacion/autenticacion_repositorio.dart';
 import 'recuperar_contrasena_estado.dart';
 
 class RecuperarContrasenaCubit extends Cubit<RecuperarContrasenaEstado> {
-  RecuperarContrasenaCubit(this._repositorio) : super(const RecuperarContrasenaInicial());
+  RecuperarContrasenaCubit(this._repositorio)
+      : super(const RecuperarContrasenaInicial());
 
   final AutenticacionRepositorio _repositorio;
 
@@ -14,11 +15,13 @@ class RecuperarContrasenaCubit extends Cubit<RecuperarContrasenaEstado> {
   Future<void> enviar(String correo) async {
     final correoLimpio = correo.trim();
     if (correoLimpio.isEmpty) {
-      emit(const RecuperarContrasenaError(mensaje: 'Ingresa tu correo institucional.'));
+      emit(const RecuperarContrasenaError(
+          mensaje: 'Ingresa tu correo institucional.'));
       return;
     }
     if (!_regexCorreo.hasMatch(correoLimpio)) {
-      emit(const RecuperarContrasenaError(mensaje: 'Ingresa un correo válido.'));
+      emit(
+          const RecuperarContrasenaError(mensaje: 'Ingresa un correo válido.'));
       return;
     }
     emit(const RecuperarContrasenaEnviando());

@@ -15,16 +15,16 @@ class QrUsuario extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return QrImageView(
-      data:            usuarioId,
-      version:         QrVersions.auto,
-      size:            tamanio,
-      eyeStyle:        const QrEyeStyle(
-        eyeShape:  QrEyeShape.square,
-        color:     ColoresApp.acento,
+      data: usuarioId,
+      version: QrVersions.auto,
+      size: tamanio,
+      eyeStyle: const QrEyeStyle(
+        eyeShape: QrEyeShape.square,
+        color: ColoresApp.acento,
       ),
       dataModuleStyle: const QrDataModuleStyle(
         dataModuleShape: QrDataModuleShape.square,
-        color:           ColoresApp.textoPrimario,
+        color: ColoresApp.textoPrimario,
       ),
       backgroundColor: ColoresApp.superficiePrimaria,
     );

@@ -25,8 +25,10 @@ class EventosRepositorio {
         try {
           final datos = await _supabase
               .from(TablasSupabase.eventos)
-              .select('*, evento_grupos_tags(grupo_index, tag_id, tags(tipo, nombre))')
-              .inFilter('estatus', [EstatusEvento.enCurso, EstatusEvento.programado])
+              .select(
+                  '*, evento_grupos_tags(grupo_index, tag_id, tags(tipo, nombre))')
+              .inFilter(
+                  'estatus', [EstatusEvento.enCurso, EstatusEvento.programado])
               .order('fecha_inicio', ascending: true)
               .timeout(kTimeoutSolicitud);
 
@@ -58,8 +60,7 @@ class EventosRepositorio {
   }
 
   /// Retorna cuántos eventos con estatus "borrador" tiene el usuario.
-  Future<int> contarBorradores(String usuarioId) =>
-      conReintentos(() async {
+  Future<int> contarBorradores(String usuarioId) => conReintentos(() async {
         try {
           final datos = await _supabase
               .from(TablasSupabase.eventos)
@@ -88,11 +89,10 @@ class EventosRepositorio {
               .select('evento_id')
               .inFilter('evento_id', eventoIds)
               .inFilter('estatus', [
-                EstatusAsistencia.presente,
-                EstatusAsistencia.completado,
-                EstatusAsistencia.salioAnticipado,
-              ])
-              .timeout(kTimeoutSolicitud);
+            EstatusAsistencia.presente,
+            EstatusAsistencia.completado,
+            EstatusAsistencia.salioAnticipado,
+          ]).timeout(kTimeoutSolicitud);
           final conteos = <String, int>{};
           for (final fila in filas) {
             final id = fila['evento_id'] as String;
@@ -108,37 +108,37 @@ class EventosRepositorio {
 
   /// Retorna el tag principal y los tags secundarios activos del usuario.
   Future<({String? tagPrincipalId, List<String> tagsSecundariosIds})>
-      obtenerTagsUsuario(String usuarioId) =>
-      conReintentos(() async {
-        try {
-          final datos = await _supabase
-              .from(TablasSupabase.usuariosTags)
-              .select('tag_id, tags(tipo)')
-              .eq('usuario_id', usuarioId)
-              .eq('estatus', true)
-              .timeout(kTimeoutSolicitud);
+      obtenerTagsUsuario(String usuarioId) => conReintentos(() async {
+            try {
+              final datos = await _supabase
+                  .from(TablasSupabase.usuariosTags)
+                  .select('tag_id, tags(tipo)')
+                  .eq('usuario_id', usuarioId)
+                  .eq('estatus', true)
+                  .timeout(kTimeoutSolicitud);
 
-          String?      tagPrincipalId;
-          final        tagsSecundariosIds = <String>[];
+              String? tagPrincipalId;
+              final tagsSecundariosIds = <String>[];
 
-          for (final fila in datos) {
-            final tagId = fila['tag_id'] as String;
-            final tipo  = (fila['tags'] as Map<String, dynamic>?)?['tipo'] as String?;
-            if (tipo == 'principal') {
-              tagPrincipalId = tagId;
-            } else {
-              tagsSecundariosIds.add(tagId);
+              for (final fila in datos) {
+                final tagId = fila['tag_id'] as String;
+                final tipo =
+                    (fila['tags'] as Map<String, dynamic>?)?['tipo'] as String?;
+                if (tipo == 'principal') {
+                  tagPrincipalId = tagId;
+                } else {
+                  tagsSecundariosIds.add(tagId);
+                }
+              }
+
+              return (
+                tagPrincipalId: tagPrincipalId,
+                tagsSecundariosIds: tagsSecundariosIds,
+              );
+            } on PostgrestException catch (e) {
+              throw FallaServidor(TraductorErrores.dePostgres(e));
+            } catch (e) {
+              TraductorErrores.lanzarInesperado(e);
             }
-          }
-
-          return (
-            tagPrincipalId:     tagPrincipalId,
-            tagsSecundariosIds: tagsSecundariosIds,
-          );
-        } on PostgrestException catch (e) {
-          throw FallaServidor(TraductorErrores.dePostgres(e));
-        } catch (e) {
-          TraductorErrores.lanzarInesperado(e);
-        }
-      });
+          });
 }

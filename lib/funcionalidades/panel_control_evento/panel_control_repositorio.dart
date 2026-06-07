@@ -13,8 +13,7 @@ class PanelControlRepositorio {
   final SupabaseClient _supabase;
 
   /// Retorna el evento completo por su ID.
-  Future<Evento> obtenerEvento(String eventoId) =>
-      conReintentos(() async {
+  Future<Evento> obtenerEvento(String eventoId) => conReintentos(() async {
         try {
           final fila = await _supabase
               .from(TablasSupabase.eventos)
@@ -59,17 +58,15 @@ class PanelControlRepositorio {
 
   /// Retorna TODOS los usuarios del sistema como ítems sintéticos con
   /// estatus 'esperado'. Se usa para eventos de alcance 'general'.
-  Future<List<AsistenteItem>> obtenerTodosUsuarios() =>
-      conReintentos(() async {
+  Future<List<AsistenteItem>> obtenerTodosUsuarios() => conReintentos(() async {
         try {
           final rows = await _supabase
               .from(TablasSupabase.usuarios)
-              .select('id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
+              .select(
+                  'id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
               .order('primer_apellido', ascending: true)
               .timeout(kTimeoutSolicitud);
-          return rows
-              .map<AsistenteItem>(_construirItemDesdeUsuario)
-              .toList();
+          return rows.map<AsistenteItem>(_construirItemDesdeUsuario).toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -100,18 +97,17 @@ class PanelControlRepositorio {
   Stream<List<Map<String, dynamic>>> streamCambiosAsistencia(String eventoId) {
     return _supabase
         .from(TablasSupabase.asistencia)
-        .stream(primaryKey: ['id'])
-        .eq('evento_id', eventoId);
+        .stream(primaryKey: ['id']).eq('evento_id', eventoId);
   }
 
   /// Cambia el estatus del evento a 'finalizado'.
   Future<void> cerrarEvento(String eventoId) async {
     try {
       final actualizadoPor = await _resolverUsuarioId();
-      await _supabase
-          .from(TablasSupabase.eventos)
-          .update({'estatus': EstatusEvento.finalizado, 'actualizado_por': actualizadoPor})
-          .eq('id', eventoId);
+      await _supabase.from(TablasSupabase.eventos).update({
+        'estatus': EstatusEvento.finalizado,
+        'actualizado_por': actualizadoPor
+      }).eq('id', eventoId);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -129,18 +125,16 @@ class PanelControlRepositorio {
     String? registradoPorId,
   }) async {
     try {
-      await _supabase
-          .from(TablasSupabase.asistencia)
-          .insert({
-            'evento_id':                      eventoId,
-            'visitante_primer_nombre':         primerNombre,
-            'visitante_primer_apellido':       primerApellido,
-            'visitante_numero_identificacion': _textoOpcional(cedula),
-            'visitante_contacto':              _textoOpcional(contacto),
-            'estatus':                         EstatusAsistencia.presente,
-            'hora_entrada':                    DateTime.now().toUtc().toIso8601String(),
-            'entrada_registrada_por':          registradoPorId,
-          });
+      await _supabase.from(TablasSupabase.asistencia).insert({
+        'evento_id': eventoId,
+        'visitante_primer_nombre': primerNombre,
+        'visitante_primer_apellido': primerApellido,
+        'visitante_numero_identificacion': _textoOpcional(cedula),
+        'visitante_contacto': _textoOpcional(contacto),
+        'estatus': EstatusAsistencia.presente,
+        'hora_entrada': DateTime.now().toUtc().toIso8601String(),
+        'entrada_registrada_por': registradoPorId,
+      });
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -159,11 +153,11 @@ class PanelControlRepositorio {
       await _supabase
           .from(TablasSupabase.asistencia)
           .update({
-            'estatus':        EstatusAsistencia.ausente,
+            'estatus': EstatusAsistencia.ausente,
             'actualizado_en': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('evento_id', eventoId)
-          .eq('estatus',   EstatusAsistencia.esperado);
+          .eq('estatus', EstatusAsistencia.esperado);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -205,13 +199,14 @@ class PanelControlRepositorio {
     Map<int, List<String>> grupos,
   ) {
     final tagsPorUsuario = <String, Set<String>>{};
-    final datosUsuario   = <String, Map<String, dynamic>>{};
+    final datosUsuario = <String, Map<String, dynamic>>{};
     for (final row in rows) {
       final userId = row['usuario_id'] as String;
-      final tagId  = row['tag_id']     as String;
+      final tagId = row['tag_id'] as String;
       tagsPorUsuario.putIfAbsent(userId, () => {}).add(tagId);
       datosUsuario.putIfAbsent(
-        userId, () => row['usuarios'] as Map<String, dynamic>? ?? {},
+        userId,
+        () => row['usuarios'] as Map<String, dynamic>? ?? {},
       );
     }
     final resultado = <AsistenteItem>[];
@@ -220,7 +215,8 @@ class PanelControlRepositorio {
         entry.value.containsAll,
       );
       if (!coincide) continue;
-      resultado.add(_construirItemEsperado(entry.key, datosUsuario[entry.key]!));
+      resultado
+          .add(_construirItemEsperado(entry.key, datosUsuario[entry.key]!));
     }
     return resultado;
   }
@@ -229,16 +225,19 @@ class PanelControlRepositorio {
     String userId,
     Map<String, dynamic> datosUsuario,
   ) {
-    return AsistenteItem.desdeJson({
-      'id':                        userId,
-      'usuario_id':                userId,
-      'estatus':                   EstatusAsistencia.esperado,
-      'hora_entrada':              null,
-      'visitante_primer_nombre':   null,
-      'visitante_primer_apellido': null,
-      'visitante_contacto':        null,
-      'usuarios':                  datosUsuario,
-    }, eraEsperado: true,);
+    return AsistenteItem.desdeJson(
+      {
+        'id': userId,
+        'usuario_id': userId,
+        'estatus': EstatusAsistencia.esperado,
+        'hora_entrada': null,
+        'visitante_primer_nombre': null,
+        'visitante_primer_apellido': null,
+        'visitante_contacto': null,
+        'usuarios': datosUsuario,
+      },
+      eraEsperado: true,
+    );
   }
 
   Future<String?> _resolverUsuarioId() async {
@@ -254,17 +253,17 @@ class PanelControlRepositorio {
 
   AsistenteItem _construirItemDesdeUsuario(Map<String, dynamic> row) {
     return AsistenteItem.desdeJson({
-      'id':                        row['id'],
-      'usuario_id':                row['id'],
-      'estatus':                   EstatusAsistencia.esperado,
-      'hora_entrada':              null,
-      'visitante_primer_nombre':   null,
+      'id': row['id'],
+      'usuario_id': row['id'],
+      'estatus': EstatusAsistencia.esperado,
+      'hora_entrada': null,
+      'visitante_primer_nombre': null,
       'visitante_primer_apellido': null,
-      'visitante_contacto':        null,
+      'visitante_contacto': null,
       'usuarios': {
-        'primer_nombre':         row['primer_nombre'],
-        'primer_apellido':       row['primer_apellido'],
-        'url_avatar':            row['url_avatar'],
+        'primer_nombre': row['primer_nombre'],
+        'primer_apellido': row['primer_apellido'],
+        'url_avatar': row['url_avatar'],
         'numero_identificacion': row['numero_identificacion'],
       },
     });

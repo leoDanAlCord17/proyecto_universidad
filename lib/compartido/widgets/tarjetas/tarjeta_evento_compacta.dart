@@ -25,7 +25,7 @@ class TarjetaEventoCompacta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TarjetaApp(
-      variante:    VarianteTarjeta.pequena,
+      variante: VarianteTarjeta.pequena,
       alPresionar: alPresionar,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,17 +34,17 @@ class TarjetaEventoCompacta extends StatelessWidget {
           Text(
             titulo,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color:      colorTitulo,
-              fontWeight: FontWeight.w700,
-            ),
+                  color: colorTitulo,
+                  fontWeight: FontWeight.w700,
+                ),
           ),
           if (subtitulo != null) ...[
             const SizedBox(height: 3),
             Text(
               subtitulo!,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: colorSubtitulo,
-              ),
+                    color: colorSubtitulo,
+                  ),
             ),
           ],
         ],

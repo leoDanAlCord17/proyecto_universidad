@@ -12,7 +12,7 @@ class TagsCubit extends Cubit<TagsEstado> {
   final TagsRepositorio _repositorio;
 
   String _busqueda = '';
-  int    _offset   = 0;
+  int _offset = 0;
 
   Future<void> cargarTags() async {
     _offset = 0;
@@ -21,11 +21,13 @@ class TagsCubit extends Cubit<TagsEstado> {
       final resultado = await _repositorio.obtenerTags(offset: _offset);
       if (isClosed) return;
       _offset += resultado.tags.length;
-      emit(TagsCargados(
-        tags:          resultado.tags,
-        tagsFiltrados: _aplicarFiltro(resultado.tags, _busqueda),
-        hayMas:        resultado.hayMas,
-      ),);
+      emit(
+        TagsCargados(
+          tags: resultado.tags,
+          tagsFiltrados: _aplicarFiltro(resultado.tags, _busqueda),
+          hayMas: resultado.hayMas,
+        ),
+      );
     } on FallaServidor catch (e) {
       if (isClosed) return;
       reportarError(e);
@@ -45,27 +47,33 @@ class TagsCubit extends Cubit<TagsEstado> {
     final estado = state;
     if (estado is! TagsCargados || !estado.hayMas) return;
 
-    emit(TagsCargandoMas(
-      tags:          estado.tags,
-      tagsFiltrados: estado.tagsFiltrados,
-    ),);
+    emit(
+      TagsCargandoMas(
+        tags: estado.tags,
+        tagsFiltrados: estado.tagsFiltrados,
+      ),
+    );
     try {
       final resultado = await _repositorio.obtenerTags(offset: _offset);
       if (isClosed) return;
       _offset += resultado.tags.length;
       final todos = [...estado.tags, ...resultado.tags];
-      emit(TagsCargados(
-        tags:          todos,
-        tagsFiltrados: _aplicarFiltro(todos, _busqueda),
-        hayMas:        resultado.hayMas,
-      ),);
+      emit(
+        TagsCargados(
+          tags: todos,
+          tagsFiltrados: _aplicarFiltro(todos, _busqueda),
+          hayMas: resultado.hayMas,
+        ),
+      );
     } catch (_) {
       if (isClosed) return;
-      emit(TagsCargados(
-        tags:          estado.tags,
-        tagsFiltrados: estado.tagsFiltrados,
-        hayMas:        estado.hayMas,
-      ),);
+      emit(
+        TagsCargados(
+          tags: estado.tags,
+          tagsFiltrados: estado.tagsFiltrados,
+          hayMas: estado.hayMas,
+        ),
+      );
     }
   }
 
@@ -73,9 +81,9 @@ class TagsCubit extends Cubit<TagsEstado> {
     _busqueda = texto;
     final estadoActual = state;
     final base = switch (estadoActual) {
-      TagsCargados()    => estadoActual.tags,
+      TagsCargados() => estadoActual.tags,
       TagsCargandoMas() => estadoActual.tags,
-      _                 => null,
+      _ => null,
     };
     if (base == null) return;
 
@@ -125,9 +133,13 @@ class TagsCubit extends Cubit<TagsEstado> {
   List<Tag> _aplicarFiltro(List<Tag> tags, String busqueda) {
     if (busqueda.trim().isEmpty) return tags;
     final q = busqueda.toLowerCase();
-    return tags.where((t) =>
-        t.nombre.toLowerCase().contains(q) ||
-        t.descripcion.toLowerCase().contains(q) ||
-        t.tipo.toLowerCase().contains(q),).toList();
+    return tags
+        .where(
+          (t) =>
+              t.nombre.toLowerCase().contains(q) ||
+              t.descripcion.toLowerCase().contains(q) ||
+              t.tipo.toLowerCase().contains(q),
+        )
+        .toList();
   }
 }

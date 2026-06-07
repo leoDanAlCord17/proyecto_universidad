@@ -27,14 +27,12 @@ List<GoRoute> get rutasPersonal => [
           child: const InicioPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.admin,
         builder: (context, state) => const Scaffold(
           body: Center(child: Text('Panel de Administración')),
         ),
       ),
-
       GoRoute(
         path: Rutas.perfil,
         builder: (context, state) => BlocProvider(
@@ -42,7 +40,6 @@ List<GoRoute> get rutasPersonal => [
           child: const PerfilPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.historial,
         builder: (context, state) => BlocProvider(
@@ -50,7 +47,6 @@ List<GoRoute> get rutasPersonal => [
           child: const HistorialPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.estadisticas,
         builder: (context, state) => BlocProvider(
@@ -58,7 +54,6 @@ List<GoRoute> get rutasPersonal => [
           child: const EstadisticasPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.notificaciones,
         builder: (context, state) => BlocProvider.value(

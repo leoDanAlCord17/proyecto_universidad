@@ -1,12 +1,11 @@
 import 'package:equatable/equatable.dart';
 
 class TagItem extends Equatable {
-
   factory TagItem.desdeJson(Map<String, dynamic> json) => TagItem(
-    id:     json['id']     as String,
-    nombre: json['nombre'] as String? ?? '',
-    tipo:   json['tipo']   as String? ?? '',
-  );
+        id: json['id'] as String,
+        nombre: json['nombre'] as String? ?? '',
+        tipo: json['tipo'] as String? ?? '',
+      );
   const TagItem({
     required this.id,
     required this.nombre,

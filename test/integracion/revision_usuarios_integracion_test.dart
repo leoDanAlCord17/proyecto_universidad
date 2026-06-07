@@ -10,10 +10,10 @@ import 'package:uniasist/funcionalidades/revision_usuarios/revision_usuarios_pan
 import '../helpers.dart';
 
 const _usuarioPendiente = RevisionUsuarioItem(
-  id:             'rev-1',
-  primerNombre:   'Ana',
+  id: 'rev-1',
+  primerNombre: 'Ana',
   primerApellido: 'Pérez',
-  correo:         'ana@uni.edu',
+  correo: 'ana@uni.edu',
 );
 
 Widget _marco(RevisionUsuariosCubit cubit) => MaterialApp(
@@ -36,10 +36,12 @@ void main() {
         'carga exitosa: pantalla muestra el nombre del usuario pendiente',
         (tester) async {
       when(() => repositorio.obtenerPendientes(offset: any(named: 'offset')))
-          .thenAnswer((_) async => (
-                usuarios: [_usuarioPendiente],
-                hayMas:   false,
-              ),);
+          .thenAnswer(
+        (_) async => (
+          usuarios: [_usuarioPendiente],
+          hayMas: false,
+        ),
+      );
 
       final cubit = RevisionUsuariosCubit(repositorio);
 
@@ -51,14 +53,15 @@ void main() {
       expect(find.text('ana@uni.edu'), findsOneWidget);
     });
 
-    testWidgets(
-        'lista vacía: pantalla muestra mensaje de sin pendientes',
+    testWidgets('lista vacía: pantalla muestra mensaje de sin pendientes',
         (tester) async {
       when(() => repositorio.obtenerPendientes(offset: any(named: 'offset')))
-          .thenAnswer((_) async => (
-                usuarios: <RevisionUsuarioItem>[],
-                hayMas:   false,
-              ),);
+          .thenAnswer(
+        (_) async => (
+          usuarios: <RevisionUsuarioItem>[],
+          hayMas: false,
+        ),
+      );
 
       final cubit = RevisionUsuariosCubit(repositorio);
 
@@ -72,8 +75,7 @@ void main() {
       );
     });
 
-    testWidgets(
-        'error del servidor: pantalla muestra el mensaje de error',
+    testWidgets('error del servidor: pantalla muestra el mensaje de error',
         (tester) async {
       when(() => repositorio.obtenerPendientes(offset: any(named: 'offset')))
           .thenThrow(const FallaServidor('Error al cargar usuarios.'));

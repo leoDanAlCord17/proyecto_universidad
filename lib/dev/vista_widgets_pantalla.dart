@@ -28,9 +28,9 @@ class VistaWidgetsPantalla extends StatefulWidget {
 }
 
 class _VistaWidgetsPantallaState extends State<VistaWidgetsPantalla> {
-  final _controladorTexto     = TextEditingController(text: 'Texto de ejemplo');
-  final _controladorClave     = TextEditingController();
-  final _controladorBusqueda  = TextEditingController();
+  final _controladorTexto = TextEditingController(text: 'Texto de ejemplo');
+  final _controladorClave = TextEditingController();
+  final _controladorBusqueda = TextEditingController();
   DateTimeRange? _rangoBusqueda;
 
   @override
@@ -59,9 +59,10 @@ class _VistaWidgetsPantallaState extends State<VistaWidgetsPantalla> {
               controladorClave: _controladorClave,
             ),
             _SeccionBusqueda(
-              controlador:       _controladorBusqueda,
+              controlador: _controladorBusqueda,
               rangoSeleccionado: _rangoBusqueda,
-              alSeleccionarRango: (rango) => setState(() => _rangoBusqueda = rango),
+              alSeleccionarRango: (rango) =>
+                  setState(() => _rangoBusqueda = rango),
             ),
             _SeccionIndicadores(),
             _SeccionAvatares(),
@@ -94,9 +95,9 @@ class _TituloSeccion extends StatelessWidget {
           Text(
             titulo.toUpperCase(),
             style: const TextStyle(
-              color:         ColoresApp.acento,
-              fontSize:      11,
-              fontWeight:    FontWeight.w800,
+              color: ColoresApp.acento,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
               letterSpacing: 1.5,
             ),
           ),
@@ -109,7 +110,8 @@ class _TituloSeccion extends StatelessWidget {
 }
 
 class _ItemWidget extends StatelessWidget {
-  const _ItemWidget({required this.nombre, required this.child, this.descripcion});
+  const _ItemWidget(
+      {required this.nombre, required this.child, this.descripcion});
   final String nombre;
   final Widget child;
   final String? descripcion;
@@ -126,8 +128,8 @@ class _ItemWidget extends StatelessWidget {
           Text(
             nombre,
             style: const TextStyle(
-              color:      ColoresApp.acento,
-              fontSize:   11,
+              color: ColoresApp.acento,
+              fontSize: 11,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -135,7 +137,7 @@ class _ItemWidget extends StatelessWidget {
             Text(
               descripcion!,
               style: const TextStyle(
-                color:   ColoresApp.textoSecundario,
+                color: ColoresApp.textoSecundario,
                 fontSize: 11,
               ),
             ),
@@ -154,109 +156,107 @@ class _SeccionBotones extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _TituloSeccion('Botones'),
-
         _ItemWidget(
-          nombre:      'BotonApp — primario',
-          descripcion: 'Acción principal. Gradiente morado. Se deshabilita pasando alPresionar: null.',
+          nombre: 'BotonApp — primario',
+          descripcion:
+              'Acción principal. Gradiente morado. Se deshabilita pasando alPresionar: null.',
           child: BotonApp(texto: 'Iniciar sesión', alPresionar: () {}),
         ),
-
         _ItemWidget(
-          nombre:      'BotonApp — primario con ícono',
+          nombre: 'BotonApp — primario con ícono',
           descripcion: 'Mismo botón pero con ícono a la izquierda del texto.',
           child: BotonApp(
-            texto:       'Registrar entrada',
-            icono:       Icons.check_rounded,
+            texto: 'Registrar entrada',
+            icono: Icons.check_rounded,
             alPresionar: () {},
           ),
         ),
-
         _ItemWidget(
-          nombre:      'BotonApp — primario cargando',
-          descripcion: 'Estado estaCargando: true. Deshabilita el botón y muestra spinner.',
+          nombre: 'BotonApp — primario cargando',
+          descripcion:
+              'Estado estaCargando: true. Deshabilita el botón y muestra spinner.',
           child: BotonApp(
-            texto:        'Guardando...',
+            texto: 'Guardando...',
             estaCargando: true,
-            alPresionar:  () {},
+            alPresionar: () {},
           ),
         ),
-
         _ItemWidget(
-          nombre:      'BotonApp — ghost',
-          descripcion: 'Acción secundaria. Fondo transparente con borde morado.',
+          nombre: 'BotonApp — ghost',
+          descripcion:
+              'Acción secundaria. Fondo transparente con borde morado.',
           child: BotonApp(
-            texto:    'Cancelar',
+            texto: 'Cancelar',
             variante: VarianteBoton.ghost,
             alPresionar: () {},
           ),
         ),
-
         _ItemWidget(
-          nombre:      'BotonApp — rojo',
+          nombre: 'BotonApp — rojo',
           descripcion: 'Acción destructiva. Fondo rojo sólido.',
           child: BotonApp(
-            texto:    'Marcar salida',
+            texto: 'Marcar salida',
             variante: VarianteBoton.rojo,
             alPresionar: () {},
           ),
         ),
-
         _ItemWidget(
-          nombre:      'BotonApp — ancho personalizado',
-          descripcion: 'Parámetro ancho: para botones compactos dentro de tarjetas.',
+          nombre: 'BotonApp — ancho personalizado',
+          descripcion:
+              'Parámetro ancho: para botones compactos dentro de tarjetas.',
           child: BotonApp(
-            texto:    'Quitar',
+            texto: 'Quitar',
             variante: VarianteBoton.rojo,
-            ancho:    100,
+            ancho: 100,
             alPresionar: () {},
           ),
         ),
-
         _ItemWidget(
-          nombre:      'BotonContornoIcono — tamaños',
-          descripcion: 'Borde gris visible siempre. Fondo gris suave al presionar. Solo ícono.',
+          nombre: 'BotonContornoIcono — tamaños',
+          descripcion:
+              'Borde gris visible siempre. Fondo gris suave al presionar. Solo ícono.',
           child: Row(
             children: [
               BotonContornoIcono(
-                icono:       Icons.description_outlined,
+                icono: Icons.description_outlined,
                 alPresionar: () {},
               ),
               const SizedBox(width: 12),
               BotonContornoIcono(
-                icono:       Icons.filter_list_rounded,
+                icono: Icons.filter_list_rounded,
                 alPresionar: () {},
               ),
               const SizedBox(width: 12),
               BotonContornoIcono(
-                icono:       Icons.tune_rounded,
-                tamanio:     48,
+                icono: Icons.tune_rounded,
+                tamanio: 48,
                 alPresionar: () {},
               ),
             ],
           ),
         ),
-
         _ItemWidget(
-          nombre:      'BotonRegresar',
-          descripcion: 'Botón de retroceso estándar. Usa context.pop() por defecto.',
+          nombre: 'BotonRegresar',
+          descripcion:
+              'Botón de retroceso estándar. Usa context.pop() por defecto.',
           child: BotonRegresar(alPresionar: () {}),
         ),
-
         _ItemWidget(
-          nombre:      'BotonIcono — variantes',
-          descripcion: 'normal / acento / rojo. Solo ícono, sin texto. Para acciones dentro de tarjetas.',
+          nombre: 'BotonIcono — variantes',
+          descripcion:
+              'normal / acento / rojo. Solo ícono, sin texto. Para acciones dentro de tarjetas.',
           child: Row(
             children: [
-              BotonIcono(icono: Icons.settings_outlined,  alPresionar: () {}),
+              BotonIcono(icono: Icons.settings_outlined, alPresionar: () {}),
               const SizedBox(width: 12),
               BotonIcono(
-                icono:    Icons.qr_code_scanner,
+                icono: Icons.qr_code_scanner,
                 variante: VarianteBotonIcono.acento,
                 alPresionar: () {},
               ),
               const SizedBox(width: 12),
               BotonIcono(
-                icono:    Icons.delete_outline,
+                icono: Icons.delete_outline,
                 variante: VarianteBotonIcono.rojo,
                 alPresionar: () {},
               ),
@@ -285,35 +285,34 @@ class _SeccionFormularios extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _TituloSeccion('Formularios'),
-
         _ItemWidget(
-          nombre:      'CampoTextoApp — normal',
+          nombre: 'CampoTextoApp — normal',
           descripcion: 'Campo de texto estándar con etiqueta.',
           child: CampoTextoApp(
-            etiqueta:   'Correo institucional',
-            hintText:   'maria.gonzalez@uni.edu',
+            etiqueta: 'Correo institucional',
+            hintText: 'maria.gonzalez@uni.edu',
             controller: controladorTexto,
           ),
         ),
-
         _ItemWidget(
-          nombre:      'CampoTextoApp — contraseña',
-          descripcion: 'Con esContrasena: true. Muestra ojo para alternar visibilidad.',
+          nombre: 'CampoTextoApp — contraseña',
+          descripcion:
+              'Con esContrasena: true. Muestra ojo para alternar visibilidad.',
           child: CampoTextoApp(
-            etiqueta:      'Contraseña',
-            hintText:      '••••••••',
-            controller:    controladorClave,
-            esContrasena:  true,
+            etiqueta: 'Contraseña',
+            hintText: '••••••••',
+            controller: controladorClave,
+            esContrasena: true,
           ),
         ),
-
         _ItemWidget(
-          nombre:      'CampoTextoApp — solo lectura',
-          descripcion: 'Con soloLectura: true. El usuario no puede editar el valor.',
+          nombre: 'CampoTextoApp — solo lectura',
+          descripcion:
+              'Con soloLectura: true. El usuario no puede editar el valor.',
           child: CampoTextoApp(
-            etiqueta:    'Correo (no editable)',
-            hintText:    '',
-            controller:  controladorTexto,
+            etiqueta: 'Correo (no editable)',
+            hintText: '',
+            controller: controladorTexto,
             soloLectura: true,
           ),
         ),
@@ -331,9 +330,9 @@ class _SeccionBusqueda extends StatelessWidget {
     this.rangoSeleccionado,
   });
 
-  final TextEditingController       controlador;
+  final TextEditingController controlador;
   final ValueChanged<DateTimeRange> alSeleccionarRango;
-  final DateTimeRange?              rangoSeleccionado;
+  final DateTimeRange? rangoSeleccionado;
 
   @override
   Widget build(BuildContext context) {
@@ -341,25 +340,24 @@ class _SeccionBusqueda extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _TituloSeccion('Búsqueda'),
-
         _ItemWidget(
-          nombre:      'BarraBusquedaApp — sin calendario',
+          nombre: 'BarraBusquedaApp — sin calendario',
           descripcion: 'Solo texto. alSeleccionarRango: null oculta el botón.',
           child: BarraBusquedaApp(
-            hintText:  'Buscar evento...',
+            hintText: 'Buscar evento...',
             alCambiar: (_) {},
           ),
         ),
-
         _ItemWidget(
-          nombre:      'BarraBusquedaApp — con calendario',
-          descripcion: 'El ícono se vuelve morado cuando hay un rango seleccionado.',
+          nombre: 'BarraBusquedaApp — con calendario',
+          descripcion:
+              'El ícono se vuelve morado cuando hay un rango seleccionado.',
           child: BarraBusquedaApp(
-            hintText:           'Buscar evento...',
-            controlador:        controlador,
-            alCambiar:          (_) {},
+            hintText: 'Buscar evento...',
+            controlador: controlador,
+            alCambiar: (_) {},
             alSeleccionarRango: alSeleccionarRango,
-            rangoSeleccionado:  rangoSeleccionado,
+            rangoSeleccionado: rangoSeleccionado,
           ),
         ),
       ],
@@ -372,70 +370,87 @@ class _SeccionBusqueda extends StatelessWidget {
 class _SeccionIndicadores extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    const estatusEventos    = ['en_curso', 'programado', 'finalizado', 'cancelado', 'borrador'];
-    const estatusAsistencia = ['presente', 'completado', 'esperado', 'ausente', 'salio_anticipado', 'anulado'];
+    const estatusEventos = [
+      'en_curso',
+      'programado',
+      'finalizado',
+      'cancelado',
+      'borrador'
+    ];
+    const estatusAsistencia = [
+      'presente',
+      'completado',
+      'esperado',
+      'ausente',
+      'salio_anticipado',
+      'anulado'
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _TituloSeccion('Indicadores'),
-
         _ItemWidget(
-          nombre:      'InsigniaEstado — estatus de eventos',
-          descripcion: 'Pastilla de color semántico. El color se asigna automáticamente por estatus.',
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final e in estatusEventos) InsigniaEstado(key: ValueKey(e), estatus: e),
-            ],
-          ),
-        ),
-
-        _ItemWidget(
-          nombre:      'InsigniaEstado — estatus de asistencia',
-          descripcion: 'Mismo widget, distintos valores de estatus.',
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final e in estatusAsistencia) InsigniaEstado(key: ValueKey(e), estatus: e),
-            ],
-          ),
-        ),
-
-        _ItemWidget(
-          nombre:      'InsigniaEstado — tamaño pequeño',
-          descripcion: 'Con tamanio: TamanioInsignia.pequeno para espacios reducidos.',
+          nombre: 'InsigniaEstado — estatus de eventos',
+          descripcion:
+              'Pastilla de color semántico. El color se asigna automáticamente por estatus.',
           child: Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
               for (final e in estatusEventos)
-                InsigniaEstado(key: ValueKey('p_$e'), estatus: e, tamanio: TamanioInsignia.pequeno),
+                InsigniaEstado(key: ValueKey(e), estatus: e),
             ],
           ),
         ),
-
+        _ItemWidget(
+          nombre: 'InsigniaEstado — estatus de asistencia',
+          descripcion: 'Mismo widget, distintos valores de estatus.',
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final e in estatusAsistencia)
+                InsigniaEstado(key: ValueKey(e), estatus: e),
+            ],
+          ),
+        ),
+        _ItemWidget(
+          nombre: 'InsigniaEstado — tamaño pequeño',
+          descripcion:
+              'Con tamanio: TamanioInsignia.pequeno para espacios reducidos.',
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final e in estatusEventos)
+                InsigniaEstado(
+                    key: ValueKey('p_$e'),
+                    estatus: e,
+                    tamanio: TamanioInsignia.pequeno),
+            ],
+          ),
+        ),
         const _ItemWidget(
-          nombre:      'BarraEstadistica — 75%',
-          descripcion: 'Label + porcentaje + barra de progreso. Porcentaje entre 0.0 y 1.0.',
+          nombre: 'BarraEstadistica — 75%',
+          descripcion:
+              'Label + porcentaje + barra de progreso. Porcentaje entre 0.0 y 1.0.',
           child: TarjetaApp(
             child: BarraEstadistica(
-              etiqueta:   'Tasa de asistencia',
+              etiqueta: 'Tasa de asistencia',
               porcentaje: 0.75,
             ),
           ),
         ),
-
         const _ItemWidget(
-          nombre:      'BarraEstadistica — colores personalizados',
-          descripcion: 'Se pueden sobreescribir colorBarra, colorEtiqueta y colorPorcentaje.',
+          nombre: 'BarraEstadistica — colores personalizados',
+          descripcion:
+              'Se pueden sobreescribir colorBarra, colorEtiqueta y colorPorcentaje.',
           child: TarjetaApp(
             child: BarraEstadistica(
-              etiqueta:        'Eventos completados',
-              porcentaje:      0.40,
-              colorBarra:      ColoresApp.ambar,
+              etiqueta: 'Eventos completados',
+              porcentaje: 0.40,
+              colorBarra: ColoresApp.ambar,
               colorPorcentaje: ColoresApp.ambar,
             ),
           ),
@@ -454,10 +469,10 @@ class _SeccionAvatares extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _TituloSeccion('Avatares'),
-
         _ItemWidget(
-          nombre:      'AvatarUsuario — iniciales (tamaños)',
-          descripcion: 'Muestra iniciales. El tamaño del texto escala automáticamente.',
+          nombre: 'AvatarUsuario — iniciales (tamaños)',
+          descripcion:
+              'Muestra iniciales. El tamaño del texto escala automáticamente.',
           child: Row(
             children: [
               AvatarUsuario(iniciales: 'PM', tamanio: 32),
@@ -470,26 +485,26 @@ class _SeccionAvatares extends StatelessWidget {
             ],
           ),
         ),
-
         _ItemWidget(
-          nombre:      'AvatarUsuario — colores personalizados',
-          descripcion: 'colorFondo y colorTexto sobreescriben los defaults morados.',
+          nombre: 'AvatarUsuario — colores personalizados',
+          descripcion:
+              'colorFondo y colorTexto sobreescriben los defaults morados.',
           child: Row(
             children: [
               AvatarUsuario(
-                iniciales:  'PM',
+                iniciales: 'PM',
                 colorFondo: ColoresApp.verdeClaro,
                 colorTexto: ColoresApp.verde,
               ),
               SizedBox(width: 12),
               AvatarUsuario(
-                iniciales:  'LR',
+                iniciales: 'LR',
                 colorFondo: ColoresApp.ambarClaro,
                 colorTexto: ColoresApp.ambar,
               ),
               SizedBox(width: 12),
               AvatarUsuario(
-                iniciales:  'JG',
+                iniciales: 'JG',
                 colorFondo: ColoresApp.tealClaro,
                 colorTexto: ColoresApp.teal,
               ),
@@ -510,36 +525,35 @@ class _SeccionTarjetasBase extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _TituloSeccion('Tarjetas Base (TarjetaApp)'),
-
         const _ItemWidget(
-          nombre:      'TarjetaApp — normal',
-          descripcion: 'Tarjeta estándar. Base de todas las tarjetas de contenido.',
+          nombre: 'TarjetaApp — normal',
+          descripcion:
+              'Tarjeta estándar. Base de todas las tarjetas de contenido.',
           child: TarjetaApp(
             child: Text('Contenido de la tarjeta normal'),
           ),
         ),
-
         const _ItemWidget(
-          nombre:      'TarjetaApp — acento',
-          descripcion: 'Fondo morado claro con borde izquierdo acento. Para destacar información.',
+          nombre: 'TarjetaApp — acento',
+          descripcion:
+              'Fondo morado claro con borde izquierdo acento. Para destacar información.',
           child: TarjetaApp(
             variante: VarianteTarjeta.acento,
-            child:    Text('Contenido destacado con acento'),
+            child: Text('Contenido destacado con acento'),
           ),
         ),
-
         const _ItemWidget(
-          nombre:      'TarjetaApp — punteada',
+          nombre: 'TarjetaApp — punteada',
           descripcion: 'Borde punteado. Para indicar que algo puede agregarse.',
           child: TarjetaApp(
             variante: VarianteTarjeta.punteada,
-            child:    Center(child: Text('+ Agregar elemento')),
+            child: Center(child: Text('+ Agregar elemento')),
           ),
         ),
-
         _ItemWidget(
-          nombre:      'TarjetaApp — presionable',
-          descripcion: 'Pasar alPresionar convierte cualquier variante en botón con efecto ripple.',
+          nombre: 'TarjetaApp — presionable',
+          descripcion:
+              'Pasar alPresionar convierte cualquier variante en botón con efecto ripple.',
           child: TarjetaApp(
             alPresionar: () {},
             child: const Text('Esta tarjeta es presionable'),
@@ -559,72 +573,69 @@ class _SeccionTarjetasContenido extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _TituloSeccion('Tarjetas de Contenido'),
-
         _ItemWidget(
-          nombre:      'TarjetaEvento — completa',
-          descripcion: 'Muestra estatus, horario, lugar y contador de asistentes.',
+          nombre: 'TarjetaEvento — completa',
+          descripcion:
+              'Muestra estatus, horario, lugar y contador de asistentes.',
           child: TarjetaEvento(
-            titulo:         'Seminario ETA',
-            estatus:        'en_curso',
-            horario:        '08:00 – 12:00',
-            lugar:          'Aula 305',
-            contadorTexto:  '35/33',
-            alPresionar:    () {},
-          ),
-        ),
-
-        const _ItemWidget(
-          nombre:      'TarjetaEvento — mínima',
-          descripcion: 'Solo los campos requeridos: titulo y estatus.',
-          child: TarjetaEvento(
-            titulo:  'Taller de Flutter',
-            estatus: 'programado',
-          ),
-        ),
-
-        _ItemWidget(
-          nombre:      'TarjetaEventoCompacta',
-          descripcion: 'Versión reducida para listas densas. Título + subtítulo de una línea.',
-          child: TarjetaEventoCompacta(
-            titulo:      'Física II',
-            subtitulo:   '10:30 · Lab. 2 · 18 esperados',
+            titulo: 'Seminario ETA',
+            estatus: 'en_curso',
+            horario: '08:00 – 12:00',
+            lugar: 'Aula 305',
+            contadorTexto: '35/33',
             alPresionar: () {},
           ),
         ),
-
+        const _ItemWidget(
+          nombre: 'TarjetaEvento — mínima',
+          descripcion: 'Solo los campos requeridos: titulo y estatus.',
+          child: TarjetaEvento(
+            titulo: 'Taller de Flutter',
+            estatus: 'programado',
+          ),
+        ),
         _ItemWidget(
-          nombre:      'TarjetaAsistente — con botón',
+          nombre: 'TarjetaEventoCompacta',
+          descripcion:
+              'Versión reducida para listas densas. Título + subtítulo de una línea.',
+          child: TarjetaEventoCompacta(
+            titulo: 'Física II',
+            subtitulo: '10:30 · Lab. 2 · 18 esperados',
+            alPresionar: () {},
+          ),
+        ),
+        _ItemWidget(
+          nombre: 'TarjetaAsistente — con botón',
           descripcion: 'Avatar + nombre + detalle + estatus + botón de acción.',
           child: TarjetaAsistente(
-            iniciales:       'PM',
-            nombre:          'Pedro Martínez',
-            detalle:         'V-22.100.004 · Estudiante',
-            estatus:         'esperado',
-            textoBoton:      'Registrar entrada',
+            iniciales: 'PM',
+            nombre: 'Pedro Martínez',
+            detalle: 'V-22.100.004 · Estudiante',
+            estatus: 'esperado',
+            textoBoton: 'Registrar entrada',
             alPresionarBoton: () {},
           ),
         ),
-
         const _ItemWidget(
-          nombre:      'TarjetaAsistente — sin botón',
-          descripcion: 'Sin textoBoton el botón desaparece. Útil en modo solo lectura.',
+          nombre: 'TarjetaAsistente — sin botón',
+          descripcion:
+              'Sin textoBoton el botón desaparece. Útil en modo solo lectura.',
           child: TarjetaAsistente(
             iniciales: 'LR',
-            nombre:    'Laura Ramírez',
-            detalle:   'V-18.450.201 · Docente',
-            estatus:   'presente',
+            nombre: 'Laura Ramírez',
+            detalle: 'V-18.450.201 · Docente',
+            estatus: 'presente',
           ),
         ),
-
         const _ItemWidget(
-          nombre:      'TarjetaSalidaAnticipada',
+          nombre: 'TarjetaSalidaAnticipada',
           descripcion: 'Muestra quién salió antes, el horario y el motivo.',
           child: TarjetaSalidaAnticipada(
             iniciales: 'LR',
-            nombre:    'Luis Rodríguez',
-            estatus:   'salio_anticipado',
-            horario:   '08:05 → 09:30',
-            motivo:    'Consulta médica',
+            nombre: 'Luis Rodríguez',
+            estatus: 'salio_anticipado',
+            horario: '08:05 → 09:30',
+            motivo: 'Consulta médica',
           ),
         ),
       ],
@@ -642,8 +653,8 @@ class _SeccionTogle extends StatefulWidget {
 }
 
 class _SeccionTogleState extends State<_SeccionTogle> {
-  bool _conIcono    = true;
-  bool _sinIcono    = false;
+  bool _conIcono = true;
+  bool _sinIcono = false;
   final bool _desactivado = true;
 
   @override
@@ -652,38 +663,35 @@ class _SeccionTogleState extends State<_SeccionTogle> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _TituloSeccion('Togle'),
-
         _ItemWidget(
-          nombre:      'FilaTogle — con ícono, activo',
+          nombre: 'FilaTogle — con ícono, activo',
           descripcion: 'icono opcional a la izquierda. valor: true.',
           child: FilaTogle(
-            icono:       Icons.search_outlined,
-            titulo:      'Marcado manual',
+            icono: Icons.search_outlined,
+            titulo: 'Marcado manual',
             descripcion: 'Admin busca por nombre o cédula',
-            valor:       _conIcono,
-            alCambiar:   (v) => setState(() => _conIcono = v),
+            valor: _conIcono,
+            alCambiar: (v) => setState(() => _conIcono = v),
           ),
         ),
-
         _ItemWidget(
-          nombre:      'FilaTogle — sin ícono, inactivo',
+          nombre: 'FilaTogle — sin ícono, inactivo',
           descripcion: 'Sin icono. valor: false.',
           child: FilaTogle(
-            titulo:      'Registrar salida (ciclo completo)',
+            titulo: 'Registrar salida (ciclo completo)',
             descripcion: 'Asistente debe marcar entrada Y salida',
-            valor:       _sinIcono,
-            alCambiar:   (v) => setState(() => _sinIcono = v),
+            valor: _sinIcono,
+            alCambiar: (v) => setState(() => _sinIcono = v),
           ),
         ),
-
         _ItemWidget(
-          nombre:      'FilaTogle — desactivado (alCambiar: null)',
+          nombre: 'FilaTogle — desactivado (alCambiar: null)',
           descripcion: 'alCambiar: null deshabilita la interacción.',
           child: FilaTogle(
-            titulo:      'Función no disponible',
+            titulo: 'Función no disponible',
             descripcion: 'Requiere permiso de administrador',
-            valor:       _desactivado,
-            alCambiar:   null,
+            valor: _desactivado,
+            alCambiar: null,
           ),
         ),
       ],
@@ -702,55 +710,52 @@ class _SeccionAvisos extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _TituloSeccion('Avisos'),
-
         _ItemWidget(
-          nombre:      'AvisoApp — informativa',
+          nombre: 'AvisoApp — informativa',
           descripcion: 'EstiloAviso.informativa. Duración por defecto: 2.5s.',
           child: BotonApp(
-            texto:       'Mostrar informativa',
+            texto: 'Mostrar informativa',
             alPresionar: () => AvisoApp.mostrar(
               context,
-              texto:  'La información fue actualizada correctamente.',
+              texto: 'La información fue actualizada correctamente.',
               estilo: EstiloAviso.informativa,
             ),
           ),
         ),
-
         _ItemWidget(
-          nombre:      'AvisoApp — exito',
+          nombre: 'AvisoApp — exito',
           descripcion: 'EstiloAviso.exito.',
           child: BotonApp(
-            texto:       'Mostrar éxito',
+            texto: 'Mostrar éxito',
             alPresionar: () => AvisoApp.mostrar(
               context,
-              texto:  'Evento publicado exitosamente.',
+              texto: 'Evento publicado exitosamente.',
               estilo: EstiloAviso.exito,
             ),
           ),
         ),
-
         _ItemWidget(
-          nombre:      'AvisoApp — error',
+          nombre: 'AvisoApp — error',
           descripcion: 'EstiloAviso.error.',
           child: BotonApp(
-            texto:       'Mostrar error',
+            texto: 'Mostrar error',
             alPresionar: () => AvisoApp.mostrar(
               context,
-              texto:  'No se pudo guardar. Verifica tu conexión.',
+              texto: 'No se pudo guardar. Verifica tu conexión.',
               estilo: EstiloAviso.error,
             ),
           ),
         ),
-
         _ItemWidget(
-          nombre:      'AvisoApp — duración personalizada (5s)',
-          descripcion: 'Parámetro duracion: para controlar cuánto tiempo permanece.',
+          nombre: 'AvisoApp — duración personalizada (5s)',
+          descripcion:
+              'Parámetro duracion: para controlar cuánto tiempo permanece.',
           child: BotonApp(
-            texto:       'Mostrar 5 segundos',
+            texto: 'Mostrar 5 segundos',
             alPresionar: () => AvisoApp.mostrar(
               context,
-              texto:    'Este aviso dura 5 segundos.',
-              estilo:   EstiloAviso.informativa,
+              texto: 'Este aviso dura 5 segundos.',
+              estilo: EstiloAviso.informativa,
               duracion: const Duration(seconds: 5),
             ),
           ),
@@ -769,32 +774,32 @@ class _SeccionListas extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _TituloSeccion('Listas'),
-
         const _ItemWidget(
-          nombre:      'FilaRol — con insignia Sistema',
-          descripcion: 'esSistema: true muestra la pastilla "Sistema". No tiene botón de acción.',
+          nombre: 'FilaRol — con insignia Sistema',
+          descripcion:
+              'esSistema: true muestra la pastilla "Sistema". No tiene botón de acción.',
           child: FilaRol(
-            nombre:    'Superadmin',
+            nombre: 'Superadmin',
             esSistema: true,
           ),
         ),
-
         _ItemWidget(
-          nombre:      'FilaRol — con botón Quitar',
-          descripcion: 'textoBoton y alPresionarBoton activan el botón de acción.',
+          nombre: 'FilaRol — con botón Quitar',
+          descripcion:
+              'textoBoton y alPresionarBoton activan el botón de acción.',
           child: FilaRol(
-            nombre:           'Coordinador',
-            descripcion:      'Persona encargada de las auditorías',
-            textoBoton:       'Quitar',
+            nombre: 'Coordinador',
+            descripcion: 'Persona encargada de las auditorías',
+            textoBoton: 'Quitar',
             alPresionarBoton: () {},
           ),
         ),
-
         _ItemWidget(
-          nombre:      'FilaRol — presionable',
-          descripcion: 'alPresionar convierte toda la fila en un elemento navegable.',
+          nombre: 'FilaRol — presionable',
+          descripcion:
+              'alPresionar convierte toda la fila en un elemento navegable.',
           child: FilaRol(
-            nombre:      'Profesor',
+            nombre: 'Profesor',
             descripcion: 'Puede crear y gestionar eventos',
             alPresionar: () {},
           ),

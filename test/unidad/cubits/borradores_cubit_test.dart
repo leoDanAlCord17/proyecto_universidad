@@ -12,30 +12,30 @@ import '../../helpers.dart';
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 final _b1 = BorradorEvento(
-  id:          'b-1',
-  titulo:      'Congreso Flutter',
+  id: 'b-1',
+  titulo: 'Congreso Flutter',
   descripcion: 'Desc 1',
   fechaInicio: DateTime(2026, 3, 10),
 );
 final _b2 = BorradorEvento(
-  id:          'b-2',
-  titulo:      'Taller Dart',
+  id: 'b-2',
+  titulo: 'Taller Dart',
   descripcion: 'Desc 2',
   fechaInicio: DateTime(2026, 4, 20),
 );
 const _b3 = BorradorEvento(
-  id:          'b-3',
-  titulo:      'Seminario UX',
+  id: 'b-3',
+  titulo: 'Seminario UX',
   descripcion: 'Desc 3',
 );
 
 const _uid = 'user-1';
 
 BorradoresCargados _cargados() => BorradoresCargados(
-  borradores:          [_b1, _b2, _b3],
-  borradoresFiltrados: [_b1, _b2, _b3],
-  hayMas:              false,
-);
+      borradores: [_b1, _b2, _b3],
+      borradoresFiltrados: [_b1, _b2, _b3],
+      hayMas: false,
+    );
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
@@ -66,9 +66,10 @@ void main() {
       expect: () => [
         isA<BorradoresCargando>(),
         isA<BorradoresCargados>()
-            .having((e) => e.borradores.length,          'borradores.length',          2)
-            .having((e) => e.borradoresFiltrados.length, 'borradoresFiltrados.length', 2)
-            .having((e) => e.hayMas,                     'hayMas',                     false),
+            .having((e) => e.borradores.length, 'borradores.length', 2)
+            .having((e) => e.borradoresFiltrados.length,
+                'borradoresFiltrados.length', 2)
+            .having((e) => e.hayMas, 'hayMas', false),
       ],
     );
 
@@ -82,8 +83,7 @@ void main() {
       act: (c) => c.cargarBorradores(_uid),
       expect: () => [
         isA<BorradoresCargando>(),
-        isA<BorradoresCargados>()
-            .having((e) => e.hayMas, 'hayMas', true),
+        isA<BorradoresCargados>().having((e) => e.hayMas, 'hayMas', true),
       ],
     );
 
@@ -149,12 +149,12 @@ void main() {
       build: build,
       setUp: () {
         var llamadas = 0;
-        when(() => repositorio.obtenerBorradores(_uid, offset: any(named: 'offset')))
-            .thenAnswer((_) async {
+        when(() => repositorio.obtenerBorradores(_uid,
+            offset: any(named: 'offset'))).thenAnswer((_) async {
           llamadas++;
           return llamadas == 1
               ? (borradores: [_b1, _b2], hayMas: true)
-              : (borradores: [_b3],      hayMas: false);
+              : (borradores: [_b3], hayMas: false);
         });
       },
       act: (c) async {
@@ -178,8 +178,8 @@ void main() {
       build: build,
       setUp: () {
         var llamadas = 0;
-        when(() => repositorio.obtenerBorradores(_uid, offset: any(named: 'offset')))
-            .thenAnswer((_) async {
+        when(() => repositorio.obtenerBorradores(_uid,
+            offset: any(named: 'offset'))).thenAnswer((_) async {
           llamadas++;
           if (llamadas == 1) return (borradores: [_b1, _b2], hayMas: true);
           throw const FallaServidor('Sin conexión');
@@ -243,9 +243,9 @@ void main() {
       'texto vacío restaura todos los borradores',
       build: build,
       seed: () => BorradoresCargados(
-        borradores:          [_b1, _b2, _b3],
+        borradores: [_b1, _b2, _b3],
         borradoresFiltrados: [_b1],
-        hayMas:              false,
+        hayMas: false,
       ),
       act: (c) => c.filtrar('', null),
       expect: () => [
@@ -262,7 +262,7 @@ void main() {
         '',
         DateTimeRange(
           start: DateTime(2026, 4, 1),
-          end:   DateTime(2026, 4, 30),
+          end: DateTime(2026, 4, 30),
         ),
       ),
       expect: () => [
@@ -289,10 +289,10 @@ void main() {
       'emite publicandoId y luego elimina el evento de la lista',
       build: build,
       setUp: () {
-        when(() => repositorio.obtenerBorradores(_uid, offset: any(named: 'offset')))
+        when(() => repositorio.obtenerBorradores(_uid,
+                offset: any(named: 'offset')))
             .thenAnswer((_) async => (borradores: [_b1, _b2], hayMas: false));
-        when(() => repositorio.publicarEvento(any()))
-            .thenAnswer((_) async {});
+        when(() => repositorio.publicarEvento(any())).thenAnswer((_) async {});
       },
       act: (c) async {
         await c.cargarBorradores(_uid);
@@ -305,9 +305,10 @@ void main() {
         isA<BorradoresCargados>()
             .having((e) => e.publicandoId, 'publicandoId', 'b-1'),
         isA<BorradoresCargados>()
-            .having((e) => e.borradores.length,          'borradores.length',          1)
-            .having((e) => e.borradoresFiltrados.length, 'borradoresFiltrados.length', 1)
-            .having((e) => e.publicandoId,               'publicandoId',               null),
+            .having((e) => e.borradores.length, 'borradores.length', 1)
+            .having((e) => e.borradoresFiltrados.length,
+                'borradoresFiltrados.length', 1)
+            .having((e) => e.publicandoId, 'publicandoId', null),
       ],
     );
 
@@ -315,7 +316,8 @@ void main() {
       'emite errorPublicacion cuando publicarEvento falla',
       build: build,
       setUp: () {
-        when(() => repositorio.obtenerBorradores(_uid, offset: any(named: 'offset')))
+        when(() => repositorio.obtenerBorradores(_uid,
+                offset: any(named: 'offset')))
             .thenAnswer((_) async => (borradores: [_b1, _b2], hayMas: false));
         when(() => repositorio.publicarEvento(any()))
             .thenThrow(const FallaServidor('Sin permiso'));
@@ -331,7 +333,8 @@ void main() {
         isA<BorradoresCargados>()
             .having((e) => e.publicandoId, 'publicandoId', 'b-1'),
         isA<BorradoresCargados>()
-            .having((e) => e.errorPublicacion, 'errorPublicacion', 'Sin permiso')
+            .having(
+                (e) => e.errorPublicacion, 'errorPublicacion', 'Sin permiso')
             .having((e) => e.borradores.length, 'borradores.length', 2),
       ],
     );

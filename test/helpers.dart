@@ -45,11 +45,9 @@ class MockAuditoriaEventoRepositorio extends Mock
 class MockNotificacionesRepositorio extends Mock
     implements NotificacionesRepositorio {}
 
-class MockHistorialRepositorio extends Mock
-    implements HistorialRepositorio {}
+class MockHistorialRepositorio extends Mock implements HistorialRepositorio {}
 
-class MockEscanearQrRepositorio extends Mock
-    implements EscanearQrRepositorio {}
+class MockEscanearQrRepositorio extends Mock implements EscanearQrRepositorio {}
 
 class MockPanelControlRepositorio extends Mock
     implements PanelControlRepositorio {}
@@ -75,45 +73,45 @@ class MockAuthCubit extends MockCubit<AuthEstado> implements AuthCubit {}
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 
 const usuarioEjemplo = Usuario(
-  id:             'user-id-1',
-  authId:         'auth-id-1',
-  primerNombre:   'Leo',
+  id: 'user-id-1',
+  authId: 'auth-id-1',
+  primerNombre: 'Leo',
   primerApellido: 'Alvarez',
-  correo:         'leo@uni.edu',
+  correo: 'leo@uni.edu',
 );
 
 final _fechaBase = DateTime.utc(2025, 1, 1);
 
 final eventoEjemplo = Evento(
-  id:                      'evento-id-1',
-  titulo:                  'Evento de prueba',
-  modoRegistro:            'auto',
-  estatus:                 'en_curso',
-  creadoEn:                _fechaBase,
-  actualizadoEn:           _fechaBase,
-  permiteQrEvento:         true,
-  permiteQrUsuario:        true,
-  permiteManualAdmin:      true,
-  requiereCicloCompleto:   false,
+  id: 'evento-id-1',
+  titulo: 'Evento de prueba',
+  modoRegistro: 'auto',
+  estatus: 'en_curso',
+  creadoEn: _fechaBase,
+  actualizadoEn: _fechaBase,
+  permiteQrEvento: true,
+  permiteQrUsuario: true,
+  permiteManualAdmin: true,
+  requiereCicloCompleto: false,
   permiteSalidaAnticipada: false,
-  marcarAusentesAuto:      false,
-  permiteForaneos:         false,
+  marcarAusentesAuto: false,
+  permiteForaneos: false,
 );
 
 const historialItemEjemplo = HistorialItem(
-  id:           'historial-id-1',
-  eventoId:     'evento-id-1',
+  id: 'historial-id-1',
+  eventoId: 'evento-id-1',
   eventoTitulo: 'Charla de Flutter',
-  estatus:      'presente',
+  estatus: 'presente',
 );
 
 const asistenteEjemplo = AsistenteItem(
-  id:          'asistencia-id-1',
-  usuarioId:   'user-id-1',
-  nombre:      'Leo Alvarez',
-  iniciales:   'LA',
-  estatus:     'presente',
-  esForaneo:   false,
+  id: 'asistencia-id-1',
+  usuarioId: 'user-id-1',
+  nombre: 'Leo Alvarez',
+  iniciales: 'LA',
+  estatus: 'presente',
+  esForaneo: false,
   eraEsperado: false,
 );
 
@@ -133,11 +131,9 @@ class MockBuscarAsistenteRepositorio extends Mock
 class MockCrearEventoRepositorio extends Mock
     implements CrearEventoRepositorio {}
 
-class MockBorradoresRepositorio extends Mock
-    implements BorradoresRepositorio {}
+class MockBorradoresRepositorio extends Mock implements BorradoresRepositorio {}
 
-class MockTagsRepositorio extends Mock
-    implements TagsRepositorio {}
+class MockTagsRepositorio extends Mock implements TagsRepositorio {}
 
 class MockRevisionUsuariosRepositorio extends Mock
     implements RevisionUsuariosRepositorio {}
@@ -145,26 +141,26 @@ class MockRevisionUsuariosRepositorio extends Mock
 // ─── Fixtures adicionales ─────────────────────────────────────────────────────
 
 const rolEjemplo = Rol(
-  id:          'rol-1',
-  nombre:      'Estudiante',
+  id: 'rol-1',
+  nombre: 'Estudiante',
   descripcion: 'Rol base',
-  esSistema:   false,
+  esSistema: false,
 );
 
 const tagPrincipalEjemplo = TagOpcion(
-  id:     'tp-1',
+  id: 'tp-1',
   nombre: 'Ingeniería',
-  tipo:   'principal',
+  tipo: 'principal',
 );
 
 const tagSecundarioEjemplo = TagOpcion(
-  id:     'ts-1',
+  id: 'ts-1',
   nombre: 'Sistemas',
-  tipo:   'secundario',
+  tipo: 'secundario',
 );
 
 const tipoEventoEjemplo = TipoEvento(
-  id:     'tipo-1',
+  id: 'tipo-1',
   nombre: 'Conferencia',
 );
 
@@ -177,8 +173,7 @@ void registrarFallbacks() {
 // ─── Helpers de widget ───────────────────────────────────────────────────────
 
 /// Envuelve un widget aislado en un MaterialApp + Scaffold.
-Widget enMarcoApp(Widget child) =>
-    MaterialApp(home: Scaffold(body: child));
+Widget enMarcoApp(Widget child) => MaterialApp(home: Scaffold(body: child));
 
 /// Envuelve una pantalla que provee sus propios BlocProviders.
 /// Recibe la lista de providers y el widget hijo.

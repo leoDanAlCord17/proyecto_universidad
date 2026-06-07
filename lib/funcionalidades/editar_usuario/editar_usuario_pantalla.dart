@@ -22,16 +22,16 @@ class EditarUsuarioPantalla extends StatefulWidget {
 }
 
 class _EditarUsuarioPantallaState extends State<EditarUsuarioPantalla> {
-  final _primerNombreCtrl        = TextEditingController();
-  final _segundoNombreCtrl       = TextEditingController();
-  final _primerApellidoCtrl      = TextEditingController();
-  final _segundoApellidoCtrl     = TextEditingController();
+  final _primerNombreCtrl = TextEditingController();
+  final _segundoNombreCtrl = TextEditingController();
+  final _primerApellidoCtrl = TextEditingController();
+  final _segundoApellidoCtrl = TextEditingController();
   final _numeroIdentificacionCtrl = TextEditingController();
-  final _correoCtrl              = TextEditingController();
-  final _telefonoCtrl            = TextEditingController();
+  final _correoCtrl = TextEditingController();
+  final _telefonoCtrl = TextEditingController();
 
-  bool _estaIniciado  = false;
-  bool _estaPrelleno  = false;
+  bool _estaIniciado = false;
+  bool _estaPrelleno = false;
 
   @override
   void didChangeDependencies() {
@@ -55,48 +55,51 @@ class _EditarUsuarioPantallaState extends State<EditarUsuarioPantalla> {
 
   void _escucharEstado(BuildContext context, EditarUsuarioEstado estado) {
     if (estado is EditarUsuarioGuardado) {
-      AvisoApp.mostrar(context, texto: 'Información actualizada.', estilo: EstiloAviso.exito);
+      AvisoApp.mostrar(context,
+          texto: 'Información actualizada.', estilo: EstiloAviso.exito);
       context.pop();
-    } else if (estado is EditarUsuarioCargado && estado.errorValidacion.isNotEmpty) {
-      AvisoApp.mostrar(context, texto: estado.errorValidacion, estilo: EstiloAviso.error);
+    } else if (estado is EditarUsuarioCargado &&
+        estado.errorValidacion.isNotEmpty) {
+      AvisoApp.mostrar(context,
+          texto: estado.errorValidacion, estilo: EstiloAviso.error);
     } else if (estado is EditarUsuarioCargado && !_estaPrelleno) {
       _estaPrelleno = true;
-      _primerNombreCtrl.text         = estado.primerNombreInicial;
-      _segundoNombreCtrl.text        = estado.segundoNombreInicial         ?? '';
-      _primerApellidoCtrl.text       = estado.primerApellidoInicial;
-      _segundoApellidoCtrl.text      = estado.segundoApellidoInicial       ?? '';
-      _numeroIdentificacionCtrl.text = estado.numeroIdentificacionInicial  ?? '';
-      _correoCtrl.text               = estado.correoInicial;
-      _telefonoCtrl.text             = estado.telefonoInicial              ?? '';
+      _primerNombreCtrl.text = estado.primerNombreInicial;
+      _segundoNombreCtrl.text = estado.segundoNombreInicial ?? '';
+      _primerApellidoCtrl.text = estado.primerApellidoInicial;
+      _segundoApellidoCtrl.text = estado.segundoApellidoInicial ?? '';
+      _numeroIdentificacionCtrl.text = estado.numeroIdentificacionInicial ?? '';
+      _correoCtrl.text = estado.correoInicial;
+      _telefonoCtrl.text = estado.telefonoInicial ?? '';
     }
   }
 
   Future<void> _alGuardar(BuildContext context) async {
     await context.read<EditarUsuarioCubit>().guardar(
-      primerNombre:        _primerNombreCtrl.text,
-      segundoNombre:       _segundoNombreCtrl.text,
-      primerApellido:      _primerApellidoCtrl.text,
-      segundoApellido:     _segundoApellidoCtrl.text,
-      numeroIdentificacion: _numeroIdentificacionCtrl.text,
-      correo:              _correoCtrl.text,
-      telefono:            _telefonoCtrl.text,
-    );
+          primerNombre: _primerNombreCtrl.text,
+          segundoNombre: _segundoNombreCtrl.text,
+          primerApellido: _primerApellidoCtrl.text,
+          segundoApellido: _segundoApellidoCtrl.text,
+          numeroIdentificacion: _numeroIdentificacionCtrl.text,
+          correo: _correoCtrl.text,
+          telefono: _telefonoCtrl.text,
+        );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<EditarUsuarioCubit, EditarUsuarioEstado>(
       listener: _escucharEstado,
-      builder:  _construirVista,
+      builder: _construirVista,
     );
   }
 
   Widget _construirVista(BuildContext context, EditarUsuarioEstado estado) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -113,27 +116,29 @@ class _EditarUsuarioPantallaState extends State<EditarUsuarioPantalla> {
                     Text(
                       'Editar información',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontSize:   20,
-                        fontWeight: FontWeight.w700,
-                        color:      ColoresApp.textoPrimario,
-                      ),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: ColoresApp.textoPrimario,
+                          ),
                     ),
                   ],
                 ),
               ),
             ),
-            Expanded(child: _Cuerpo(
-              estado:                   estado,
-              primerNombreCtrl:         _primerNombreCtrl,
-              segundoNombreCtrl:        _segundoNombreCtrl,
-              primerApellidoCtrl:       _primerApellidoCtrl,
-              segundoApellidoCtrl:      _segundoApellidoCtrl,
-              numeroIdentificacionCtrl: _numeroIdentificacionCtrl,
-              correoCtrl:               _correoCtrl,
-              telefonoCtrl:             _telefonoCtrl,
-            ),),
+            Expanded(
+              child: _Cuerpo(
+                estado: estado,
+                primerNombreCtrl: _primerNombreCtrl,
+                segundoNombreCtrl: _segundoNombreCtrl,
+                primerApellidoCtrl: _primerApellidoCtrl,
+                segundoApellidoCtrl: _segundoApellidoCtrl,
+                numeroIdentificacionCtrl: _numeroIdentificacionCtrl,
+                correoCtrl: _correoCtrl,
+                telefonoCtrl: _telefonoCtrl,
+              ),
+            ),
             _BarraInferior(
-              estado:    estado,
+              estado: estado,
               alGuardar: () => _alGuardar(context),
             ),
           ],
@@ -157,7 +162,7 @@ class _Cuerpo extends StatelessWidget {
     required this.telefonoCtrl,
   });
 
-  final EditarUsuarioEstado   estado;
+  final EditarUsuarioEstado estado;
   final TextEditingController primerNombreCtrl;
   final TextEditingController segundoNombreCtrl;
   final TextEditingController primerApellidoCtrl;
@@ -171,18 +176,20 @@ class _Cuerpo extends StatelessWidget {
     final e = estado;
     return switch (e) {
       EditarUsuarioInicial() || EditarUsuarioCargando() => const Center(
-        child: CircularProgressIndicator(color: ColoresApp.acento),
-      ),
+          child: CircularProgressIndicator(color: ColoresApp.acento),
+        ),
       EditarUsuarioCargado() => _Formulario(
-        primerNombreCtrl:         primerNombreCtrl,
-        segundoNombreCtrl:        segundoNombreCtrl,
-        primerApellidoCtrl:       primerApellidoCtrl,
-        segundoApellidoCtrl:      segundoApellidoCtrl,
-        numeroIdentificacionCtrl: numeroIdentificacionCtrl,
-        correoCtrl:               correoCtrl,
-        telefonoCtrl:             telefonoCtrl,
-      ),
-      EditarUsuarioGuardado() || EditarUsuarioError() => const SizedBox.shrink(),
+          primerNombreCtrl: primerNombreCtrl,
+          segundoNombreCtrl: segundoNombreCtrl,
+          primerApellidoCtrl: primerApellidoCtrl,
+          segundoApellidoCtrl: segundoApellidoCtrl,
+          numeroIdentificacionCtrl: numeroIdentificacionCtrl,
+          correoCtrl: correoCtrl,
+          telefonoCtrl: telefonoCtrl,
+        ),
+      EditarUsuarioGuardado() ||
+      EditarUsuarioError() =>
+        const SizedBox.shrink(),
     };
   }
 }
@@ -216,13 +223,13 @@ class _Formulario extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color:        ColoresApp.superficiePrimaria,
+            color: ColoresApp.superficiePrimaria,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
               BoxShadow(
-                color:      ColoresApp.sombraTarjeta,
+                color: ColoresApp.sombraTarjeta,
                 blurRadius: 8,
-                offset:     Offset(0, 2),
+                offset: Offset(0, 2),
               ),
             ],
           ),
@@ -232,52 +239,52 @@ class _Formulario extends StatelessWidget {
               Text(
                 'INFORMACIÓN PERSONAL',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color:         ColoresApp.acento,
-                  letterSpacing: 0.8,
-                  fontSize:      14,
-                  fontWeight:    FontWeight.w800,
-                ),
+                      color: ColoresApp.acento,
+                      letterSpacing: 0.8,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
               ),
               const SizedBox(height: 16),
               CampoTextoApp(
-                etiqueta:   'Primer nombre*',
-                hintText:   'Ej. Juan',
+                etiqueta: 'Primer nombre*',
+                hintText: 'Ej. Juan',
                 controller: primerNombreCtrl,
               ),
               const SizedBox(height: 16),
               CampoTextoApp(
-                etiqueta:   'Segundo nombre',
-                hintText:   'Opcional',
+                etiqueta: 'Segundo nombre',
+                hintText: 'Opcional',
                 controller: segundoNombreCtrl,
               ),
               const SizedBox(height: 16),
               CampoTextoApp(
-                etiqueta:   'Primer apellido*',
-                hintText:   'Ej. Pérez',
+                etiqueta: 'Primer apellido*',
+                hintText: 'Ej. Pérez',
                 controller: primerApellidoCtrl,
               ),
               const SizedBox(height: 16),
               CampoTextoApp(
-                etiqueta:   'Segundo apellido',
-                hintText:   'Opcional',
+                etiqueta: 'Segundo apellido',
+                hintText: 'Opcional',
                 controller: segundoApellidoCtrl,
               ),
               const SizedBox(height: 16),
               CampoTextoApp(
-                etiqueta:   'Número de identificación',
-                hintText:   'Ej. V-12345678',
+                etiqueta: 'Número de identificación',
+                hintText: 'Ej. V-12345678',
                 controller: numeroIdentificacionCtrl,
               ),
               const SizedBox(height: 16),
               CampoTextoApp(
-                etiqueta:   'Correo electrónico*',
-                hintText:   'Ej. correo@email.com',
+                etiqueta: 'Correo electrónico*',
+                hintText: 'Ej. correo@email.com',
                 controller: correoCtrl,
               ),
               const SizedBox(height: 16),
               CampoTextoApp(
-                etiqueta:   'Teléfono',
-                hintText:   'Opcional',
+                etiqueta: 'Teléfono',
+                hintText: 'Opcional',
                 controller: telefonoCtrl,
               ),
             ],
@@ -294,7 +301,7 @@ class _BarraInferior extends StatelessWidget {
   const _BarraInferior({required this.estado, required this.alGuardar});
 
   final EditarUsuarioEstado estado;
-  final VoidCallback        alGuardar;
+  final VoidCallback alGuardar;
 
   @override
   Widget build(BuildContext context) {
@@ -306,9 +313,9 @@ class _BarraInferior extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
         child: BotonApp(
-          texto:        'Guardar cambios',
+          texto: 'Guardar cambios',
           estaCargando: estaCargando,
-          alPresionar:  puedeGuardar ? alGuardar : null,
+          alPresionar: puedeGuardar ? alGuardar : null,
         ),
       ),
     );

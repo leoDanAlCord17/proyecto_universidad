@@ -14,10 +14,12 @@ class RecuperarContrasenaPantalla extends StatefulWidget {
   const RecuperarContrasenaPantalla({super.key});
 
   @override
-  State<RecuperarContrasenaPantalla> createState() => _RecuperarContrasenaPantallaState();
+  State<RecuperarContrasenaPantalla> createState() =>
+      _RecuperarContrasenaPantallaState();
 }
 
-class _RecuperarContrasenaPantallaState extends State<RecuperarContrasenaPantalla> {
+class _RecuperarContrasenaPantallaState
+    extends State<RecuperarContrasenaPantalla> {
   final _correoCtrl = TextEditingController();
 
   @override
@@ -33,15 +35,18 @@ class _RecuperarContrasenaPantallaState extends State<RecuperarContrasenaPantall
       body: BlocConsumer<RecuperarContrasenaCubit, RecuperarContrasenaEstado>(
         listener: (context, estado) {
           if (estado is RecuperarContrasenaError) {
-            AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
+            AvisoApp.mostrar(context,
+                texto: estado.mensaje, estilo: EstiloAviso.error);
           }
         },
         builder: (context, estado) => switch (estado) {
-          RecuperarContrasenaEnviado() => _VistaConfirmacion(correo: estado.correo),
+          RecuperarContrasenaEnviado() =>
+            _VistaConfirmacion(correo: estado.correo),
           RecuperarContrasenaInicial() ||
           RecuperarContrasenaEnviando() ||
-          RecuperarContrasenaError()   => _VistaFormulario(
-              correoCtrl:   _correoCtrl,
+          RecuperarContrasenaError() =>
+            _VistaFormulario(
+              correoCtrl: _correoCtrl,
               estaCargando: estado is RecuperarContrasenaEnviando,
             ),
         },
@@ -53,10 +58,11 @@ class _RecuperarContrasenaPantallaState extends State<RecuperarContrasenaPantall
 // ─── Vista formulario ─────────────────────────────────────────────────────────
 
 class _VistaFormulario extends StatelessWidget {
-  const _VistaFormulario({required this.correoCtrl, required this.estaCargando});
+  const _VistaFormulario(
+      {required this.correoCtrl, required this.estaCargando});
 
   final TextEditingController correoCtrl;
-  final bool                  estaCargando;
+  final bool estaCargando;
 
   @override
   Widget build(BuildContext context) {
@@ -71,28 +77,32 @@ class _VistaFormulario extends StatelessWidget {
             const _Cabecera(),
             const SizedBox(height: 40),
             CampoTextoApp(
-              etiqueta:   'Correo',
-              hintText:   'leo.alvarez@gmail.com',
+              etiqueta: 'Correo',
+              hintText: 'leo.alvarez@gmail.com',
               controller: correoCtrl,
             ),
             const SizedBox(height: 12),
             Text(
               'Te enviaremos un enlace para restablecer tu contraseña.',
-              style: estiloTexto.bodySmall?.copyWith(color: ColoresApp.textoSecundario),
+              style: estiloTexto.bodySmall
+                  ?.copyWith(color: ColoresApp.textoSecundario),
             ),
             const SizedBox(height: 32),
             BotonApp(
-              texto:        'Enviar instrucciones',
+              texto: 'Enviar instrucciones',
               estaCargando: estaCargando,
-              alPresionar:  estaCargando
+              alPresionar: estaCargando
                   ? null
-                  : () => context.read<RecuperarContrasenaCubit>().enviar(correoCtrl.text),
+                  : () => context
+                      .read<RecuperarContrasenaCubit>()
+                      .enviar(correoCtrl.text),
             ),
             const SizedBox(height: 20),
             Center(
               child: TextButton(
                 onPressed: () => context.pop(),
-                child: Text('Volver al inicio de sesión', style: estiloTexto.labelLarge),
+                child: Text('Volver al inicio de sesión',
+                    style: estiloTexto.labelLarge),
               ),
             ),
             const SizedBox(height: 40),
@@ -115,16 +125,18 @@ class _Cabecera extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding:    const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color:        ColoresApp.acento,
+            color: ColoresApp.acento,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: const Icon(Icons.lock_reset_rounded, size: 45, color: ColoresApp.blanco),
+          child: const Icon(Icons.lock_reset_rounded,
+              size: 45, color: ColoresApp.blanco),
         ),
         const SizedBox(height: 30),
         Text('Recuperar contraseña', style: estiloTexto.displaySmall),
-        Text('Ingresa tu correo y te enviaremos el enlace', style: estiloTexto.bodyMedium),
+        Text('Ingresa tu correo y te enviaremos el enlace',
+            style: estiloTexto.bodyMedium),
       ],
     );
   }
@@ -147,26 +159,28 @@ class _VistaConfirmacion extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding:    const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color:        ColoresApp.verdeClaro,
+                color: ColoresApp.verdeClaro,
                 borderRadius: BorderRadius.circular(24),
               ),
-              child: const Icon(Icons.mark_email_read_outlined, size: 52, color: ColoresApp.verde),
+              child: const Icon(Icons.mark_email_read_outlined,
+                  size: 52, color: ColoresApp.verde),
             ),
             const SizedBox(height: 28),
             Text('Revisa tu correo', style: estiloTexto.displaySmall),
             const SizedBox(height: 12),
             Text(
               'Enviamos las instrucciones a',
-              style: estiloTexto.bodyMedium?.copyWith(color: ColoresApp.textoSecundario),
+              style: estiloTexto.bodyMedium
+                  ?.copyWith(color: ColoresApp.textoSecundario),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 4),
             Text(
               correo,
               style: estiloTexto.bodyMedium?.copyWith(
-                color:      ColoresApp.textoPrimario,
+                color: ColoresApp.textoPrimario,
                 fontWeight: FontWeight.w700,
               ),
               textAlign: TextAlign.center,
@@ -174,12 +188,13 @@ class _VistaConfirmacion extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Si no llega en unos minutos, revisa tu carpeta de spam.',
-              style: estiloTexto.bodySmall?.copyWith(color: ColoresApp.textoTerciario),
+              style: estiloTexto.bodySmall
+                  ?.copyWith(color: ColoresApp.textoTerciario),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 36),
             BotonApp(
-              texto:       'Volver al inicio de sesión',
+              texto: 'Volver al inicio de sesión',
               alPresionar: () => context.go(Rutas.login),
             ),
           ],

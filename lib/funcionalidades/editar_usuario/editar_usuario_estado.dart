@@ -30,40 +30,47 @@ final class EditarUsuarioCargado extends EditarUsuarioEstado {
     this.errorValidacion = '',
   });
 
-  final String  usuarioId;
-  final String  primerNombreInicial;
-  final String  primerApellidoInicial;
+  final String usuarioId;
+  final String primerNombreInicial;
+  final String primerApellidoInicial;
   final String? segundoNombreInicial;
   final String? segundoApellidoInicial;
   final String? numeroIdentificacionInicial;
-  final String  correoInicial;
+  final String correoInicial;
   final String? telefonoInicial;
-  final bool    estaGuardando;
-  final String  errorValidacion;
+  final bool estaGuardando;
+  final String errorValidacion;
 
   EditarUsuarioCargado copiarCon({
-    bool?   estaGuardando,
+    bool? estaGuardando,
     String? errorValidacion,
-  }) => EditarUsuarioCargado(
-    usuarioId:                   usuarioId,
-    primerNombreInicial:         primerNombreInicial,
-    primerApellidoInicial:       primerApellidoInicial,
-    segundoNombreInicial:        segundoNombreInicial,
-    segundoApellidoInicial:      segundoApellidoInicial,
-    numeroIdentificacionInicial: numeroIdentificacionInicial,
-    correoInicial:               correoInicial,
-    telefonoInicial:             telefonoInicial,
-    estaGuardando:               estaGuardando   ?? this.estaGuardando,
-    errorValidacion:             errorValidacion ?? this.errorValidacion,
-  );
+  }) =>
+      EditarUsuarioCargado(
+        usuarioId: usuarioId,
+        primerNombreInicial: primerNombreInicial,
+        primerApellidoInicial: primerApellidoInicial,
+        segundoNombreInicial: segundoNombreInicial,
+        segundoApellidoInicial: segundoApellidoInicial,
+        numeroIdentificacionInicial: numeroIdentificacionInicial,
+        correoInicial: correoInicial,
+        telefonoInicial: telefonoInicial,
+        estaGuardando: estaGuardando ?? this.estaGuardando,
+        errorValidacion: errorValidacion ?? this.errorValidacion,
+      );
 
   @override
   List<Object?> get props => [
-    usuarioId, primerNombreInicial, primerApellidoInicial,
-    segundoNombreInicial, segundoApellidoInicial,
-    numeroIdentificacionInicial, correoInicial, telefonoInicial,
-    estaGuardando, errorValidacion,
-  ];
+        usuarioId,
+        primerNombreInicial,
+        primerApellidoInicial,
+        segundoNombreInicial,
+        segundoApellidoInicial,
+        numeroIdentificacionInicial,
+        correoInicial,
+        telefonoInicial,
+        estaGuardando,
+        errorValidacion,
+      ];
 }
 
 final class EditarUsuarioGuardado extends EditarUsuarioEstado {

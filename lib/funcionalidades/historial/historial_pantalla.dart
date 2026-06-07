@@ -24,11 +24,11 @@ class HistorialPantalla extends StatefulWidget {
 
 class _HistorialPantallaState extends State<HistorialPantalla>
     with SingleTickerProviderStateMixin {
-  late final TabController   _tabController;
-  final      TextEditingController _busquedaCtrl = TextEditingController();
+  late final TabController _tabController;
+  final TextEditingController _busquedaCtrl = TextEditingController();
   DateTimeRange? _rango;
   bool _estaIniciado = false;
-  bool _exportando   = false;
+  bool _exportando = false;
 
   @override
   void initState() {
@@ -59,7 +59,7 @@ class _HistorialPantallaState extends State<HistorialPantalla>
     try {
       await HistorialExportador.generarYCompartirPdf(
         nombreUsuario: nombre,
-        items:         items,
+        items: items,
       );
     } finally {
       if (mounted) setState(() => _exportando = false);
@@ -92,28 +92,32 @@ class _HistorialPantallaState extends State<HistorialPantalla>
   Widget _construirVista(BuildContext context, HistorialEstado estado) {
     // Tanto HistorialCargado como HistorialCargandoMas tienen items visibles
     final itemsActuales = switch (estado) {
-      HistorialCargado(:final items)     => items,
+      HistorialCargado(:final items) => items,
       HistorialCargandoMas(:final items) => items,
-      _                                  => null,
+      _ => null,
     };
-    final hayMas      = estado is HistorialCargado && estado.hayMas;
+    final hayMas = estado is HistorialCargado && estado.hayMas;
     final cargandoMas = estado is HistorialCargandoMas;
 
-    final filtrados          = itemsActuales != null ? _filtrar(itemsActuales) : <HistorialItem>[];
+    final filtrados =
+        itemsActuales != null ? _filtrar(itemsActuales) : <HistorialItem>[];
     final asistidosFiltrados = filtrados.where((i) => i.esAsistido).toList();
-    final salieronFiltrados  = filtrados.where((i) => i.esSalidaAnticipada).toList();
-    final ausentesFiltrados  = filtrados.where((i) => i.esAusente).toList();
-    final hayBusquedaActiva  = _busquedaCtrl.text.trim().isNotEmpty || _rango != null;
+    final salieronFiltrados =
+        filtrados.where((i) => i.esSalidaAnticipada).toList();
+    final ausentesFiltrados = filtrados.where((i) => i.esAusente).toList();
+    final hayBusquedaActiva =
+        _busquedaCtrl.text.trim().isNotEmpty || _rango != null;
 
     final authEstado = context.read<AuthCubit>().state;
-    final nombre     = authEstado is Autenticado ? authEstado.usuario.nombreCompleto : '';
+    final nombre =
+        authEstado is Autenticado ? authEstado.usuario.nombreCompleto : '';
     final todosItems = itemsActuales ?? [];
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -121,22 +125,22 @@ class _HistorialPantallaState extends State<HistorialPantalla>
           children: [
             _BarraTitulo(
               estaExportando: _exportando,
-              alCompartir:    (todosItems.isNotEmpty && !_exportando)
+              alCompartir: (todosItems.isNotEmpty && !_exportando)
                   ? () => _exportar(todosItems, nombre)
                   : null,
             ),
             if (itemsActuales != null) ..._construirControles(filtrados),
             Expanded(
               child: _Cuerpo(
-                estado:            estado,
-                tabController:     _tabController,
-                todos:             filtrados,
-                asistidos:         asistidosFiltrados,
-                salieron:          salieronFiltrados,
-                ausentes:          ausentesFiltrados,
+                estado: estado,
+                tabController: _tabController,
+                todos: filtrados,
+                asistidos: asistidosFiltrados,
+                salieron: salieronFiltrados,
+                ausentes: ausentesFiltrados,
                 hayBusquedaActiva: hayBusquedaActiva,
-                hayMas:            hayMas,
-                cargandoMas:       cargandoMas,
+                hayMas: hayMas,
+                cargandoMas: cargandoMas,
               ),
             ),
           ],
@@ -146,20 +150,20 @@ class _HistorialPantallaState extends State<HistorialPantalla>
   }
 
   List<Widget> _construirControles(List<HistorialItem> filtrados) => [
-    Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      child: BarraBusquedaApp(
-        controlador:        _busquedaCtrl,
-        hintText:           'Buscar evento o lugar...',
-        alCambiar:          (_) => setState(() {}),
-        alSeleccionarRango: (r) => setState(() => _rango = r),
-        alLimpiarRango:     () => setState(() => _rango = null),
-        rangoSeleccionado:  _rango,
-      ),
-    ),
-    _BloqueTotales(items: filtrados),
-    _BarraTabs(controller: _tabController),
-  ];
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+          child: BarraBusquedaApp(
+            controlador: _busquedaCtrl,
+            hintText: 'Buscar evento o lugar...',
+            alCambiar: (_) => setState(() {}),
+            alSeleccionarRango: (r) => setState(() => _rango = r),
+            alLimpiarRango: () => setState(() => _rango = null),
+            rangoSeleccionado: _rango,
+          ),
+        ),
+        _BloqueTotales(items: filtrados),
+        _BarraTabs(controller: _tabController),
+      ];
 }
 
 // ─── Barra de título ──────────────────────────────────────────────────────────
@@ -171,7 +175,7 @@ class _BarraTitulo extends StatelessWidget {
   });
 
   final VoidCallback? alCompartir;
-  final bool          estaExportando;
+  final bool estaExportando;
 
   @override
   Widget build(BuildContext context) {
@@ -186,35 +190,35 @@ class _BarraTitulo extends StatelessWidget {
             Text(
               'Mi historial',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontSize:   20,
-                fontWeight: FontWeight.w700,
-                color:      ColoresApp.textoPrimario,
-              ),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: ColoresApp.textoPrimario,
+                  ),
             ),
           ],
         ),
         derecha: alCompartir != null || estaExportando
             ? Material(
-                color:        Colors.transparent,
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(50),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(50),
-                  onTap:        estaExportando ? null : alCompartir,
+                  onTap: estaExportando ? null : alCompartir,
                   child: Padding(
                     padding: const EdgeInsets.all(8),
                     child: estaExportando
                         ? const SizedBox(
-                            width:  20,
+                            width: 20,
                             height: 20,
-                            child:  CircularProgressIndicator(
+                            child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color:       ColoresApp.acento,
+                              color: ColoresApp.acento,
                             ),
                           )
                         : const Icon(
                             Icons.ios_share_rounded,
                             color: ColoresApp.acento,
-                            size:  22,
+                            size: 22,
                           ),
                   ),
                 ),
@@ -234,21 +238,21 @@ class _BloqueTotales extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalAsistio    = items.where((i) => i.esAsistido).length;
+    final totalAsistio = items.where((i) => i.esAsistido).length;
     final totalSalioAntes = items.where((i) => i.esSalidaAnticipada).length;
-    final totalAusente    = items.where((i) => i.esAusente).length;
+    final totalAusente = items.where((i) => i.esAusente).length;
 
     return Container(
-      margin:  const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
-            color:      ColoresApp.sombraTarjeta,
+            color: ColoresApp.sombraTarjeta,
             blurRadius: 8,
-            offset:     Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -290,9 +294,9 @@ class _CeldaTotales extends StatelessWidget {
     required this.color,
   });
 
-  final int    valor;
+  final int valor;
   final String label;
-  final Color  color;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -303,18 +307,18 @@ class _CeldaTotales extends StatelessWidget {
           Text(
             '$valor',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              color:      color,
-              fontSize:   22,
-            ),
+                  fontWeight: FontWeight.w800,
+                  color: color,
+                  fontSize: 22,
+                ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color:    ColoresApp.textoTerciario,
-              fontSize: 11,
-            ),
+                  color: ColoresApp.textoTerciario,
+                  fontSize: 11,
+                ),
           ),
         ],
       ),
@@ -328,9 +332,9 @@ class _Divisor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:  1,
+      width: 1,
       height: 36,
-      color:  ColoresApp.superficieTerciar,
+      color: ColoresApp.superficieTerciar,
     );
   }
 }
@@ -347,36 +351,36 @@ class _BarraTabs extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(
-            color:      ColoresApp.sombraTarjeta,
+            color: ColoresApp.sombraTarjeta,
             blurRadius: 6,
-            offset:     Offset(0, 1),
+            offset: Offset(0, 1),
           ),
         ],
       ),
       child: TabBar(
-        controller:          controller,
-        isScrollable:        false,
-        dividerColor:        Colors.transparent,
-        indicatorSize:       TabBarIndicatorSize.tab,
+        controller: controller,
+        isScrollable: false,
+        dividerColor: Colors.transparent,
+        indicatorSize: TabBarIndicatorSize.tab,
         indicator: BoxDecoration(
-          color:        ColoresApp.acento,
+          color: ColoresApp.acento,
           borderRadius: BorderRadius.circular(10),
         ),
-        labelColor:          ColoresApp.superficiePrimaria,
+        labelColor: ColoresApp.superficiePrimaria,
         unselectedLabelColor: ColoresApp.textoSecundario,
         labelStyle: const TextStyle(
-          fontSize:   12,
+          fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
         unselectedLabelStyle: const TextStyle(
-          fontSize:   12,
+          fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
-        padding:       const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(4),
         tabs: const [
           Tab(text: 'Todos'),
           Tab(text: 'Asistí'),
@@ -405,43 +409,43 @@ class _Cuerpo extends StatelessWidget {
 
   // ── Configuraciones de estado vacío ─────────────────────────────────────────
   static const _vaciaResultados = _VaciaConfig(
-    icono:     Icons.search_off_rounded,
-    titulo:    'Sin resultados',
+    icono: Icons.search_off_rounded,
+    titulo: 'Sin resultados',
     subtitulo: 'Intenta con otro término o ajusta el rango de fechas',
   );
   static const _vaciaTodos = _VaciaConfig(
-    icono:     Icons.calendar_today_outlined,
-    titulo:    'Sin eventos aún',
+    icono: Icons.calendar_today_outlined,
+    titulo: 'Sin eventos aún',
     subtitulo: 'Los eventos a los que asistas aparecerán aquí',
   );
   static const _vaciaAsistidos = _VaciaConfig(
-    icono:      Icons.check_circle_outline,
-    titulo:     'Sin asistencias aún',
-    subtitulo:  'Los eventos donde asististe aparecerán aquí',
+    icono: Icons.check_circle_outline,
+    titulo: 'Sin asistencias aún',
+    subtitulo: 'Los eventos donde asististe aparecerán aquí',
     colorIcono: ColoresApp.verde,
   );
   static const _vaciaSalieron = _VaciaConfig(
-    icono:      Icons.logout_outlined,
-    titulo:     'Sin salidas anticipadas',
-    subtitulo:  'Aquí verás los eventos donde saliste antes del cierre',
+    icono: Icons.logout_outlined,
+    titulo: 'Sin salidas anticipadas',
+    subtitulo: 'Aquí verás los eventos donde saliste antes del cierre',
     colorIcono: ColoresApp.ambar,
   );
   static const _vaciaAusentes = _VaciaConfig(
-    icono:      Icons.emoji_events_rounded,
-    titulo:     '¡Sin ausencias!',
-    subtitulo:  'Mantén este récord asistiendo a todos tus eventos',
+    icono: Icons.emoji_events_rounded,
+    titulo: '¡Sin ausencias!',
+    subtitulo: 'Mantén este récord asistiendo a todos tus eventos',
     colorIcono: ColoresApp.verde,
   );
 
-  final HistorialEstado     estado;
-  final TabController       tabController;
+  final HistorialEstado estado;
+  final TabController tabController;
   final List<HistorialItem> todos;
   final List<HistorialItem> asistidos;
   final List<HistorialItem> salieron;
   final List<HistorialItem> ausentes;
-  final bool                hayBusquedaActiva;
-  final bool                hayMas;
-  final bool                cargandoMas;
+  final bool hayBusquedaActiva;
+  final bool hayMas;
+  final bool cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -453,27 +457,30 @@ class _Cuerpo extends StatelessWidget {
           controller: tabController,
           children: [
             _ListaHistorial(
-              items:       todos,
+              items: todos,
               vaciaConfig: hayBusquedaActiva ? _vaciaResultados : _vaciaTodos,
-              hayMas:      hayMas,
+              hayMas: hayMas,
               cargandoMas: cargandoMas,
             ),
             _ListaHistorial(
-              items:       asistidos,
-              vaciaConfig: hayBusquedaActiva ? _vaciaResultados : _vaciaAsistidos,
+              items: asistidos,
+              vaciaConfig:
+                  hayBusquedaActiva ? _vaciaResultados : _vaciaAsistidos,
             ),
             _ListaHistorial(
-              items:       salieron,
-              vaciaConfig: hayBusquedaActiva ? _vaciaResultados : _vaciaSalieron,
+              items: salieron,
+              vaciaConfig:
+                  hayBusquedaActiva ? _vaciaResultados : _vaciaSalieron,
             ),
             _ListaHistorial(
-              items:       ausentes,
-              vaciaConfig: hayBusquedaActiva ? _vaciaResultados : _vaciaAusentes,
+              items: ausentes,
+              vaciaConfig:
+                  hayBusquedaActiva ? _vaciaResultados : _vaciaAusentes,
             ),
           ],
         ),
       final HistorialError error => VistaErrorApp(
-          mensaje:      error.mensaje,
+          mensaje: error.mensaje,
           alReintentar: () {
             final authEstado = context.read<AuthCubit>().state;
             if (authEstado is Autenticado) {
@@ -491,14 +498,14 @@ class _ListaHistorial extends StatelessWidget {
   const _ListaHistorial({
     required this.items,
     required this.vaciaConfig,
-    this.hayMas      = false,
+    this.hayMas = false,
     this.cargandoMas = false,
   });
 
   final List<HistorialItem> items;
-  final _VaciaConfig        vaciaConfig;
-  final bool                hayMas;
-  final bool                cargandoMas;
+  final _VaciaConfig vaciaConfig;
+  final bool hayMas;
+  final bool cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -510,8 +517,8 @@ class _ListaHistorial extends StatelessWidget {
     final totalItems = items.length + (hayMas || cargandoMas ? 1 : 0);
 
     return ListView.builder(
-      padding:     const EdgeInsets.fromLTRB(20, 16, 20, 32),
-      itemCount:   totalItems,
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      itemCount: totalItems,
       itemBuilder: (context, i) {
         if (i == items.length) {
           return Padding(
@@ -530,7 +537,7 @@ class _ListaHistorial extends StatelessWidget {
                     child: TextButton.icon(
                       onPressed: () =>
                           context.read<HistorialCubit>().cargarMas(),
-                      icon:  const Icon(
+                      icon: const Icon(
                         Icons.expand_more_rounded,
                         color: ColoresApp.acento,
                       ),
@@ -544,7 +551,7 @@ class _ListaHistorial extends StatelessWidget {
         }
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child:   _TarjetaHistorial(item: items[i]),
+          child: _TarjetaHistorial(item: items[i]),
         );
       },
     );
@@ -565,13 +572,13 @@ class _TarjetaHistorial extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [
           BoxShadow(
-            color:      ColoresApp.sombraTarjeta,
+            color: ColoresApp.sombraTarjeta,
             blurRadius: 6,
-            offset:     Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -586,9 +593,9 @@ class _TarjetaHistorial extends StatelessWidget {
                 Text(
                   item.eventoTitulo,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color:      ColoresApp.textoPrimario,
-                  ),
+                        fontWeight: FontWeight.w600,
+                        color: ColoresApp.textoPrimario,
+                      ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -605,10 +612,11 @@ class _TarjetaHistorial extends StatelessWidget {
                       Expanded(
                         child: Text(
                           item.eventoLugar!,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color:    ColoresApp.textoTerciario,
-                            fontSize: 11,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: ColoresApp.textoTerciario,
+                                    fontSize: 11,
+                                  ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -620,53 +628,54 @@ class _TarjetaHistorial extends StatelessWidget {
                   Text(
                     item.etiquetaFecha,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color:    ColoresApp.textoSecundario,
-                      fontSize: 11,
-                    ),
+                          color: ColoresApp.textoSecundario,
+                          fontSize: 11,
+                        ),
                   ),
                 ],
               ],
             ),
           ),
           const SizedBox(width: 10),
-          _EtiquetaEstatus(label: config.label, color: config.color, fondo: config.fondo),
+          _EtiquetaEstatus(
+              label: config.label, color: config.color, fondo: config.fondo),
         ],
       ),
     );
   }
 
   _ConfigEstatus _configEstatus(String estatus) => switch (estatus) {
-    EstatusAsistencia.presente => const _ConfigEstatus(
-      icono: Icons.check_circle_outline,
-      color: ColoresApp.verde,
-      fondo: ColoresApp.verdeClaro,
-      label: 'Presente',
-    ),
-    EstatusAsistencia.completado => const _ConfigEstatus(
-      icono: Icons.verified_outlined,
-      color: ColoresApp.verde,
-      fondo: ColoresApp.verdeClaro,
-      label: 'Completado',
-    ),
-    EstatusAsistencia.salioAnticipado => const _ConfigEstatus(
-      icono: Icons.logout_outlined,
-      color: ColoresApp.ambar,
-      fondo: ColoresApp.ambarClaro,
-      label: 'Salió antes',
-    ),
-    EstatusAsistencia.ausente => const _ConfigEstatus(
-      icono: Icons.cancel_outlined,
-      color: ColoresApp.rojo,
-      fondo: ColoresApp.rojoClaro,
-      label: 'Ausente',
-    ),
-    _ => _ConfigEstatus(
-      icono: Icons.help_outline,
-      color: ColoresApp.textoTerciario,
-      fondo: ColoresApp.superficieSecund,
-      label: estatus,
-    ),
-  };
+        EstatusAsistencia.presente => const _ConfigEstatus(
+            icono: Icons.check_circle_outline,
+            color: ColoresApp.verde,
+            fondo: ColoresApp.verdeClaro,
+            label: 'Presente',
+          ),
+        EstatusAsistencia.completado => const _ConfigEstatus(
+            icono: Icons.verified_outlined,
+            color: ColoresApp.verde,
+            fondo: ColoresApp.verdeClaro,
+            label: 'Completado',
+          ),
+        EstatusAsistencia.salioAnticipado => const _ConfigEstatus(
+            icono: Icons.logout_outlined,
+            color: ColoresApp.ambar,
+            fondo: ColoresApp.ambarClaro,
+            label: 'Salió antes',
+          ),
+        EstatusAsistencia.ausente => const _ConfigEstatus(
+            icono: Icons.cancel_outlined,
+            color: ColoresApp.rojo,
+            fondo: ColoresApp.rojoClaro,
+            label: 'Ausente',
+          ),
+        _ => _ConfigEstatus(
+            icono: Icons.help_outline,
+            color: ColoresApp.textoTerciario,
+            fondo: ColoresApp.superficieSecund,
+            label: estatus,
+          ),
+      };
 }
 
 class _ConfigEstatus {
@@ -678,24 +687,24 @@ class _ConfigEstatus {
   });
 
   final IconData icono;
-  final Color    color;
-  final Color    fondo;
-  final String   label;
+  final Color color;
+  final Color fondo;
+  final String label;
 }
 
 class _Insignia extends StatelessWidget {
   const _Insignia({required this.icono, required this.color});
 
   final IconData icono;
-  final Color    color;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:       42,
-      height:      42,
+      width: 42,
+      height: 42,
       decoration: BoxDecoration(
-        color:        color.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(icono, color: color, size: 22),
@@ -711,29 +720,28 @@ class _EtiquetaEstatus extends StatelessWidget {
   });
 
   final String label;
-  final Color  color;
-  final Color  fondo;
+  final Color color;
+  final Color fondo;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color:        fondo,
+        color: fondo,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color:      color,
-          fontWeight: FontWeight.w600,
-          fontSize:   11,
-        ),
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+            ),
       ),
     );
   }
 }
-
 
 // ─── Configuración de estado vacío ───────────────────────────────────────────
 
@@ -746,9 +754,9 @@ class _VaciaConfig {
   });
 
   final IconData icono;
-  final String   titulo;
-  final String?  subtitulo;
-  final Color?   colorIcono;
+  final String titulo;
+  final String? subtitulo;
+  final Color? colorIcono;
 }
 
 // ─── Vista estado vacío ───────────────────────────────────────────────────────
@@ -768,11 +776,11 @@ class _VistaVacia extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width:  72,
+              width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color:  color.withValues(alpha: 0.1),
-                shape:  BoxShape.circle,
+                color: color.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
               child: Icon(config.icono, color: color, size: 36),
             ),
@@ -781,9 +789,9 @@ class _VistaVacia extends StatelessWidget {
               config.titulo,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color:      ColoresApp.textoPrimario,
-              ),
+                    fontWeight: FontWeight.w700,
+                    color: ColoresApp.textoPrimario,
+                  ),
             ),
             if (config.subtitulo != null) ...[
               const SizedBox(height: 6),
@@ -791,8 +799,8 @@ class _VistaVacia extends StatelessWidget {
                 config.subtitulo!,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: ColoresApp.textoTerciario,
-                ),
+                      color: ColoresApp.textoTerciario,
+                    ),
               ),
             ],
           ],

@@ -15,8 +15,8 @@ import 'errores.dart';
 /// ```
 Future<T> conReintentos<T>(
   Future<T> Function() operacion, {
-  int      maxIntentos = 2,
-  Duration esperaBase  = const Duration(milliseconds: 800),
+  int maxIntentos = 2,
+  Duration esperaBase = const Duration(milliseconds: 800),
 }) async {
   var intentos = 0;
   while (true) {

@@ -7,19 +7,20 @@ class TarjetaInfoPersonal extends StatelessWidget {
     super.key,
     this.cedula,
     this.telefono,
-    this.roles             = const [],
+    this.roles = const [],
     this.tagPrincipal,
-    this.tagsSecundarios   = const [],
+    this.tagsSecundarios = const [],
     this.miembroDesde,
     this.alEditarTap,
   });
 
-  final String?       cedula;
-  final String?       telefono;
-  final List<String>  roles;
-  final String?       tagPrincipal;
-  final List<String>  tagsSecundarios;
-  final DateTime?     miembroDesde;
+  final String? cedula;
+  final String? telefono;
+  final List<String> roles;
+  final String? tagPrincipal;
+  final List<String> tagsSecundarios;
+  final DateTime? miembroDesde;
+
   /// Si no es null, muestra el botón de editar en el encabezado.
   final VoidCallback? alEditarTap;
 
@@ -36,24 +37,24 @@ class TarjetaInfoPersonal extends StatelessWidget {
                 child: Text(
                   'INFORMACIÓN PERSONAL',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color:         ColoresApp.textoTerciario,
-                    fontWeight:    FontWeight.w700,
-                    letterSpacing: 1.2,
-                  ),
+                        color: ColoresApp.textoTerciario,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2,
+                      ),
                 ),
               ),
               if (alEditarTap != null)
                 Material(
-                  color:        Colors.transparent,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(20),
-                    onTap:        alEditarTap,
+                    onTap: alEditarTap,
                     child: const Padding(
                       padding: EdgeInsets.all(6),
-                      child:   Icon(
+                      child: Icon(
                         Icons.edit_outlined,
-                        size:  18,
+                        size: 18,
                         color: ColoresApp.acento,
                       ),
                     ),
@@ -63,19 +64,19 @@ class TarjetaInfoPersonal extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           if (cedula != null) ...[
-            _FilaTexto(etiqueta: 'Cédula',    valor: cedula!),
+            _FilaTexto(etiqueta: 'Cédula', valor: cedula!),
             const _Divisor(),
           ],
           if (telefono != null) ...[
-            _FilaTexto(etiqueta: 'Teléfono',  valor: telefono!),
+            _FilaTexto(etiqueta: 'Teléfono', valor: telefono!),
             const _Divisor(),
           ],
           if (roles.isNotEmpty) ...[
-            _FilaChips(etiqueta: 'Roles',              chips: roles),
+            _FilaChips(etiqueta: 'Roles', chips: roles),
             const _Divisor(),
           ],
           if (tagPrincipal != null) ...[
-            _FilaChips(etiqueta: 'Tag principal',     chips: [tagPrincipal!]),
+            _FilaChips(etiqueta: 'Tag principal', chips: [tagPrincipal!]),
             const _Divisor(),
           ],
           if (tagsSecundarios.isNotEmpty) ...[
@@ -84,8 +85,8 @@ class TarjetaInfoPersonal extends StatelessWidget {
           ],
           if (miembroDesde != null)
             _FilaTexto(
-              etiqueta:  'Miembro desde',
-              valor:     _formatearMes(miembroDesde!),
+              etiqueta: 'Miembro desde',
+              valor: _formatearMes(miembroDesde!),
               esNegrita: true,
             ),
         ],
@@ -95,8 +96,18 @@ class TarjetaInfoPersonal extends StatelessWidget {
 
   static String _formatearMes(DateTime fecha) {
     const meses = [
-      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
-      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic',
+      'Ene',
+      'Feb',
+      'Mar',
+      'Abr',
+      'May',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dic',
     ];
     return '${meses[fecha.month - 1]} ${fecha.year}';
   }
@@ -113,7 +124,7 @@ class _FilaTexto extends StatelessWidget {
 
   final String etiqueta;
   final String valor;
-  final bool   esNegrita;
+  final bool esNegrita;
 
   @override
   Widget build(BuildContext context) {
@@ -134,9 +145,9 @@ class _FilaTexto extends StatelessWidget {
               valor,
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color:      ColoresApp.textoPrimario,
-                fontWeight: esNegrita ? FontWeight.w700 : null,
-              ),
+                    color: ColoresApp.textoPrimario,
+                    fontWeight: esNegrita ? FontWeight.w700 : null,
+                  ),
             ),
           ),
         ],
@@ -153,7 +164,7 @@ class _FilaChips extends StatelessWidget {
     required this.chips,
   });
 
-  final String       etiqueta;
+  final String etiqueta;
   final List<String> chips;
 
   @override
@@ -172,9 +183,9 @@ class _FilaChips extends StatelessWidget {
           ),
           Expanded(
             child: Wrap(
-              alignment:   WrapAlignment.end,
-              spacing:     6,
-              runSpacing:  6,
+              alignment: WrapAlignment.end,
+              spacing: 6,
+              runSpacing: 6,
               children: chips.map((c) => _ChipEtiqueta(texto: c)).toList(),
             ),
           ),
@@ -196,15 +207,15 @@ class _ChipEtiqueta extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color:        ColoresApp.acentoClaro,
+        color: ColoresApp.acentoClaro,
         borderRadius: BorderRadius.circular(30),
       ),
       child: Text(
         texto,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color:      ColoresApp.acento,
-          fontWeight: FontWeight.w600,
-        ),
+              color: ColoresApp.acento,
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }
@@ -218,9 +229,9 @@ class _Divisor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Divider(
-      height:    1,
+      height: 1,
       thickness: 1,
-      color:     ColoresApp.superficieTerciar,
+      color: ColoresApp.superficieTerciar,
     );
   }
 }

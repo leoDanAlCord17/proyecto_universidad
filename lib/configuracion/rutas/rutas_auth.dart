@@ -28,7 +28,6 @@ List<GoRoute> get rutasAuth => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.login,
         builder: (context, state) => BlocProvider(
@@ -36,7 +35,6 @@ List<GoRoute> get rutasAuth => [
           child: const LoginPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.registro,
         builder: (context, state) => BlocProvider(
@@ -44,7 +42,6 @@ List<GoRoute> get rutasAuth => [
           child: const RegistroPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.completarPerfil,
         builder: (context, state) => BlocProvider(
@@ -52,7 +49,6 @@ List<GoRoute> get rutasAuth => [
           child: const CrearUsuarioPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.recuperarContrasena,
         builder: (context, state) => BlocProvider(
@@ -60,7 +56,6 @@ List<GoRoute> get rutasAuth => [
           child: const RecuperarContrasenaPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.nuevaContrasena,
         builder: (context, state) => BlocProvider(
@@ -68,14 +63,12 @@ List<GoRoute> get rutasAuth => [
           child: const NuevaContrasenaPantalla(),
         ),
       ),
-
       GoRoute(
-        path:    Rutas.pendienteAprobacion,
+        path: Rutas.pendienteAprobacion,
         builder: (context, state) => const PendienteAprobacionPantalla(),
       ),
-
       GoRoute(
-        path:    Rutas.usuarioRechazado,
+        path: Rutas.usuarioRechazado,
         builder: (context, state) => const UsuarioRechazadoPantalla(),
       ),
     ];

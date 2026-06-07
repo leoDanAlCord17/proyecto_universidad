@@ -10,25 +10,25 @@ FiltrosEstadisticas _filtroConDuracion(int dias) {
   return FiltrosEstadisticas(
     rango: DateTimeRange(
       start: ahora.subtract(Duration(days: dias)),
-      end:   ahora,
+      end: ahora,
     ),
   );
 }
 
 FiltrosEstadisticas _filtroConOpciones({
-  List<OpcionFiltro> tipos     = const [],
+  List<OpcionFiltro> tipos = const [],
   List<OpcionFiltro> creadores = const [],
-  List<OpcionFiltro> tags      = const [],
+  List<OpcionFiltro> tags = const [],
 }) {
   final ahora = DateTime(2025, 6, 15);
   return FiltrosEstadisticas(
     rango: DateTimeRange(
       start: ahora.subtract(const Duration(days: 30)),
-      end:   ahora,
+      end: ahora,
     ),
-    tiposSeleccionados:     tipos,
+    tiposSeleccionados: tipos,
     creadoresSeleccionados: creadores,
-    tagsSeleccionados:      tags,
+    tagsSeleccionados: tags,
   );
 }
 
@@ -63,7 +63,7 @@ void main() {
       final filtro = FiltrosEstadisticas(
         rango: DateTimeRange(
           start: DateTime(anio),
-          end:   DateTime(anio, 12, 31),
+          end: DateTime(anio, 12, 31),
         ),
       );
       expect(filtro.etiquetaRango, 'Año $anio');
@@ -73,7 +73,7 @@ void main() {
       final filtro = FiltrosEstadisticas(
         rango: DateTimeRange(
           start: DateTime(2024, 3, 5),
-          end:   DateTime(2025, 6, 15),
+          end: DateTime(2025, 6, 15),
         ),
       );
       expect(filtro.etiquetaRango, '5/3/2024 – 15/6/2025');
@@ -113,9 +113,9 @@ void main() {
     test('suma tipos + creadores + tags', () {
       const t = OpcionFiltro(id: 't', nombre: 'T');
       final filtro = _filtroConOpciones(
-        tipos:     [t],
+        tipos: [t],
         creadores: [t, t],
-        tags:      [t],
+        tags: [t],
       );
       expect(filtro.totalFiltrosActivos, 4);
     });
@@ -125,10 +125,12 @@ void main() {
 
   group('FiltrosEstadisticas getters de IDs', () {
     test('tipoIds extrae los IDs de tiposSeleccionados', () {
-      final filtro = _filtroConOpciones(tipos: [
-        const OpcionFiltro(id: 'tipo-1', nombre: 'A'),
-        const OpcionFiltro(id: 'tipo-2', nombre: 'B'),
-      ],);
+      final filtro = _filtroConOpciones(
+        tipos: [
+          const OpcionFiltro(id: 'tipo-1', nombre: 'A'),
+          const OpcionFiltro(id: 'tipo-2', nombre: 'B'),
+        ],
+      );
       expect(filtro.tipoIds, ['tipo-1', 'tipo-2']);
     });
 
@@ -153,7 +155,9 @@ void main() {
     test('limpia todas las listas pero conserva el rango', () {
       const opcion = OpcionFiltro(id: 'x', nombre: 'X');
       final original = _filtroConOpciones(
-        tipos: [opcion], creadores: [opcion], tags: [opcion],
+        tipos: [opcion],
+        creadores: [opcion],
+        tags: [opcion],
       );
       final limpio = original.sinFiltros();
       expect(limpio.tieneFiltrosActivos, false);
@@ -166,7 +170,7 @@ void main() {
   group('FiltrosEstadisticas.copyWith', () {
     test('rango null preserva el rango original', () {
       final original = _filtroConDuracion(30);
-      final copia    = original.copyWith();
+      final copia = original.copyWith();
       expect(copia.rango, original.rango);
     });
 
@@ -174,7 +178,7 @@ void main() {
       final original = _filtroConDuracion(30);
       final nuevoRango = DateTimeRange(
         start: DateTime(2025, 1, 1),
-        end:   DateTime(2025, 1, 31),
+        end: DateTime(2025, 1, 31),
       );
       final copia = original.copyWith(rango: nuevoRango);
       expect(copia.rango, nuevoRango);
@@ -186,9 +190,9 @@ void main() {
   group('FiltrosEstadisticas.porDefecto', () {
     test('genera rango terminado en hoy con inicio aprox un mes antes', () {
       final filtro = FiltrosEstadisticas.porDefecto();
-      final ahora  = DateTime.now();
+      final ahora = DateTime.now();
       // El rango termina hoy o muy cerca
-      expect(filtro.rango.end.day,   ahora.day);
+      expect(filtro.rango.end.day, ahora.day);
       // Sin filtros activos
       expect(filtro.tieneFiltrosActivos, false);
     });

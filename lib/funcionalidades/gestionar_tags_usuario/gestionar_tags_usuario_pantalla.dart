@@ -31,8 +31,10 @@ class _GestionarTagsUsuarioState extends State<GestionarTagsUsuarioPantalla> {
     if (_estaIniciado) return;
     _estaIniciado = true;
     final authEstado = context.read<AuthCubit>().state;
-    final adminId    = authEstado is Autenticado ? authEstado.usuario.id : null;
-    context.read<GestionarTagsUsuarioCubit>().cargar(widget.usuarioId, adminId: adminId);
+    final adminId = authEstado is Autenticado ? authEstado.usuario.id : null;
+    context
+        .read<GestionarTagsUsuarioCubit>()
+        .cargar(widget.usuarioId, adminId: adminId);
   }
 
   @override
@@ -41,19 +43,21 @@ class _GestionarTagsUsuarioState extends State<GestionarTagsUsuarioPantalla> {
       listenWhen: (_, curr) => curr is GestionarTagsUsuarioOperacionFallida,
       listener: (context, estado) {
         if (estado is GestionarTagsUsuarioOperacionFallida) {
-          AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
+          AvisoApp.mostrar(context,
+              texto: estado.mensaje, estilo: EstiloAviso.error);
         }
       },
       builder: _construirVista,
     );
   }
 
-  Widget _construirVista(BuildContext context, GestionarTagsUsuarioEstado estado) {
+  Widget _construirVista(
+      BuildContext context, GestionarTagsUsuarioEstado estado) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -85,7 +89,9 @@ class _CabeceraTitulo extends StatelessWidget {
     final nombre = estado is GestionarTagsUsuarioCargado
         ? (estado as GestionarTagsUsuarioCargado).nombreUsuario
         : estado is GestionarTagsUsuarioOperacionFallida
-            ? (estado as GestionarTagsUsuarioOperacionFallida).anterior.nombreUsuario
+            ? (estado as GestionarTagsUsuarioOperacionFallida)
+                .anterior
+                .nombreUsuario
             : '';
 
     return Row(
@@ -94,24 +100,24 @@ class _CabeceraTitulo extends StatelessWidget {
         const BotonRegresar(),
         const SizedBox(width: 12),
         Column(
-          mainAxisAlignment:  MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Gestionar Tags',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontSize:   20,
-                fontWeight: FontWeight.w700,
-                color:      ColoresApp.textoPrimario,
-              ),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: ColoresApp.textoPrimario,
+                  ),
             ),
             if (nombre.isNotEmpty)
               Text(
                 nombre,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color:    ColoresApp.textoSecundario,
-                  fontSize: 13,
-                ),
+                      color: ColoresApp.textoSecundario,
+                      fontSize: 13,
+                    ),
               ),
           ],
         ),
@@ -131,13 +137,15 @@ class _Cuerpo extends StatelessWidget {
   Widget build(BuildContext context) {
     final e = estado;
     return switch (e) {
-      GestionarTagsUsuarioInicial()  ||
-      GestionarTagsUsuarioCargando() => const Center(
-        child: CircularProgressIndicator(color: ColoresApp.acento),
-      ),
-      GestionarTagsUsuarioCargado()         => _VistaContenido(estado: e),
-      GestionarTagsUsuarioOperacionFallida() => _VistaContenido(estado: e.anterior),
-      GestionarTagsUsuarioError()            => _VistaError(mensaje: e.mensaje),
+      GestionarTagsUsuarioInicial() ||
+      GestionarTagsUsuarioCargando() =>
+        const Center(
+          child: CircularProgressIndicator(color: ColoresApp.acento),
+        ),
+      GestionarTagsUsuarioCargado() => _VistaContenido(estado: e),
+      GestionarTagsUsuarioOperacionFallida() =>
+        _VistaContenido(estado: e.anterior),
+      GestionarTagsUsuarioError() => _VistaError(mensaje: e.mensaje),
     };
   }
 }
@@ -174,13 +182,13 @@ class _SeccionPrincipal extends StatelessWidget {
 
   void _abrirPicker(BuildContext context) {
     showModalBottomSheet<void>(
-      context:            context,
-      useRootNavigator:   true,
+      context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
-      backgroundColor:    Colors.transparent,
-      barrierColor:       ColoresApp.sombraBarrera,
+      backgroundColor: Colors.transparent,
+      barrierColor: ColoresApp.sombraBarrera,
       builder: (_) => _HojaPickerTag(
-        titulo:  estado.tagPrincipal != null
+        titulo: estado.tagPrincipal != null
             ? 'Cambiar tag principal'
             : 'Asignar tag principal',
         opciones: estado.principalesDisponibles,
@@ -201,18 +209,19 @@ class _SeccionPrincipal extends StatelessWidget {
         const SizedBox(height: 12),
         if (estado.tagPrincipal != null)
           _FilaTagAsignado(
-            tag:       estado.tagPrincipal!,
-            alQuitar:  () => context.read<GestionarTagsUsuarioCubit>().quitarPrincipal(),
+            tag: estado.tagPrincipal!,
+            alQuitar: () =>
+                context.read<GestionarTagsUsuarioCubit>().quitarPrincipal(),
           )
         else
           const _PlaceholderSinTag(texto: 'Sin tag principal asignado'),
         if (estado.principalesDisponibles.isNotEmpty) ...[
           const SizedBox(height: 10),
           _BotonAccion(
-            icono:       estado.tagPrincipal != null
+            icono: estado.tagPrincipal != null
                 ? Icons.swap_horiz_rounded
                 : Icons.add_rounded,
-            texto:       estado.tagPrincipal != null
+            texto: estado.tagPrincipal != null
                 ? 'Cambiar tag principal'
                 : 'Asignar tag principal',
             alPresionar: () => _abrirPicker(context),
@@ -232,13 +241,13 @@ class _SeccionSecundarios extends StatelessWidget {
 
   void _abrirPicker(BuildContext context) {
     showModalBottomSheet<void>(
-      context:            context,
-      useRootNavigator:   true,
+      context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
-      backgroundColor:    Colors.transparent,
-      barrierColor:       ColoresApp.sombraBarrera,
+      backgroundColor: Colors.transparent,
+      barrierColor: ColoresApp.sombraBarrera,
       builder: (_) => _HojaPickerTag(
-        titulo:   'Agregar tag secundario',
+        titulo: 'Agregar tag secundario',
         opciones: estado.secundariosDisponibles,
         alSeleccionar: (tag) {
           Navigator.of(context, rootNavigator: true).pop();
@@ -261,20 +270,22 @@ class _SeccionSecundarios extends StatelessWidget {
         if (estado.tagsSecundarios.isEmpty)
           const _PlaceholderSinTag(texto: 'Sin tags secundarios asignados')
         else
-          ...estado.tagsSecundarios.map((t) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: _FilaTagAsignado(
-              tag:      t,
-              alQuitar: () => context
-                  .read<GestionarTagsUsuarioCubit>()
-                  .quitarSecundario(t.id),
+          ...estado.tagsSecundarios.map(
+            (t) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: _FilaTagAsignado(
+                tag: t,
+                alQuitar: () => context
+                    .read<GestionarTagsUsuarioCubit>()
+                    .quitarSecundario(t.id),
+              ),
             ),
-          ),),
+          ),
         const SizedBox(height: 10),
         if (!estado.estaEnLimite && estado.secundariosDisponibles.isNotEmpty)
           _BotonAccion(
-            icono:       Icons.add_rounded,
-            texto:       'Agregar tag secundario',
+            icono: Icons.add_rounded,
+            texto: 'Agregar tag secundario',
             alPresionar: () => _abrirPicker(context),
           )
         else if (estado.estaEnLimite)
@@ -289,31 +300,32 @@ class _SeccionSecundarios extends StatelessWidget {
 class _FilaTagAsignado extends StatelessWidget {
   const _FilaTagAsignado({required this.tag, required this.alQuitar});
 
-  final TagItem      tag;
+  final TagItem tag;
   final VoidCallback alQuitar;
 
   @override
   Widget build(BuildContext context) {
     final color = tag.esPrincipal ? ColoresApp.acento : ColoresApp.ambar;
-    final fondo = tag.esPrincipal ? ColoresApp.acentoClaro : ColoresApp.ambarClaro;
+    final fondo =
+        tag.esPrincipal ? ColoresApp.acentoClaro : ColoresApp.ambarClaro;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [
           BoxShadow(
-            color:      ColoresApp.sombraTarjeta,
+            color: ColoresApp.sombraTarjeta,
             blurRadius: 8,
-            offset:     Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width:  8,
+            width: 8,
             height: 8,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
@@ -322,39 +334,39 @@ class _FilaTagAsignado extends StatelessWidget {
             child: Text(
               tag.nombre,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color:      ColoresApp.textoPrimario,
-                fontSize:   15,
-              ),
+                    fontWeight: FontWeight.w600,
+                    color: ColoresApp.textoPrimario,
+                    fontSize: 15,
+                  ),
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color:        fondo,
+              color: fondo,
               borderRadius: BorderRadius.circular(30),
             ),
             child: Text(
               tag.esPrincipal ? 'Principal' : 'Secundario',
               style: TextStyle(
-                color:      color,
-                fontSize:   11,
+                color: color,
+                fontSize: 11,
                 fontWeight: FontWeight.w600,
               ),
             ),
           ),
           const SizedBox(width: 8),
           Material(
-            color:        Colors.transparent,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             child: InkWell(
-              onTap:        alQuitar,
+              onTap: alQuitar,
               borderRadius: BorderRadius.circular(8),
               child: const Padding(
                 padding: EdgeInsets.all(6),
                 child: Icon(
                   Icons.close_rounded,
-                  size:  18,
+                  size: 18,
                   color: ColoresApp.textoTerciario,
                 ),
               ),
@@ -376,18 +388,18 @@ class _PlaceholderSinTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:   double.infinity,
+      width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(14),
-        border:       Border.all(color: ColoresApp.bordeMedio),
+        border: Border.all(color: ColoresApp.bordeMedio),
       ),
       child: Text(
         texto,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: ColoresApp.textoTerciario,
-        ),
+              color: ColoresApp.textoTerciario,
+            ),
       ),
     );
   }
@@ -402,25 +414,25 @@ class _BotonAccion extends StatelessWidget {
     required this.alPresionar,
   });
 
-  final IconData     icono;
-  final String       texto;
+  final IconData icono;
+  final String texto;
   final VoidCallback alPresionar;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap:          alPresionar,
-        borderRadius:   BorderRadius.circular(12),
+        onTap: alPresionar,
+        borderRadius: BorderRadius.circular(12),
         highlightColor: ColoresApp.acentoClaro,
-        splashColor:    ColoresApp.bordeMedio,
+        splashColor: ColoresApp.bordeMedio,
         child: Ink(
-          width:  double.infinity,
+          width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            border:       Border.all(color: ColoresApp.bordeFuerte),
+            border: Border.all(color: ColoresApp.bordeFuerte),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -431,9 +443,9 @@ class _BotonAccion extends StatelessWidget {
               Text(
                 texto,
                 style: const TextStyle(
-                  color:      ColoresApp.acento,
+                  color: ColoresApp.acento,
                   fontWeight: FontWeight.w600,
-                  fontSize:   14,
+                  fontSize: 14,
                 ),
               ),
             ],
@@ -454,22 +466,23 @@ class _AvisoLimite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:   double.infinity,
+      width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color:        ColoresApp.ambarClaro,
+        color: ColoresApp.ambarClaro,
         borderRadius: BorderRadius.circular(12),
-        border:       Border.all(color: ColoresApp.ambar, width: 0.8),
+        border: Border.all(color: ColoresApp.ambar, width: 0.8),
       ),
       child: Row(
         children: [
-          const Icon(Icons.info_outline_rounded, color: ColoresApp.ambar, size: 16),
+          const Icon(Icons.info_outline_rounded,
+              color: ColoresApp.ambar, size: 16),
           const SizedBox(width: 8),
           Text(
             'Límite alcanzado ($maximo/$maximo tags secundarios)',
             style: const TextStyle(
-              color:      ColoresApp.ambar,
-              fontSize:   13,
+              color: ColoresApp.ambar,
+              fontSize: 13,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -491,11 +504,11 @@ class _LabelSeccion extends StatelessWidget {
     return Text(
       texto,
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-        color:         ColoresApp.textoTerciario,
-        letterSpacing: 0.8,
-        fontSize:      13,
-        fontWeight:    FontWeight.w900,
-      ),
+            color: ColoresApp.textoTerciario,
+            letterSpacing: 0.8,
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+          ),
     );
   }
 }
@@ -509,8 +522,8 @@ class _HojaPickerTag extends StatefulWidget {
     required this.alSeleccionar,
   });
 
-  final String             titulo;
-  final List<TagItem>      opciones;
+  final String titulo;
+  final List<TagItem> opciones;
   final ValueChanged<TagItem> alSeleccionar;
 
   @override
@@ -523,17 +536,20 @@ class _HojaPickerTagState extends State<_HojaPickerTag> {
   List<TagItem> get _filtradas {
     if (_busqueda.trim().isEmpty) return widget.opciones;
     final q = _busqueda.toLowerCase();
-    return widget.opciones.where((t) => t.nombre.toLowerCase().contains(q)).toList();
+    return widget.opciones
+        .where((t) => t.nombre.toLowerCase().contains(q))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.75),
+      constraints:
+          BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.75),
       child: Container(
         decoration: const BoxDecoration(
-          color:        ColoresApp.superficiePrimaria,
+          color: ColoresApp.superficiePrimaria,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
@@ -546,8 +562,8 @@ class _HojaPickerTagState extends State<_HojaPickerTag> {
               child: Text(
                 widget.titulo,
                 style: const TextStyle(
-                  color:      ColoresApp.textoPrimario,
-                  fontSize:   16,
+                  color: ColoresApp.textoPrimario,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -567,42 +583,45 @@ class _HojaPickerTagState extends State<_HojaPickerTag> {
   }
 
   Widget _handle() => Container(
-    width:  36,
-    height: 4,
-    decoration: BoxDecoration(
-      color:        ColoresApp.bordeMedio,
-      borderRadius: BorderRadius.circular(2),
-    ),
-  );
+        width: 36,
+        height: 4,
+        decoration: BoxDecoration(
+          color: ColoresApp.bordeMedio,
+          borderRadius: BorderRadius.circular(2),
+        ),
+      );
 
   Widget _campoBusqueda() => Container(
-    height: 44,
-    decoration: BoxDecoration(
-      color:        ColoresApp.superficieSecund,
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Row(
-      children: [
-        const SizedBox(width: 12),
-        const Icon(Icons.search_rounded, color: ColoresApp.textoTerciario, size: 18),
-        const SizedBox(width: 8),
-        Expanded(
-          child: TextField(
-            onChanged: (v) => setState(() => _busqueda = v),
-            style: const TextStyle(color: ColoresApp.textoPrimario, fontSize: 14),
-            decoration: const InputDecoration(
-              hintText:       'Buscar...',
-              hintStyle:      TextStyle(color: ColoresApp.textoTerciario, fontSize: 14),
-              border:         InputBorder.none,
-              isDense:        true,
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
+        height: 44,
+        decoration: BoxDecoration(
+          color: ColoresApp.superficieSecund,
+          borderRadius: BorderRadius.circular(12),
         ),
-        const SizedBox(width: 12),
-      ],
-    ),
-  );
+        child: Row(
+          children: [
+            const SizedBox(width: 12),
+            const Icon(Icons.search_rounded,
+                color: ColoresApp.textoTerciario, size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                onChanged: (v) => setState(() => _busqueda = v),
+                style: const TextStyle(
+                    color: ColoresApp.textoPrimario, fontSize: 14),
+                decoration: const InputDecoration(
+                  hintText: 'Buscar...',
+                  hintStyle:
+                      TextStyle(color: ColoresApp.textoTerciario, fontSize: 14),
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
+        ),
+      );
 
   Widget _listaOpciones(double bottomPadding) {
     final items = _filtradas;
@@ -616,12 +635,13 @@ class _HojaPickerTagState extends State<_HojaPickerTag> {
       );
     }
     return ListView.separated(
-      shrinkWrap:       true,
-      padding:          EdgeInsets.fromLTRB(16, 8, 16, bottomPadding + 20),
-      itemCount:        items.length,
-      separatorBuilder: (_, __) => const Divider(height: 1, indent: 16, color: ColoresApp.bordesuave),
+      shrinkWrap: true,
+      padding: EdgeInsets.fromLTRB(16, 8, 16, bottomPadding + 20),
+      itemCount: items.length,
+      separatorBuilder: (_, __) =>
+          const Divider(height: 1, indent: 16, color: ColoresApp.bordesuave),
       itemBuilder: (_, i) => _ItemPickerTag(
-        tag:           items[i],
+        tag: items[i],
         alSeleccionar: widget.alSeleccionar,
       ),
     );
@@ -633,7 +653,7 @@ class _HojaPickerTagState extends State<_HojaPickerTag> {
 class _ItemPickerTag extends StatelessWidget {
   const _ItemPickerTag({required this.tag, required this.alSeleccionar});
 
-  final TagItem               tag;
+  final TagItem tag;
   final ValueChanged<TagItem> alSeleccionar;
 
   @override
@@ -642,16 +662,16 @@ class _ItemPickerTag extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap:          () => alSeleccionar(tag),
-        borderRadius:   BorderRadius.circular(10),
+        onTap: () => alSeleccionar(tag),
+        borderRadius: BorderRadius.circular(10),
         highlightColor: ColoresApp.superficieSecund,
-        splashColor:    ColoresApp.bordeMedio,
+        splashColor: ColoresApp.bordeMedio,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
           child: Row(
             children: [
               Container(
-                width:  8,
+                width: 8,
                 height: 8,
                 decoration: BoxDecoration(color: color, shape: BoxShape.circle),
               ),
@@ -660,8 +680,8 @@ class _ItemPickerTag extends StatelessWidget {
                 child: Text(
                   tag.nombre,
                   style: const TextStyle(
-                    color:      ColoresApp.textoPrimario,
-                    fontSize:   15,
+                    color: ColoresApp.textoPrimario,
+                    fontSize: 15,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -669,7 +689,7 @@ class _ItemPickerTag extends StatelessWidget {
               const Icon(
                 Icons.chevron_right_rounded,
                 color: ColoresApp.textoTerciario,
-                size:  18,
+                size: 18,
               ),
             ],
           ),
@@ -700,12 +720,13 @@ class _VistaError extends StatelessWidget {
               mensaje,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
+                    color: ColoresApp.textoSecundario,
+                  ),
             ),
             const SizedBox(height: 24),
             FilledButton(
-              onPressed: () => context.read<GestionarTagsUsuarioCubit>().cargar(''),
+              onPressed: () =>
+                  context.read<GestionarTagsUsuarioCubit>().cargar(''),
               child: const Text('Reintentar'),
             ),
           ],

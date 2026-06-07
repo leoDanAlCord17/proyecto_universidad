@@ -10,7 +10,6 @@ import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 
 class PerfilRepositorio {
-
   PerfilRepositorio(this._supabase);
   final SupabaseClient _supabase;
 
@@ -34,9 +33,9 @@ class PerfilRepositorio {
           final tagsSecundarios = <String>[];
 
           for (final fila in datos) {
-            final tag    = fila['tags'] as Map<String, dynamic>;
+            final tag = fila['tags'] as Map<String, dynamic>;
             final nombre = tag['nombre'] as String;
-            final tipo   = tag['tipo']   as String;
+            final tipo = tag['tipo'] as String;
             if (tipo == 'principal') {
               tagPrincipal = nombre;
             } else {
@@ -47,7 +46,10 @@ class PerfilRepositorio {
           unawaited(
             CacheLocal.guardar(
               '${_claveTags}_$usuarioId',
-              jsonEncode({'tagPrincipal': tagPrincipal, 'tagsSecundarios': tagsSecundarios}),
+              jsonEncode({
+                'tagPrincipal': tagPrincipal,
+                'tagsSecundarios': tagsSecundarios
+              }),
             ),
           );
 
@@ -66,12 +68,12 @@ class PerfilRepositorio {
     final json = CacheLocal.leer('${_claveTags}_$usuarioId');
     if (json == null) return null;
     try {
-      final mapa           = jsonDecode(json) as Map<String, dynamic>;
+      final mapa = jsonDecode(json) as Map<String, dynamic>;
       final tagsSecundarios = (mapa['tagsSecundarios'] as List<dynamic>)
           .map((e) => e as String)
           .toList();
       return (
-        tagPrincipal:    mapa['tagPrincipal'] as String?,
+        tagPrincipal: mapa['tagPrincipal'] as String?,
         tagsSecundarios: tagsSecundarios,
       );
     } catch (_) {
@@ -81,8 +83,7 @@ class PerfilRepositorio {
 
   /// Retorna true si la configuración permite al usuario editar su perfil.
   /// Devuelve false ante cualquier error (seguro por defecto).
-  Future<bool> obtenerPuedeEditarPerfil() =>
-      conReintentos(() async {
+  Future<bool> obtenerPuedeEditarPerfil() => conReintentos(() async {
         try {
           final fila = await _supabase
               .from(TablasSupabase.configuracion)
@@ -101,7 +102,7 @@ class PerfilRepositorio {
 
   /// Actualiza los datos personales del usuario en la tabla usuarios.
   Future<void> actualizarPerfil({
-    required String               usuarioId,
+    required String usuarioId,
     required Map<String, dynamic> datos,
   }) async {
     try {

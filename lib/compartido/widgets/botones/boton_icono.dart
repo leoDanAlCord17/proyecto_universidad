@@ -10,20 +10,24 @@ class BotonIcono extends StatelessWidget {
     required this.alPresionar,
     this.tooltip,
     this.variante = VarianteBotonIcono.normal,
-    this.tamanio  = 18,
+    this.tamanio = 18,
   });
 
-  final IconData           icono;
-  final VoidCallback?      alPresionar;
+  final IconData icono;
+  final VoidCallback? alPresionar;
+
   /// Texto descriptivo para lectores de pantalla y hover. Recomendado siempre.
-  final String?            tooltip;
+  final String? tooltip;
   final VarianteBotonIcono variante;
-  final double             tamanio;
+  final double tamanio;
 
   static const _estilos = {
-    VarianteBotonIcono.normal: (ColoresApp.superficieSecund, ColoresApp.textoPrimario),
-    VarianteBotonIcono.acento: (ColoresApp.acentoClaro,      ColoresApp.acento),
-    VarianteBotonIcono.rojo:   (ColoresApp.rojoClaro,        ColoresApp.rojo),
+    VarianteBotonIcono.normal: (
+      ColoresApp.superficieSecund,
+      ColoresApp.textoPrimario
+    ),
+    VarianteBotonIcono.acento: (ColoresApp.acentoClaro, ColoresApp.acento),
+    VarianteBotonIcono.rojo: (ColoresApp.rojoClaro, ColoresApp.rojo),
   };
 
   @override
@@ -32,14 +36,14 @@ class BotonIcono extends StatelessWidget {
 
     final boton = Semantics(
       button: true,
-      label:  tooltip,
+      label: tooltip,
       enabled: alPresionar != null,
       child: GestureDetector(
         onTap: alPresionar,
         child: Container(
-          padding:    EdgeInsets.all(tamanio * 0.55),
+          padding: EdgeInsets.all(tamanio * 0.55),
           decoration: BoxDecoration(
-            color:        colorFondo,
+            color: colorFondo,
             borderRadius: BorderRadius.circular(12),
           ),
           child: ExcludeSemantics(

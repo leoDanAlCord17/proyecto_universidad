@@ -32,29 +32,34 @@ class _GestionarRolesUsuarioState extends State<GestionarRolesUsuarioPantalla> {
     if (_estaIniciado) return;
     _estaIniciado = true;
     final authEstado = context.read<AuthCubit>().state;
-    final adminId    = authEstado is Autenticado ? authEstado.usuario.id : null;
-    context.read<GestionarRolesUsuarioCubit>().cargar(widget.usuarioId, adminId: adminId);
+    final adminId = authEstado is Autenticado ? authEstado.usuario.id : null;
+    context
+        .read<GestionarRolesUsuarioCubit>()
+        .cargar(widget.usuarioId, adminId: adminId);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<GestionarRolesUsuarioCubit, GestionarRolesUsuarioEstado>(
+    return BlocConsumer<GestionarRolesUsuarioCubit,
+        GestionarRolesUsuarioEstado>(
       listenWhen: (_, curr) => curr is GestionarRolesUsuarioOperacionFallida,
       listener: (context, estado) {
         if (estado is GestionarRolesUsuarioOperacionFallida) {
-          AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
+          AvisoApp.mostrar(context,
+              texto: estado.mensaje, estilo: EstiloAviso.error);
         }
       },
       builder: _construirVista,
     );
   }
 
-  Widget _construirVista(BuildContext context, GestionarRolesUsuarioEstado estado) {
+  Widget _construirVista(
+      BuildContext context, GestionarRolesUsuarioEstado estado) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -86,7 +91,9 @@ class _CabeceraTitulo extends StatelessWidget {
     final nombre = estado is GestionarRolesUsuarioCargado
         ? (estado as GestionarRolesUsuarioCargado).nombreUsuario
         : estado is GestionarRolesUsuarioOperacionFallida
-            ? (estado as GestionarRolesUsuarioOperacionFallida).anterior.nombreUsuario
+            ? (estado as GestionarRolesUsuarioOperacionFallida)
+                .anterior
+                .nombreUsuario
             : '';
 
     return Row(
@@ -95,22 +102,24 @@ class _CabeceraTitulo extends StatelessWidget {
         const BotonRegresar(),
         const SizedBox(width: 12),
         Column(
-          mainAxisAlignment:  MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Gestionar Roles',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontSize: 20, fontWeight: FontWeight.w700,
-                color: ColoresApp.textoPrimario,
-              ),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: ColoresApp.textoPrimario,
+                  ),
             ),
             if (nombre.isNotEmpty)
               Text(
                 nombre,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: ColoresApp.textoSecundario, fontSize: 13,
-                ),
+                      color: ColoresApp.textoSecundario,
+                      fontSize: 13,
+                    ),
               ),
           ],
         ),
@@ -130,13 +139,15 @@ class _Cuerpo extends StatelessWidget {
   Widget build(BuildContext context) {
     final e = estado;
     return switch (e) {
-      GestionarRolesUsuarioInicial()  ||
-      GestionarRolesUsuarioCargando() => const Center(
-        child: CircularProgressIndicator(color: ColoresApp.acento),
-      ),
-      GestionarRolesUsuarioCargado()         => _VistaContenido(estado: e),
-      GestionarRolesUsuarioOperacionFallida() => _VistaContenido(estado: e.anterior),
-      GestionarRolesUsuarioError()            => VistaErrorApp(mensaje: e.mensaje),
+      GestionarRolesUsuarioInicial() ||
+      GestionarRolesUsuarioCargando() =>
+        const Center(
+          child: CircularProgressIndicator(color: ColoresApp.acento),
+        ),
+      GestionarRolesUsuarioCargado() => _VistaContenido(estado: e),
+      GestionarRolesUsuarioOperacionFallida() =>
+        _VistaContenido(estado: e.anterior),
+      GestionarRolesUsuarioError() => VistaErrorApp(mensaje: e.mensaje),
     };
   }
 }
@@ -150,11 +161,11 @@ class _VistaContenido extends StatelessWidget {
 
   void _abrirPicker(BuildContext context) {
     showModalBottomSheet<void>(
-      context:            context,
-      useRootNavigator:   true,
+      context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
-      backgroundColor:    Colors.transparent,
-      barrierColor:       ColoresApp.sombraBarrera,
+      backgroundColor: Colors.transparent,
+      barrierColor: ColoresApp.sombraBarrera,
       builder: (_) => _HojaPickerRol(
         opciones: estado.rolesDisponibles,
         alSeleccionar: (rol) {
@@ -177,15 +188,17 @@ class _VistaContenido extends StatelessWidget {
           if (estado.rolesActivos.isEmpty)
             const _PlaceholderVacio(texto: 'Sin roles asignados')
           else
-            ...estado.rolesActivos.map((r) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: _FilaRolAsignado(
-                rol:      r,
-                alQuitar: () => context
-                    .read<GestionarRolesUsuarioCubit>()
-                    .quitarRol(r.id),
+            ...estado.rolesActivos.map(
+              (r) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _FilaRolAsignado(
+                  rol: r,
+                  alQuitar: () => context
+                      .read<GestionarRolesUsuarioCubit>()
+                      .quitarRol(r.id),
+                ),
               ),
-            ),),
+            ),
           if (estado.rolesDisponibles.isNotEmpty) ...[
             const SizedBox(height: 10),
             _BotonAgregar(alPresionar: () => _abrirPicker(context)),
@@ -201,7 +214,7 @@ class _VistaContenido extends StatelessWidget {
 class _FilaRolAsignado extends StatelessWidget {
   const _FilaRolAsignado({required this.rol, required this.alQuitar});
 
-  final RolItem      rol;
+  final RolItem rol;
   final VoidCallback alQuitar;
 
   @override
@@ -209,17 +222,22 @@ class _FilaRolAsignado extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [
-          BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 8, offset: Offset(0, 2)),
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 8,
+              offset: Offset(0, 2)),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width: 8, height: 8,
-            decoration: const BoxDecoration(color: ColoresApp.teal, shape: BoxShape.circle),
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(
+                color: ColoresApp.teal, shape: BoxShape.circle),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -229,18 +247,19 @@ class _FilaRolAsignado extends StatelessWidget {
                 Text(
                   rol.nombre,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: ColoresApp.textoPrimario,
-                    fontSize: 15,
-                  ),
+                        fontWeight: FontWeight.w600,
+                        color: ColoresApp.textoPrimario,
+                        fontSize: 15,
+                      ),
                 ),
                 if (rol.descripcion.isNotEmpty) ...[
                   const SizedBox(height: 2),
                   Text(
                     rol.descripcion,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: ColoresApp.textoSecundario, fontSize: 13,
-                    ),
+                          color: ColoresApp.textoSecundario,
+                          fontSize: 13,
+                        ),
                   ),
                 ],
               ],
@@ -255,7 +274,8 @@ class _FilaRolAsignado extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               child: const Padding(
                 padding: EdgeInsets.all(6),
-                child: Icon(Icons.close_rounded, size: 18, color: ColoresApp.textoTerciario),
+                child: Icon(Icons.close_rounded,
+                    size: 18, color: ColoresApp.textoTerciario),
               ),
             ),
           ),
@@ -281,7 +301,7 @@ class _BotonAgregar extends StatelessWidget {
         onTap: alPresionar,
         borderRadius: BorderRadius.circular(12),
         highlightColor: ColoresApp.acentoClaro,
-        splashColor:    ColoresApp.bordeMedio,
+        splashColor: ColoresApp.bordeMedio,
         child: Ink(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -297,7 +317,9 @@ class _BotonAgregar extends StatelessWidget {
               Text(
                 'Agregar rol',
                 style: TextStyle(
-                  color: ColoresApp.acento, fontWeight: FontWeight.w600, fontSize: 14,
+                  color: ColoresApp.acento,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
                 ),
               ),
             ],
@@ -328,8 +350,8 @@ class _PlaceholderVacio extends StatelessWidget {
       child: Text(
         texto,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: ColoresApp.textoTerciario,
-        ),
+              color: ColoresApp.textoTerciario,
+            ),
       ),
     );
   }
@@ -347,9 +369,11 @@ class _LabelSeccion extends StatelessWidget {
     return Text(
       texto,
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-        color: ColoresApp.textoTerciario, letterSpacing: 0.8,
-        fontSize: 13, fontWeight: FontWeight.w900,
-      ),
+            color: ColoresApp.textoTerciario,
+            letterSpacing: 0.8,
+            fontSize: 13,
+            fontWeight: FontWeight.w900,
+          ),
     );
   }
 }
@@ -359,7 +383,7 @@ class _LabelSeccion extends StatelessWidget {
 class _HojaPickerRol extends StatefulWidget {
   const _HojaPickerRol({required this.opciones, required this.alSeleccionar});
 
-  final List<RolItem>         opciones;
+  final List<RolItem> opciones;
   final ValueChanged<RolItem> alSeleccionar;
 
   @override
@@ -367,12 +391,12 @@ class _HojaPickerRol extends StatefulWidget {
 }
 
 class _HojaPickerRolState extends State<_HojaPickerRol> {
-
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.7),
+      constraints:
+          BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.7),
       child: Container(
         decoration: const BoxDecoration(
           color: ColoresApp.superficiePrimaria,
@@ -382,9 +406,11 @@ class _HojaPickerRolState extends State<_HojaPickerRol> {
           children: [
             const SizedBox(height: 14),
             Container(
-              width: 36, height: 4,
+              width: 36,
+              height: 4,
               decoration: BoxDecoration(
-                color: ColoresApp.bordeMedio, borderRadius: BorderRadius.circular(2),
+                color: ColoresApp.bordeMedio,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
             const SizedBox(height: 16),
@@ -395,7 +421,9 @@ class _HojaPickerRolState extends State<_HojaPickerRol> {
                 child: Text(
                   'Asignar rol',
                   style: TextStyle(
-                    color: ColoresApp.textoPrimario, fontSize: 16, fontWeight: FontWeight.w700,
+                    color: ColoresApp.textoPrimario,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -408,7 +436,9 @@ class _HojaPickerRolState extends State<_HojaPickerRol> {
                 padding: EdgeInsets.fromLTRB(16, 8, 16, bottomPadding + 20),
                 itemCount: widget.opciones.length,
                 separatorBuilder: (_, __) => const Divider(
-                  height: 1, indent: 16, color: ColoresApp.bordesuave,
+                  height: 1,
+                  indent: 16,
+                  color: ColoresApp.bordesuave,
                 ),
                 itemBuilder: (_, i) {
                   final rol = widget.opciones[i];
@@ -419,13 +449,16 @@ class _HojaPickerRolState extends State<_HojaPickerRol> {
                       borderRadius: BorderRadius.circular(10),
                       highlightColor: ColoresApp.superficieSecund,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 14),
                         child: Row(
                           children: [
                             Container(
-                              width: 8, height: 8,
+                              width: 8,
+                              height: 8,
                               decoration: const BoxDecoration(
-                                color: ColoresApp.teal, shape: BoxShape.circle,
+                                color: ColoresApp.teal,
+                                shape: BoxShape.circle,
                               ),
                             ),
                             const SizedBox(width: 14),
@@ -437,14 +470,16 @@ class _HojaPickerRolState extends State<_HojaPickerRol> {
                                     rol.nombre,
                                     style: const TextStyle(
                                       color: ColoresApp.textoPrimario,
-                                      fontSize: 15, fontWeight: FontWeight.w500,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                   if (rol.descripcion.isNotEmpty)
                                     Text(
                                       rol.descripcion,
                                       style: const TextStyle(
-                                        color: ColoresApp.textoTerciario, fontSize: 13,
+                                        color: ColoresApp.textoTerciario,
+                                        fontSize: 13,
                                       ),
                                     ),
                                 ],
@@ -452,7 +487,8 @@ class _HojaPickerRolState extends State<_HojaPickerRol> {
                             ),
                             const Icon(
                               Icons.chevron_right_rounded,
-                              color: ColoresApp.textoTerciario, size: 18,
+                              color: ColoresApp.textoTerciario,
+                              size: 18,
                             ),
                           ],
                         ),

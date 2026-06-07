@@ -29,23 +29,26 @@ final class GestionarTagsUsuarioCargado extends GestionarTagsUsuarioEstado {
     required this.maxSecundarios,
   });
 
-  final String        nombreUsuario;
-  final String        correoUsuario;
-  final TagItem?      tagPrincipal;
+  final String nombreUsuario;
+  final String correoUsuario;
+  final TagItem? tagPrincipal;
   final List<TagItem> tagsSecundarios;
   final List<TagItem> principalesDisponibles;
   final List<TagItem> secundariosDisponibles;
-  final int           maxSecundarios;
+  final int maxSecundarios;
 
   bool get estaEnLimite => tagsSecundarios.length >= maxSecundarios;
 
   @override
   List<Object?> get props => [
-    nombreUsuario, correoUsuario,
-    tagPrincipal, tagsSecundarios,
-    principalesDisponibles, secundariosDisponibles,
-    maxSecundarios,
-  ];
+        nombreUsuario,
+        correoUsuario,
+        tagPrincipal,
+        tagsSecundarios,
+        principalesDisponibles,
+        secundariosDisponibles,
+        maxSecundarios,
+      ];
 }
 
 final class GestionarTagsUsuarioError extends GestionarTagsUsuarioEstado {
@@ -57,14 +60,15 @@ final class GestionarTagsUsuarioError extends GestionarTagsUsuarioEstado {
   List<Object?> get props => [mensaje];
 }
 
-final class GestionarTagsUsuarioOperacionFallida extends GestionarTagsUsuarioEstado {
+final class GestionarTagsUsuarioOperacionFallida
+    extends GestionarTagsUsuarioEstado {
   const GestionarTagsUsuarioOperacionFallida({
     required this.anterior,
     required this.mensaje,
   });
 
   final GestionarTagsUsuarioCargado anterior;
-  final String                      mensaje;
+  final String mensaje;
 
   @override
   List<Object?> get props => [anterior, mensaje];

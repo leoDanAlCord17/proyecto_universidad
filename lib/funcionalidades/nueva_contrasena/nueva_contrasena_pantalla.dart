@@ -13,11 +13,12 @@ class NuevaContrasenaPantalla extends StatefulWidget {
   const NuevaContrasenaPantalla({super.key});
 
   @override
-  State<NuevaContrasenaPantalla> createState() => _NuevaContrasenaPantallaState();
+  State<NuevaContrasenaPantalla> createState() =>
+      _NuevaContrasenaPantallaState();
 }
 
 class _NuevaContrasenaPantallaState extends State<NuevaContrasenaPantalla> {
-  final _claveCtrl        = TextEditingController();
+  final _claveCtrl = TextEditingController();
   final _confirmacionCtrl = TextEditingController();
 
   @override
@@ -34,7 +35,8 @@ class _NuevaContrasenaPantallaState extends State<NuevaContrasenaPantalla> {
       body: BlocConsumer<NuevaContrasenaCubit, NuevaContrasenaEstado>(
         listener: (context, estado) {
           if (estado is NuevaContrasenaError) {
-            AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
+            AvisoApp.mostrar(context,
+                texto: estado.mensaje, estilo: EstiloAviso.error);
           }
           if (estado is NuevaContrasenaGuardada) {
             context.read<AuthCubit>().verificarSesion();
@@ -42,12 +44,13 @@ class _NuevaContrasenaPantallaState extends State<NuevaContrasenaPantalla> {
         },
         builder: (context, estado) => switch (estado) {
           NuevaContrasenaGuardada() => const SizedBox.shrink(),
-          NuevaContrasenaInicial()  ||
+          NuevaContrasenaInicial() ||
           NuevaContrasenaGuardando() ||
-          NuevaContrasenaError()    => _CuerpoFormulario(
-              claveCtrl:        _claveCtrl,
+          NuevaContrasenaError() =>
+            _CuerpoFormulario(
+              claveCtrl: _claveCtrl,
               confirmacionCtrl: _confirmacionCtrl,
-              estaCargando:     estado is NuevaContrasenaGuardando,
+              estaCargando: estado is NuevaContrasenaGuardando,
             ),
         },
       ),
@@ -66,7 +69,7 @@ class _CuerpoFormulario extends StatelessWidget {
 
   final TextEditingController claveCtrl;
   final TextEditingController confirmacionCtrl;
-  final bool                  estaCargando;
+  final bool estaCargando;
 
   @override
   Widget build(BuildContext context) {
@@ -81,33 +84,34 @@ class _CuerpoFormulario extends StatelessWidget {
             const _Cabecera(),
             const SizedBox(height: 40),
             CampoTextoApp(
-              etiqueta:     'Nueva contraseña',
-              hintText:     '••••••••',
-              controller:   claveCtrl,
+              etiqueta: 'Nueva contraseña',
+              hintText: '••••••••',
+              controller: claveCtrl,
               esContrasena: true,
             ),
             const SizedBox(height: 20),
             CampoTextoApp(
-              etiqueta:     'Confirmar contraseña',
-              hintText:     '••••••••',
-              controller:   confirmacionCtrl,
+              etiqueta: 'Confirmar contraseña',
+              hintText: '••••••••',
+              controller: confirmacionCtrl,
               esContrasena: true,
             ),
             const SizedBox(height: 8),
             Text(
               'Mínimo 6 caracteres.',
-              style: estiloTexto.bodySmall?.copyWith(color: ColoresApp.textoSecundario),
+              style: estiloTexto.bodySmall
+                  ?.copyWith(color: ColoresApp.textoSecundario),
             ),
             const SizedBox(height: 32),
             BotonApp(
-              texto:        'Guardar contraseña',
+              texto: 'Guardar contraseña',
               estaCargando: estaCargando,
-              alPresionar:  estaCargando
+              alPresionar: estaCargando
                   ? null
                   : () => context.read<NuevaContrasenaCubit>().cambiar(
-                      nuevaClave:   claveCtrl.text,
-                      confirmacion: confirmacionCtrl.text,
-                    ),
+                        nuevaClave: claveCtrl.text,
+                        confirmacion: confirmacionCtrl.text,
+                      ),
             ),
             const SizedBox(height: 40),
           ],
@@ -129,16 +133,18 @@ class _Cabecera extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding:    const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color:        ColoresApp.acento,
+            color: ColoresApp.acento,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: const Icon(Icons.lock_outline_rounded, size: 45, color: ColoresApp.blanco),
+          child: const Icon(Icons.lock_outline_rounded,
+              size: 45, color: ColoresApp.blanco),
         ),
         const SizedBox(height: 30),
         Text('Nueva contraseña', style: estiloTexto.displaySmall),
-        Text('Elige una contraseña segura para tu cuenta', style: estiloTexto.bodyMedium),
+        Text('Elige una contraseña segura para tu cuenta',
+            style: estiloTexto.bodyMedium),
       ],
     );
   }

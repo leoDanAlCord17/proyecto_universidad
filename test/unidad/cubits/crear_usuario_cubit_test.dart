@@ -17,8 +17,8 @@ void main() {
   setUp(() {
     registrarFallbacks();
     repositorio = MockAutenticacionRepositorio();
-    sesion      = MockSession();
-    mockUser    = MockUser();
+    sesion = MockSession();
+    mockUser = MockUser();
     when(() => mockUser.id).thenReturn('auth-id-1');
     when(() => mockUser.email).thenReturn('leo@uni.edu');
     when(() => sesion.user).thenReturn(mockUser);
@@ -122,7 +122,7 @@ void main() {
         return CrearUsuarioCubit(repositorio);
       },
       act: (c) => c.guardarPerfil(
-        primerNombre:   '  Leo  ',
+        primerNombre: '  Leo  ',
         primerApellido: '  Alvarez  ',
       ),
       verify: (_) {
@@ -130,7 +130,7 @@ void main() {
           () => repositorio.crearPerfilUsuario(captureAny()),
         ).captured;
         final usuario = capturado.first as Usuario;
-        expect(usuario.primerNombre,   'Leo');
+        expect(usuario.primerNombre, 'Leo');
         expect(usuario.primerApellido, 'Alvarez');
       },
     );
@@ -162,8 +162,8 @@ void main() {
         when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
         when(() => repositorio.verificarRevisionCreacionHabilitada())
             .thenAnswer((_) async => false);
-        when(() => repositorio.crearPerfilUsuario(any()))
-            .thenThrow(const FallaServidor('Ya existe un registro con esos datos.'));
+        when(() => repositorio.crearPerfilUsuario(any())).thenThrow(
+            const FallaServidor('Ya existe un registro con esos datos.'));
         return CrearUsuarioCubit(repositorio);
       },
       act: (c) =>

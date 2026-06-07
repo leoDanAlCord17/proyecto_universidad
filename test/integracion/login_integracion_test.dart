@@ -27,8 +27,8 @@ void main() {
 
   setUp(() {
     registrarFallbacks();
-    repositorio  = MockAutenticacionRepositorio();
-    authCubit    = MockAuthCubit();
+    repositorio = MockAutenticacionRepositorio();
+    authCubit = MockAuthCubit();
     authResponse = MockAuthResponse();
     when(() => authCubit.verificarSesion()).thenAnswer((_) async {});
     when(() => authCubit.state).thenReturn(NoAutenticado());
@@ -72,8 +72,8 @@ void main() {
     testWidgets(
         'error del servidor: cubit real emite LoginError con mensaje del repo',
         (tester) async {
-      when(() => repositorio.iniciarSesion(any(), any()))
-          .thenThrow(const FallaAutenticacion('Correo o contraseña incorrectos.'));
+      when(() => repositorio.iniciarSesion(any(), any())).thenThrow(
+          const FallaAutenticacion('Correo o contraseña incorrectos.'));
 
       final cubit = LoginCubit(repositorio);
 

@@ -105,10 +105,9 @@ void main() {
     blocTest<RegistroCubit, RegistroEstado>(
       'emite [RegistroCargando, RegistroError] al recibir FallaAutenticacion',
       build: () {
-        when(() => repositorio.registrarse(any(), any()))
-            .thenThrow(
-              const FallaAutenticacion('Este correo ya tiene una cuenta.'),
-            );
+        when(() => repositorio.registrarse(any(), any())).thenThrow(
+          const FallaAutenticacion('Este correo ya tiene una cuenta.'),
+        );
         return RegistroCubit(repositorio);
       },
       act: (c) => c.registrarse('leo@uni.edu', 'clave123', 'clave123'),

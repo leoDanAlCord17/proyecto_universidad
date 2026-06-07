@@ -27,33 +27,37 @@ final class AuditoriaEventoCargada extends AuditoriaEventoEstado {
     required this.eventoSeleccionado,
     required this.registros,
     required this.resumen,
-    this.filtro              = FiltroParticipantes.todos,
+    this.filtro = FiltroParticipantes.todos,
     this.busquedaParticipante = '',
   });
 
-  final EventoParaAuditoria    eventoSeleccionado;
+  final EventoParaAuditoria eventoSeleccionado;
   final List<RegistroAuditoria> registros;
-  final ResumenAuditoria        resumen;
-  final FiltroParticipantes     filtro;
-  final String                  busquedaParticipante;
+  final ResumenAuditoria resumen;
+  final FiltroParticipantes filtro;
+  final String busquedaParticipante;
 
   List<RegistroAuditoria> get registrosFiltrados {
     var lista = registros;
 
     lista = switch (filtro) {
-      FiltroParticipantes.todos           => lista,
-      FiltroParticipantes.entraron        => lista.where((r) => r.haEntrado).toList(),
-      FiltroParticipantes.ausentes        => lista.where((r) => r.estatus == 'ausente').toList(),
-      FiltroParticipantes.salioAnticipado => lista.where((r) => r.estatus == 'salio_anticipado').toList(),
-      FiltroParticipantes.foraneos        => lista.where((r) => r.esForaneo).toList(),
+      FiltroParticipantes.todos => lista,
+      FiltroParticipantes.entraron => lista.where((r) => r.haEntrado).toList(),
+      FiltroParticipantes.ausentes =>
+        lista.where((r) => r.estatus == 'ausente').toList(),
+      FiltroParticipantes.salioAnticipado =>
+        lista.where((r) => r.estatus == 'salio_anticipado').toList(),
+      FiltroParticipantes.foraneos => lista.where((r) => r.esForaneo).toList(),
     };
 
     final q = busquedaParticipante.trim().toLowerCase();
     if (q.isNotEmpty) {
       lista = lista
-          .where((r) =>
-              r.nombre.toLowerCase().contains(q) ||
-              (r.numeroIdentificacion?.toLowerCase().contains(q) ?? false),)
+          .where(
+            (r) =>
+                r.nombre.toLowerCase().contains(q) ||
+                (r.numeroIdentificacion?.toLowerCase().contains(q) ?? false),
+          )
           .toList();
     }
 
@@ -62,13 +66,13 @@ final class AuditoriaEventoCargada extends AuditoriaEventoEstado {
 
   AuditoriaEventoCargada copiarCon({
     FiltroParticipantes? filtro,
-    String?              busquedaParticipante,
+    String? busquedaParticipante,
   }) =>
       AuditoriaEventoCargada(
-        eventoSeleccionado:   eventoSeleccionado,
-        registros:            registros,
-        resumen:              resumen,
-        filtro:               filtro              ?? this.filtro,
+        eventoSeleccionado: eventoSeleccionado,
+        registros: registros,
+        resumen: resumen,
+        filtro: filtro ?? this.filtro,
         busquedaParticipante: busquedaParticipante ?? this.busquedaParticipante,
       );
 }

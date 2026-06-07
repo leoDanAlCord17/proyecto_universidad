@@ -14,55 +14,54 @@ import '../../helpers.dart';
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 const _usuarioFila = <String, dynamic>{
-  'id':                   'u-1',
-  'primer_nombre':        'Leo',
-  'primer_apellido':      'Alvarez',
-  'url_avatar':           null,
+  'id': 'u-1',
+  'primer_nombre': 'Leo',
+  'primer_apellido': 'Alvarez',
+  'url_avatar': null,
   'numero_identificacion': null,
 };
 
 const _usuarioFila2 = <String, dynamic>{
-  'id':                   'u-2',
-  'primer_nombre':        'Ana',
-  'primer_apellido':      'Gomez',
-  'url_avatar':           null,
+  'id': 'u-2',
+  'primer_nombre': 'Ana',
+  'primer_apellido': 'Gomez',
+  'url_avatar': null,
   'numero_identificacion': null,
 };
 
 const _asistenciaPresente = <String, dynamic>{
-  'id':                       'a-1',
-  'usuario_id':               'u-1',
-  'estatus':                  EstatusAsistencia.presente,
-  'hora_entrada':             null,
-  'hora_salida':              null,
-  'entrada_registrada_por':   null,
+  'id': 'a-1',
+  'usuario_id': 'u-1',
+  'estatus': EstatusAsistencia.presente,
+  'hora_entrada': null,
+  'hora_salida': null,
+  'entrada_registrada_por': null,
 };
 
 const _asistenciaCompletado = <String, dynamic>{
-  'id':                       'a-2',
-  'usuario_id':               'u-2',
-  'estatus':                  EstatusAsistencia.completado,
-  'hora_entrada':             null,
-  'hora_salida':              null,
-  'entrada_registrada_por':   null,
+  'id': 'a-2',
+  'usuario_id': 'u-2',
+  'estatus': EstatusAsistencia.completado,
+  'hora_entrada': null,
+  'hora_salida': null,
+  'entrada_registrada_por': null,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 void _stubIniciar(MockBuscarAsistenteRepositorio repo) {
-  when(() => repo.obtenerEvento(any()))
-      .thenAnswer((_) async => eventoEjemplo);
+  when(() => repo.obtenerEvento(any())).thenAnswer((_) async => eventoEjemplo);
   when(() => repo.streamAsistencia(any()))
       .thenAnswer((_) => const Stream.empty());
 }
 
 BuscarAsistenteCargado _estadoCargado() => BuscarAsistenteCargado(
-  evento:            eventoEjemplo,
-  resultados:        const [],
-  busqueda:          '',
-  cantidadPresentes: 0,
-  cantidadTotal:     0,
-);
+      evento: eventoEjemplo,
+      resultados: const [],
+      busqueda: '',
+      cantidadPresentes: 0,
+      cantidadTotal: 0,
+    );
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
@@ -91,7 +90,7 @@ void main() {
       expect: () => [
         isA<BuscarAsistenteCargando>(),
         isA<BuscarAsistenteCargado>()
-            .having((e) => e.evento.id,  'evento.id',  eventoEjemplo.id)
+            .having((e) => e.evento.id, 'evento.id', eventoEjemplo.id)
             .having((e) => e.resultados, 'resultados', isEmpty),
       ],
     );
@@ -138,7 +137,7 @@ void main() {
       expect: () => [
         isA<BuscarAsistenteCargado>()
             .having((e) => e.resultados, 'resultados', isEmpty)
-            .having((e) => e.busqueda,   'busqueda',   'a'),
+            .having((e) => e.busqueda, 'busqueda', 'a'),
       ],
       verify: (_) {
         verifyNever(() => repositorio.buscarUsuarios(any()));
@@ -184,7 +183,7 @@ void main() {
       expect: () => [
         isA<BuscarAsistenteCargado>()
             .having((e) => e.resultados.length, 'resultados.length', 1)
-            .having((e) => e.busqueda,          'busqueda',          'le'),
+            .having((e) => e.busqueda, 'busqueda', 'le'),
       ],
       verify: (_) {
         verify(() => repositorio.buscarUsuarios('le')).called(1);
@@ -228,12 +227,14 @@ void main() {
       build: build,
       setUp: () {
         _stubIniciar(repositorio);
-        when(() => repositorio.registrarEntrada(
-              eventoId:        any(named: 'eventoId'),
-              usuarioId:       any(named: 'usuarioId'),
-              asistenciaId:    any(named: 'asistenciaId'),
-              registradoPorId: any(named: 'registradoPorId'),
-            ),).thenAnswer((_) async {});
+        when(
+          () => repositorio.registrarEntrada(
+            eventoId: any(named: 'eventoId'),
+            usuarioId: any(named: 'usuarioId'),
+            asistenciaId: any(named: 'asistenciaId'),
+            registradoPorId: any(named: 'registradoPorId'),
+          ),
+        ).thenAnswer((_) async {});
       },
       act: (c) async {
         await c.iniciar('ev-1');
@@ -242,11 +243,13 @@ void main() {
       skip: 2,
       expect: () => [
         isA<BuscarAsistenteCargado>()
-            .having((e) => e.estaRegistrando,      'estaRegistrando',      true)
-            .having((e) => e.usuarioIdRegistrando, 'usuarioIdRegistrando', 'u-1'),
+            .having((e) => e.estaRegistrando, 'estaRegistrando', true)
+            .having(
+                (e) => e.usuarioIdRegistrando, 'usuarioIdRegistrando', 'u-1'),
         isA<BuscarAsistenteCargado>()
-            .having((e) => e.estaRegistrando,      'estaRegistrando',      false)
-            .having((e) => e.usuarioIdRegistrando, 'usuarioIdRegistrando', isNull),
+            .having((e) => e.estaRegistrando, 'estaRegistrando', false)
+            .having(
+                (e) => e.usuarioIdRegistrando, 'usuarioIdRegistrando', isNull),
       ],
     );
 
@@ -255,12 +258,14 @@ void main() {
       build: build,
       setUp: () {
         _stubIniciar(repositorio);
-        when(() => repositorio.registrarEntrada(
-              eventoId:        any(named: 'eventoId'),
-              usuarioId:       any(named: 'usuarioId'),
-              asistenciaId:    any(named: 'asistenciaId'),
-              registradoPorId: any(named: 'registradoPorId'),
-            ),).thenAnswer((_) async {});
+        when(
+          () => repositorio.registrarEntrada(
+            eventoId: any(named: 'eventoId'),
+            usuarioId: any(named: 'usuarioId'),
+            asistenciaId: any(named: 'asistenciaId'),
+            registradoPorId: any(named: 'registradoPorId'),
+          ),
+        ).thenAnswer((_) async {});
       },
       act: (c) async {
         await c.iniciar('ev-1');
@@ -269,12 +274,14 @@ void main() {
         await Future.wait([f1, f2]);
       },
       verify: (_) {
-        verify(() => repositorio.registrarEntrada(
-              eventoId:        any(named: 'eventoId'),
-              usuarioId:       any(named: 'usuarioId'),
-              asistenciaId:    any(named: 'asistenciaId'),
-              registradoPorId: any(named: 'registradoPorId'),
-            ),).called(1);
+        verify(
+          () => repositorio.registrarEntrada(
+            eventoId: any(named: 'eventoId'),
+            usuarioId: any(named: 'usuarioId'),
+            asistenciaId: any(named: 'asistenciaId'),
+            registradoPorId: any(named: 'registradoPorId'),
+          ),
+        ).called(1);
       },
     );
 
@@ -283,12 +290,14 @@ void main() {
       build: build,
       setUp: () {
         _stubIniciar(repositorio);
-        when(() => repositorio.registrarEntrada(
-              eventoId:        any(named: 'eventoId'),
-              usuarioId:       any(named: 'usuarioId'),
-              asistenciaId:    any(named: 'asistenciaId'),
-              registradoPorId: any(named: 'registradoPorId'),
-            ),).thenThrow(const FallaServidor('DB error'));
+        when(
+          () => repositorio.registrarEntrada(
+            eventoId: any(named: 'eventoId'),
+            usuarioId: any(named: 'usuarioId'),
+            asistenciaId: any(named: 'asistenciaId'),
+            registradoPorId: any(named: 'registradoPorId'),
+          ),
+        ).thenThrow(const FallaServidor('DB error'));
       },
       act: (c) async {
         await c.iniciar('ev-1');
@@ -318,12 +327,14 @@ void main() {
       'emite [marcandoSalida=true, marcandoSalida=false] al registrar salida normal',
       build: build,
       setUp: () {
-        when(() => repositorio.marcarSalida(
-              asistenciaId:    any(named: 'asistenciaId'),
-              esAnticipada:    any(named: 'esAnticipada'),
-              motivo:          any(named: 'motivo'),
-              registradoPorId: any(named: 'registradoPorId'),
-            ),).thenAnswer((_) async {});
+        when(
+          () => repositorio.marcarSalida(
+            asistenciaId: any(named: 'asistenciaId'),
+            esAnticipada: any(named: 'esAnticipada'),
+            motivo: any(named: 'motivo'),
+            registradoPorId: any(named: 'registradoPorId'),
+          ),
+        ).thenAnswer((_) async {});
       },
       seed: _estadoCargado,
       act: (c) => c.marcarSalida(asistenciaId: 'a-1', esAnticipada: false),
@@ -339,12 +350,14 @@ void main() {
       'emite OperacionFallida cuando FallaServidor en marcarSalida',
       build: build,
       setUp: () {
-        when(() => repositorio.marcarSalida(
-              asistenciaId:    any(named: 'asistenciaId'),
-              esAnticipada:    any(named: 'esAnticipada'),
-              motivo:          any(named: 'motivo'),
-              registradoPorId: any(named: 'registradoPorId'),
-            ),).thenThrow(const FallaServidor('Sin permiso'));
+        when(
+          () => repositorio.marcarSalida(
+            asistenciaId: any(named: 'asistenciaId'),
+            esAnticipada: any(named: 'esAnticipada'),
+            motivo: any(named: 'motivo'),
+            registradoPorId: any(named: 'registradoPorId'),
+          ),
+        ).thenThrow(const FallaServidor('Sin permiso'));
       },
       seed: _estadoCargado,
       act: (c) => c.marcarSalida(asistenciaId: 'a-1', esAnticipada: true),

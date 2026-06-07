@@ -24,7 +24,7 @@ class AvatarUsuario extends StatelessWidget {
     final texto = colorTexto ?? ColoresApp.acento;
 
     return Container(
-      width:  tamanio,
+      width: tamanio,
       height: tamanio,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -42,9 +42,9 @@ class AvatarUsuario extends StatelessWidget {
               child: Text(
                 iniciales.toUpperCase(),
                 style: TextStyle(
-                  color:         texto,
-                  fontSize:      tamanio * 0.35,
-                  fontWeight:    FontWeight.w700,
+                  color: texto,
+                  fontSize: tamanio * 0.35,
+                  fontWeight: FontWeight.w700,
                   letterSpacing: 0.5,
                 ),
               ),

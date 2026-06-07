@@ -15,7 +15,6 @@ import 'rutas/rutas_ajustes.dart';
 import 'rutas/rutas_dev.dart';
 
 class RouterApp {
-
   RouterApp(this.authCubit);
   final AuthCubit authCubit;
 
@@ -36,7 +35,9 @@ class RouterApp {
 
       // Perfil incompleto: tiene cuenta en Auth pero no terminó el registro.
       if (estadoAuth is PerfilIncompleto) {
-        return ubicacion == Rutas.completarPerfil ? null : Rutas.completarPerfil;
+        return ubicacion == Rutas.completarPerfil
+            ? null
+            : Rutas.completarPerfil;
       }
 
       // Cuenta pendiente de aprobación por el administrador.
@@ -55,14 +56,16 @@ class RouterApp {
 
       // Recuperación de contraseña: sesión de recovery activa
       if (estadoAuth is RecuperandoContrasena) {
-        return ubicacion == Rutas.nuevaContrasena ? null : Rutas.nuevaContrasena;
+        return ubicacion == Rutas.nuevaContrasena
+            ? null
+            : Rutas.nuevaContrasena;
       }
 
       // Sin autenticación: solo puede estar en rutas públicas
       if (estadoAuth is! Autenticado) {
-        final esRutaPublica = ubicacion == Rutas.login
-            || ubicacion == Rutas.registro
-            || ubicacion == Rutas.recuperarContrasena;
+        final esRutaPublica = ubicacion == Rutas.login ||
+            ubicacion == Rutas.registro ||
+            ubicacion == Rutas.recuperarContrasena;
         return esRutaPublica ? null : Rutas.login;
       }
 
@@ -80,17 +83,30 @@ class RouterApp {
 
       // ─── GUARDS DE RUTAS POR PERMISO ────────────────────────────────────
       final u = estadoAuth.usuario;
-      final sinPermiso =
-          (ubicacion.startsWith('/gestion_usuarios') && !u.tienePermiso(Permisos.ajustesUsuarios)) ||
-          ((ubicacion == Rutas.gestionRoles || ubicacion.startsWith('/crear_rol')) && !u.tienePermiso(Permisos.ajustesRoles)) ||
-          (ubicacion == Rutas.permisosSistema && !u.tienePermiso(Permisos.ajustesPermisos)) ||
-          ((ubicacion == Rutas.gestionTags || ubicacion.startsWith('/crear_tag')) && !u.tienePermiso(Permisos.ajustesTags)) ||
-          ((ubicacion.startsWith('/gestion_tipos_evento') || ubicacion.startsWith('/crear_tipo_evento')) && !u.tienePermiso(Permisos.ajustesTiposEvento)) ||
-          (ubicacion == Rutas.estadisticas && !u.tienePermiso(Permisos.ajustesEstadisticas)) ||
-          (ubicacion == Rutas.revisionUsuarios && !u.tienePermiso(Permisos.ajustesRevision)) ||
-          (ubicacion == Rutas.auditoriaEvento && !u.tienePermiso(Permisos.ajustesEstadisticas)) ||
-          ((ubicacion == Rutas.borradores || ubicacion.startsWith('/crear_evento')) && !u.tienePermiso(Permisos.eventosCrearEventos)) ||
-          (ubicacion.contains('/panel') && !u.tienePermiso(Permisos.eventosPanelControl));
+      final sinPermiso = (ubicacion.startsWith('/gestion_usuarios') &&
+              !u.tienePermiso(Permisos.ajustesUsuarios)) ||
+          ((ubicacion == Rutas.gestionRoles ||
+                  ubicacion.startsWith('/crear_rol')) &&
+              !u.tienePermiso(Permisos.ajustesRoles)) ||
+          (ubicacion == Rutas.permisosSistema &&
+              !u.tienePermiso(Permisos.ajustesPermisos)) ||
+          ((ubicacion == Rutas.gestionTags ||
+                  ubicacion.startsWith('/crear_tag')) &&
+              !u.tienePermiso(Permisos.ajustesTags)) ||
+          ((ubicacion.startsWith('/gestion_tipos_evento') ||
+                  ubicacion.startsWith('/crear_tipo_evento')) &&
+              !u.tienePermiso(Permisos.ajustesTiposEvento)) ||
+          (ubicacion == Rutas.estadisticas &&
+              !u.tienePermiso(Permisos.ajustesEstadisticas)) ||
+          (ubicacion == Rutas.revisionUsuarios &&
+              !u.tienePermiso(Permisos.ajustesRevision)) ||
+          (ubicacion == Rutas.auditoriaEvento &&
+              !u.tienePermiso(Permisos.ajustesEstadisticas)) ||
+          ((ubicacion == Rutas.borradores ||
+                  ubicacion.startsWith('/crear_evento')) &&
+              !u.tienePermiso(Permisos.eventosCrearEventos)) ||
+          (ubicacion.contains('/panel') &&
+              !u.tienePermiso(Permisos.eventosPanelControl));
       if (sinPermiso) return Rutas.home;
 
       return null;
@@ -110,7 +126,8 @@ class RouterApp {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.search_off_rounded, size: 64, color: ColoresApp.textoTerciario),
+            const Icon(Icons.search_off_rounded,
+                size: 64, color: ColoresApp.textoTerciario),
             const SizedBox(height: 16),
             const Text(
               'Página no encontrada',
@@ -135,7 +152,6 @@ class RouterApp {
 
 /// Clase auxiliar para que GoRouter pueda escuchar el Stream del Cubit.
 class _StreamToListen extends ChangeNotifier {
-
   _StreamToListen(Stream stream) {
     _suscripcion = stream.listen((_) => notifyListeners());
   }

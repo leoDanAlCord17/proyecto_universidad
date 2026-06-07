@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import '../../compartido/constantes.dart';
 
 class Usuario extends Equatable {
-
   const Usuario({
     this.id,
     this.authId,
@@ -15,35 +14,36 @@ class Usuario extends Equatable {
     required this.correo,
     this.telefono,
     this.urlAvatar,
-    this.estatus           = true,
+    this.estatus = true,
     this.estatusAprobacion = EstatusAprobacion.aprobado,
     this.creadoEn,
-    this.roles    = const [],
+    this.roles = const [],
     this.permisos = const [],
   });
 
   factory Usuario.desdeJson(Map<String, dynamic> json) {
     final usuariosRoles = json['usuarios_roles'] as List? ?? [];
-    final activos       = _rolesActivos(usuariosRoles);
+    final activos = _rolesActivos(usuariosRoles);
 
     return Usuario(
-      id:                   json['id'],
-      authId:               json['auth_id'],
-      primerNombre:         json['primer_nombre'] ?? '',
-      segundoNombre:        json['segundo_nombre'],
-      primerApellido:       json['primer_apellido'] ?? '',
-      segundoApellido:      json['segundo_apellido'],
+      id: json['id'],
+      authId: json['auth_id'],
+      primerNombre: json['primer_nombre'] ?? '',
+      segundoNombre: json['segundo_nombre'],
+      primerApellido: json['primer_apellido'] ?? '',
+      segundoApellido: json['segundo_apellido'],
       numeroIdentificacion: json['numero_identificacion'],
-      correo:               json['correo'] ?? '',
-      telefono:             json['telefono'],
-      urlAvatar:            json['url_avatar'],
-      estatus:              (json['estatus']            as bool?)   ?? true,
-      estatusAprobacion:    (json['estatus_aprobacion'] as String?) ?? EstatusAprobacion.aprobado,
-      creadoEn:             json['creado_en'] != null
-                                ? DateTime.parse(json['creado_en'] as String)
-                                : null,
-      roles:                _extraerNombresRoles(activos),
-      permisos:             _extraerNombresPermisos(activos),
+      correo: json['correo'] ?? '',
+      telefono: json['telefono'],
+      urlAvatar: json['url_avatar'],
+      estatus: (json['estatus'] as bool?) ?? true,
+      estatusAprobacion:
+          (json['estatus_aprobacion'] as String?) ?? EstatusAprobacion.aprobado,
+      creadoEn: json['creado_en'] != null
+          ? DateTime.parse(json['creado_en'] as String)
+          : null,
+      roles: _extraerNombresRoles(activos),
+      permisos: _extraerNombresPermisos(activos),
     );
   }
   final String? id;
@@ -56,13 +56,14 @@ class Usuario extends Equatable {
   final String correo;
   final String? telefono;
   final String? urlAvatar;
-  final bool   estatus;
+  final bool estatus;
   final String estatusAprobacion;
   final DateTime? creadoEn;
   final List<String> roles;
   final List<String> permisos;
 
-  static List<Map<String, dynamic>> _rolesActivos(List<dynamic> usuariosRoles) =>
+  static List<Map<String, dynamic>> _rolesActivos(
+          List<dynamic> usuariosRoles) =>
       usuariosRoles
           .whereType<Map<String, dynamic>>()
           .where((ur) => ur['estatus'] == true)
@@ -71,13 +72,15 @@ class Usuario extends Equatable {
           .where((r) => r['estatus'] == true)
           .toList();
 
-  static List<String> _extraerNombresRoles(List<Map<String, dynamic>> activos) =>
+  static List<String> _extraerNombresRoles(
+          List<Map<String, dynamic>> activos) =>
       activos
           .map((r) => r['nombre'] as String? ?? '')
           .where((n) => n.isNotEmpty)
           .toList();
 
-  static List<String> _extraerNombresPermisos(List<Map<String, dynamic>> activos) =>
+  static List<String> _extraerNombresPermisos(
+          List<Map<String, dynamic>> activos) =>
       activos
           .expand((r) => (r['roles_permisos'] as List? ?? []))
           .whereType<Map<String, dynamic>>()
@@ -90,19 +93,19 @@ class Usuario extends Equatable {
           .toList();
 
   Map<String, dynamic> aJson() => {
-    if (authId != null) 'auth_id': authId,
-    'primer_nombre':          primerNombre,
-    'segundo_nombre':         segundoNombre,
-    'primer_apellido':        primerApellido,
-    'segundo_apellido':       segundoApellido,
-    'numero_identificacion':  numeroIdentificacion,
-    'correo':                 correo,
-    'telefono':               telefono,
-    'url_avatar':             urlAvatar,
-    'estatus':                estatus,
-    'estatus_aprobacion':     estatusAprobacion,
-    // roles y permisos viven en usuarios_roles y roles_permisos, no en usuarios
-  };
+        if (authId != null) 'auth_id': authId,
+        'primer_nombre': primerNombre,
+        'segundo_nombre': segundoNombre,
+        'primer_apellido': primerApellido,
+        'segundo_apellido': segundoApellido,
+        'numero_identificacion': numeroIdentificacion,
+        'correo': correo,
+        'telefono': telefono,
+        'url_avatar': urlAvatar,
+        'estatus': estatus,
+        'estatus_aprobacion': estatusAprobacion,
+        // roles y permisos viven en usuarios_roles y roles_permisos, no en usuarios
+      };
 
   bool tienePermiso(String permiso) {
     if (permiso.contains('.')) return permisos.contains(permiso);
@@ -120,9 +123,20 @@ class Usuario extends Equatable {
 
   @override
   List<Object?> get props => [
-    id, authId, primerNombre, segundoNombre,
-    primerApellido, segundoApellido, numeroIdentificacion,
-    correo, telefono, urlAvatar, estatus, estatusAprobacion,
-    creadoEn, roles, permisos,
-  ];
+        id,
+        authId,
+        primerNombre,
+        segundoNombre,
+        primerApellido,
+        segundoApellido,
+        numeroIdentificacion,
+        correo,
+        telefono,
+        urlAvatar,
+        estatus,
+        estatusAprobacion,
+        creadoEn,
+        roles,
+        permisos,
+      ];
 }

@@ -25,7 +25,7 @@ void main() {
   setUp(() {
     registrarFallbacks();
     loginCubit = MockLoginCubit();
-    authCubit  = MockAuthCubit();
+    authCubit = MockAuthCubit();
     when(() => authCubit.verificarSesion()).thenAnswer((_) async {});
   });
 
@@ -36,8 +36,8 @@ void main() {
       await tester.pumpWidget(_marco(loginCubit, authCubit));
 
       expect(find.text('Correo institucional'), findsOneWidget);
-      expect(find.text('Contraseña'),           findsOneWidget);
-      expect(find.text('Iniciar sesión'),        findsOneWidget);
+      expect(find.text('Contraseña'), findsOneWidget);
+      expect(find.text('Iniciar sesión'), findsOneWidget);
     });
 
     testWidgets('muestra CircularProgressIndicator cuando LoginCargando',
@@ -47,7 +47,7 @@ void main() {
       await tester.pumpWidget(_marco(loginCubit, authCubit));
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text('Iniciar sesión'),            findsNothing);
+      expect(find.text('Iniciar sesión'), findsNothing);
     });
 
     testWidgets('muestra SnackBar con el mensaje cuando LoginError',

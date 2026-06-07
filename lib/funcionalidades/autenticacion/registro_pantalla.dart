@@ -20,8 +20,8 @@ class RegistroPantalla extends StatefulWidget {
 }
 
 class _RegistroPantallaState extends State<RegistroPantalla> {
-  final _correoController         = TextEditingController();
-  final _claveController          = TextEditingController();
+  final _correoController = TextEditingController();
+  final _claveController = TextEditingController();
   final _confirmarClaveController = TextEditingController();
 
   @override
@@ -39,13 +39,14 @@ class _RegistroPantallaState extends State<RegistroPantalla> {
       body: BlocConsumer<RegistroCubit, RegistroEstado>(
         listener: (context, estado) {
           if (estado is RegistroError) context.mostrarError(estado.mensaje);
-          if (estado is RegistroExito) context.read<AuthCubit>().verificarSesion();
+          if (estado is RegistroExito)
+            context.read<AuthCubit>().verificarSesion();
         },
         builder: (context, estado) => _CuerpoRegistro(
-          correoController:         _correoController,
-          claveController:          _claveController,
+          correoController: _correoController,
+          claveController: _claveController,
           confirmarClaveController: _confirmarClaveController,
-          estaCargando:             estado is RegistroCargando,
+          estaCargando: estado is RegistroCargando,
         ),
       ),
     );
@@ -77,33 +78,33 @@ class _CuerpoRegistro extends StatelessWidget {
             const _CabeceraRegistro(),
             const SizedBox(height: 45),
             CampoTextoApp(
-              etiqueta:   'Correo institucional',
-              hintText:   'maria.gonzalez@uni.edu',
+              etiqueta: 'Correo institucional',
+              hintText: 'maria.gonzalez@uni.edu',
               controller: correoController,
             ),
             const SizedBox(height: 20),
             CampoTextoApp(
-              etiqueta:     'Contraseña',
-              hintText:     '••••••••',
-              controller:   claveController,
+              etiqueta: 'Contraseña',
+              hintText: '••••••••',
+              controller: claveController,
               esContrasena: true,
             ),
             const SizedBox(height: 20),
             CampoTextoApp(
-              etiqueta:     'Confirmar contraseña',
-              hintText:     '••••••••',
-              controller:   confirmarClaveController,
+              etiqueta: 'Confirmar contraseña',
+              hintText: '••••••••',
+              controller: confirmarClaveController,
               esContrasena: true,
             ),
             const SizedBox(height: 40),
             BotonApp(
-              texto:        'Continuar',
+              texto: 'Continuar',
               estaCargando: estaCargando,
-              alPresionar:  () => context.read<RegistroCubit>().registrarse(
-                correoController.text.trim(),
-                claveController.text,
-                confirmarClaveController.text,
-              ),
+              alPresionar: () => context.read<RegistroCubit>().registrarse(
+                    correoController.text.trim(),
+                    claveController.text,
+                    confirmarClaveController.text,
+                  ),
             ),
             const SizedBox(height: 30),
             const _PieRegistro(),
@@ -126,16 +127,18 @@ class _CabeceraRegistro extends StatelessWidget {
         const BotonRegresar(),
         const SizedBox(height: 30),
         Container(
-          padding:    const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color:        ColoresApp.acento,
+            color: ColoresApp.acento,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: const Icon(Icons.person_add_outlined, size: 45, color: ColoresApp.blanco),
+          child: const Icon(Icons.person_add_outlined,
+              size: 45, color: ColoresApp.blanco),
         ),
         const SizedBox(height: 30),
         Text('Crear cuenta', style: estiloTexto.displaySmall),
-        Text('Paso 1 de 2 · Credenciales de acceso', style: estiloTexto.bodyMedium),
+        Text('Paso 1 de 2 · Credenciales de acceso',
+            style: estiloTexto.bodyMedium),
       ],
     );
   }

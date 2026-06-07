@@ -19,7 +19,7 @@ final class EscanearQrCargando extends EscanearQrEstado {
 final class EscanearQrListo extends EscanearQrEstado {
   const EscanearQrListo({required this.evento, required this.presentes});
   final Evento evento;
-  final int    presentes;
+  final int presentes;
   @override
   List<Object?> get props => [evento, presentes];
 }
@@ -27,7 +27,7 @@ final class EscanearQrListo extends EscanearQrEstado {
 final class EscanearQrProcesando extends EscanearQrEstado {
   const EscanearQrProcesando({required this.evento, required this.presentes});
   final Evento evento;
-  final int    presentes;
+  final int presentes;
   @override
   List<Object?> get props => [evento, presentes];
 }
@@ -40,9 +40,9 @@ final class EscanearQrConfirmado extends EscanearQrEstado {
     this.cedula,
     this.rol,
   });
-  final Evento  evento;
-  final int     presentes;
-  final String  nombre;
+  final Evento evento;
+  final int presentes;
+  final String nombre;
   final String? cedula;
   final String? rol;
   @override
@@ -56,9 +56,9 @@ final class EscanearQrYaRegistrado extends EscanearQrEstado {
     required this.nombre,
     this.cedula,
   });
-  final Evento  evento;
-  final int     presentes;
-  final String  nombre;
+  final Evento evento;
+  final int presentes;
+  final String nombre;
   final String? cedula;
   @override
   List<Object?> get props => [evento, presentes, nombre, cedula];
@@ -67,7 +67,7 @@ final class EscanearQrYaRegistrado extends EscanearQrEstado {
 final class EscanearQrNoValido extends EscanearQrEstado {
   const EscanearQrNoValido({required this.evento, required this.presentes});
   final Evento evento;
-  final int    presentes;
+  final int presentes;
   @override
   List<Object?> get props => [evento, presentes];
 }

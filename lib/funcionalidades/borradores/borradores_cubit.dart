@@ -13,24 +13,27 @@ class BorradoresCubit extends Cubit<BorradoresEstado> {
   final BorradoresRepositorio _repositorio;
 
   List<BorradorEvento> _todos = [];
-  String?              _usuarioId;
-  int                  _offset = 0;
+  String? _usuarioId;
+  int _offset = 0;
 
   Future<void> cargarBorradores(String usuarioId) async {
     _usuarioId = usuarioId;
-    _offset    = 0;
-    _todos     = [];
+    _offset = 0;
+    _todos = [];
     emit(const BorradoresCargando());
     try {
-      final resultado = await _repositorio.obtenerBorradores(usuarioId, offset: _offset);
+      final resultado =
+          await _repositorio.obtenerBorradores(usuarioId, offset: _offset);
       if (isClosed) return;
-      _todos   = resultado.borradores;
+      _todos = resultado.borradores;
       _offset += resultado.borradores.length;
-      emit(BorradoresCargados(
-        borradores:          _todos,
-        borradoresFiltrados: _todos,
-        hayMas:              resultado.hayMas,
-      ),);
+      emit(
+        BorradoresCargados(
+          borradores: _todos,
+          borradoresFiltrados: _todos,
+          hayMas: resultado.hayMas,
+        ),
+      );
     } on FallaServidor catch (e) {
       if (isClosed) return;
       reportarError(e);
@@ -47,40 +50,48 @@ class BorradoresCubit extends Cubit<BorradoresEstado> {
   }
 
   Future<void> cargarMas() async {
-    final estado    = state;
+    final estado = state;
     final usuarioId = _usuarioId;
-    if (estado is! BorradoresCargados || !estado.hayMas || usuarioId == null) return;
+    if (estado is! BorradoresCargados || !estado.hayMas || usuarioId == null)
+      return;
 
-    emit(BorradoresCargandoMas(
-      borradores:          estado.borradores,
-      borradoresFiltrados: estado.borradoresFiltrados,
-    ),);
+    emit(
+      BorradoresCargandoMas(
+        borradores: estado.borradores,
+        borradoresFiltrados: estado.borradoresFiltrados,
+      ),
+    );
     try {
-      final resultado = await _repositorio.obtenerBorradores(usuarioId, offset: _offset);
+      final resultado =
+          await _repositorio.obtenerBorradores(usuarioId, offset: _offset);
       if (isClosed) return;
-      _todos   = [...estado.borradores, ...resultado.borradores];
+      _todos = [...estado.borradores, ...resultado.borradores];
       _offset += resultado.borradores.length;
-      emit(BorradoresCargados(
-        borradores:          _todos,
-        borradoresFiltrados: _todos,
-        hayMas:              resultado.hayMas,
-      ),);
+      emit(
+        BorradoresCargados(
+          borradores: _todos,
+          borradoresFiltrados: _todos,
+          hayMas: resultado.hayMas,
+        ),
+      );
     } catch (_) {
       if (isClosed) return;
-      emit(BorradoresCargados(
-        borradores:          estado.borradores,
-        borradoresFiltrados: estado.borradoresFiltrados,
-        hayMas:              estado.hayMas,
-      ),);
+      emit(
+        BorradoresCargados(
+          borradores: estado.borradores,
+          borradoresFiltrados: estado.borradoresFiltrados,
+          hayMas: estado.hayMas,
+        ),
+      );
     }
   }
 
   void filtrar(String texto, DateTimeRange? rango) {
     final estadoActual = state;
     final base = switch (estadoActual) {
-      BorradoresCargados()    => estadoActual.borradores,
+      BorradoresCargados() => estadoActual.borradores,
       BorradoresCargandoMas() => estadoActual.borradores,
-      _                       => null,
+      _ => null,
     };
     if (base == null) return;
 
@@ -88,29 +99,37 @@ class BorradoresCubit extends Cubit<BorradoresEstado> {
     if (texto.isNotEmpty) {
       final q = texto.toLowerCase();
       filtrados = filtrados
-          .where((e) =>
-              e.titulo.toLowerCase().contains(q) ||
-              e.descripcion.toLowerCase().contains(q),)
+          .where(
+            (e) =>
+                e.titulo.toLowerCase().contains(q) ||
+                e.descripcion.toLowerCase().contains(q),
+          )
           .toList();
     }
     if (rango != null) {
-      final inicio = DateTime(rango.start.year, rango.start.month, rango.start.day);
-      final fin    = DateTime(rango.end.year, rango.end.month, rango.end.day, 23, 59, 59);
+      final inicio =
+          DateTime(rango.start.year, rango.start.month, rango.start.day);
+      final fin =
+          DateTime(rango.end.year, rango.end.month, rango.end.day, 23, 59, 59);
       filtrados = filtrados
-          .where((e) =>
-              e.fechaInicio != null &&
-              !e.fechaInicio!.isBefore(inicio) &&
-              !e.fechaInicio!.isAfter(fin),)
+          .where(
+            (e) =>
+                e.fechaInicio != null &&
+                !e.fechaInicio!.isBefore(inicio) &&
+                !e.fechaInicio!.isAfter(fin),
+          )
           .toList();
     }
 
     if (estadoActual is BorradoresCargados) {
       emit(estadoActual.copiarCon(borradoresFiltrados: filtrados));
     } else if (estadoActual is BorradoresCargandoMas) {
-      emit(BorradoresCargandoMas(
-        borradores:          estadoActual.borradores,
-        borradoresFiltrados: filtrados,
-      ),);
+      emit(
+        BorradoresCargandoMas(
+          borradores: estadoActual.borradores,
+          borradoresFiltrados: filtrados,
+        ),
+      );
     }
   }
 
@@ -124,27 +143,33 @@ class BorradoresCubit extends Cubit<BorradoresEstado> {
       final filtrados = estadoActual.borradoresFiltrados
           .where((e) => e.id != eventoId)
           .toList();
-      emit(BorradoresCargados(
-        borradores:          _todos,
-        borradoresFiltrados: filtrados,
-        hayMas:              estadoActual.hayMas,
-      ),);
+      emit(
+        BorradoresCargados(
+          borradores: _todos,
+          borradoresFiltrados: filtrados,
+          hayMas: estadoActual.hayMas,
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
-      emit(BorradoresCargados(
-        borradores:          estadoActual.borradores,
-        borradoresFiltrados: estadoActual.borradoresFiltrados,
-        hayMas:              estadoActual.hayMas,
-        errorPublicacion:    e.mensaje,
-      ),);
+      emit(
+        BorradoresCargados(
+          borradores: estadoActual.borradores,
+          borradoresFiltrados: estadoActual.borradoresFiltrados,
+          hayMas: estadoActual.hayMas,
+          errorPublicacion: e.mensaje,
+        ),
+      );
     } on FallaInesperada catch (e) {
       reportarError(e);
-      emit(BorradoresCargados(
-        borradores:          estadoActual.borradores,
-        borradoresFiltrados: estadoActual.borradoresFiltrados,
-        hayMas:              estadoActual.hayMas,
-        errorPublicacion:    e.mensaje,
-      ),);
+      emit(
+        BorradoresCargados(
+          borradores: estadoActual.borradores,
+          borradoresFiltrados: estadoActual.borradoresFiltrados,
+          hayMas: estadoActual.hayMas,
+          errorPublicacion: e.mensaje,
+        ),
+      );
     }
   }
 

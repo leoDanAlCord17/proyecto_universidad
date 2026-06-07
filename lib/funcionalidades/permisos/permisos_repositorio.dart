@@ -11,8 +11,7 @@ class PermisosRepositorio {
 
   final SupabaseClient _supabase;
 
-  Future<List<Permiso>> obtenerPermisos() =>
-      conReintentos(() async {
+  Future<List<Permiso>> obtenerPermisos() => conReintentos(() async {
         try {
           final respuesta = await _supabase
               .from(TablasSupabase.permisos)

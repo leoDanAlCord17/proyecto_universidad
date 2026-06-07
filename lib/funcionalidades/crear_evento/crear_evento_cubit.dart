@@ -18,15 +18,17 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
   Future<void> cargarOpciones() async {
     emit(const CrearEventoCargando());
     try {
-      final tiposEvento        = await _repositorio.obtenerTiposEvento();
-      final tags               = await _repositorio.obtenerTags();
+      final tiposEvento = await _repositorio.obtenerTiposEvento();
+      final tags = await _repositorio.obtenerTags();
       final maxTagsSecundarios = await _repositorio.obtenerMaxTagsSecundarios();
-      emit(CrearEventoCargado(
-        tiposEvento:        tiposEvento,
-        tagsPrincipales:    tags.where((t) => t.tipo == 'principal').toList(),
-        tagsSecundarios:    tags.where((t) => t.tipo == 'secundario').toList(),
-        maxTagsSecundarios: maxTagsSecundarios,
-      ),);
+      emit(
+        CrearEventoCargado(
+          tiposEvento: tiposEvento,
+          tagsPrincipales: tags.where((t) => t.tipo == 'principal').toList(),
+          tagsSecundarios: tags.where((t) => t.tipo == 'secundario').toList(),
+          maxTagsSecundarios: maxTagsSecundarios,
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(CrearEventoError(mensaje: e.mensaje));
@@ -39,12 +41,13 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
   Future<void> cargarEventoParaEditar(String eventoId) async {
     emit(const CrearEventoCargando());
     try {
-      final tiposEvento        = await _repositorio.obtenerTiposEvento();
-      final tags               = await _repositorio.obtenerTags();
+      final tiposEvento = await _repositorio.obtenerTiposEvento();
+      final tags = await _repositorio.obtenerTags();
       final maxTagsSecundarios = await _repositorio.obtenerMaxTagsSecundarios();
-      final evento             = await _repositorio.obtenerEvento(eventoId);
-      final grupos             = await _repositorio.obtenerGruposEvento(eventoId);
-      emit(_estadoDesdeEvento(eventoId, tiposEvento, tags, maxTagsSecundarios, evento, grupos));
+      final evento = await _repositorio.obtenerEvento(eventoId);
+      final grupos = await _repositorio.obtenerGruposEvento(eventoId);
+      emit(_estadoDesdeEvento(
+          eventoId, tiposEvento, tags, maxTagsSecundarios, evento, grupos));
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(CrearEventoError(mensaje: e.mensaje));
@@ -55,47 +58,53 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
   }
 
   CrearEventoCargado _estadoDesdeEvento(
-    String               eventoId,
-    List<TipoEvento>     tiposEvento,
-    List<TagOpcion>      tags,
-    int                  maxTagsSecundarios,
+    String eventoId,
+    List<TipoEvento> tiposEvento,
+    List<TagOpcion> tags,
+    int maxTagsSecundarios,
     Map<String, dynamic> e,
     List<GrupoAudiencia> grupos,
   ) {
-    final tipo  = _resolverTipoEvento(e['tipo_evento_id'] as String?, tiposEvento);
+    final tipo =
+        _resolverTipoEvento(e['tipo_evento_id'] as String?, tiposEvento);
     final bools = _boolsDesdeEvento(e);
     return CrearEventoCargado(
-      eventoId:                eventoId,
-      tiposEvento:             tiposEvento,
-      tagsPrincipales:         tags.where((t) => t.tipo == 'principal').toList(),
-      tagsSecundarios:         tags.where((t) => t.tipo == 'secundario').toList(),
-      maxTagsSecundarios:      maxTagsSecundarios,
-      tipoEventoSeleccionado:  tipo,
-      alcance:                 e['alcance'] as String? ?? AlcanceEvento.general,
-      grupos:                  grupos,
-      titulo:                  e['titulo']      as String? ?? '',
-      descripcion:             e['descripcion'] as String? ?? '',
-      lugar:                   e['lugar']       as String? ?? '',
-      fechaInicio:             e['fecha_inicio'] != null ? DateTime.tryParse(e['fecha_inicio'] as String) : null,
-      horaInicio:              _parseHora(e['hora_inicio'] as String?),
-      tieneFechaFin:           true,
-      fechaFin:                e['fecha_fin'] != null ? DateTime.tryParse(e['fecha_fin'] as String) : null,
-      horaFin:                 _parseHora(e['hora_fin'] as String?),
-      permiteManualAdmin:      bools.permiteManualAdmin,
-      permiteQrEvento:         bools.permiteQrEvento,
-      permiteQrUsuario:        bools.permiteQrUsuario,
-      permiteForaneos:         bools.permiteForaneos,
-      requiereCicloCompleto:   bools.requiereCicloCompleto,
+      eventoId: eventoId,
+      tiposEvento: tiposEvento,
+      tagsPrincipales: tags.where((t) => t.tipo == 'principal').toList(),
+      tagsSecundarios: tags.where((t) => t.tipo == 'secundario').toList(),
+      maxTagsSecundarios: maxTagsSecundarios,
+      tipoEventoSeleccionado: tipo,
+      alcance: e['alcance'] as String? ?? AlcanceEvento.general,
+      grupos: grupos,
+      titulo: e['titulo'] as String? ?? '',
+      descripcion: e['descripcion'] as String? ?? '',
+      lugar: e['lugar'] as String? ?? '',
+      fechaInicio: e['fecha_inicio'] != null
+          ? DateTime.tryParse(e['fecha_inicio'] as String)
+          : null,
+      horaInicio: _parseHora(e['hora_inicio'] as String?),
+      tieneFechaFin: true,
+      fechaFin: e['fecha_fin'] != null
+          ? DateTime.tryParse(e['fecha_fin'] as String)
+          : null,
+      horaFin: _parseHora(e['hora_fin'] as String?),
+      permiteManualAdmin: bools.permiteManualAdmin,
+      permiteQrEvento: bools.permiteQrEvento,
+      permiteQrUsuario: bools.permiteQrUsuario,
+      permiteForaneos: bools.permiteForaneos,
+      requiereCicloCompleto: bools.requiereCicloCompleto,
       permiteSalidaAnticipada: bools.permiteSalidaAnticipada,
-      marcarAusentesAuto:      bools.marcarAusentesAuto,
+      marcarAusentesAuto: bools.marcarAusentesAuto,
     );
   }
 
   TipoEvento? _resolverTipoEvento(String? tipoId, List<TipoEvento> tipos) {
     if (tipoId == null) return null;
     return tipos.cast<TipoEvento?>().firstWhere(
-      (t) => t?.id == tipoId, orElse: () => null,
-    );
+          (t) => t?.id == tipoId,
+          orElse: () => null,
+        );
   }
 
   ({
@@ -107,14 +116,15 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
     bool permiteSalidaAnticipada,
     bool marcarAusentesAuto,
   }) _boolsDesdeEvento(Map<String, dynamic> e) => (
-    permiteManualAdmin:      e['permite_manual_admin']      as bool? ?? true,
-    permiteQrEvento:         e['permite_qr_evento']         as bool? ?? true,
-    permiteQrUsuario:        e['permite_qr_usuario']        as bool? ?? true,
-    permiteForaneos:         e['permite_foraneos']          as bool? ?? false,
-    requiereCicloCompleto:   e['requiere_ciclo_completo']   as bool? ?? false,
-    permiteSalidaAnticipada: e['permite_salida_anticipada'] as bool? ?? false,
-    marcarAusentesAuto:      e['marcar_ausentes_auto']      as bool? ?? false,
-  );
+        permiteManualAdmin: e['permite_manual_admin'] as bool? ?? true,
+        permiteQrEvento: e['permite_qr_evento'] as bool? ?? true,
+        permiteQrUsuario: e['permite_qr_usuario'] as bool? ?? true,
+        permiteForaneos: e['permite_foraneos'] as bool? ?? false,
+        requiereCicloCompleto: e['requiere_ciclo_completo'] as bool? ?? false,
+        permiteSalidaAnticipada:
+            e['permite_salida_anticipada'] as bool? ?? false,
+        marcarAusentesAuto: e['marcar_ausentes_auto'] as bool? ?? false,
+      );
 
   void actualizarCampo(
     CrearEventoCargado Function(CrearEventoCargado) actualizar,
@@ -136,10 +146,12 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
       _emitirErrorValidacion('El título del evento es obligatorio.');
       return;
     }
-    emit(estadoActual.copiarCon(
-      pasoActual:            paso,
-      limpiarErrorValidacion: true,
-    ),);
+    emit(
+      estadoActual.copiarCon(
+        pasoActual: paso,
+        limpiarErrorValidacion: true,
+      ),
+    );
   }
 
   void agregarGrupo(GrupoAudiencia grupo) {
@@ -147,9 +159,11 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
   }
 
   void eliminarGrupo(int grupoIndex) {
-    actualizarCampo((s) => s.copiarCon(
-      grupos: s.grupos.where((g) => g.grupoIndex != grupoIndex).toList(),
-    ),);
+    actualizarCampo(
+      (s) => s.copiarCon(
+        grupos: s.grupos.where((g) => g.grupoIndex != grupoIndex).toList(),
+      ),
+    );
   }
 
   Future<void> publicarEvento() async {
@@ -180,7 +194,7 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
     if (estadoActual is! CrearEventoCargado) return;
     emit(estadoActual.copiarCon(estaGuardando: true));
     try {
-      final datos    = _construirDatos(estadoActual, estatus);
+      final datos = _construirDatos(estadoActual, estatus);
       final editando = estadoActual.eventoId != null;
       final eventoId = editando
           ? estadoActual.eventoId!
@@ -191,13 +205,15 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
       await _persistirGrupos(
         eventoId: eventoId,
         editando: editando,
-        alcance:  estadoActual.alcance,
-        grupos:   estadoActual.grupos,
+        alcance: estadoActual.alcance,
+        grupos: estadoActual.grupos,
       );
-      emit(CrearEventoGuardado(
-        eventoId:   eventoId,
-        esBorrador: estatus == EstatusEvento.borrador,
-      ),);
+      emit(
+        CrearEventoGuardado(
+          eventoId: eventoId,
+          esBorrador: estatus == EstatusEvento.borrador,
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(CrearEventoError(mensaje: e.mensaje));
@@ -208,15 +224,17 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
   }
 
   Future<void> _persistirGrupos({
-    required String              eventoId,
-    required bool                editando,
-    required String              alcance,
+    required String eventoId,
+    required bool editando,
+    required String alcance,
     required List<GrupoAudiencia> grupos,
   }) async {
     if (editando) {
-      await _repositorio.actualizarGruposEvento(eventoId: eventoId, grupos: grupos);
+      await _repositorio.actualizarGruposEvento(
+          eventoId: eventoId, grupos: grupos);
     } else if (alcance == AlcanceEvento.dirigido && grupos.isNotEmpty) {
-      await _repositorio.guardarGruposEvento(eventoId: eventoId, grupos: grupos);
+      await _repositorio.guardarGruposEvento(
+          eventoId: eventoId, grupos: grupos);
     }
   }
 
@@ -225,23 +243,23 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
     String estatus,
   ) {
     return {
-      'titulo':                    estado.titulo,
-      'descripcion':               estado.descripcion,
-      'tipo_evento_id':            estado.tipoEventoSeleccionado?.id,
-      'lugar':                     estado.lugar,
-      'fecha_inicio':              _formatearFecha(estado.fechaInicio),
-      'hora_inicio':               _formatearHora(estado.horaInicio),
-      'fecha_fin':                 _formatearFecha(estado.fechaFin),
-      'hora_fin':                  _formatearHora(estado.horaFin),
-      'alcance':                   estado.alcance,
-      'permite_manual_admin':      estado.permiteManualAdmin,
-      'permite_qr_evento':         estado.permiteQrEvento,
-      'permite_qr_usuario':        estado.permiteQrUsuario,
-      'permite_foraneos':          estado.permiteForaneos,
-      'requiere_ciclo_completo':   estado.requiereCicloCompleto,
+      'titulo': estado.titulo,
+      'descripcion': estado.descripcion,
+      'tipo_evento_id': estado.tipoEventoSeleccionado?.id,
+      'lugar': estado.lugar,
+      'fecha_inicio': _formatearFecha(estado.fechaInicio),
+      'hora_inicio': _formatearHora(estado.horaInicio),
+      'fecha_fin': _formatearFecha(estado.fechaFin),
+      'hora_fin': _formatearHora(estado.horaFin),
+      'alcance': estado.alcance,
+      'permite_manual_admin': estado.permiteManualAdmin,
+      'permite_qr_evento': estado.permiteQrEvento,
+      'permite_qr_usuario': estado.permiteQrUsuario,
+      'permite_foraneos': estado.permiteForaneos,
+      'requiere_ciclo_completo': estado.requiereCicloCompleto,
       'permite_salida_anticipada': estado.permiteSalidaAnticipada,
-      'marcar_ausentes_auto':      estado.marcarAusentesAuto,
-      'estatus':                   estatus,
+      'marcar_ausentes_auto': estado.marcarAusentesAuto,
+      'estatus': estatus,
     };
   }
 
@@ -264,7 +282,7 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
     final partes = hora.split(':');
     if (partes.length < 2) return null;
     return TimeOfDay(
-      hour:   int.tryParse(partes[0]) ?? 0,
+      hour: int.tryParse(partes[0]) ?? 0,
       minute: int.tryParse(partes[1]) ?? 0,
     );
   }

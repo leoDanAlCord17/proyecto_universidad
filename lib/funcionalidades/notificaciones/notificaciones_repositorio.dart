@@ -45,8 +45,7 @@ class NotificacionesRepositorio {
     try {
       await _supabase
           .from(TablasSupabase.notificaciones)
-          .update({'leida': true})
-          .eq('id', notificacionId);
+          .update({'leida': true}).eq('id', notificacionId);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -77,18 +76,16 @@ class NotificacionesRepositorio {
     required String plataforma,
   }) async {
     try {
-      await _supabase
-          .from(TablasSupabase.tokensDispositivo)
-          .upsert(
-            {
-              'usuario_id':     usuarioId,
-              'token':          token,
-              'plataforma':     plataforma,
-              'activo':         true,
-              'actualizado_en': DateTime.now().toUtc().toIso8601String(),
-            },
-            onConflict: 'token',
-          );
+      await _supabase.from(TablasSupabase.tokensDispositivo).upsert(
+        {
+          'usuario_id': usuarioId,
+          'token': token,
+          'plataforma': plataforma,
+          'activo': true,
+          'actualizado_en': DateTime.now().toUtc().toIso8601String(),
+        },
+        onConflict: 'token',
+      );
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -99,13 +96,10 @@ class NotificacionesRepositorio {
   /// Desactiva el token al cerrar sesión para no recibir notificaciones.
   Future<void> desactivarToken(String token) async {
     try {
-      await _supabase
-          .from(TablasSupabase.tokensDispositivo)
-          .update({
-            'activo':         false,
-            'actualizado_en': DateTime.now().toUtc().toIso8601String(),
-          })
-          .eq('token', token);
+      await _supabase.from(TablasSupabase.tokensDispositivo).update({
+        'activo': false,
+        'actualizado_en': DateTime.now().toUtc().toIso8601String(),
+      }).eq('token', token);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {

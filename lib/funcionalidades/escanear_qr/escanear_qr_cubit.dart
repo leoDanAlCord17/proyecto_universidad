@@ -14,12 +14,12 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
 
   String? _eventoId;
   String? _adminId;
-  bool    _estaProcesando = false;
-  Timer?  _timerReset;
+  bool _estaProcesando = false;
+  Timer? _timerReset;
 
   Future<void> iniciar(String eventoId, {String? adminId}) async {
     _eventoId = eventoId;
-    _adminId  = adminId;
+    _adminId = adminId;
     emit(const EscanearQrCargando());
     try {
       final (evento, presentes) = await (
@@ -27,7 +27,8 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
         _repositorio.contarPresentes(eventoId),
       ).wait;
       if (!evento.permiteQrEvento) {
-        emit(const EscanearQrErrorCarga(mensaje: 'Este evento no permite el escaneo de QR.'));
+        emit(const EscanearQrErrorCarga(
+            mensaje: 'Este evento no permite el escaneo de QR.'));
         return;
       }
       emit(EscanearQrListo(evento: evento, presentes: presentes));
@@ -46,23 +47,26 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
     if (listo == null || _eventoId == null) return;
 
     _estaProcesando = true;
-    emit(EscanearQrProcesando(evento: listo.evento, presentes: listo.presentes));
+    emit(
+        EscanearQrProcesando(evento: listo.evento, presentes: listo.presentes));
 
     try {
       final usuario = await _repositorio.buscarUsuario(rawValue);
       if (usuario == null) {
-        emit(EscanearQrNoValido(evento: listo.evento, presentes: listo.presentes));
+        emit(EscanearQrNoValido(
+            evento: listo.evento, presentes: listo.presentes));
         _programarReset(listo);
         return;
       }
 
-      final datos      = _extraerDatosUsuario(usuario);
+      final datos = _extraerDatosUsuario(usuario);
       final registrado = await _repositorio.registrarEntrada(
-        eventoId:        _eventoId!,
-        usuarioId:       rawValue,
+        eventoId: _eventoId!,
+        usuarioId: rawValue,
         registradoPorId: _adminId,
       );
-      _emitirResultado(listo, registrado, nombre: datos.nombre, cedula: datos.cedula, rol: datos.rol);
+      _emitirResultado(listo, registrado,
+          nombre: datos.nombre, cedula: datos.cedula, rol: datos.rol);
     } on FallaServidor catch (e) {
       reportarError(e);
       _programarReset(listo);
@@ -75,9 +79,11 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
   ({String nombre, String? cedula, String? rol}) _extraerDatosUsuario(
     Map<String, dynamic> usuario,
   ) {
-    final nombre = '${usuario['primer_nombre'] ?? ''} ${usuario['primer_apellido'] ?? ''}'.trim();
+    final nombre =
+        '${usuario['primer_nombre'] ?? ''} ${usuario['primer_apellido'] ?? ''}'
+            .trim();
     final cedula = usuario['numero_identificacion'] as String?;
-    final roles  = usuario['usuarios_roles'] as List?;
+    final roles = usuario['usuarios_roles'] as List?;
     String? rol;
     if (roles != null && roles.isNotEmpty) {
       final entrada = (roles.first as Map<String, dynamic>)['roles'];
@@ -89,26 +95,30 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
   void _emitirResultado(
     EscanearQrListo listo,
     bool registrado, {
-    required String  nombre,
+    required String nombre,
     required String? cedula,
     required String? rol,
   }) {
     if (registrado) {
-      emit(EscanearQrConfirmado(
-        evento:    listo.evento,
-        presentes: listo.presentes + 1,
-        nombre:    nombre,
-        cedula:    cedula,
-        rol:       rol,
-      ),);
+      emit(
+        EscanearQrConfirmado(
+          evento: listo.evento,
+          presentes: listo.presentes + 1,
+          nombre: nombre,
+          cedula: cedula,
+          rol: rol,
+        ),
+      );
       _programarReset(listo, nuevosPresentes: listo.presentes + 1);
     } else {
-      emit(EscanearQrYaRegistrado(
-        evento:    listo.evento,
-        presentes: listo.presentes,
-        nombre:    nombre,
-        cedula:    cedula,
-      ),);
+      emit(
+        EscanearQrYaRegistrado(
+          evento: listo.evento,
+          presentes: listo.presentes,
+          nombre: nombre,
+          cedula: cedula,
+        ),
+      );
       _programarReset(listo);
     }
   }
@@ -118,10 +128,12 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
     _timerReset = Timer(const Duration(seconds: 2, milliseconds: 500), () {
       _estaProcesando = false;
       if (!isClosed) {
-        emit(EscanearQrListo(
-          evento:    base.evento,
-          presentes: nuevosPresentes ?? base.presentes,
-        ),);
+        emit(
+          EscanearQrListo(
+            evento: base.evento,
+            presentes: nuevosPresentes ?? base.presentes,
+          ),
+        );
       }
     });
   }

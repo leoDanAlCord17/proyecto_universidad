@@ -15,12 +15,12 @@ class GestionarTagsUsuarioCubit extends Cubit<GestionarTagsUsuarioEstado> {
 
   Future<void> cargar(String usuarioId, {String? adminId}) async {
     _usuarioId = usuarioId;
-    _adminId   = adminId;
+    _adminId = adminId;
     emit(const GestionarTagsUsuarioCargando());
     try {
-      final info           = await _repositorio.obtenerInfoUsuario(usuarioId);
-      final tagsUsuario    = await _repositorio.obtenerTagsUsuario(usuarioId);
-      final todosLosTags   = await _repositorio.obtenerTagsActivos();
+      final info = await _repositorio.obtenerInfoUsuario(usuarioId);
+      final tagsUsuario = await _repositorio.obtenerTagsUsuario(usuarioId);
+      final todosLosTags = await _repositorio.obtenerTagsActivos();
       final maxSecundarios = await _repositorio.obtenerMaxTagsSecundarios();
 
       final idsAsignados = {
@@ -28,15 +28,20 @@ class GestionarTagsUsuarioCubit extends Cubit<GestionarTagsUsuarioEstado> {
         ...tagsUsuario.tagsSecundarios.map((t) => t.id),
       };
 
-      emit(GestionarTagsUsuarioCargado(
-        nombreUsuario:          info.nombre,
-        correoUsuario:          info.correo,
-        tagPrincipal:           tagsUsuario.tagPrincipal,
-        tagsSecundarios:        tagsUsuario.tagsSecundarios,
-        principalesDisponibles: todosLosTags.where((t) =>  t.esPrincipal).toList(),
-        secundariosDisponibles: todosLosTags.where((t) => !t.esPrincipal && !idsAsignados.contains(t.id)).toList(),
-        maxSecundarios:         maxSecundarios,
-      ),);
+      emit(
+        GestionarTagsUsuarioCargado(
+          nombreUsuario: info.nombre,
+          correoUsuario: info.correo,
+          tagPrincipal: tagsUsuario.tagPrincipal,
+          tagsSecundarios: tagsUsuario.tagsSecundarios,
+          principalesDisponibles:
+              todosLosTags.where((t) => t.esPrincipal).toList(),
+          secundariosDisponibles: todosLosTags
+              .where((t) => !t.esPrincipal && !idsAsignados.contains(t.id))
+              .toList(),
+          maxSecundarios: maxSecundarios,
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(GestionarTagsUsuarioError(mensaje: e.mensaje));
@@ -80,10 +85,12 @@ class GestionarTagsUsuarioCubit extends Cubit<GestionarTagsUsuarioEstado> {
       await cargar(_usuarioId!, adminId: _adminId);
     } on FallaServidor catch (e) {
       reportarError(e);
-      emit(GestionarTagsUsuarioOperacionFallida(anterior: estadoActual, mensaje: e.mensaje));
+      emit(GestionarTagsUsuarioOperacionFallida(
+          anterior: estadoActual, mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
       reportarError(e);
-      emit(GestionarTagsUsuarioOperacionFallida(anterior: estadoActual, mensaje: e.mensaje));
+      emit(GestionarTagsUsuarioOperacionFallida(
+          anterior: estadoActual, mensaje: e.mensaje));
     }
   }
 }

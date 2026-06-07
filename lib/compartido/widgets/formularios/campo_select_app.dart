@@ -12,24 +12,24 @@ class CampoSelectApp<T> extends StatelessWidget {
     this.valorActual,
   });
 
-  final String             etiqueta;
-  final String             hintText;
-  final List<T>            opciones;
+  final String etiqueta;
+  final String hintText;
+  final List<T> opciones;
   final String Function(T) mostrarTexto;
-  final void Function(T)   alSeleccionar;
-  final T?                 valorActual;
+  final void Function(T) alSeleccionar;
+  final T? valorActual;
 
   Future<void> _abrirHoja(BuildContext context) async {
     final resultado = await showModalBottomSheet<T>(
-      context:         context,
+      context: context,
       backgroundColor: ColoresApp.superficiePrimaria,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) => _HojaSelect<T>(
-        opciones:     opciones,
+        opciones: opciones,
         mostrarTexto: mostrarTexto,
-        valorActual:  valorActual,
+        valorActual: valorActual,
       ),
     );
     if (resultado != null) alSeleccionar(resultado);
@@ -43,17 +43,17 @@ class CampoSelectApp<T> extends StatelessWidget {
         Text(etiqueta, style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(height: 8),
         Material(
-          color:        Colors.transparent,
+          color: Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
-            onTap:          () => _abrirHoja(context),
-            borderRadius:   BorderRadius.circular(12),
+            onTap: () => _abrirHoja(context),
+            borderRadius: BorderRadius.circular(12),
             highlightColor: ColoresApp.superficieTerciar,
-            splashColor:    ColoresApp.bordeMedio,
+            splashColor: ColoresApp.bordeMedio,
             child: Ink(
               decoration: BoxDecoration(
-                color:        ColoresApp.superficieSecund,
-                border:       Border.all(color: ColoresApp.bordeMedio),
+                color: ColoresApp.superficieSecund,
+                border: Border.all(color: ColoresApp.bordeMedio),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -65,18 +65,18 @@ class CampoSelectApp<T> extends StatelessWidget {
                           ? mostrarTexto(valorActual as T)
                           : hintText,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: valorActual != null
-                            ? ColoresApp.textoPrimario
-                            : ColoresApp.textoTerciario,
-                        fontWeight: FontWeight.w600,
-                        fontSize:   14,
-                      ),
+                            color: valorActual != null
+                                ? ColoresApp.textoPrimario
+                                : ColoresApp.textoTerciario,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
                     ),
                   ),
                   const Icon(
                     Icons.keyboard_arrow_down_rounded,
                     color: ColoresApp.textoTerciario,
-                    size:  20,
+                    size: 20,
                   ),
                 ],
               ),
@@ -95,9 +95,9 @@ class _HojaSelect<T> extends StatelessWidget {
     this.valorActual,
   });
 
-  final List<T>            opciones;
+  final List<T> opciones;
   final String Function(T) mostrarTexto;
-  final T?                 valorActual;
+  final T? valorActual;
 
   @override
   Widget build(BuildContext context) {
@@ -107,10 +107,10 @@ class _HojaSelect<T> extends StatelessWidget {
         children: [
           const SizedBox(height: 12),
           Container(
-            width:  40,
+            width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color:        ColoresApp.bordeMedio,
+              color: ColoresApp.bordeMedio,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -118,21 +118,22 @@ class _HojaSelect<T> extends StatelessWidget {
           Flexible(
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount:  opciones.length,
+              itemCount: opciones.length,
               itemBuilder: (context, i) {
-                final opcion      = opciones[i];
-                final estaActiva  = valorActual == opcion;
+                final opcion = opciones[i];
+                final estaActiva = valorActual == opcion;
                 return ListTile(
                   title: Text(
                     mostrarTexto(opcion),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: estaActiva
-                          ? ColoresApp.acento
-                          : ColoresApp.textoPrimario,
-                    ),
+                          color: estaActiva
+                              ? ColoresApp.acento
+                              : ColoresApp.textoPrimario,
+                        ),
                   ),
                   trailing: estaActiva
-                      ? const Icon(Icons.check_rounded, color: ColoresApp.acento)
+                      ? const Icon(Icons.check_rounded,
+                          color: ColoresApp.acento)
                       : null,
                   onTap: () => Navigator.pop(context, opcion),
                 );

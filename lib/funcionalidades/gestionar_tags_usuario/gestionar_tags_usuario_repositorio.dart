@@ -12,7 +12,8 @@ class GestionarTagsUsuarioRepositorio {
   final SupabaseClient _supabase;
 
   /// Retorna nombre completo y correo del usuario.
-  Future<({String nombre, String correo})> obtenerInfoUsuario(String usuarioId) =>
+  Future<({String nombre, String correo})> obtenerInfoUsuario(
+          String usuarioId) =>
       conReintentos(() async {
         try {
           final fila = await _supabase
@@ -31,42 +32,42 @@ class GestionarTagsUsuarioRepositorio {
       });
 
   /// Retorna los tags actualmente activos del usuario separados por tipo.
-  Future<({TagItem? tagPrincipal, List<TagItem> tagsSecundarios})> obtenerTagsUsuario(
+  Future<({TagItem? tagPrincipal, List<TagItem> tagsSecundarios})>
+      obtenerTagsUsuario(
     String usuarioId,
   ) =>
-      conReintentos(() async {
-        try {
-          final datos = await _supabase
-              .from(TablasSupabase.usuariosTags)
-              .select('tags(id, nombre, tipo)')
-              .eq('usuario_id', usuarioId)
-              .eq('estatus', true)
-              .timeout(kTimeoutSolicitud);
+          conReintentos(() async {
+            try {
+              final datos = await _supabase
+                  .from(TablasSupabase.usuariosTags)
+                  .select('tags(id, nombre, tipo)')
+                  .eq('usuario_id', usuarioId)
+                  .eq('estatus', true)
+                  .timeout(kTimeoutSolicitud);
 
-          TagItem?      principal;
-          final         secundarios  = <TagItem>[];
+              TagItem? principal;
+              final secundarios = <TagItem>[];
 
-          for (final fila in datos) {
-            final tagData = fila['tags'] as Map<String, dynamic>?;
-            if (tagData == null) continue;
-            final tag = TagItem.desdeJson(tagData);
-            if (tag.esPrincipal) {
-              principal = tag;
-            } else {
-              secundarios.add(tag);
+              for (final fila in datos) {
+                final tagData = fila['tags'] as Map<String, dynamic>?;
+                if (tagData == null) continue;
+                final tag = TagItem.desdeJson(tagData);
+                if (tag.esPrincipal) {
+                  principal = tag;
+                } else {
+                  secundarios.add(tag);
+                }
+              }
+              return (tagPrincipal: principal, tagsSecundarios: secundarios);
+            } on PostgrestException catch (e) {
+              throw FallaServidor(TraductorErrores.dePostgres(e));
+            } catch (e) {
+              TraductorErrores.lanzarInesperado(e);
             }
-          }
-          return (tagPrincipal: principal, tagsSecundarios: secundarios);
-        } on PostgrestException catch (e) {
-          throw FallaServidor(TraductorErrores.dePostgres(e));
-        } catch (e) {
-          TraductorErrores.lanzarInesperado(e);
-        }
-      });
+          });
 
   /// Retorna los tags activos del sistema (techo de 200 — picker, no paginado).
-  Future<List<TagItem>> obtenerTagsActivos() =>
-      conReintentos(() async {
+  Future<List<TagItem>> obtenerTagsActivos() => conReintentos(() async {
         try {
           final datos = await _supabase
               .from(TablasSupabase.tags)
@@ -85,8 +86,7 @@ class GestionarTagsUsuarioRepositorio {
       });
 
   /// Retorna el límite de tags secundarios por usuario desde configuracion_int.
-  Future<int> obtenerMaxTagsSecundarios() =>
-      conReintentos(() async {
+  Future<int> obtenerMaxTagsSecundarios() => conReintentos(() async {
         try {
           final fila = await _supabase
               .from(TablasSupabase.configuracion)
@@ -105,12 +105,13 @@ class GestionarTagsUsuarioRepositorio {
 
   /// Inserta un nuevo registro de asignación de tag.
   /// Siempre crea un registro nuevo para preservar trazabilidad.
-  Future<void> asignarTag(String usuarioId, String tagId, String? adminId) async {
+  Future<void> asignarTag(
+      String usuarioId, String tagId, String? adminId) async {
     try {
       await _supabase.from(TablasSupabase.usuariosTags).insert({
-        'usuario_id':   usuarioId,
-        'tag_id':       tagId,
-        'estatus':      true,
+        'usuario_id': usuarioId,
+        'tag_id': tagId,
+        'estatus': true,
         'creado_por': adminId,
       });
     } on PostgrestException catch (e) {
@@ -121,18 +122,19 @@ class GestionarTagsUsuarioRepositorio {
   }
 
   /// Desactiva el registro activo del tag, registrando quién y cuándo lo quitó.
-  Future<void> quitarTag(String usuarioId, String tagId, String? adminId) async {
+  Future<void> quitarTag(
+      String usuarioId, String tagId, String? adminId) async {
     try {
       await _supabase
           .from(TablasSupabase.usuariosTags)
           .update({
-            'estatus':         false,
+            'estatus': false,
             'actualizado_por': adminId,
-            'actualizado_en':  DateTime.now().toUtc().toIso8601String(),
+            'actualizado_en': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('usuario_id', usuarioId)
-          .eq('tag_id',     tagId)
-          .eq('estatus',    true);
+          .eq('tag_id', tagId)
+          .eq('estatus', true);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {

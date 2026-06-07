@@ -11,35 +11,35 @@ import '../../helpers.dart';
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 const _u1 = UsuarioItem(
-  id:             'u-1',
-  primerNombre:   'Leo',
+  id: 'u-1',
+  primerNombre: 'Leo',
   primerApellido: 'Alvarez',
-  correo:         'leo@uni.edu',
-  estatus:        true,
+  correo: 'leo@uni.edu',
+  estatus: true,
 );
 const _u2 = UsuarioItem(
-  id:                   'u-2',
-  primerNombre:         'Ana',
-  primerApellido:       'Gomez',
-  correo:               'ana@uni.edu',
-  estatus:              true,
+  id: 'u-2',
+  primerNombre: 'Ana',
+  primerApellido: 'Gomez',
+  correo: 'ana@uni.edu',
+  estatus: true,
   numeroIdentificacion: 'CI-12345',
 );
 const _u3 = UsuarioItem(
-  id:             'u-3',
-  primerNombre:   'Carlos',
+  id: 'u-3',
+  primerNombre: 'Carlos',
   primerApellido: 'Ruiz',
-  correo:         'carlos@uni.edu',
-  estatus:        false,
+  correo: 'carlos@uni.edu',
+  estatus: false,
 );
 
 const _lista = [_u1, _u2, _u3];
 
 UsuariosCargados _cargados() => const UsuariosCargados(
-  usuarios:          _lista,
-  usuariosFiltrados: _lista,
-  hayMas:            false,
-);
+      usuarios: _lista,
+      usuariosFiltrados: _lista,
+      hayMas: false,
+    );
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
@@ -70,9 +70,9 @@ void main() {
       expect: () => [
         isA<UsuariosCargando>(),
         isA<UsuariosCargados>()
-            .having((e) => e.usuarios,          'usuarios',          _lista)
+            .having((e) => e.usuarios, 'usuarios', _lista)
             .having((e) => e.usuariosFiltrados, 'usuariosFiltrados', _lista)
-            .having((e) => e.hayMas,            'hayMas',            false),
+            .having((e) => e.hayMas, 'hayMas', false),
       ],
     );
 
@@ -86,8 +86,7 @@ void main() {
       act: (c) => c.cargar(),
       expect: () => [
         isA<UsuariosCargando>(),
-        isA<UsuariosCargados>()
-            .having((e) => e.hayMas, 'hayMas', true),
+        isA<UsuariosCargados>().having((e) => e.hayMas, 'hayMas', true),
       ],
     );
 
@@ -146,16 +145,16 @@ void main() {
             .thenAnswer((_) async => (usuarios: [_u3], hayMas: false));
       },
       seed: () => const UsuariosCargados(
-        usuarios:          [_u1, _u2],
+        usuarios: [_u1, _u2],
         usuariosFiltrados: [_u1, _u2],
-        hayMas:            true,
+        hayMas: true,
       ),
       act: (c) => c.cargarMas(),
       expect: () => [
         isA<UsuariosCargandoMas>(),
         isA<UsuariosCargados>()
             .having((e) => e.usuarios.length, 'usuarios.length', 3)
-            .having((e) => e.hayMas,          'hayMas',          false),
+            .having((e) => e.hayMas, 'hayMas', false),
       ],
     );
 
@@ -167,20 +166,20 @@ void main() {
             .thenAnswer((_) async => (usuarios: [_u3], hayMas: false));
       },
       seed: () => const UsuariosCargados(
-        usuarios:          [_u1, _u2],
+        usuarios: [_u1, _u2],
         usuariosFiltrados: [_u1, _u2],
-        hayMas:            true,
-        modoSeleccion:     true,
-        seleccionados:     {'u-1'},
+        hayMas: true,
+        modoSeleccion: true,
+        seleccionados: {'u-1'},
       ),
       act: (c) => c.cargarMas(),
       expect: () => [
         isA<UsuariosCargandoMas>()
-            .having((e) => e.seleccionados, 'seleccionados', {'u-1'})
-            .having((e) => e.modoSeleccion, 'modoSeleccion', true),
+            .having((e) => e.seleccionados, 'seleccionados', {'u-1'}).having(
+                (e) => e.modoSeleccion, 'modoSeleccion', true),
         isA<UsuariosCargados>()
-            .having((e) => e.seleccionados, 'seleccionados', {'u-1'})
-            .having((e) => e.modoSeleccion, 'modoSeleccion', true),
+            .having((e) => e.seleccionados, 'seleccionados', {'u-1'}).having(
+                (e) => e.modoSeleccion, 'modoSeleccion', true),
       ],
     );
 
@@ -192,16 +191,16 @@ void main() {
             .thenThrow(const FallaServidor('Error de red'));
       },
       seed: () => const UsuariosCargados(
-        usuarios:          [_u1, _u2],
+        usuarios: [_u1, _u2],
         usuariosFiltrados: [_u1, _u2],
-        hayMas:            true,
+        hayMas: true,
       ),
       act: (c) => c.cargarMas(),
       expect: () => [
         isA<UsuariosCargandoMas>(),
         isA<UsuariosCargados>()
             .having((e) => e.usuarios.length, 'usuarios.length', 2)
-            .having((e) => e.hayMas,          'hayMas',          true),
+            .having((e) => e.hayMas, 'hayMas', true),
       ],
     );
   });
@@ -220,9 +219,9 @@ void main() {
       'texto vacío después de filtrar restaura todos los usuarios',
       build: build,
       seed: () => const UsuariosCargados(
-        usuarios:          _lista,
+        usuarios: _lista,
         usuariosFiltrados: [_u1],
-        hayMas:            false,
+        hayMas: false,
       ),
       act: (c) => c.filtrar(''),
       expect: () => [
@@ -235,9 +234,9 @@ void main() {
       'texto solo espacios después de filtrar restaura todos',
       build: build,
       seed: () => const UsuariosCargados(
-        usuarios:          _lista,
+        usuarios: _lista,
         usuariosFiltrados: [_u2],
-        hayMas:            false,
+        hayMas: false,
       ),
       act: (c) => c.filtrar('   '),
       expect: () => [
@@ -340,9 +339,11 @@ void main() {
       'toggleSeleccion agrega un usuario al set',
       build: build,
       seed: () => const UsuariosCargados(
-        usuarios: _lista, usuariosFiltrados: _lista,
+        usuarios: _lista,
+        usuariosFiltrados: _lista,
         hayMas: false,
-        modoSeleccion: true, seleccionados: {'u-1'},
+        modoSeleccion: true,
+        seleccionados: {'u-1'},
       ),
       act: (c) => c.toggleSeleccion('u-2'),
       expect: () => [
@@ -355,9 +356,11 @@ void main() {
       'toggleSeleccion quita un usuario del set',
       build: build,
       seed: () => const UsuariosCargados(
-        usuarios: _lista, usuariosFiltrados: _lista,
+        usuarios: _lista,
+        usuariosFiltrados: _lista,
         hayMas: false,
-        modoSeleccion: true, seleccionados: {'u-1', 'u-2'},
+        modoSeleccion: true,
+        seleccionados: {'u-1', 'u-2'},
       ),
       act: (c) => c.toggleSeleccion('u-1'),
       expect: () => [
@@ -370,9 +373,11 @@ void main() {
       'toggleSeleccion auto-sale del modo cuando el set queda vacío',
       build: build,
       seed: () => const UsuariosCargados(
-        usuarios: _lista, usuariosFiltrados: _lista,
+        usuarios: _lista,
+        usuariosFiltrados: _lista,
         hayMas: false,
-        modoSeleccion: true, seleccionados: {'u-1'},
+        modoSeleccion: true,
+        seleccionados: {'u-1'},
       ),
       act: (c) => c.toggleSeleccion('u-1'),
       expect: () => [
@@ -386,9 +391,11 @@ void main() {
       'salirModoSeleccion limpia selección y desactiva modo',
       build: build,
       seed: () => const UsuariosCargados(
-        usuarios: _lista, usuariosFiltrados: _lista,
+        usuarios: _lista,
+        usuariosFiltrados: _lista,
         hayMas: false,
-        modoSeleccion: true, seleccionados: {'u-1', 'u-2'},
+        modoSeleccion: true,
+        seleccionados: {'u-1', 'u-2'},
       ),
       act: (c) => c.salirModoSeleccion(),
       expect: () => [
@@ -414,15 +421,16 @@ void main() {
       'emite estaEjecutandoLote=true, llama al repo y recarga',
       build: build,
       setUp: () {
-        when(() => repositorio.suspenderLote(any()))
-            .thenAnswer((_) async {});
+        when(() => repositorio.suspenderLote(any())).thenAnswer((_) async {});
         when(() => repositorio.obtenerUsuarios())
             .thenAnswer((_) async => (usuarios: _lista, hayMas: false));
       },
       seed: () => const UsuariosCargados(
-        usuarios: _lista, usuariosFiltrados: _lista,
+        usuarios: _lista,
+        usuariosFiltrados: _lista,
         hayMas: false,
-        modoSeleccion: true, seleccionados: {'u-1', 'u-2'},
+        modoSeleccion: true,
+        seleccionados: {'u-1', 'u-2'},
       ),
       act: (c) => c.suspenderLote(),
       verify: (_) {
@@ -439,9 +447,11 @@ void main() {
             .thenThrow(const FallaServidor('Error al suspender'));
       },
       seed: () => const UsuariosCargados(
-        usuarios: _lista, usuariosFiltrados: _lista,
+        usuarios: _lista,
+        usuariosFiltrados: _lista,
         hayMas: false,
-        modoSeleccion: true, seleccionados: {'u-1'},
+        modoSeleccion: true,
+        seleccionados: {'u-1'},
       ),
       act: (c) => c.suspenderLote(),
       expect: () => [
@@ -473,13 +483,16 @@ void main() {
             .thenAnswer((_) async => (usuarios: _lista, hayMas: false));
       },
       seed: () => const UsuariosCargados(
-        usuarios: _lista, usuariosFiltrados: _lista,
+        usuarios: _lista,
+        usuariosFiltrados: _lista,
         hayMas: false,
-        modoSeleccion: true, seleccionados: {'u-1'},
+        modoSeleccion: true,
+        seleccionados: {'u-1'},
       ),
       act: (c) => c.asignarRolLote('rol-1', 'admin-1'),
       verify: (_) {
-        verify(() => repositorio.asignarRolLote(any(), 'rol-1', 'admin-1')).called(1);
+        verify(() => repositorio.asignarRolLote(any(), 'rol-1', 'admin-1'))
+            .called(1);
       },
     );
 
@@ -491,9 +504,11 @@ void main() {
             .thenThrow(const FallaServidor('Sin permiso'));
       },
       seed: () => const UsuariosCargados(
-        usuarios: _lista, usuariosFiltrados: _lista,
+        usuarios: _lista,
+        usuariosFiltrados: _lista,
         hayMas: false,
-        modoSeleccion: true, seleccionados: {'u-1'},
+        modoSeleccion: true,
+        seleccionados: {'u-1'},
       ),
       act: (c) => c.asignarRolLote('rol-1', 'admin-1'),
       expect: () => [
@@ -524,13 +539,16 @@ void main() {
             .thenAnswer((_) async => (usuarios: _lista, hayMas: false));
       },
       seed: () => const UsuariosCargados(
-        usuarios: _lista, usuariosFiltrados: _lista,
+        usuarios: _lista,
+        usuariosFiltrados: _lista,
         hayMas: false,
-        modoSeleccion: true, seleccionados: {'u-2'},
+        modoSeleccion: true,
+        seleccionados: {'u-2'},
       ),
       act: (c) => c.asignarTagLote('tag-p', 'admin-1'),
       verify: (_) {
-        verify(() => repositorio.asignarTagLote(any(), 'tag-p', 'admin-1')).called(1);
+        verify(() => repositorio.asignarTagLote(any(), 'tag-p', 'admin-1'))
+            .called(1);
       },
     );
   });

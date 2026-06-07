@@ -28,7 +28,9 @@ void main() {
       act: (c) => c.cambiar(nuevaClave: '12345', confirmacion: '12345'),
       expect: () => [
         isA<NuevaContrasenaError>().having(
-          (e) => e.mensaje, 'mensaje', contains('6 caracteres'),
+          (e) => e.mensaje,
+          'mensaje',
+          contains('6 caracteres'),
         ),
       ],
     );
@@ -39,7 +41,9 @@ void main() {
       act: (c) => c.cambiar(nuevaClave: 'clave123', confirmacion: 'otraClave'),
       expect: () => [
         isA<NuevaContrasenaError>().having(
-          (e) => e.mensaje, 'mensaje', contains('no coinciden'),
+          (e) => e.mensaje,
+          'mensaje',
+          contains('no coinciden'),
         ),
       ],
     );

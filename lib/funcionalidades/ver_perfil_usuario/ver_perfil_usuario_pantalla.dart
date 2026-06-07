@@ -40,17 +40,18 @@ class _VerPerfilUsuarioState extends State<VerPerfilUsuarioPantalla> {
   Widget _construirVista(BuildContext context, VerPerfilUsuarioEstado estado) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
-        statusBarBrightness:     Brightness.dark,
+        statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
         body: switch (estado) {
-          VerPerfilUsuarioInicial()  ||
-          VerPerfilUsuarioCargando() => const _VistaEsqueleto(),
-          VerPerfilUsuarioCargado()  => _VistaCompleta(perfil: estado.perfil),
-          VerPerfilUsuarioError()    => _VistaError(mensaje: estado.mensaje),
+          VerPerfilUsuarioInicial() ||
+          VerPerfilUsuarioCargando() =>
+            const _VistaEsqueleto(),
+          VerPerfilUsuarioCargado() => _VistaCompleta(perfil: estado.perfil),
+          VerPerfilUsuarioError() => _VistaError(mensaje: estado.mensaje),
         },
       ),
     );
@@ -68,7 +69,8 @@ class _VistaEsqueleto extends StatelessWidget {
       children: [
         Container(
           height: 260 + MediaQuery.paddingOf(context).top,
-          decoration: const BoxDecoration(gradient: ColoresApp.degradadoPrincipal),
+          decoration:
+              const BoxDecoration(gradient: ColoresApp.degradadoPrincipal),
         ),
         const Expanded(
           child: Center(
@@ -96,11 +98,11 @@ class _VistaCompleta extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
             child: TarjetaInfoPersonal(
-              cedula:          perfil.numeroIdentificacion,
-              telefono:        perfil.telefono,
-              tagPrincipal:    perfil.tagPrincipalNombre,
+              cedula: perfil.numeroIdentificacion,
+              telefono: perfil.telefono,
+              tagPrincipal: perfil.tagPrincipalNombre,
               tagsSecundarios: perfil.tagsSecundariosNombres,
-              miembroDesde:    perfil.creadoEn,
+              miembroDesde: perfil.creadoEn,
             ),
           ),
         ),
@@ -128,7 +130,8 @@ class _CabeceraGradiente extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: ColoresApp.blanco, size: 20),
+              icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                  color: ColoresApp.blanco, size: 20),
               onPressed: () => context.pop(),
             ),
           ),
@@ -137,8 +140,8 @@ class _CabeceraGradiente extends StatelessWidget {
             child: Column(
               children: [
                 AvatarUsuario(
-                  iniciales:  perfil.iniciales,
-                  tamanio:    72,
+                  iniciales: perfil.iniciales,
+                  tamanio: 72,
                   colorFondo: ColoresApp.blanco.withValues(alpha: 0.2),
                   colorTexto: ColoresApp.blanco,
                 ),
@@ -146,15 +149,16 @@ class _CabeceraGradiente extends StatelessWidget {
                 Text(
                   perfil.nombreCompleto,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: ColoresApp.blanco, fontSize: 22,
-                  ),
+                        color: ColoresApp.blanco,
+                        fontSize: 22,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   perfil.correo,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: ColoresApp.blanco.withValues(alpha: 0.8),
-                  ),
+                        color: ColoresApp.blanco.withValues(alpha: 0.8),
+                      ),
                 ),
                 const SizedBox(height: 14),
                 Row(
@@ -194,8 +198,9 @@ class _ChipHeader extends StatelessWidget {
       child: Text(
         texto,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: ColoresApp.blanco, fontWeight: FontWeight.w600,
-        ),
+              color: ColoresApp.blanco,
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }
@@ -217,9 +222,9 @@ class _ChipEstatus extends StatelessWidget {
       child: Text(
         activo ? 'Activo' : 'Inactivo',
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: activo ? ColoresApp.verde : ColoresApp.rojo,
-          fontWeight: FontWeight.w600,
-        ),
+              color: activo ? ColoresApp.verde : ColoresApp.rojo,
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }
@@ -238,13 +243,16 @@ class _VistaError extends StatelessWidget {
       children: [
         Container(
           height: 120 + MediaQuery.paddingOf(context).top,
-          decoration: const BoxDecoration(gradient: ColoresApp.degradadoPrincipal),
+          decoration:
+              const BoxDecoration(gradient: ColoresApp.degradadoPrincipal),
           child: Align(
             alignment: Alignment.topLeft,
             child: Padding(
-              padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top + 4),
+              padding:
+                  EdgeInsets.only(top: MediaQuery.paddingOf(context).top + 4),
               child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, color: ColoresApp.blanco, size: 20),
+                icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                    color: ColoresApp.blanco, size: 20),
                 onPressed: () => context.pop(),
               ),
             ),
@@ -257,16 +265,20 @@ class _VistaError extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline, color: ColoresApp.rojo, size: 48),
+                  const Icon(Icons.error_outline,
+                      color: ColoresApp.rojo, size: 48),
                   const SizedBox(height: 16),
-                  Text(mensaje, textAlign: TextAlign.center,
+                  Text(
+                    mensaje,
+                    textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: ColoresApp.textoSecundario,
-                    ),
+                          color: ColoresApp.textoSecundario,
+                        ),
                   ),
                   const SizedBox(height: 24),
                   FilledButton(
-                    onPressed: () => context.read<VerPerfilUsuarioCubit>().cargar(''),
+                    onPressed: () =>
+                        context.read<VerPerfilUsuarioCubit>().cargar(''),
                     child: const Text('Reintentar'),
                   ),
                 ],

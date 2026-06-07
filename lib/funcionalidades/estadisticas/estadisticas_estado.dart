@@ -35,24 +35,24 @@ final class EstadisticasCargadas extends EstadisticasEstado {
     required this.heatmapHora,
   });
 
-  final FiltrosEstadisticas    filtros;
-  final ResumenEstadisticas    resumen;
-  final List<DatoGrafica>      porTipo;
-  final List<DatoGrafica>      porMes;
-  final List<DatoGrafica>      porEstatus;
-  final List<EventoTopStat>    topEventos;
-  final List<DatoGrafica>      porDiaSemana;
-  final List<DatoCreador>      porCreador;
-  final OpcionesFiltros        opciones;
+  final FiltrosEstadisticas filtros;
+  final ResumenEstadisticas resumen;
+  final List<DatoGrafica> porTipo;
+  final List<DatoGrafica> porMes;
+  final List<DatoGrafica> porEstatus;
+  final List<EventoTopStat> topEventos;
+  final List<DatoGrafica> porDiaSemana;
+  final List<DatoCreador> porCreador;
+  final OpcionesFiltros opciones;
   // v3
-  final List<DatoTasaTipo>      tasaPorTipo;
+  final List<DatoTasaTipo> tasaPorTipo;
   final List<DatoTendenciaDual> tendenciaDual;
-  final List<DatoGrafica>       escalaPorTamano;
-  final List<DatoTag>           topTags;
+  final List<DatoGrafica> escalaPorTamano;
+  final List<DatoTag> topTags;
   final List<AsistenteFrecuente> topAsistentes;
-  final List<ComposicionMes>    composicionMensual;
-  final List<DatoGrafica>       estadoEventos;
-  final List<DatoHeatmap>       heatmapHora;
+  final List<ComposicionMes> composicionMensual;
+  final List<DatoGrafica> estadoEventos;
+  final List<DatoHeatmap> heatmapHora;
 }
 
 final class EstadisticasError extends EstadisticasEstado {

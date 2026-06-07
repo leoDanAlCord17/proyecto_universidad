@@ -22,24 +22,25 @@ class SelectorAudiencia extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _OpcionesAlcance(
-          alcance:   estado.alcance,
-          alCambiar: (a) => cubit.actualizarCampo((s) => s.copiarCon(alcance: a)),
+          alcance: estado.alcance,
+          alCambiar: (a) =>
+              cubit.actualizarCampo((s) => s.copiarCon(alcance: a)),
         ),
         if (estado.alcance == AlcanceEvento.dirigido) ...[
           const SizedBox(height: 12),
           ...estado.grupos.map(
             (g) => _TarjetaGrupoAudiencia(
-              grupo:      g,
+              grupo: g,
               onEliminar: () => cubit.eliminarGrupo(g.grupoIndex),
             ),
           ),
           const SizedBox(height: 4),
           _BotonAgregarGrupo(
-            tagsPrincipales:    estado.tagsPrincipales,
-            tagsSecundarios:    estado.tagsSecundarios,
+            tagsPrincipales: estado.tagsPrincipales,
+            tagsSecundarios: estado.tagsSecundarios,
             maxTagsSecundarios: estado.maxTagsSecundarios,
-            siguienteIndice:    _siguienteIndice(estado.grupos),
-            onAgregar:          cubit.agregarGrupo,
+            siguienteIndice: _siguienteIndice(estado.grupos),
+            onAgregar: cubit.agregarGrupo,
           ),
         ],
       ],
@@ -57,7 +58,7 @@ class SelectorAudiencia extends StatelessWidget {
 class _OpcionesAlcance extends StatelessWidget {
   const _OpcionesAlcance({required this.alcance, required this.alCambiar});
 
-  final String                alcance;
+  final String alcance;
   final void Function(String) alCambiar;
 
   @override
@@ -66,18 +67,18 @@ class _OpcionesAlcance extends StatelessWidget {
       children: [
         Expanded(
           child: _Opcion(
-            etiqueta:    'General',
+            etiqueta: 'General',
             descripcion: 'Visible para todos',
-            activo:      alcance == AlcanceEvento.general,
+            activo: alcance == AlcanceEvento.general,
             alPresionar: () => alCambiar(AlcanceEvento.general),
           ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: _Opcion(
-            etiqueta:    'Dirigido',
+            etiqueta: 'Dirigido',
             descripcion: 'Grupos específicos',
-            activo:      alcance == AlcanceEvento.dirigido,
+            activo: alcance == AlcanceEvento.dirigido,
             alPresionar: () => alCambiar(AlcanceEvento.dirigido),
           ),
         ),
@@ -94,25 +95,27 @@ class _Opcion extends StatelessWidget {
     required this.alPresionar,
   });
 
-  final String        etiqueta;
-  final String        descripcion;
-  final bool          activo;
-  final VoidCallback  alPresionar;
+  final String etiqueta;
+  final String descripcion;
+  final bool activo;
+  final VoidCallback alPresionar;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap:        alPresionar,
+        onTap: alPresionar,
         borderRadius: BorderRadius.circular(10),
         child: Ink(
           decoration: BoxDecoration(
-            color:        activo ? ColoresApp.acento.withValues(alpha: 0.08) : ColoresApp.superficieSecund,
-            border:       Border.all(
-              color:     activo ? ColoresApp.acento : ColoresApp.bordeMedio,
-              width:     activo ? 1.5 : 1,
+            color: activo
+                ? ColoresApp.acento.withValues(alpha: 0.08)
+                : ColoresApp.superficieSecund,
+            border: Border.all(
+              color: activo ? ColoresApp.acento : ColoresApp.bordeMedio,
+              width: activo ? 1.5 : 1,
             ),
             borderRadius: BorderRadius.circular(10),
           ),
@@ -120,8 +123,10 @@ class _Opcion extends StatelessWidget {
           child: Row(
             children: [
               Icon(
-                activo ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
-                size:  18,
+                activo
+                    ? Icons.radio_button_checked_rounded
+                    : Icons.radio_button_off_rounded,
+                size: 18,
                 color: activo ? ColoresApp.acento : ColoresApp.textoTerciario,
               ),
               const SizedBox(width: 8),
@@ -132,17 +137,19 @@ class _Opcion extends StatelessWidget {
                     Text(
                       etiqueta,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color:      activo ? ColoresApp.acento : ColoresApp.textoPrimario,
-                        fontWeight: FontWeight.w700,
-                        fontSize:   13,
-                      ),
+                            color: activo
+                                ? ColoresApp.acento
+                                : ColoresApp.textoPrimario,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                          ),
                     ),
                     Text(
                       descripcion,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color:    ColoresApp.textoTerciario,
-                        fontSize: 11,
-                      ),
+                            color: ColoresApp.textoTerciario,
+                            fontSize: 11,
+                          ),
                     ),
                   ],
                 ),
@@ -161,7 +168,7 @@ class _TarjetaGrupoAudiencia extends StatelessWidget {
   const _TarjetaGrupoAudiencia({required this.grupo, required this.onEliminar});
 
   final GrupoAudiencia grupo;
-  final VoidCallback   onEliminar;
+  final VoidCallback onEliminar;
 
   @override
   Widget build(BuildContext context) {
@@ -169,17 +176,19 @@ class _TarjetaGrupoAudiencia extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Container(
         decoration: BoxDecoration(
-          color:        ColoresApp.superficieSecund,
+          color: ColoresApp.superficieSecund,
           borderRadius: BorderRadius.circular(10),
-          border:       Border.all(color: ColoresApp.bordeMedio),
+          border: Border.all(color: ColoresApp.bordeMedio),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         child: Row(
           children: [
             Container(
-              width: 6, height: 6,
+              width: 6,
+              height: 6,
               decoration: const BoxDecoration(
-                color: ColoresApp.acento, shape: BoxShape.circle,
+                color: ColoresApp.acento,
+                shape: BoxShape.circle,
               ),
             ),
             const SizedBox(width: 10),
@@ -187,19 +196,20 @@ class _TarjetaGrupoAudiencia extends StatelessWidget {
               child: Text(
                 grupo.etiqueta,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color:      ColoresApp.textoPrimario,
-                ),
+                      fontWeight: FontWeight.w600,
+                      color: ColoresApp.textoPrimario,
+                    ),
               ),
             ),
             Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap:        onEliminar,
+                onTap: onEliminar,
                 borderRadius: BorderRadius.circular(8),
                 child: const Padding(
                   padding: EdgeInsets.all(4),
-                  child: Icon(Icons.close_rounded, size: 16, color: ColoresApp.textoTerciario),
+                  child: Icon(Icons.close_rounded,
+                      size: 16, color: ColoresApp.textoTerciario),
                 ),
               ),
             ),
@@ -221,25 +231,25 @@ class _BotonAgregarGrupo extends StatelessWidget {
     required this.onAgregar,
   });
 
-  final List<TagOpcion>           tagsPrincipales;
-  final List<TagOpcion>           tagsSecundarios;
-  final int                       maxTagsSecundarios;
-  final int                       siguienteIndice;
+  final List<TagOpcion> tagsPrincipales;
+  final List<TagOpcion> tagsSecundarios;
+  final int maxTagsSecundarios;
+  final int siguienteIndice;
   final void Function(GrupoAudiencia) onAgregar;
 
   Future<void> _abrir(BuildContext context) async {
     final resultado = await showModalBottomSheet<GrupoAudiencia>(
-      context:            context,
-      backgroundColor:    ColoresApp.superficiePrimaria,
+      context: context,
+      backgroundColor: ColoresApp.superficiePrimaria,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) => _HojaCrearGrupo(
-        tagsPrincipales:    tagsPrincipales,
-        tagsSecundarios:    tagsSecundarios,
+        tagsPrincipales: tagsPrincipales,
+        tagsSecundarios: tagsSecundarios,
         maxTagsSecundarios: maxTagsSecundarios,
-        grupoIndex:         siguienteIndice,
+        grupoIndex: siguienteIndice,
       ),
     );
     if (resultado != null) onAgregar(resultado);
@@ -248,16 +258,16 @@ class _BotonAgregarGrupo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap:        () => _abrir(context),
+        onTap: () => _abrir(context),
         borderRadius: BorderRadius.circular(10),
         highlightColor: ColoresApp.superficieTerciar,
-        splashColor:    ColoresApp.bordeMedio,
+        splashColor: ColoresApp.bordeMedio,
         child: Ink(
           decoration: BoxDecoration(
-            border:       Border.all(color: ColoresApp.acento),
+            border: Border.all(color: ColoresApp.acento),
             borderRadius: BorderRadius.circular(10),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -269,8 +279,8 @@ class _BotonAgregarGrupo extends StatelessWidget {
               Text(
                 'Añadir grupo',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: ColoresApp.acento,
-                ),
+                      color: ColoresApp.acento,
+                    ),
               ),
             ],
           ),
@@ -292,28 +302,28 @@ class _HojaCrearGrupo extends StatefulWidget {
 
   final List<TagOpcion> tagsPrincipales;
   final List<TagOpcion> tagsSecundarios;
-  final int             maxTagsSecundarios;
-  final int             grupoIndex;
+  final int maxTagsSecundarios;
+  final int grupoIndex;
 
   @override
   State<_HojaCrearGrupo> createState() => _HojaCrearGrupoState();
 }
 
 class _HojaCrearGrupoState extends State<_HojaCrearGrupo> {
-  TagOpcion?      _principal;
+  TagOpcion? _principal;
   List<TagOpcion> _secundarios = [];
 
   Future<void> _seleccionarPrincipal() async {
     final res = await showModalBottomSheet<TagOpcion>(
-      context:         context,
+      context: context,
       backgroundColor: ColoresApp.superficiePrimaria,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) => _HojaSelectSingle<TagOpcion>(
-        opciones:     widget.tagsPrincipales,
+        opciones: widget.tagsPrincipales,
         mostrarTexto: (t) => t.nombre,
-        valorActual:  _principal,
+        valorActual: _principal,
       ),
     );
     if (res != null) setState(() => _principal = res);
@@ -321,16 +331,16 @@ class _HojaCrearGrupoState extends State<_HojaCrearGrupo> {
 
   Future<void> _seleccionarSecundarios() async {
     final res = await showModalBottomSheet<List<TagOpcion>>(
-      context:            context,
-      backgroundColor:    ColoresApp.superficiePrimaria,
+      context: context,
+      backgroundColor: ColoresApp.superficiePrimaria,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (_) => _HojaMultiSelect(
-        opciones:      widget.tagsSecundarios,
+        opciones: widget.tagsSecundarios,
         seleccionados: _secundarios,
-        max:           widget.maxTagsSecundarios,
+        max: widget.maxTagsSecundarios,
       ),
     );
     if (res != null) setState(() => _secundarios = res);
@@ -338,11 +348,13 @@ class _HojaCrearGrupoState extends State<_HojaCrearGrupo> {
 
   void _confirmar() {
     if (_principal == null) return;
-    Navigator.of(context).pop(GrupoAudiencia(
-      grupoIndex:      widget.grupoIndex,
-      tagPrincipal:    _principal!,
-      tagsSecundarios: _secundarios,
-    ),);
+    Navigator.of(context).pop(
+      GrupoAudiencia(
+        grupoIndex: widget.grupoIndex,
+        tagPrincipal: _principal!,
+        tagsSecundarios: _secundarios,
+      ),
+    );
   }
 
   @override
@@ -357,7 +369,8 @@ class _HojaCrearGrupoState extends State<_HojaCrearGrupo> {
           children: [
             Center(
               child: Container(
-                width: 40, height: 4,
+                width: 40,
+                height: 4,
                 decoration: BoxDecoration(
                   color: ColoresApp.bordeMedio,
                   borderRadius: BorderRadius.circular(2),
@@ -368,17 +381,17 @@ class _HojaCrearGrupoState extends State<_HojaCrearGrupo> {
             Text('Nuevo grupo', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 20),
             _CampoPickerHoja(
-              etiqueta:    'Tag principal *',
-              hintText:    'Selecciona',
-              valor:       _principal?.nombre,
+              etiqueta: 'Tag principal *',
+              hintText: 'Selecciona',
+              valor: _principal?.nombre,
               alPresionar: _seleccionarPrincipal,
             ),
             if (widget.tagsSecundarios.isNotEmpty) ...[
               const SizedBox(height: 16),
               _CampoPickerHoja(
-                etiqueta:    'Tags secundarios',
-                hintText:    'Ninguno',
-                valor:       _secundarios.isEmpty
+                etiqueta: 'Tags secundarios',
+                hintText: 'Ninguno',
+                valor: _secundarios.isEmpty
                     ? null
                     : _secundarios.map((t) => t.nombre).join(', '),
                 alPresionar: _seleccionarSecundarios,
@@ -386,23 +399,24 @@ class _HojaCrearGrupoState extends State<_HojaCrearGrupo> {
             ],
             const SizedBox(height: 24),
             SizedBox(
-              width:  double.infinity,
+              width: double.infinity,
               height: 48,
               child: Material(
-                color:        puedeConfirmar ? ColoresApp.acento : ColoresApp.bordeMedio,
+                color:
+                    puedeConfirmar ? ColoresApp.acento : ColoresApp.bordeMedio,
                 borderRadius: BorderRadius.circular(12),
                 child: InkWell(
-                  onTap:        puedeConfirmar ? _confirmar : null,
+                  onTap: puedeConfirmar ? _confirmar : null,
                   borderRadius: BorderRadius.circular(12),
-                  splashColor:    ColoresApp.blanco.withValues(alpha: 0.2),
+                  splashColor: ColoresApp.blanco.withValues(alpha: 0.2),
                   highlightColor: ColoresApp.blanco.withValues(alpha: 0.1),
                   child: Center(
                     child: Text(
                       'Agregar',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: ColoresApp.blanco,
-                        fontWeight: FontWeight.w700,
-                      ),
+                            color: ColoresApp.blanco,
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
                   ),
                 ),
@@ -425,9 +439,9 @@ class _CampoPickerHoja extends StatelessWidget {
     this.valor,
   });
 
-  final String       etiqueta;
-  final String       hintText;
-  final String?      valor;
+  final String etiqueta;
+  final String hintText;
+  final String? valor;
   final VoidCallback alPresionar;
 
   @override
@@ -438,17 +452,17 @@ class _CampoPickerHoja extends StatelessWidget {
         Text(etiqueta, style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(height: 8),
         Material(
-          color:        Colors.transparent,
+          color: Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           child: InkWell(
-            onTap:        alPresionar,
+            onTap: alPresionar,
             borderRadius: BorderRadius.circular(12),
             highlightColor: ColoresApp.superficieTerciar,
-            splashColor:    ColoresApp.bordeMedio,
+            splashColor: ColoresApp.bordeMedio,
             child: Ink(
               decoration: BoxDecoration(
-                color:        ColoresApp.superficieSecund,
-                border:       Border.all(color: ColoresApp.bordeMedio),
+                color: ColoresApp.superficieSecund,
+                border: Border.all(color: ColoresApp.bordeMedio),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -458,16 +472,18 @@ class _CampoPickerHoja extends StatelessWidget {
                     child: Text(
                       valor ?? hintText,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color:      valor != null ? ColoresApp.textoPrimario : ColoresApp.textoTerciario,
-                        fontWeight: FontWeight.w600,
-                        fontSize:   14,
-                      ),
+                            color: valor != null
+                                ? ColoresApp.textoPrimario
+                                : ColoresApp.textoTerciario,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
                     ),
                   ),
                   const Icon(
                     Icons.keyboard_arrow_down_rounded,
                     color: ColoresApp.textoTerciario,
-                    size:  20,
+                    size: 20,
                   ),
                 ],
               ),
@@ -488,9 +504,9 @@ class _HojaSelectSingle<T> extends StatelessWidget {
     this.valorActual,
   });
 
-  final List<T>            opciones;
+  final List<T> opciones;
   final String Function(T) mostrarTexto;
-  final T?                 valorActual;
+  final T? valorActual;
 
   @override
   Widget build(BuildContext context) {
@@ -500,7 +516,8 @@ class _HojaSelectSingle<T> extends StatelessWidget {
         children: [
           const SizedBox(height: 12),
           Container(
-            width: 40, height: 4,
+            width: 40,
+            height: 4,
             decoration: BoxDecoration(
               color: ColoresApp.bordeMedio,
               borderRadius: BorderRadius.circular(2),
@@ -509,7 +526,7 @@ class _HojaSelectSingle<T> extends StatelessWidget {
           Flexible(
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount:  opciones.length,
+              itemCount: opciones.length,
               itemBuilder: (context, i) {
                 final opcion = opciones[i];
                 final activo = valorActual == opcion;
@@ -517,11 +534,14 @@ class _HojaSelectSingle<T> extends StatelessWidget {
                   title: Text(
                     mostrarTexto(opcion),
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: activo ? ColoresApp.acento : ColoresApp.textoPrimario,
-                    ),
+                          color: activo
+                              ? ColoresApp.acento
+                              : ColoresApp.textoPrimario,
+                        ),
                   ),
                   trailing: activo
-                      ? const Icon(Icons.check_rounded, color: ColoresApp.acento)
+                      ? const Icon(Icons.check_rounded,
+                          color: ColoresApp.acento)
                       : null,
                   onTap: () => Navigator.pop(context, opcion),
                 );
@@ -546,7 +566,7 @@ class _HojaMultiSelect extends StatefulWidget {
 
   final List<TagOpcion> opciones;
   final List<TagOpcion> seleccionados;
-  final int             max;
+  final int max;
 
   @override
   State<_HojaMultiSelect> createState() => _HojaMultiSelectState();
@@ -579,7 +599,8 @@ class _HojaMultiSelectState extends State<_HojaMultiSelect> {
         children: [
           const SizedBox(height: 12),
           Container(
-            width: 40, height: 4,
+            width: 40,
+            height: 4,
             decoration: BoxDecoration(
               color: ColoresApp.bordeMedio,
               borderRadius: BorderRadius.circular(2),
@@ -593,30 +614,34 @@ class _HojaMultiSelectState extends State<_HojaMultiSelect> {
                 child: Text(
                   '${_seleccionados.length}/${widget.max}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: ColoresApp.textoTerciario,
-                  ),
+                        color: ColoresApp.textoTerciario,
+                      ),
                 ),
               ),
             ),
           Flexible(
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount:  widget.opciones.length,
+              itemCount: widget.opciones.length,
               itemBuilder: (context, i) {
-                final opcion           = widget.opciones[i];
-                final activo           = _seleccionados.contains(opcion);
-                final maxAlcanzado     = _seleccionados.length >= widget.max && !activo;
+                final opcion = widget.opciones[i];
+                final activo = _seleccionados.contains(opcion);
+                final maxAlcanzado =
+                    _seleccionados.length >= widget.max && !activo;
                 return ListTile(
                   title: Text(
                     opcion.nombre,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: maxAlcanzado
-                          ? ColoresApp.textoTerciario
-                          : (activo ? ColoresApp.acento : ColoresApp.textoPrimario),
-                    ),
+                          color: maxAlcanzado
+                              ? ColoresApp.textoTerciario
+                              : (activo
+                                  ? ColoresApp.acento
+                                  : ColoresApp.textoPrimario),
+                        ),
                   ),
                   trailing: activo
-                      ? const Icon(Icons.check_rounded, color: ColoresApp.acento)
+                      ? const Icon(Icons.check_rounded,
+                          color: ColoresApp.acento)
                       : null,
                   onTap: maxAlcanzado ? null : () => _toggle(opcion),
                 );
@@ -626,11 +651,12 @@ class _HojaMultiSelectState extends State<_HojaMultiSelect> {
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
             child: SizedBox(
-              width:  double.infinity,
+              width: double.infinity,
               height: 44,
               child: FilledButton(
                 onPressed: () => Navigator.pop(context, _seleccionados),
-                style: FilledButton.styleFrom(backgroundColor: ColoresApp.acento),
+                style:
+                    FilledButton.styleFrom(backgroundColor: ColoresApp.acento),
                 child: const Text('Confirmar'),
               ),
             ),

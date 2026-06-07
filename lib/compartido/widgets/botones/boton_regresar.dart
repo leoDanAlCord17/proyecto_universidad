@@ -10,37 +10,38 @@ class BotonRegresar extends StatelessWidget {
     this.tooltip = 'Regresar',
   });
 
-  final String?       ruta;
+  final String? ruta;
   final VoidCallback? alPresionar;
-  final String        tooltip;
+  final String tooltip;
 
   @override
   Widget build(BuildContext context) {
     return Tooltip(
       message: tooltip,
       child: Material(
-        color:        Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap: alPresionar ?? () {
-            if (ruta != null) {
-              context.go(ruta!);
-            } else {
-              context.pop();
-            }
-          },
-          borderRadius:   BorderRadius.circular(12),
+          onTap: alPresionar ??
+              () {
+                if (ruta != null) {
+                  context.go(ruta!);
+                } else {
+                  context.pop();
+                }
+              },
+          borderRadius: BorderRadius.circular(12),
           highlightColor: ColoresApp.superficieTerciar,
-          splashColor:    ColoresApp.bordeMedio,
+          splashColor: ColoresApp.bordeMedio,
           child: Ink(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color:        ColoresApp.superficieSecund,
+              color: ColoresApp.superficieSecund,
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
               Icons.arrow_back_ios_new_rounded,
-              size:  18,
+              size: 18,
               color: ColoresApp.textoPrimario,
             ),
           ),

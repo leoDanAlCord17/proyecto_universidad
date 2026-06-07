@@ -15,7 +15,7 @@ class ColaboradoresEventoRepositorio {
   Future<List<ColaboradorItem>> obtenerColaboradores(String eventoId) =>
       conReintentos(() async {
         try {
-          final rolId        = await _rolColaboradorId();
+          final rolId = await _rolColaboradorId();
           final asignaciones = await _supabase
               .from(TablasSupabase.eventosUsuariosRoles)
               .select('id, usuario_id, asignado_por')
@@ -24,7 +24,8 @@ class ColaboradoresEventoRepositorio {
               .eq('estatus', true)
               .timeout(kTimeoutSolicitud);
           if (asignaciones.isEmpty) return [];
-          final usuarioIds    = asignaciones.map((a) => a['usuario_id'] as String).toList();
+          final usuarioIds =
+              asignaciones.map((a) => a['usuario_id'] as String).toList();
           final asignadoPorIds = asignaciones
               .map((a) => a['asignado_por'] as String?)
               .whereType<String>()
@@ -33,7 +34,8 @@ class ColaboradoresEventoRepositorio {
           final todosIds = {...usuarioIds, ...asignadoPorIds}.toList();
           final usuarios = await _supabase
               .from(TablasSupabase.usuarios)
-              .select('id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
+              .select(
+                  'id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
               .inFilter('id', todosIds)
               .timeout(kTimeoutSolicitud);
           return _combinarDatos(asignaciones, usuarios);
@@ -53,7 +55,8 @@ class ColaboradoresEventoRepositorio {
           final qSanitizado = q.length > 100 ? q.substring(0, 100) : q;
           final filas = await _supabase
               .from(TablasSupabase.usuarios)
-              .select('id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
+              .select(
+                  'id, primer_nombre, primer_apellido, url_avatar, numero_identificacion')
               .or('primer_nombre.ilike.%$qSanitizado%,primer_apellido.ilike.%$qSanitizado%')
               .order('primer_apellido', ascending: true)
               .limit(30)
@@ -75,18 +78,16 @@ class ColaboradoresEventoRepositorio {
   }) async {
     try {
       final rolId = await _rolColaboradorId();
-      await _supabase
-          .from(TablasSupabase.eventosUsuariosRoles)
-          .upsert(
-            {
-              'evento_id':    eventoId,
-              'usuario_id':   usuarioId,
-              'rol_id':       rolId,
-              'asignado_por': asignadoPorId,
-              'estatus':      true,
-            },
-            onConflict: 'evento_id,usuario_id,rol_id',
-          );
+      await _supabase.from(TablasSupabase.eventosUsuariosRoles).upsert(
+        {
+          'evento_id': eventoId,
+          'usuario_id': usuarioId,
+          'rol_id': rolId,
+          'asignado_por': asignadoPorId,
+          'estatus': true,
+        },
+        onConflict: 'evento_id,usuario_id,rol_id',
+      );
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -99,8 +100,7 @@ class ColaboradoresEventoRepositorio {
     try {
       await _supabase
           .from(TablasSupabase.eventosUsuariosRoles)
-          .update({'estatus': false})
-          .eq('id', asignacionId);
+          .update({'estatus': false}).eq('id', asignacionId);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -126,27 +126,30 @@ class ColaboradoresEventoRepositorio {
     final mapaUsuarios = {
       for (final u in usuarios) u['id'] as String: u,
     };
-    return asignaciones.map((asig) {
-      final uid          = asig['usuario_id'] as String;
-      final u            = mapaUsuarios[uid];
-      if (u == null) return null;
-      final asignadoPorId = asig['asignado_por'] as String?;
-      String? asignadoPorNombre;
-      if (asignadoPorId != null) {
-        final asignador = mapaUsuarios[asignadoPorId];
-        if (asignador != null) {
-          final n = asignador['primer_nombre']  as String? ?? '';
-          final a = asignador['primer_apellido'] as String? ?? '';
-          asignadoPorNombre = '$n $a'.trim();
-          if (asignadoPorNombre.isEmpty) asignadoPorNombre = null;
-        }
-      }
-      return ColaboradorItem.desdeJson({
-        ...u,
-        'asignacion_id':      asig['id'] as String,
-        'usuario_id':         uid,
-        'asignado_por_nombre': asignadoPorNombre,
-      });
-    }).whereType<ColaboradorItem>().toList();
+    return asignaciones
+        .map((asig) {
+          final uid = asig['usuario_id'] as String;
+          final u = mapaUsuarios[uid];
+          if (u == null) return null;
+          final asignadoPorId = asig['asignado_por'] as String?;
+          String? asignadoPorNombre;
+          if (asignadoPorId != null) {
+            final asignador = mapaUsuarios[asignadoPorId];
+            if (asignador != null) {
+              final n = asignador['primer_nombre'] as String? ?? '';
+              final a = asignador['primer_apellido'] as String? ?? '';
+              asignadoPorNombre = '$n $a'.trim();
+              if (asignadoPorNombre.isEmpty) asignadoPorNombre = null;
+            }
+          }
+          return ColaboradorItem.desdeJson({
+            ...u,
+            'asignacion_id': asig['id'] as String,
+            'usuario_id': uid,
+            'asignado_por_nombre': asignadoPorNombre,
+          });
+        })
+        .whereType<ColaboradorItem>()
+        .toList();
   }
 }

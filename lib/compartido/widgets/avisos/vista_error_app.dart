@@ -13,7 +13,7 @@ class VistaErrorApp extends StatelessWidget {
     this.alReintentar,
   });
 
-  final String        mensaje;
+  final String mensaje;
   final VoidCallback? alReintentar;
 
   @override
@@ -25,15 +25,15 @@ class VistaErrorApp extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width:  64,
+              width: 64,
               height: 64,
               decoration: const BoxDecoration(
-                color:        ColoresApp.rojoClaro,
+                color: ColoresApp.rojoClaro,
                 borderRadius: BorderRadius.all(Radius.circular(18)),
               ),
               child: const Icon(
                 Icons.error_outline_rounded,
-                size:  32,
+                size: 32,
                 color: ColoresApp.rojo,
               ),
             ),
@@ -42,8 +42,8 @@ class VistaErrorApp extends StatelessWidget {
               mensaje,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
+                    color: ColoresApp.textoSecundario,
+                  ),
             ),
             if (alReintentar != null) ...[
               const SizedBox(height: 24),

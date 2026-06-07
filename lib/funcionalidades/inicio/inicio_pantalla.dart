@@ -53,9 +53,9 @@ class _InicioPantallaState extends State<InicioPantalla> {
       builder: (context, usuario) {
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: const SystemUiOverlayStyle(
-            statusBarColor:          Colors.transparent,
+            statusBarColor: Colors.transparent,
             statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness:     Brightness.light,
+            statusBarBrightness: Brightness.light,
           ),
           child: Scaffold(
             backgroundColor: ColoresApp.fondo,
@@ -68,7 +68,8 @@ class _InicioPantallaState extends State<InicioPantalla> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (usuario != null) ...[
-                          AvatarUsuario(iniciales: usuario.iniciales, tamanio: 42),
+                          AvatarUsuario(
+                              iniciales: usuario.iniciales, tamanio: 42),
                           const SizedBox(width: 12),
                         ],
                         _CabeceraTexto(nombre: usuario?.nombreCompleto ?? ''),
@@ -77,9 +78,11 @@ class _InicioPantallaState extends State<InicioPantalla> {
                     derecha: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        BlocSelector<NotificacionesCubit, NotificacionesEstado, int>(
-                          selector: (estado) =>
-                              estado is NotificacionesCargadas ? estado.cantidad : 0,
+                        BlocSelector<NotificacionesCubit, NotificacionesEstado,
+                            int>(
+                          selector: (estado) => estado is NotificacionesCargadas
+                              ? estado.cantidad
+                              : 0,
                           builder: (_, cantidad) =>
                               _BotonNotificaciones(cantidad: cantidad),
                         ),
@@ -97,10 +100,14 @@ class _InicioPantallaState extends State<InicioPantalla> {
                         if (usuario?.id != null)
                           BlocBuilder<InicioCubit, InicioEstado>(
                             builder: (context, estado) => TarjetaQrPerfil(
-                              usuarioId:       usuario!.id!,
-                              roles:           usuario.roles,
-                              tagPrincipal:    estado is InicioTagsCargados ? estado.tagPrincipal    : null,
-                              tagsSecundarios: estado is InicioTagsCargados ? estado.tagsSecundarios : [],
+                              usuarioId: usuario!.id!,
+                              roles: usuario.roles,
+                              tagPrincipal: estado is InicioTagsCargados
+                                  ? estado.tagPrincipal
+                                  : null,
+                              tagsSecundarios: estado is InicioTagsCargados
+                                  ? estado.tagsSecundarios
+                                  : [],
                             ),
                           ),
                         BlocBuilder<EventosEnCursoCubit, EventosEnCursoEstado>(
@@ -114,7 +121,7 @@ class _InicioPantallaState extends State<InicioPantalla> {
               ],
             ),
             bottomNavigationBar: BarraNavegacionApp(
-              indiceActual:    0,
+              indiceActual: 0,
               alCambiarIndice: (indice) {
                 if (indice == 1) context.go(Rutas.eventos);
                 if (indice == 3) context.push(Rutas.historial);
@@ -137,7 +144,7 @@ class _CabeceraTexto extends StatelessWidget {
   Widget build(BuildContext context) {
     final estilos = Theme.of(context).textTheme;
     return Column(
-      mainAxisAlignment:  MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BlocSelector<EventosEnCursoCubit, EventosEnCursoEstado, int>(
@@ -151,7 +158,7 @@ class _CabeceraTexto extends StatelessWidget {
             return Text(
               texto,
               style: estilos.titleSmall?.copyWith(
-                color:      ColoresApp.verde,
+                color: ColoresApp.verde,
                 fontWeight: FontWeight.w600,
               ),
             );
@@ -160,9 +167,9 @@ class _CabeceraTexto extends StatelessWidget {
         Text(
           'Hola, $nombre 👋',
           style: estilos.titleSmall?.copyWith(
-            fontSize:   20,
+            fontSize: 20,
             fontWeight: FontWeight.w700,
-            color:      ColoresApp.textoPrimario,
+            color: ColoresApp.textoPrimario,
           ),
         ),
       ],
@@ -206,29 +213,30 @@ class _EstadoVacioEventos extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: Container(
-        width:   double.infinity,
+        width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         decoration: BoxDecoration(
-          color:        ColoresApp.superficieTerciar,
+          color: ColoresApp.superficieTerciar,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
           children: [
             const Icon(
               Icons.event_busy_outlined,
-              size:  40,
+              size: 40,
               color: ColoresApp.textoSecundario,
             ),
             const SizedBox(height: 12),
             Text(
               'No hay eventos activos en este momento',
               textAlign: TextAlign.center,
-              style: estilos.bodyMedium?.copyWith(color: ColoresApp.textoSecundario),
+              style: estilos.bodyMedium
+                  ?.copyWith(color: ColoresApp.textoSecundario),
             ),
             const SizedBox(height: 12),
             TextButton.icon(
               onPressed: () => context.go(Rutas.eventos),
-              icon:  const Icon(Icons.calendar_month_outlined),
+              icon: const Icon(Icons.calendar_month_outlined),
               label: const Text('Ver próximos eventos'),
             ),
           ],
@@ -260,28 +268,29 @@ class _BotonAjustes extends StatelessWidget {
     );
 
     return BotonContornoIcono(
-      icono:       Icons.settings_outlined,
+      icono: Icons.settings_outlined,
       alPresionar: () => PanelOpciones.mostrar(
         context,
         opciones: [
           if (usuario.tienePermiso('ajustes.usuarios'))
             OpcionPanel(
-              icono:       Icons.people_outline_rounded,
-              colorFondo:  ColoresApp.acentoClaro,
-              colorIcono:  ColoresApp.acento,
-              titulo:      'Usuarios',
+              icono: Icons.people_outline_rounded,
+              colorFondo: ColoresApp.acentoClaro,
+              colorIcono: ColoresApp.acento,
+              titulo: 'Usuarios',
               descripcion: 'Gestionar usuarios',
               alPresionar: () {
                 Navigator.of(context, rootNavigator: true).pop();
                 context.push(Rutas.gestionUsuarios);
               },
             ),
-          if (revisionHabilitada && usuario.tienePermiso('ajustes.revision_usuarios'))
+          if (revisionHabilitada &&
+              usuario.tienePermiso('ajustes.revision_usuarios'))
             OpcionPanel(
-              icono:       Icons.how_to_reg_outlined,
-              colorFondo:  ColoresApp.ambarClaro,
-              colorIcono:  ColoresApp.ambar,
-              titulo:      'Revisión de usuarios',
+              icono: Icons.how_to_reg_outlined,
+              colorFondo: ColoresApp.ambarClaro,
+              colorIcono: ColoresApp.ambar,
+              titulo: 'Revisión de usuarios',
               descripcion: 'Aprobar o rechazar solicitudes',
               alPresionar: () {
                 Navigator.of(context, rootNavigator: true).pop();
@@ -290,10 +299,10 @@ class _BotonAjustes extends StatelessWidget {
             ),
           if (usuario.tienePermiso('ajustes.gestionar_roles'))
             OpcionPanel(
-              icono:       Icons.admin_panel_settings_outlined,
-              colorFondo:  ColoresApp.tealClaro,
-              colorIcono:  ColoresApp.teal,
-              titulo:      'Gestionar Roles',
+              icono: Icons.admin_panel_settings_outlined,
+              colorFondo: ColoresApp.tealClaro,
+              colorIcono: ColoresApp.teal,
+              titulo: 'Gestionar Roles',
               descripcion: 'Asignar o remover roles',
               alPresionar: () {
                 Navigator.of(context, rootNavigator: true).pop();
@@ -302,10 +311,10 @@ class _BotonAjustes extends StatelessWidget {
             ),
           if (usuario.tienePermiso('ajustes.permisos'))
             OpcionPanel(
-              icono:       Icons.shield_outlined,
-              colorFondo:  ColoresApp.verdeClaro,
-              colorIcono:  ColoresApp.verde,
-              titulo:      'Permisos',
+              icono: Icons.shield_outlined,
+              colorFondo: ColoresApp.verdeClaro,
+              colorIcono: ColoresApp.verde,
+              titulo: 'Permisos',
               descripcion: 'Permisos de la app',
               alPresionar: () {
                 Navigator.of(context, rootNavigator: true).pop();
@@ -314,10 +323,10 @@ class _BotonAjustes extends StatelessWidget {
             ),
           if (usuario.tienePermiso('ajustes.gestionar_tags'))
             OpcionPanel(
-              icono:       Icons.label_outline_rounded,
-              colorFondo:  ColoresApp.ambarClaro,
-              colorIcono:  ColoresApp.ambar,
-              titulo:      'Gestionar Tags',
+              icono: Icons.label_outline_rounded,
+              colorFondo: ColoresApp.ambarClaro,
+              colorIcono: ColoresApp.ambar,
+              titulo: 'Gestionar Tags',
               descripcion: 'Etiquetas',
               alPresionar: () {
                 Navigator.of(context, rootNavigator: true).pop();
@@ -326,10 +335,10 @@ class _BotonAjustes extends StatelessWidget {
             ),
           if (usuario.tienePermiso('ajustes.tipos_eventos'))
             OpcionPanel(
-              icono:       Icons.category_outlined,
-              colorFondo:  ColoresApp.tealClaro,
-              colorIcono:  ColoresApp.teal,
-              titulo:      'Tipos de evento',
+              icono: Icons.category_outlined,
+              colorFondo: ColoresApp.tealClaro,
+              colorIcono: ColoresApp.teal,
+              titulo: 'Tipos de evento',
               descripcion: 'Gestionar tipos de evento',
               alPresionar: () {
                 Navigator.of(context, rootNavigator: true).pop();
@@ -338,10 +347,10 @@ class _BotonAjustes extends StatelessWidget {
             ),
           if (usuario.tienePermiso('ajustes.estadisticas'))
             OpcionPanel(
-              icono:       Icons.bar_chart_rounded,
-              colorFondo:  ColoresApp.verdeClaro,
-              colorIcono:  ColoresApp.verde,
-              titulo:      'Estadísticas',
+              icono: Icons.bar_chart_rounded,
+              colorFondo: ColoresApp.verdeClaro,
+              colorIcono: ColoresApp.verde,
+              titulo: 'Estadísticas',
               descripcion: 'Métricas y análisis de eventos',
               alPresionar: () {
                 Navigator.of(context, rootNavigator: true).pop();
@@ -350,10 +359,10 @@ class _BotonAjustes extends StatelessWidget {
             ),
           if (usuario.tienePermiso('ajustes.configuraciones'))
             const OpcionPanel(
-              icono:       Icons.tune_rounded,
-              colorFondo:  ColoresApp.superficieTerciar,
-              colorIcono:  ColoresApp.textoSecundario,
-              titulo:      'Configuraciones generales',
+              icono: Icons.tune_rounded,
+              colorFondo: ColoresApp.superficieTerciar,
+              colorIcono: ColoresApp.textoSecundario,
+              titulo: 'Configuraciones generales',
               descripcion: 'Preferencias y ajustes',
             ),
         ],
@@ -375,12 +384,12 @@ class _BotonNotificaciones extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         BotonContornoIcono(
-          icono:       Icons.notifications_outlined,
+          icono: Icons.notifications_outlined,
           alPresionar: () => context.push(Rutas.notificaciones),
         ),
         if (cantidad > 0)
           Positioned(
-            top:   -5,
+            top: -5,
             right: -5,
             child: _Insignia(cantidad: cantidad),
           ),
@@ -398,19 +407,19 @@ class _Insignia extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-      padding:     const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-      decoration:  BoxDecoration(
-        color:        ColoresApp.rojo,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: BoxDecoration(
+        color: ColoresApp.rojo,
         borderRadius: BorderRadius.circular(9),
       ),
       child: Center(
         child: Text(
           cantidad > 9 ? '+9' : '$cantidad',
           style: const TextStyle(
-            color:      ColoresApp.blanco,
-            fontSize:   10,
+            color: ColoresApp.blanco,
+            fontSize: 10,
             fontWeight: FontWeight.w700,
-            height:     1.0,
+            height: 1.0,
           ),
         ),
       ),

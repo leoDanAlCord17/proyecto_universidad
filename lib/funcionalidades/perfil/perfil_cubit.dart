@@ -15,14 +15,16 @@ class PerfilCubit extends Cubit<PerfilEstado> {
   Future<void> cargar(String usuarioId) async {
     emit(const PerfilCargando());
     try {
-      final tags        = await _repositorio.obtenerTags(usuarioId);
+      final tags = await _repositorio.obtenerTags(usuarioId);
       final puedeEditar = await _repositorio.obtenerPuedeEditarPerfil();
       if (isClosed) return;
-      emit(PerfilCargado(
-        tagPrincipal:      tags.tagPrincipal,
-        tagsSecundarios:   tags.tagsSecundarios,
-        puedeEditarPerfil: puedeEditar,
-      ),);
+      emit(
+        PerfilCargado(
+          tagPrincipal: tags.tagPrincipal,
+          tagsSecundarios: tags.tagsSecundarios,
+          puedeEditarPerfil: puedeEditar,
+        ),
+      );
     } on FallaServidor catch (e) {
       if (isClosed) return;
       reportarError(e);
@@ -37,10 +39,12 @@ class PerfilCubit extends Cubit<PerfilEstado> {
   void _emitirDesdeCache(String usuarioId, String mensajeError) {
     final cache = _repositorio.obtenerTagsDesdeCache(usuarioId);
     if (cache != null) {
-      emit(PerfilSinConexion(
-        tagPrincipal:    cache.tagPrincipal,
-        tagsSecundarios: cache.tagsSecundarios,
-      ),);
+      emit(
+        PerfilSinConexion(
+          tagPrincipal: cache.tagPrincipal,
+          tagsSecundarios: cache.tagsSecundarios,
+        ),
+      );
     } else {
       emit(PerfilError(mensajeError));
     }
@@ -50,7 +54,7 @@ class PerfilCubit extends Cubit<PerfilEstado> {
   /// Emite [PerfilGuardado] al tener éxito — el listener de la pantalla
   /// actualiza el AuthCubit y llama a [volverACargado].
   Future<void> guardarPerfil({
-    required Usuario              usuarioActual,
+    required Usuario usuarioActual,
     required Map<String, dynamic> campos,
   }) async {
     final estadoActual = state;
@@ -61,35 +65,39 @@ class PerfilCubit extends Cubit<PerfilEstado> {
       final datos = {
         ...campos,
         'actualizado_por': usuarioActual.id,
-        'actualizado_en':  DateTime.now().toUtc().toIso8601String(),
+        'actualizado_en': DateTime.now().toUtc().toIso8601String(),
       };
       await _repositorio.actualizarPerfil(
         usuarioId: usuarioActual.id!,
-        datos:     datos,
+        datos: datos,
       );
 
       final usuarioActualizado = Usuario(
-        id:                   usuarioActual.id,
-        authId:               usuarioActual.authId,
-        primerNombre:         campos['primer_nombre']         as String? ?? usuarioActual.primerNombre,
-        segundoNombre:        campos['segundo_nombre']        as String?,
-        primerApellido:       campos['primer_apellido']       as String? ?? usuarioActual.primerApellido,
-        segundoApellido:      campos['segundo_apellido']      as String?,
+        id: usuarioActual.id,
+        authId: usuarioActual.authId,
+        primerNombre:
+            campos['primer_nombre'] as String? ?? usuarioActual.primerNombre,
+        segundoNombre: campos['segundo_nombre'] as String?,
+        primerApellido: campos['primer_apellido'] as String? ??
+            usuarioActual.primerApellido,
+        segundoApellido: campos['segundo_apellido'] as String?,
         numeroIdentificacion: campos['numero_identificacion'] as String?,
-        correo:               campos['correo']                as String? ?? usuarioActual.correo,
-        telefono:             campos['telefono']              as String?,
-        urlAvatar:            usuarioActual.urlAvatar,
-        estatus:              usuarioActual.estatus,
-        estatusAprobacion:    usuarioActual.estatusAprobacion,
-        creadoEn:             usuarioActual.creadoEn,
-        roles:                usuarioActual.roles,
-        permisos:             usuarioActual.permisos,
+        correo: campos['correo'] as String? ?? usuarioActual.correo,
+        telefono: campos['telefono'] as String?,
+        urlAvatar: usuarioActual.urlAvatar,
+        estatus: usuarioActual.estatus,
+        estatusAprobacion: usuarioActual.estatusAprobacion,
+        creadoEn: usuarioActual.creadoEn,
+        roles: usuarioActual.roles,
+        permisos: usuarioActual.permisos,
       );
 
-      emit(PerfilGuardado(
-        usuarioActualizado: usuarioActualizado,
-        estadoAnterior:     estadoActual.copiarCon(estaGuardando: false),
-      ),);
+      emit(
+        PerfilGuardado(
+          usuarioActualizado: usuarioActualizado,
+          estadoAnterior: estadoActual.copiarCon(estaGuardando: false),
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(estadoActual.copiarCon(estaGuardando: false, limpiarError: true));

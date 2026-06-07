@@ -21,9 +21,9 @@ class BarraNavegacionApp extends StatelessWidget {
         color: ColoresApp.superficiePrimaria,
         boxShadow: [
           BoxShadow(
-            color:      ColoresApp.sombraTarjeta,
+            color: ColoresApp.sombraTarjeta,
             blurRadius: 16,
-            offset:     Offset(0, -4),
+            offset: Offset(0, -4),
           ),
         ],
       ),
@@ -36,36 +36,36 @@ class BarraNavegacionApp extends StatelessWidget {
             child: Row(
               children: [
                 _ItemNavegacion(
-                  icono:        Icons.home_rounded,
-                  etiqueta:     'Inicio',
-                  indice:       0,
+                  icono: Icons.home_rounded,
+                  etiqueta: 'Inicio',
+                  indice: 0,
                   indiceActual: indiceActual,
-                  alPresionar:  alCambiarIndice,
+                  alPresionar: alCambiarIndice,
                 ),
                 _ItemNavegacion(
-                  icono:        Icons.calendar_month_rounded,
-                  etiqueta:     'Eventos',
-                  indice:       1,
+                  icono: Icons.calendar_month_rounded,
+                  etiqueta: 'Eventos',
+                  indice: 1,
                   indiceActual: indiceActual,
-                  alPresionar:  alCambiarIndice,
+                  alPresionar: alCambiarIndice,
                 ),
                 _BotonEscanear(
                   estaActivo: indiceActual == 2,
                   alPresionar: () => context.push(Rutas.escanear),
                 ),
                 _ItemNavegacion(
-                  icono:        Icons.how_to_reg_rounded,
-                  etiqueta:     'Asistencia',
-                  indice:       3,
+                  icono: Icons.how_to_reg_rounded,
+                  etiqueta: 'Asistencia',
+                  indice: 3,
                   indiceActual: indiceActual,
-                  alPresionar:  alCambiarIndice,
+                  alPresionar: alCambiarIndice,
                 ),
                 _ItemNavegacion(
-                  icono:        Icons.person_outline_rounded,
-                  etiqueta:     'Perfil',
-                  indice:       4,
+                  icono: Icons.person_outline_rounded,
+                  etiqueta: 'Perfil',
+                  indice: 4,
                   indiceActual: indiceActual,
-                  alPresionar:  alCambiarIndice,
+                  alPresionar: alCambiarIndice,
                 ),
               ],
             ),
@@ -85,10 +85,10 @@ class _ItemNavegacion extends StatelessWidget {
     required this.alPresionar,
   });
 
-  final IconData           icono;
-  final String             etiqueta;
-  final int                indice;
-  final int                indiceActual;
+  final IconData icono;
+  final String etiqueta;
+  final int indice;
+  final int indiceActual;
   final void Function(int) alPresionar;
 
   bool get _estaActivo => indice == indiceActual;
@@ -99,7 +99,7 @@ class _ItemNavegacion extends StatelessWidget {
 
     return Expanded(
       child: InkWell(
-        onTap:        () => alPresionar(indice),
+        onTap: () => alPresionar(indice),
         borderRadius: BorderRadius.circular(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -109,10 +109,10 @@ class _ItemNavegacion extends StatelessWidget {
             Text(
               etiqueta,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontSize:   11,
-                fontWeight: _estaActivo ? FontWeight.w700 : FontWeight.w700,
-                color:      color,
-              ),
+                    fontSize: 11,
+                    fontWeight: _estaActivo ? FontWeight.w700 : FontWeight.w700,
+                    color: color,
+                  ),
             ),
           ],
         ),
@@ -127,29 +127,29 @@ class _BotonEscanear extends StatelessWidget {
     required this.alPresionar,
   });
 
-  final bool         estaActivo;
+  final bool estaActivo;
   final VoidCallback alPresionar;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: InkWell(
-        onTap:        alPresionar,
+        onTap: alPresionar,
         borderRadius: BorderRadius.circular(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width:  48,
+              width: 48,
               height: 48,
               decoration: BoxDecoration(
-                shape:    BoxShape.circle,
+                shape: BoxShape.circle,
                 gradient: estaActivo ? ColoresApp.degradadoPrincipal : null,
-                color:    estaActivo ? null : ColoresApp.acentoClaro,
+                color: estaActivo ? null : ColoresApp.acentoClaro,
               ),
               child: Icon(
                 Icons.qr_code_scanner_rounded,
-                size:  22,
+                size: 22,
                 color: estaActivo ? ColoresApp.blanco : ColoresApp.acento,
               ),
             ),
@@ -157,10 +157,12 @@ class _BotonEscanear extends StatelessWidget {
             Text(
               'Escanear',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontSize:   11,
-                fontWeight: estaActivo ? FontWeight.w700 : FontWeight.w700,
-                color:      estaActivo ? ColoresApp.acento : ColoresApp.textoTerciario,
-              ),
+                    fontSize: 11,
+                    fontWeight: estaActivo ? FontWeight.w700 : FontWeight.w700,
+                    color: estaActivo
+                        ? ColoresApp.acento
+                        : ColoresApp.textoTerciario,
+                  ),
             ),
           ],
         ),

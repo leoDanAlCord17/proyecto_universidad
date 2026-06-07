@@ -13,17 +13,17 @@ import '../../helpers.dart';
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 CrearEventoCargado _estadoBase() => const CrearEventoCargado(
-  tiposEvento:     [tipoEventoEjemplo],
-  tagsPrincipales: [tagPrincipalEjemplo],
-  tagsSecundarios: [tagSecundarioEjemplo],
-);
+      tiposEvento: [tipoEventoEjemplo],
+      tagsPrincipales: [tagPrincipalEjemplo],
+      tagsSecundarios: [tagSecundarioEjemplo],
+    );
 
 CrearEventoCargado _estadoConTitulo({String titulo = 'Mi evento'}) =>
     _estadoBase().copiarCon(titulo: titulo);
 
 CrearEventoCargado _estadoConHoraFin() => _estadoConTitulo().copiarCon(
-  horaFin: const TimeOfDay(hour: 18, minute: 0),
-);
+      horaFin: const TimeOfDay(hour: 18, minute: 0),
+    );
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
@@ -60,10 +60,12 @@ void main() {
       expect: () => [
         isA<CrearEventoCargando>(),
         isA<CrearEventoCargado>()
-            .having((e) => e.tiposEvento.length,     'tiposEvento.length',     1)
-            .having((e) => e.tagsPrincipales.length, 'tagsPrincipales.length', 1)
-            .having((e) => e.tagsSecundarios.length, 'tagsSecundarios.length', 1)
-            .having((e) => e.maxTagsSecundarios,     'maxTagsSecundarios',     3),
+            .having((e) => e.tiposEvento.length, 'tiposEvento.length', 1)
+            .having(
+                (e) => e.tagsPrincipales.length, 'tagsPrincipales.length', 1)
+            .having(
+                (e) => e.tagsSecundarios.length, 'tagsSecundarios.length', 1)
+            .having((e) => e.maxTagsSecundarios, 'maxTagsSecundarios', 3),
       ],
     );
 
@@ -73,16 +75,14 @@ void main() {
       setUp: () {
         when(() => repositorio.obtenerTiposEvento())
             .thenThrow(const FallaServidor('Sin red'));
-        when(() => repositorio.obtenerTags())
-            .thenAnswer((_) async => []);
+        when(() => repositorio.obtenerTags()).thenAnswer((_) async => []);
         when(() => repositorio.obtenerMaxTagsSecundarios())
             .thenAnswer((_) async => 3);
       },
       act: (c) => c.cargarOpciones(),
       expect: () => [
         isA<CrearEventoCargando>(),
-        isA<CrearEventoError>()
-            .having((e) => e.mensaje, 'mensaje', 'Sin red'),
+        isA<CrearEventoError>().having((e) => e.mensaje, 'mensaje', 'Sin red'),
       ],
     );
 
@@ -92,8 +92,7 @@ void main() {
       setUp: () {
         when(() => repositorio.obtenerTiposEvento())
             .thenThrow(const FallaInesperada('Error raro'));
-        when(() => repositorio.obtenerTags())
-            .thenAnswer((_) async => []);
+        when(() => repositorio.obtenerTags()).thenAnswer((_) async => []);
         when(() => repositorio.obtenerMaxTagsSecundarios())
             .thenAnswer((_) async => 3);
       },
@@ -121,8 +120,7 @@ void main() {
       seed: _estadoConTitulo,
       act: (c) => c.irAPaso(1),
       expect: () => [
-        isA<CrearEventoCargado>()
-            .having((e) => e.pasoActual, 'pasoActual', 1),
+        isA<CrearEventoCargado>().having((e) => e.pasoActual, 'pasoActual', 1),
       ],
     );
 
@@ -146,8 +144,7 @@ void main() {
       seed: () => _estadoBase().copiarCon(pasoActual: 1),
       act: (c) => c.irAPaso(0),
       expect: () => [
-        isA<CrearEventoCargado>()
-            .having((e) => e.pasoActual, 'pasoActual', 0),
+        isA<CrearEventoCargado>().having((e) => e.pasoActual, 'pasoActual', 0),
       ],
     );
 
@@ -157,8 +154,7 @@ void main() {
       seed: () => _estadoBase().copiarCon(pasoActual: 1),
       act: (c) => c.irAPaso(2),
       expect: () => [
-        isA<CrearEventoCargado>()
-            .having((e) => e.pasoActual, 'pasoActual', 2),
+        isA<CrearEventoCargado>().having((e) => e.pasoActual, 'pasoActual', 2),
       ],
     );
   });
@@ -195,8 +191,8 @@ void main() {
       // El primer emit (null) se suprime porque el estado ya tiene error=null.
       act: (c) => c.publicarEvento(),
       expect: () => [
-        isA<CrearEventoCargado>()
-            .having((e) => e.errorValidacion, 'error', contains('hora de cierre')),
+        isA<CrearEventoCargado>().having(
+            (e) => e.errorValidacion, 'error', contains('hora de cierre')),
       ],
     );
 
@@ -206,10 +202,12 @@ void main() {
       setUp: () {
         when(() => repositorio.crearEvento(datos: any(named: 'datos')))
             .thenAnswer((_) async => 'nuevo-evento-id');
-        when(() => repositorio.guardarGruposEvento(
-              eventoId: any(named: 'eventoId'),
-              grupos:   any(named: 'grupos'),
-            ),).thenAnswer((_) async {});
+        when(
+          () => repositorio.guardarGruposEvento(
+            eventoId: any(named: 'eventoId'),
+            grupos: any(named: 'grupos'),
+          ),
+        ).thenAnswer((_) async {});
       },
       seed: _estadoConHoraFin,
       act: (c) => c.publicarEvento(),
@@ -218,7 +216,7 @@ void main() {
             .having((e) => e.estaGuardando, 'estaGuardando', true),
         isA<CrearEventoGuardado>()
             .having((e) => e.esBorrador, 'esBorrador', false)
-            .having((e) => e.eventoId,  'eventoId',  'nuevo-evento-id'),
+            .having((e) => e.eventoId, 'eventoId', 'nuevo-evento-id'),
       ],
     );
 
@@ -239,10 +237,12 @@ void main() {
       setUp: () {
         when(() => repositorio.crearEvento(datos: any(named: 'datos')))
             .thenAnswer((_) async => 'borrador-id');
-        when(() => repositorio.guardarGruposEvento(
-              eventoId: any(named: 'eventoId'),
-              grupos:   any(named: 'grupos'),
-            ),).thenAnswer((_) async {});
+        when(
+          () => repositorio.guardarGruposEvento(
+            eventoId: any(named: 'eventoId'),
+            grupos: any(named: 'grupos'),
+          ),
+        ).thenAnswer((_) async {});
       },
       seed: _estadoConTitulo,
       act: (c) => c.guardarBorrador(),
@@ -251,7 +251,7 @@ void main() {
             .having((e) => e.estaGuardando, 'estaGuardando', true),
         isA<CrearEventoGuardado>()
             .having((e) => e.esBorrador, 'esBorrador', true)
-            .having((e) => e.eventoId,  'eventoId',  'borrador-id'),
+            .having((e) => e.eventoId, 'eventoId', 'borrador-id'),
       ],
     );
 
@@ -261,19 +261,26 @@ void main() {
       setUp: () {
         when(() => repositorio.crearEvento(datos: any(named: 'datos')))
             .thenAnswer((_) async => 'ev-1');
-        when(() => repositorio.guardarGruposEvento(
-              eventoId: any(named: 'eventoId'),
-              grupos:   any(named: 'grupos'),
-            ),).thenAnswer((_) async {});
+        when(
+          () => repositorio.guardarGruposEvento(
+            eventoId: any(named: 'eventoId'),
+            grupos: any(named: 'grupos'),
+          ),
+        ).thenAnswer((_) async {});
       },
       seed: _estadoConTitulo,
       act: (c) => c.guardarBorrador(),
       verify: (_) {
-        verify(() => repositorio.crearEvento(
-          datos: any(named: 'datos', that: predicate<Map<String, dynamic>>(
-            (m) => m['estatus'] == EstatusEvento.borrador,
-          ),),
-        ),).called(1);
+        verify(
+          () => repositorio.crearEvento(
+            datos: any(
+              named: 'datos',
+              that: predicate<Map<String, dynamic>>(
+                (m) => m['estatus'] == EstatusEvento.borrador,
+              ),
+            ),
+          ),
+        ).called(1);
       },
     );
 
@@ -299,7 +306,7 @@ void main() {
 
   group('CrearEventoCubit.agregarGrupo / eliminarGrupo', () {
     const grupo = GrupoAudiencia(
-      grupoIndex:   0,
+      grupoIndex: 0,
       tagPrincipal: tagPrincipalEjemplo,
     );
 
@@ -310,7 +317,9 @@ void main() {
       act: (c) => c.agregarGrupo(grupo),
       expect: () => [
         isA<CrearEventoCargado>().having(
-          (e) => e.grupos.length, 'grupos.length', 1,
+          (e) => e.grupos.length,
+          'grupos.length',
+          1,
         ),
       ],
     );
@@ -321,8 +330,7 @@ void main() {
       seed: () => _estadoConTitulo().copiarCon(grupos: [grupo]),
       act: (c) => c.eliminarGrupo(0),
       expect: () => [
-        isA<CrearEventoCargado>()
-            .having((e) => e.grupos, 'grupos', isEmpty),
+        isA<CrearEventoCargado>().having((e) => e.grupos, 'grupos', isEmpty),
       ],
     );
 

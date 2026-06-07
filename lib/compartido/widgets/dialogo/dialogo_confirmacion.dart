@@ -34,10 +34,10 @@ class DialogoConfirmacion extends StatelessWidget {
       showDialog<bool>(
         context: context,
         builder: (_) => DialogoConfirmacion(
-          titulo:          titulo,
-          descripcion:     descripcion,
-          textoConfirmar:  textoConfirmar,
-          textoCancelar:   textoCancelar,
+          titulo: titulo,
+          descripcion: descripcion,
+          textoConfirmar: textoConfirmar,
+          textoCancelar: textoCancelar,
         ),
       );
 
@@ -45,16 +45,16 @@ class DialogoConfirmacion extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding:    const EdgeInsets.symmetric(horizontal: 28),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
       child: Container(
         decoration: BoxDecoration(
-          color:        ColoresApp.superficiePrimaria,
+          color: ColoresApp.superficiePrimaria,
           borderRadius: BorderRadius.circular(20),
           boxShadow: const [
             BoxShadow(
-              color:      ColoresApp.sombraGeneral,
+              color: ColoresApp.sombraGeneral,
               blurRadius: 24,
-              offset:     Offset(0, 8),
+              offset: Offset(0, 8),
             ),
           ],
         ),
@@ -66,8 +66,8 @@ class DialogoConfirmacion extends StatelessWidget {
             Text(
               titulo,
               style: const TextStyle(
-                color:      ColoresApp.textoPrimario,
-                fontSize:   17,
+                color: ColoresApp.textoPrimario,
+                fontSize: 17,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -75,19 +75,19 @@ class DialogoConfirmacion extends StatelessWidget {
             Text(
               descripcion,
               style: const TextStyle(
-                color:    ColoresApp.textoSecundario,
+                color: ColoresApp.textoSecundario,
                 fontSize: 14,
-                height:   1.5,
+                height: 1.5,
               ),
             ),
             const SizedBox(height: 24),
             _BotonConfirmar(
-              texto:      textoConfirmar,
+              texto: textoConfirmar,
               alPresionar: () => Navigator.of(context).pop(true),
             ),
             const SizedBox(height: 10),
             _BotonCancelar(
-              texto:      textoCancelar,
+              texto: textoCancelar,
               alPresionar: () => Navigator.of(context).pop(false),
             ),
           ],
@@ -102,31 +102,31 @@ class DialogoConfirmacion extends StatelessWidget {
 class _BotonConfirmar extends StatelessWidget {
   const _BotonConfirmar({required this.texto, required this.alPresionar});
 
-  final String       texto;
+  final String texto;
   final VoidCallback alPresionar;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:  double.infinity,
+      width: double.infinity,
       height: 48,
       child: Material(
-        color:        Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap:        alPresionar,
+          onTap: alPresionar,
           borderRadius: BorderRadius.circular(12),
           child: Ink(
             decoration: BoxDecoration(
-              gradient:     ColoresApp.degradadoPrincipal,
+              gradient: ColoresApp.degradadoPrincipal,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
               child: Text(
                 texto,
                 style: const TextStyle(
-                  color:      ColoresApp.blanco,
-                  fontSize:   14,
+                  color: ColoresApp.blanco,
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -143,33 +143,33 @@ class _BotonConfirmar extends StatelessWidget {
 class _BotonCancelar extends StatelessWidget {
   const _BotonCancelar({required this.texto, required this.alPresionar});
 
-  final String       texto;
+  final String texto;
   final VoidCallback alPresionar;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:  double.infinity,
+      width: double.infinity,
       height: 48,
       child: Material(
-        color:        Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap:          alPresionar,
-          borderRadius:   BorderRadius.circular(12),
+          onTap: alPresionar,
+          borderRadius: BorderRadius.circular(12),
           highlightColor: ColoresApp.rojoClaro,
-          splashColor:    ColoresApp.bordeError,
+          splashColor: ColoresApp.bordeError,
           child: Ink(
             decoration: BoxDecoration(
-              border:       Border.all(color: ColoresApp.bordeError),
+              border: Border.all(color: ColoresApp.bordeError),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
               child: Text(
                 texto,
                 style: const TextStyle(
-                  color:      ColoresApp.rojo,
-                  fontSize:   14,
+                  color: ColoresApp.rojo,
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),

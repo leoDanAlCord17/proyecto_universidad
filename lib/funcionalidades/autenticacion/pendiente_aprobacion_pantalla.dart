@@ -29,9 +29,9 @@ class _PendienteAprobacionPantallaState
     final estilos = Theme.of(context).textTheme;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -48,7 +48,7 @@ class _PendienteAprobacionPantallaState
                   textAlign: TextAlign.center,
                   style: estilos.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color:      ColoresApp.textoPrimario,
+                    color: ColoresApp.textoPrimario,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -56,15 +56,15 @@ class _PendienteAprobacionPantallaState
                   'Un administrador revisará tu solicitud y recibirás una respuesta pronto. Por ahora no puedes acceder a la app.',
                   textAlign: TextAlign.center,
                   style: estilos.bodyMedium?.copyWith(
-                    color:  ColoresApp.textoSecundario,
+                    color: ColoresApp.textoSecundario,
                     height: 1.5,
                   ),
                 ),
                 const Spacer(),
                 BotonApp(
-                  texto:        'Verificar estado',
+                  texto: 'Verificar estado',
                   estaCargando: _verificando,
-                  alPresionar:  _verificando ? null : _verificarEstado,
+                  alPresionar: _verificando ? null : _verificarEstado,
                 ),
                 const SizedBox(height: 12),
                 SizedBox(
@@ -73,9 +73,9 @@ class _PendienteAprobacionPantallaState
                     onPressed: () => context.read<AuthCubit>().cerrarSesion(),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: ColoresApp.textoSecundario,
-                      side:    const BorderSide(color: ColoresApp.bordeMedio),
+                      side: const BorderSide(color: ColoresApp.bordeMedio),
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape:   RoundedRectangleBorder(
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
@@ -97,16 +97,16 @@ class _Icono extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:       96,
-      height:      96,
-      decoration:  BoxDecoration(
-        color:        ColoresApp.ambarClaro,
+      width: 96,
+      height: 96,
+      decoration: BoxDecoration(
+        color: ColoresApp.ambarClaro,
         borderRadius: BorderRadius.circular(24),
       ),
       child: const Icon(
         Icons.hourglass_top_rounded,
         color: ColoresApp.ambar,
-        size:  48,
+        size: 48,
       ),
     );
   }

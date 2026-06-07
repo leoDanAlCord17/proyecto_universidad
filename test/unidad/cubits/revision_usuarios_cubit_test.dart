@@ -11,30 +11,30 @@ import '../../helpers.dart';
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 const _ru1 = RevisionUsuarioItem(
-  id:             'ru-1',
-  primerNombre:   'Leo',
+  id: 'ru-1',
+  primerNombre: 'Leo',
   primerApellido: 'Alvarez',
-  correo:         'leo@uni.edu',
+  correo: 'leo@uni.edu',
 );
 const _ru2 = RevisionUsuarioItem(
-  id:             'ru-2',
-  primerNombre:   'Ana',
+  id: 'ru-2',
+  primerNombre: 'Ana',
   primerApellido: 'Gomez',
-  correo:         'ana@uni.edu',
+  correo: 'ana@uni.edu',
 );
 const _ru3 = RevisionUsuarioItem(
-  id:             'ru-3',
-  primerNombre:   'Carlos',
+  id: 'ru-3',
+  primerNombre: 'Carlos',
   primerApellido: 'Ruiz',
-  correo:         'carlos@uni.edu',
+  correo: 'carlos@uni.edu',
 );
 
 const _lista = [_ru1, _ru2];
 
 RevisionUsuariosCargados _cargados() => const RevisionUsuariosCargados(
-  usuarios: _lista,
-  hayMas:   false,
-);
+      usuarios: _lista,
+      hayMas: false,
+    );
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
@@ -66,7 +66,7 @@ void main() {
         isA<RevisionUsuariosCargando>(),
         isA<RevisionUsuariosCargados>()
             .having((e) => e.usuarios.length, 'usuarios.length', 2)
-            .having((e) => e.hayMas,          'hayMas',          false),
+            .having((e) => e.hayMas, 'hayMas', false),
       ],
     );
 
@@ -80,8 +80,7 @@ void main() {
       act: (c) => c.cargar(),
       expect: () => [
         isA<RevisionUsuariosCargando>(),
-        isA<RevisionUsuariosCargados>()
-            .having((e) => e.hayMas, 'hayMas', true),
+        isA<RevisionUsuariosCargados>().having((e) => e.hayMas, 'hayMas', true),
       ],
     );
 
@@ -143,14 +142,14 @@ void main() {
       },
       seed: () => const RevisionUsuariosCargados(
         usuarios: [_ru1, _ru2],
-        hayMas:   true,
+        hayMas: true,
       ),
       act: (c) => c.cargarMas(),
       expect: () => [
         isA<RevisionUsuariosCargandoMas>(),
         isA<RevisionUsuariosCargados>()
             .having((e) => e.usuarios.length, 'usuarios.length', 3)
-            .having((e) => e.hayMas,          'hayMas',          false),
+            .having((e) => e.hayMas, 'hayMas', false),
       ],
     );
 
@@ -163,14 +162,14 @@ void main() {
       },
       seed: () => const RevisionUsuariosCargados(
         usuarios: [_ru1, _ru2],
-        hayMas:   true,
+        hayMas: true,
       ),
       act: (c) => c.cargarMas(),
       expect: () => [
         isA<RevisionUsuariosCargandoMas>(),
         isA<RevisionUsuariosCargados>()
             .having((e) => e.usuarios.length, 'usuarios.length', 2)
-            .having((e) => e.hayMas,          'hayMas',          true),
+            .having((e) => e.hayMas, 'hayMas', true),
       ],
     );
   });
@@ -189,8 +188,7 @@ void main() {
       'emite usuarioIdProcessando → recarga tras éxito',
       build: build,
       setUp: () {
-        when(() => repositorio.aprobar(any()))
-            .thenAnswer((_) async {});
+        when(() => repositorio.aprobar(any())).thenAnswer((_) async {});
         when(() => repositorio.obtenerPendientes())
             .thenAnswer((_) async => (usuarios: [_ru2], hayMas: false));
       },
@@ -201,8 +199,8 @@ void main() {
             .having((e) => e.usuarioIdProcessando, 'processando', 'ru-1'),
         isA<RevisionUsuariosCargando>(),
         isA<RevisionUsuariosCargados>()
-            .having((e) => e.usuarios.length,      'usuarios.length', 1)
-            .having((e) => e.usuarioIdProcessando, 'processando',     null),
+            .having((e) => e.usuarios.length, 'usuarios.length', 1)
+            .having((e) => e.usuarioIdProcessando, 'processando', null),
       ],
     );
 
@@ -219,8 +217,8 @@ void main() {
         isA<RevisionUsuariosCargados>()
             .having((e) => e.usuarioIdProcessando, 'processando', 'ru-1'),
         isA<RevisionUsuariosCargados>()
-            .having((e) => e.errorOperacion,       'errorOperacion',  'Sin permiso')
-            .having((e) => e.usuarioIdProcessando, 'processando',     null),
+            .having((e) => e.errorOperacion, 'errorOperacion', 'Sin permiso')
+            .having((e) => e.usuarioIdProcessando, 'processando', null),
       ],
     );
   });
@@ -239,8 +237,7 @@ void main() {
       'emite usuarioIdProcessando → recarga tras éxito',
       build: build,
       setUp: () {
-        when(() => repositorio.rechazar(any()))
-            .thenAnswer((_) async {});
+        when(() => repositorio.rechazar(any())).thenAnswer((_) async {});
         when(() => repositorio.obtenerPendientes())
             .thenAnswer((_) async => (usuarios: [_ru2], hayMas: false));
       },
@@ -251,8 +248,8 @@ void main() {
             .having((e) => e.usuarioIdProcessando, 'processando', 'ru-1'),
         isA<RevisionUsuariosCargando>(),
         isA<RevisionUsuariosCargados>()
-            .having((e) => e.usuarios.length,      'usuarios.length', 1)
-            .having((e) => e.usuarioIdProcessando, 'processando',     null),
+            .having((e) => e.usuarios.length, 'usuarios.length', 1)
+            .having((e) => e.usuarioIdProcessando, 'processando', null),
       ],
     );
 
@@ -269,8 +266,8 @@ void main() {
         isA<RevisionUsuariosCargados>()
             .having((e) => e.usuarioIdProcessando, 'processando', 'ru-1'),
         isA<RevisionUsuariosCargados>()
-            .having((e) => e.errorOperacion,       'errorOperacion',  'Sin permiso')
-            .having((e) => e.usuarioIdProcessando, 'processando',     null),
+            .having((e) => e.errorOperacion, 'errorOperacion', 'Sin permiso')
+            .having((e) => e.usuarioIdProcessando, 'processando', null),
       ],
     );
   });

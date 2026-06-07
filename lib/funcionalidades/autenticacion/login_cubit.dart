@@ -7,7 +7,6 @@ import 'autenticacion_repositorio.dart';
 import 'login_estado.dart';
 
 class LoginCubit extends Cubit<LoginEstado> {
-
   LoginCubit(this._repositorio) : super(LoginInicial());
   final AutenticacionRepositorio _repositorio;
 

@@ -12,22 +12,24 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
 
   final RevisionUsuariosRepositorio _repositorio;
 
-  List<RevisionUsuarioItem> _todos  = [];
-  int                       _offset = 0;
+  List<RevisionUsuarioItem> _todos = [];
+  int _offset = 0;
 
   Future<void> cargar() async {
     _offset = 0;
-    _todos  = [];
+    _todos = [];
     emit(const RevisionUsuariosCargando());
     try {
       final resultado = await _repositorio.obtenerPendientes(offset: _offset);
       if (isClosed) return;
-      _todos   = resultado.usuarios;
+      _todos = resultado.usuarios;
       _offset += resultado.usuarios.length;
-      emit(RevisionUsuariosCargados(
-        usuarios: _todos,
-        hayMas:   resultado.hayMas,
-      ),);
+      emit(
+        RevisionUsuariosCargados(
+          usuarios: _todos,
+          hayMas: resultado.hayMas,
+        ),
+      );
     } on FallaServidor catch (falla) {
       if (isClosed) return;
       reportarError(falla);
@@ -51,68 +53,84 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
     try {
       final resultado = await _repositorio.obtenerPendientes(offset: _offset);
       if (isClosed) return;
-      _todos   = [...estado.usuarios, ...resultado.usuarios];
+      _todos = [...estado.usuarios, ...resultado.usuarios];
       _offset += resultado.usuarios.length;
-      emit(RevisionUsuariosCargados(
-        usuarios: _todos,
-        hayMas:   resultado.hayMas,
-      ),);
+      emit(
+        RevisionUsuariosCargados(
+          usuarios: _todos,
+          hayMas: resultado.hayMas,
+        ),
+      );
     } catch (_) {
       if (isClosed) return;
-      emit(RevisionUsuariosCargados(
-        usuarios: estado.usuarios,
-        hayMas:   estado.hayMas,
-      ),);
+      emit(
+        RevisionUsuariosCargados(
+          usuarios: estado.usuarios,
+          hayMas: estado.hayMas,
+        ),
+      );
     }
   }
 
   Future<void> aprobar(String usuarioId) async {
     final estadoActual = state;
     if (estadoActual is! RevisionUsuariosCargados) return;
-    emit(estadoActual.copiarCon(
-      usuarioIdProcessando: usuarioId,
-      limpiarError:         true,
-    ),);
+    emit(
+      estadoActual.copiarCon(
+        usuarioIdProcessando: usuarioId,
+        limpiarError: true,
+      ),
+    );
     try {
       await _repositorio.aprobar(usuarioId);
       await cargar();
     } on FallaServidor catch (falla) {
       reportarError(falla);
-      emit(estadoActual.copiarCon(
-        limpiarProcessando: true,
-        errorOperacion:     falla.mensaje,
-      ),);
+      emit(
+        estadoActual.copiarCon(
+          limpiarProcessando: true,
+          errorOperacion: falla.mensaje,
+        ),
+      );
     } on FallaInesperada catch (falla) {
       reportarError(falla);
-      emit(estadoActual.copiarCon(
-        limpiarProcessando: true,
-        errorOperacion:     falla.mensaje,
-      ),);
+      emit(
+        estadoActual.copiarCon(
+          limpiarProcessando: true,
+          errorOperacion: falla.mensaje,
+        ),
+      );
     }
   }
 
   Future<void> rechazar(String usuarioId) async {
     final estadoActual = state;
     if (estadoActual is! RevisionUsuariosCargados) return;
-    emit(estadoActual.copiarCon(
-      usuarioIdProcessando: usuarioId,
-      limpiarError:         true,
-    ),);
+    emit(
+      estadoActual.copiarCon(
+        usuarioIdProcessando: usuarioId,
+        limpiarError: true,
+      ),
+    );
     try {
       await _repositorio.rechazar(usuarioId);
       await cargar();
     } on FallaServidor catch (falla) {
       reportarError(falla);
-      emit(estadoActual.copiarCon(
-        limpiarProcessando: true,
-        errorOperacion:     falla.mensaje,
-      ),);
+      emit(
+        estadoActual.copiarCon(
+          limpiarProcessando: true,
+          errorOperacion: falla.mensaje,
+        ),
+      );
     } on FallaInesperada catch (falla) {
       reportarError(falla);
-      emit(estadoActual.copiarCon(
-        limpiarProcessando: true,
-        errorOperacion:     falla.mensaje,
-      ),);
+      emit(
+        estadoActual.copiarCon(
+          limpiarProcessando: true,
+          errorOperacion: falla.mensaje,
+        ),
+      );
     }
   }
 }

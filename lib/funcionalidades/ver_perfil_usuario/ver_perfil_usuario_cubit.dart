@@ -6,7 +6,8 @@ import 'ver_perfil_usuario_estado.dart';
 import 'ver_perfil_usuario_repositorio.dart';
 
 class VerPerfilUsuarioCubit extends Cubit<VerPerfilUsuarioEstado> {
-  VerPerfilUsuarioCubit(this._repositorio) : super(const VerPerfilUsuarioInicial());
+  VerPerfilUsuarioCubit(this._repositorio)
+      : super(const VerPerfilUsuarioInicial());
 
   final VerPerfilUsuarioRepositorio _repositorio;
 

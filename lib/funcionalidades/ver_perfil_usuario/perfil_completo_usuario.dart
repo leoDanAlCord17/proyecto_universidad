@@ -16,18 +16,18 @@ class PerfilCompletoUsuario extends Equatable {
     this.tagsSecundariosNombres = const [],
   });
 
-  final String        id;
-  final String        primerNombre;
-  final String?       segundoNombre;
-  final String        primerApellido;
-  final String?       segundoApellido;
-  final String?       numeroIdentificacion;
-  final String        correo;
-  final String?       telefono;
-  final bool          estatus;
-  final DateTime?     creadoEn;
-  final String?       tagPrincipalNombre;
-  final List<String>  tagsSecundariosNombres;
+  final String id;
+  final String primerNombre;
+  final String? segundoNombre;
+  final String primerApellido;
+  final String? segundoApellido;
+  final String? numeroIdentificacion;
+  final String correo;
+  final String? telefono;
+  final bool estatus;
+  final DateTime? creadoEn;
+  final String? tagPrincipalNombre;
+  final List<String> tagsSecundariosNombres;
 
   String get nombreCompleto => '$primerNombre $primerApellido';
   String get iniciales {
@@ -38,8 +38,17 @@ class PerfilCompletoUsuario extends Equatable {
 
   @override
   List<Object?> get props => [
-    id, primerNombre, segundoNombre, primerApellido, segundoApellido,
-    numeroIdentificacion, correo, telefono, estatus, creadoEn,
-    tagPrincipalNombre, tagsSecundariosNombres,
-  ];
+        id,
+        primerNombre,
+        segundoNombre,
+        primerApellido,
+        segundoApellido,
+        numeroIdentificacion,
+        correo,
+        telefono,
+        estatus,
+        creadoEn,
+        tagPrincipalNombre,
+        tagsSecundariosNombres,
+      ];
 }

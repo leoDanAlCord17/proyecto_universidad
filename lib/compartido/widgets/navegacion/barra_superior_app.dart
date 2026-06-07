@@ -25,9 +25,9 @@ class BarraSuperiorApp extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               if (izquierda != null)
-                Align(alignment: Alignment.centerLeft,  child: izquierda!),
+                Align(alignment: Alignment.centerLeft, child: izquierda!),
               if (centro != null)
-                Align(alignment: Alignment.center,      child: centro!),
+                Align(alignment: Alignment.center, child: centro!),
               if (derecha != null)
                 Align(alignment: Alignment.centerRight, child: derecha!),
             ],

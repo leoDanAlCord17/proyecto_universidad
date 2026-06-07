@@ -28,20 +28,22 @@ void main() {
   setUp(() {
     registrarFallbacks();
     repositorio = MockHistorialRepositorio();
-    authCubit   = MockAuthCubit();
-    when(() => authCubit.state)
-        .thenReturn(Autenticado(usuarioEjemplo));
+    authCubit = MockAuthCubit();
+    when(() => authCubit.state).thenReturn(Autenticado(usuarioEjemplo));
   });
 
   group('Historial — integración cubit + pantalla', () {
     testWidgets(
         'carga exitosa: cubit emite HistorialCargado y pantalla muestra el título del evento',
         (tester) async {
-      when(() => repositorio.obtenerHistorial(any(), offset: any(named: 'offset')))
-          .thenAnswer((_) async => (
-                items:  [historialItemEjemplo],
-                hayMas: false,
-              ),);
+      when(() =>
+              repositorio.obtenerHistorial(any(), offset: any(named: 'offset')))
+          .thenAnswer(
+        (_) async => (
+          items: [historialItemEjemplo],
+          hayMas: false,
+        ),
+      );
 
       final cubit = HistorialCubit(repositorio);
 
@@ -55,7 +57,8 @@ void main() {
     testWidgets(
         'lista vacía: cubit emite HistorialCargado sin items y pantalla muestra estado vacío',
         (tester) async {
-      when(() => repositorio.obtenerHistorial(any(), offset: any(named: 'offset')))
+      when(() =>
+              repositorio.obtenerHistorial(any(), offset: any(named: 'offset')))
           .thenAnswer((_) async => (items: <HistorialItem>[], hayMas: false));
 
       final cubit = HistorialCubit(repositorio);
@@ -70,7 +73,8 @@ void main() {
     testWidgets(
         'error de red: cubit emite HistorialError y pantalla muestra el mensaje',
         (tester) async {
-      when(() => repositorio.obtenerHistorial(any(), offset: any(named: 'offset')))
+      when(() =>
+              repositorio.obtenerHistorial(any(), offset: any(named: 'offset')))
           .thenThrow(const FallaServidor('Error al obtener historial.'));
 
       final cubit = HistorialCubit(repositorio);

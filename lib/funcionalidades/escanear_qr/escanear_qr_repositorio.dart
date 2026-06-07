@@ -16,8 +16,7 @@ class EscanearQrRepositorio {
   );
 
   /// Obtiene los datos del evento por su UUID.
-  Future<Evento> obtenerEvento(String eventoId) =>
-      conReintentos(() async {
+  Future<Evento> obtenerEvento(String eventoId) => conReintentos(() async {
         try {
           final fila = await _supabase
               .from(TablasSupabase.eventos)
@@ -34,19 +33,17 @@ class EscanearQrRepositorio {
       });
 
   /// Cuenta asistentes con estatus activo en el evento.
-  Future<int> contarPresentes(String eventoId) =>
-      conReintentos(() async {
+  Future<int> contarPresentes(String eventoId) => conReintentos(() async {
         try {
           final result = await _supabase
               .from(TablasSupabase.asistencia)
               .select('id')
               .eq('evento_id', eventoId)
               .inFilter('estatus', [
-                EstatusAsistencia.presente,
-                EstatusAsistencia.completado,
-                EstatusAsistencia.salioAnticipado,
-              ])
-              .timeout(kTimeoutSolicitud);
+            EstatusAsistencia.presente,
+            EstatusAsistencia.completado,
+            EstatusAsistencia.salioAnticipado,
+          ]).timeout(kTimeoutSolicitud);
           return result.length;
         } on PostgrestException catch (_) {
           return 0;
@@ -94,12 +91,13 @@ class EscanearQrRepositorio {
           .maybeSingle();
 
       if (existing != null) {
-        if ((existing['estatus'] as String?) != EstatusAsistencia.esperado) return false;
+        if ((existing['estatus'] as String?) != EstatusAsistencia.esperado)
+          return false;
         await _actualizarAsistencia(existing['id'] as String, registradoPorId);
       } else {
         await _insertarAsistencia(
-          eventoId:        eventoId,
-          usuarioId:       usuarioId,
+          eventoId: eventoId,
+          usuarioId: usuarioId,
           registradoPorId: registradoPorId,
         );
       }
@@ -112,28 +110,24 @@ class EscanearQrRepositorio {
     }
   }
 
-  Future<void> _actualizarAsistencia(String asistenciaId, String? registradoPorId) =>
-      _supabase
-          .from(TablasSupabase.asistencia)
-          .update({
-            'estatus':                EstatusAsistencia.presente,
-            'hora_entrada':           DateTime.now().toUtc().toIso8601String(),
-            'entrada_registrada_por': registradoPorId,
-          })
-          .eq('id', asistenciaId);
+  Future<void> _actualizarAsistencia(
+          String asistenciaId, String? registradoPorId) =>
+      _supabase.from(TablasSupabase.asistencia).update({
+        'estatus': EstatusAsistencia.presente,
+        'hora_entrada': DateTime.now().toUtc().toIso8601String(),
+        'entrada_registrada_por': registradoPorId,
+      }).eq('id', asistenciaId);
 
   Future<void> _insertarAsistencia({
-    required String  eventoId,
-    required String  usuarioId,
+    required String eventoId,
+    required String usuarioId,
     required String? registradoPorId,
   }) =>
-      _supabase
-          .from(TablasSupabase.asistencia)
-          .insert({
-            'evento_id':              eventoId,
-            'usuario_id':             usuarioId,
-            'estatus':                EstatusAsistencia.presente,
-            'hora_entrada':           DateTime.now().toUtc().toIso8601String(),
-            'entrada_registrada_por': registradoPorId,
-          });
+      _supabase.from(TablasSupabase.asistencia).insert({
+        'evento_id': eventoId,
+        'usuario_id': usuarioId,
+        'estatus': EstatusAsistencia.presente,
+        'hora_entrada': DateTime.now().toUtc().toIso8601String(),
+        'entrada_registrada_por': registradoPorId,
+      });
 }

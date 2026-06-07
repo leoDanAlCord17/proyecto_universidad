@@ -12,8 +12,7 @@ class TiposEventoRepositorio {
   final SupabaseClient _cliente;
 
   /// Retorna todos los tipos de evento activos.
-  Future<List<TipoEventoItem>> obtenerTiposEvento() =>
-      conReintentos(() async {
+  Future<List<TipoEventoItem>> obtenerTiposEvento() => conReintentos(() async {
         try {
           final datos = await _cliente
               .from(TablasSupabase.tiposEvento)
@@ -21,7 +20,9 @@ class TiposEventoRepositorio {
               .eq('estatus', true)
               .order('nombre')
               .timeout(kTimeoutSolicitud);
-          return (datos as List).map((e) => TipoEventoItem.desdeJson(e)).toList();
+          return (datos as List)
+              .map((e) => TipoEventoItem.desdeJson(e))
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -54,10 +55,10 @@ class TiposEventoRepositorio {
     try {
       final usuarioId = await _obtenerUsuarioId();
       await _cliente.from(TablasSupabase.tiposEvento).insert({
-        'nombre':      nombre,
+        'nombre': nombre,
         'descripcion': descripcion,
-        'estatus':     true,
-        'creado_por':  usuarioId,
+        'estatus': true,
+        'creado_por': usuarioId,
       });
     } on PostgrestException catch (e) {
       if (e.code == '23505') {
@@ -80,10 +81,10 @@ class TiposEventoRepositorio {
     try {
       final usuarioId = await _obtenerUsuarioId();
       await _cliente.from(TablasSupabase.tiposEvento).update({
-        'nombre':          nombre,
-        'descripcion':     descripcion,
+        'nombre': nombre,
+        'descripcion': descripcion,
         'actualizado_por': usuarioId,
-        'actualizado_en':  DateTime.now().toUtc().toIso8601String(),
+        'actualizado_en': DateTime.now().toUtc().toIso8601String(),
       }).eq('id', id);
     } on PostgrestException catch (e) {
       if (e.code == '23505') {
@@ -102,9 +103,9 @@ class TiposEventoRepositorio {
     try {
       final usuarioId = await _obtenerUsuarioId();
       await _cliente.from(TablasSupabase.tiposEvento).update({
-        'estatus':         false,
+        'estatus': false,
         'actualizado_por': usuarioId,
-        'actualizado_en':  DateTime.now().toUtc().toIso8601String(),
+        'actualizado_en': DateTime.now().toUtc().toIso8601String(),
       }).eq('id', id);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));

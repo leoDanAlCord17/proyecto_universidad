@@ -81,8 +81,16 @@ void main() {
     testWidgets('todos los estatus conocidos renderizan sin excepciones',
         (tester) async {
       const todosLosEstatus = [
-        'en_curso', 'programado', 'finalizado', 'cancelado', 'borrador',
-        'presente', 'completado', 'ausente', 'esperado', 'salio_anticipado',
+        'en_curso',
+        'programado',
+        'finalizado',
+        'cancelado',
+        'borrador',
+        'presente',
+        'completado',
+        'ausente',
+        'esperado',
+        'salio_anticipado',
         'anulado',
       ];
 
@@ -90,8 +98,11 @@ void main() {
         await tester.pumpWidget(
           enMarcoApp(InsigniaEstado(estatus: estatus)),
         );
-        expect(tester.takeException(), isNull,
-            reason: 'estatus "$estatus" lanzó una excepción',);
+        expect(
+          tester.takeException(),
+          isNull,
+          reason: 'estatus "$estatus" lanzó una excepción',
+        );
       }
     });
   });

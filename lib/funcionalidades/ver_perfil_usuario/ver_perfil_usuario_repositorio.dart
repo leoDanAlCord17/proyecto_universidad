@@ -35,19 +35,19 @@ class VerPerfilUsuarioRepositorio {
           final (tagPrincipal, secundarios) = _mapearTags(tagsDatos);
 
           return PerfilCompletoUsuario(
-            id:                     fila['id']                    as String,
-            primerNombre:           fila['primer_nombre']         as String? ?? '',
-            segundoNombre:          fila['segundo_nombre']        as String?,
-            primerApellido:         fila['primer_apellido']       as String? ?? '',
-            segundoApellido:        fila['segundo_apellido']      as String?,
-            numeroIdentificacion:   fila['numero_identificacion'] as String?,
-            correo:                 fila['correo']                as String? ?? '',
-            telefono:               fila['telefono']              as String?,
-            estatus:                (fila['estatus']             as bool?) ?? true,
-            creadoEn:               fila['creado_en'] != null
+            id: fila['id'] as String,
+            primerNombre: fila['primer_nombre'] as String? ?? '',
+            segundoNombre: fila['segundo_nombre'] as String?,
+            primerApellido: fila['primer_apellido'] as String? ?? '',
+            segundoApellido: fila['segundo_apellido'] as String?,
+            numeroIdentificacion: fila['numero_identificacion'] as String?,
+            correo: fila['correo'] as String? ?? '',
+            telefono: fila['telefono'] as String?,
+            estatus: (fila['estatus'] as bool?) ?? true,
+            creadoEn: fila['creado_en'] != null
                 ? DateTime.parse(fila['creado_en'] as String)
                 : null,
-            tagPrincipalNombre:     tagPrincipal,
+            tagPrincipalNombre: tagPrincipal,
             tagsSecundariosNombres: secundarios,
           );
         } on PostgrestException catch (e) {
@@ -57,14 +57,15 @@ class VerPerfilUsuarioRepositorio {
         }
       });
 
-  (String? tagPrincipal, List<String> secundarios) _mapearTags(List<Map<String, dynamic>> datos) {
-    String?      tagPrincipal;
-    final        secundarios = <String>[];
+  (String? tagPrincipal, List<String> secundarios) _mapearTags(
+      List<Map<String, dynamic>> datos) {
+    String? tagPrincipal;
+    final secundarios = <String>[];
 
     for (final fila in datos) {
       final tagData = fila['tags'] as Map<String, dynamic>?;
       if (tagData == null) continue;
-      final tipo   = tagData['tipo']   as String? ?? '';
+      final tipo = tagData['tipo'] as String? ?? '';
       final nombre = tagData['nombre'] as String? ?? '';
       if (tipo == 'principal') {
         tagPrincipal = nombre;

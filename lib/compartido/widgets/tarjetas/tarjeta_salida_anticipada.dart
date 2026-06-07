@@ -37,19 +37,21 @@ class TarjetaSalidaAnticipada extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TarjetaApp(
-      variante:    VarianteTarjeta.normal,
+      variante: VarianteTarjeta.normal,
       alPresionar: alPresionar,
       child: Row(
         children: [
           AvatarUsuario(iniciales: iniciales, urlFoto: urlFoto),
           const SizedBox(width: 12),
-          Expanded(child: _InfoSalida(
-            nombre:       nombre,
-            horario:      horario,
-            motivo:       motivo,
-            colorNombre:  colorNombre,
-            colorDetalle: colorDetalle,
-          ),),
+          Expanded(
+            child: _InfoSalida(
+              nombre: nombre,
+              horario: horario,
+              motivo: motivo,
+              colorNombre: colorNombre,
+              colorDetalle: colorDetalle,
+            ),
+          ),
           InsigniaEstado(estatus: estatus),
         ],
       ),
@@ -77,7 +79,7 @@ class _InfoSalida extends StatelessWidget {
     // Combina horario y motivo en una sola línea si ambos están presentes
     final detalle = [
       if (horario != null) horario!,
-      if (motivo  != null) motivo!,
+      if (motivo != null) motivo!,
     ].join(' · ');
 
     return Column(
@@ -87,17 +89,17 @@ class _InfoSalida extends StatelessWidget {
         Text(
           nombre,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color:      colorNombre,
-            fontWeight: FontWeight.w700,
-          ),
+                color: colorNombre,
+                fontWeight: FontWeight.w700,
+              ),
         ),
         if (detalle.isNotEmpty) ...[
           const SizedBox(height: 2),
           Text(
             detalle,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: colorDetalle,
-            ),
+                  color: colorDetalle,
+                ),
           ),
         ],
       ],

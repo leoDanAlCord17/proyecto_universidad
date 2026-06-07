@@ -26,10 +26,9 @@ class RevisionUsuariosPantalla extends StatefulWidget {
       _RevisionUsuariosPantallaState();
 }
 
-class _RevisionUsuariosPantallaState
-    extends State<RevisionUsuariosPantalla> {
-  bool   _estaIniciado = false;
-  String _busqueda     = '';
+class _RevisionUsuariosPantallaState extends State<RevisionUsuariosPantalla> {
+  bool _estaIniciado = false;
+  String _busqueda = '';
 
   @override
   void didChangeDependencies() {
@@ -42,11 +41,14 @@ class _RevisionUsuariosPantallaState
   List<RevisionUsuarioItem> _aplicarFiltro(List<RevisionUsuarioItem> usuarios) {
     if (_busqueda.trim().isEmpty) return usuarios;
     final q = _busqueda.toLowerCase().trim();
-    return usuarios.where((u) =>
-      u.nombreCompleto.toLowerCase().contains(q) ||
-      u.correo.toLowerCase().contains(q) ||
-      (u.numeroIdentificacion?.toLowerCase().contains(q) ?? false),
-    ).toList();
+    return usuarios
+        .where(
+          (u) =>
+              u.nombreCompleto.toLowerCase().contains(q) ||
+              u.correo.toLowerCase().contains(q) ||
+              (u.numeroIdentificacion?.toLowerCase().contains(q) ?? false),
+        )
+        .toList();
   }
 
   @override
@@ -59,7 +61,7 @@ class _RevisionUsuariosPantallaState
             estado.errorOperacion != null) {
           AvisoApp.mostrar(
             context,
-            texto:  estado.errorOperacion!,
+            texto: estado.errorOperacion!,
             estilo: EstiloAviso.error,
           );
         }
@@ -80,7 +82,7 @@ class _RevisionUsuariosPantallaState
       RevisionUsuariosCargandoMas() => (
           RevisionUsuariosCargados(
             usuarios: _aplicarFiltro(estado.usuarios),
-            hayMas:   true,
+            hayMas: true,
           ),
           true,
         ),
@@ -89,9 +91,9 @@ class _RevisionUsuariosPantallaState
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -101,14 +103,14 @@ class _RevisionUsuariosPantallaState
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: BarraBusquedaApp(
-                hintText:  'Buscar nombre, correo o cédula...',
+                hintText: 'Buscar nombre, correo o cédula...',
                 alCambiar: (v) => setState(() => _busqueda = v),
               ),
             ),
             Expanded(
               child: _Cuerpo(
-                estado:      estadoMostrar,
-                busqueda:    _busqueda,
+                estado: estadoMostrar,
+                busqueda: _busqueda,
                 cargandoMas: cargandoMas,
               ),
             ),
@@ -137,10 +139,10 @@ class _BarraTitulo extends StatelessWidget {
             Text(
               'Revisión de usuarios',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontSize:   20,
-                fontWeight: FontWeight.w700,
-                color:      ColoresApp.textoPrimario,
-              ),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: ColoresApp.textoPrimario,
+                  ),
             ),
           ],
         ),
@@ -159,21 +161,23 @@ class _Cuerpo extends StatelessWidget {
   });
 
   final RevisionUsuariosEstado estado;
-  final String                 busqueda;
-  final bool                   cargandoMas;
+  final String busqueda;
+  final bool cargandoMas;
 
   @override
   Widget build(BuildContext context) {
     return switch (estado) {
-      RevisionUsuariosInicial()    ||
-      RevisionUsuariosCargando()   ||
-      RevisionUsuariosCargandoMas() => const Center(
+      RevisionUsuariosInicial() ||
+      RevisionUsuariosCargando() ||
+      RevisionUsuariosCargandoMas() =>
+        const Center(
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
       final RevisionUsuariosCargados cargados =>
-          _Lista(estado: cargados, busqueda: busqueda, cargandoMas: cargandoMas),
-      final RevisionUsuariosError error =>
-          VistaErrorApp(mensaje: error.mensaje, alReintentar: () => context.read<RevisionUsuariosCubit>().cargar()),
+        _Lista(estado: cargados, busqueda: busqueda, cargandoMas: cargandoMas),
+      final RevisionUsuariosError error => VistaErrorApp(
+          mensaje: error.mensaje,
+          alReintentar: () => context.read<RevisionUsuariosCubit>().cargar()),
     };
   }
 }
@@ -188,8 +192,8 @@ class _Lista extends StatelessWidget {
   });
 
   final RevisionUsuariosCargados estado;
-  final String                   busqueda;
-  final bool                     cargandoMas;
+  final String busqueda;
+  final bool cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -203,8 +207,8 @@ class _Lista extends StatelessWidget {
                 : 'No hay usuarios pendientes de aprobación',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: ColoresApp.textoTerciario,
-            ),
+                  color: ColoresApp.textoTerciario,
+                ),
           ),
         ),
       );
@@ -219,35 +223,38 @@ class _Lista extends StatelessWidget {
             Text(
               'USUARIOS PENDIENTES',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color:         ColoresApp.textoTerciario,
-                letterSpacing: 0.8,
-                fontSize:      13,
-                fontWeight:    FontWeight.w900,
-              ),
+                    color: ColoresApp.textoTerciario,
+                    letterSpacing: 0.8,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                  ),
             ),
             const SizedBox(height: 12),
-            ...estado.usuarios.map((usuario) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: _TarjetaUsuarioPendiente(
-                usuario:         usuario,
-                estaProcessando: estado.usuarioIdProcessando == usuario.id,
-                alAceptar: () => context
-                    .read<RevisionUsuariosCubit>()
-                    .aprobar(usuario.id),
-                alRechazar: () async {
-                  final confirmo = await DialogoConfirmacion.mostrar(
-                    context,
-                    titulo:         'Rechazar usuario',
-                    descripcion:
-                        '¿Deseas rechazar la solicitud de ${usuario.primerNombre} ${usuario.primerApellido}? El usuario podrá volver a intentarlo.',
-                    textoConfirmar: 'Rechazar',
-                    textoCancelar:  'Cancelar',
-                  );
-                  if (confirmo != true || !context.mounted) return;
-                  unawaited(context.read<RevisionUsuariosCubit>().rechazar(usuario.id));
-                },
+            ...estado.usuarios.map(
+              (usuario) => Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: _TarjetaUsuarioPendiente(
+                  usuario: usuario,
+                  estaProcessando: estado.usuarioIdProcessando == usuario.id,
+                  alAceptar: () =>
+                      context.read<RevisionUsuariosCubit>().aprobar(usuario.id),
+                  alRechazar: () async {
+                    final confirmo = await DialogoConfirmacion.mostrar(
+                      context,
+                      titulo: 'Rechazar usuario',
+                      descripcion:
+                          '¿Deseas rechazar la solicitud de ${usuario.primerNombre} ${usuario.primerApellido}? El usuario podrá volver a intentarlo.',
+                      textoConfirmar: 'Rechazar',
+                      textoCancelar: 'Cancelar',
+                    );
+                    if (confirmo != true || !context.mounted) return;
+                    unawaited(context
+                        .read<RevisionUsuariosCubit>()
+                        .rechazar(usuario.id));
+                  },
+                ),
               ),
-            ),),
+            ),
             if (cargandoMas)
               const Padding(
                 padding: EdgeInsets.only(top: 8),
@@ -257,8 +264,9 @@ class _Lista extends StatelessWidget {
               )
             else if (estado.hayMas)
               TextButton.icon(
-                onPressed: () => context.read<RevisionUsuariosCubit>().cargarMas(),
-                icon:  const Icon(Icons.expand_more_rounded),
+                onPressed: () =>
+                    context.read<RevisionUsuariosCubit>().cargarMas(),
+                icon: const Icon(Icons.expand_more_rounded),
                 label: const Text('Cargar más'),
               ),
           ],
@@ -286,22 +294,22 @@ class _TarjetaUsuarioPendiente extends StatelessWidget {
   });
 
   final RevisionUsuarioItem usuario;
-  final bool                estaProcessando;
-  final VoidCallback        alAceptar;
-  final VoidCallback        alRechazar;
+  final bool estaProcessando;
+  final VoidCallback alAceptar;
+  final VoidCallback alRechazar;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
-            color:      ColoresApp.sombraTarjeta,
+            color: ColoresApp.sombraTarjeta,
             blurRadius: 8,
-            offset:     Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -316,8 +324,8 @@ class _TarjetaUsuarioPendiente extends StatelessWidget {
           const SizedBox(height: 10),
           _BotonesAccion(
             estaProcessando: estaProcessando,
-            alAceptar:       alAceptar,
-            alRechazar:      alRechazar,
+            alAceptar: alAceptar,
+            alRechazar: alRechazar,
           ),
         ],
       ),
@@ -340,27 +348,27 @@ class _InfoUsuario extends StatelessWidget {
         Text(
           usuario.nombreCompleto,
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-            color:      ColoresApp.textoPrimario,
-            fontSize:   16,
-          ),
+                fontWeight: FontWeight.w700,
+                color: ColoresApp.textoPrimario,
+                fontSize: 16,
+              ),
         ),
         const SizedBox(height: 4),
         Text(
           usuario.correo,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color:    ColoresApp.textoSecundario,
-            fontSize: 13,
-          ),
+                color: ColoresApp.textoSecundario,
+                fontSize: 13,
+              ),
         ),
         if (usuario.numeroIdentificacion != null) ...[
           const SizedBox(height: 2),
           Text(
             'ID: ${usuario.numeroIdentificacion}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color:    ColoresApp.textoTerciario,
-              fontSize: 12,
-            ),
+                  color: ColoresApp.textoTerciario,
+                  fontSize: 12,
+                ),
           ),
         ],
         if (usuario.telefono != null) ...[
@@ -368,9 +376,9 @@ class _InfoUsuario extends StatelessWidget {
           Text(
             'Tel: ${usuario.telefono}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color:    ColoresApp.textoTerciario,
-              fontSize: 12,
-            ),
+                  color: ColoresApp.textoTerciario,
+                  fontSize: 12,
+                ),
           ),
         ],
       ],
@@ -393,11 +401,11 @@ class _BotonesNavegacion extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: () =>
                 context.push(Rutas.gestionarRolesUsuarioUrl(usuarioId)),
-            icon:  const Icon(Icons.admin_panel_settings_outlined, size: 18),
+            icon: const Icon(Icons.admin_panel_settings_outlined, size: 18),
             label: const Text('Agregar roles'),
             style: OutlinedButton.styleFrom(
               foregroundColor: ColoresApp.teal,
-              side:            const BorderSide(color: ColoresApp.teal),
+              side: const BorderSide(color: ColoresApp.teal),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -410,11 +418,11 @@ class _BotonesNavegacion extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: () =>
                 context.push(Rutas.gestionarTagsUsuarioUrl(usuarioId)),
-            icon:  const Icon(Icons.label_outline_rounded, size: 18),
+            icon: const Icon(Icons.label_outline_rounded, size: 18),
             label: const Text('Agregar tags'),
             style: OutlinedButton.styleFrom(
               foregroundColor: ColoresApp.ambar,
-              side:            const BorderSide(color: ColoresApp.ambar),
+              side: const BorderSide(color: ColoresApp.ambar),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -436,7 +444,7 @@ class _BotonesAccion extends StatelessWidget {
     required this.alRechazar,
   });
 
-  final bool         estaProcessando;
+  final bool estaProcessando;
   final VoidCallback alAceptar;
   final VoidCallback alRechazar;
 
@@ -465,13 +473,12 @@ class _BotonesAccion extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: BotonApp(
-            texto:        'Aceptar',
+            texto: 'Aceptar',
             estaCargando: estaProcessando,
-            alPresionar:  estaProcessando ? null : alAceptar,
+            alPresionar: estaProcessando ? null : alAceptar,
           ),
         ),
       ],
     );
   }
 }
-

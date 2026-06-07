@@ -27,9 +27,9 @@ class InicioRepositorio {
           final tagsSecundarios = <String>[];
 
           for (final fila in datos) {
-            final tag    = fila['tags'] as Map<String, dynamic>;
+            final tag = fila['tags'] as Map<String, dynamic>;
             final nombre = tag['nombre'] as String;
-            final tipo   = tag['tipo']   as String;
+            final tipo = tag['tipo'] as String;
             if (tipo == 'principal') {
               tagPrincipal = nombre;
             } else {
@@ -46,8 +46,7 @@ class InicioRepositorio {
       });
 
   /// Retorna true si la revisión de usuarios al crear cuenta está habilitada.
-  Future<bool> obtenerRevisionHabilitada() =>
-      conReintentos(() async {
+  Future<bool> obtenerRevisionHabilitada() => conReintentos(() async {
         try {
           final datos = await _cliente
               .from(TablasSupabase.configuracion)

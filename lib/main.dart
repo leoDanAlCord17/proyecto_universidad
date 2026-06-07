@@ -21,7 +21,7 @@ import 'funcionalidades/notificaciones/notificaciones_cubit.dart';
 
 // Valores inyectados en compile-time con --dart-define-from-file=.env
 // En producción / CI: flutter build apk --dart-define-from-file=.env
-const _dartUrl     = String.fromEnvironment('SUPABASE_URL');
+const _dartUrl = String.fromEnvironment('SUPABASE_URL');
 const _dartAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
 void main() {
@@ -32,8 +32,8 @@ void main() {
       // Evita que el caché de imágenes en memoria crezca indefinidamente
       // en sesiones largas (ej. operadores que dejan la app abierta todo el día).
       PaintingBinding.instance.imageCache
-        ..maximumSize      = 150        // máximo 150 imágenes descodificadas
-        ..maximumSizeBytes = 50 << 20;  // máximo 50 MB en memoria
+        ..maximumSize = 150 // máximo 150 imágenes descodificadas
+        ..maximumSizeBytes = 50 << 20; // máximo 50 MB en memoria
 
       await CacheLocal.init();
 
@@ -45,14 +45,16 @@ void main() {
       final String anonKey;
 
       if (_dartUrl.isNotEmpty && _dartAnonKey.isNotEmpty) {
-        url     = _dartUrl;
+        url = _dartUrl;
         anonKey = _dartAnonKey;
       } else {
         await dotenv.load(fileName: '.env');
-        url     = dotenv.env['SUPABASE_URL']
-            ?? (throw StateError('SUPABASE_URL no encontrado — configura .env o usa --dart-define-from-file'));
-        anonKey = dotenv.env['SUPABASE_ANON_KEY']
-            ?? (throw StateError('SUPABASE_ANON_KEY no encontrado — configura .env o usa --dart-define-from-file'));
+        url = dotenv.env['SUPABASE_URL'] ??
+            (throw StateError(
+                'SUPABASE_URL no encontrado — configura .env o usa --dart-define-from-file'));
+        anonKey = dotenv.env['SUPABASE_ANON_KEY'] ??
+            (throw StateError(
+                'SUPABASE_ANON_KEY no encontrado — configura .env o usa --dart-define-from-file'));
       }
 
       await Supabase.initialize(url: url, anonKey: anonKey);
@@ -60,8 +62,8 @@ void main() {
 
       configurarDependencias();
 
-      final authCubit           = obtenerIt<AuthCubit>();
-      final notifCubit          = obtenerIt<NotificacionesCubit>();
+      final authCubit = obtenerIt<AuthCubit>();
+      final notifCubit = obtenerIt<NotificacionesCubit>();
       final configuracionRouter = RouterApp(authCubit);
 
       authCubit.stream.listen((estado) {
@@ -83,7 +85,8 @@ void main() {
         ),
       );
     },
-    (error, stack) => log.e('Error no capturado en zone', error: error, stackTrace: stack),
+    (error, stack) =>
+        log.e('Error no capturado en zone', error: error, stackTrace: stack),
   );
 }
 
@@ -94,10 +97,10 @@ Future<void> _inicializarSentry() async {
 
   await SentryFlutter.init(
     (options) {
-      options.dsn              = dsn;
-      options.environment      = entorno.nombre;
+      options.dsn = dsn;
+      options.environment = entorno.nombre;
       options.tracesSampleRate = entorno.esProd ? 0.2 : 0.0;
-      options.debug            = entorno.esDev;
+      options.debug = entorno.esDev;
     },
   );
   log.i('Sentry inicializado (entorno: ${entorno.nombre})');
@@ -109,7 +112,7 @@ void _configurarErrorHandlers() {
   FlutterError.onError = (details) {
     log.e(
       'FlutterError: ${details.exceptionAsString()}',
-      error:      details.exception,
+      error: details.exception,
       stackTrace: details.stack,
     );
   };
@@ -123,7 +126,8 @@ void _configurarErrorHandlers() {
   // Widget de fallback cuando un subtree lanza una excepción en release
   ErrorWidget.builder = (FlutterErrorDetails details) {
     if (details.context != null) {
-      log.e('Widget error: ${details.exceptionAsString()}', error: details.exception);
+      log.e('Widget error: ${details.exceptionAsString()}',
+          error: details.exception);
     }
     return _WidgetDeError(mensaje: details.exceptionAsString());
   };
@@ -155,7 +159,8 @@ class _WidgetDeError extends StatelessWidget {
               SizedBox(height: 8),
               Text(
                 'Por favor reinicia la aplicación.',
-                style: TextStyle(fontSize: 14, color: ColoresApp.textoSecundario),
+                style:
+                    TextStyle(fontSize: 14, color: ColoresApp.textoSecundario),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -176,15 +181,15 @@ class _App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title:                      'UniAsist',
+      title: 'UniAsist',
       debugShowCheckedModeBanner: false,
-      theme:                      temaApp,
-      routerConfig:               routerApp.router,
+      theme: temaApp,
+      routerConfig: routerApp.router,
       builder: (context, child) => BlocListener<AuthCubit, AuthEstado>(
         listenWhen: (_, curr) => curr is SesionDesplazada,
         listener: (ctx, _) => AvisoApp.mostrar(
           ctx,
-          texto:  'Tu sesión fue iniciada en otro dispositivo.',
+          texto: 'Tu sesión fue iniciada en otro dispositivo.',
           estilo: EstiloAviso.informativa,
         ),
         child: child!,

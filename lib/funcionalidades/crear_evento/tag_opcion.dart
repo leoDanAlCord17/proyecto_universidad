@@ -1,12 +1,13 @@
 import 'package:equatable/equatable.dart';
 
-class TagOpcion extends Equatable { // 'principal' | 'secundario'
+class TagOpcion extends Equatable {
+  // 'principal' | 'secundario'
 
   factory TagOpcion.desdeJson(Map<String, dynamic> json) => TagOpcion(
-    id:     json['id']     as String,
-    nombre: json['nombre'] as String,
-    tipo:   json['tipo']   as String,
-  );
+        id: json['id'] as String,
+        nombre: json['nombre'] as String,
+        tipo: json['tipo'] as String,
+      );
   const TagOpcion({
     required this.id,
     required this.nombre,

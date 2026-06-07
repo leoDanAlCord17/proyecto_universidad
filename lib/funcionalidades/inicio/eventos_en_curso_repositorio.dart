@@ -63,18 +63,17 @@ class EventosEnCursoRepositorio {
     String? contacto,
   }) async {
     try {
-      await _supabase
-          .from(TablasSupabase.asistencia)
-          .insert({
-            'evento_id':                      eventoId,
-            'visitante_primer_nombre':         primerNombre,
-            'visitante_primer_apellido':       primerApellido,
-            'visitante_numero_identificacion': cedula,
-            'visitante_contacto':              contacto?.trim().isNotEmpty == true ? contacto!.trim() : null,
-            'estatus':                         EstatusAsistencia.presente,
-            'hora_entrada':                    DateTime.now().toUtc().toIso8601String(),
-            'entrada_registrada_por':          _supabase.auth.currentUser?.id,
-          });
+      await _supabase.from(TablasSupabase.asistencia).insert({
+        'evento_id': eventoId,
+        'visitante_primer_nombre': primerNombre,
+        'visitante_primer_apellido': primerApellido,
+        'visitante_numero_identificacion': cedula,
+        'visitante_contacto':
+            contacto?.trim().isNotEmpty == true ? contacto!.trim() : null,
+        'estatus': EstatusAsistencia.presente,
+        'hora_entrada': DateTime.now().toUtc().toIso8601String(),
+        'entrada_registrada_por': _supabase.auth.currentUser?.id,
+      });
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -86,6 +85,5 @@ class EventosEnCursoRepositorio {
   Stream<List<Map<String, dynamic>>> streamAsistencia(String eventoId) =>
       _supabase
           .from(TablasSupabase.asistencia)
-          .stream(primaryKey: ['id'])
-          .eq('evento_id', eventoId);
+          .stream(primaryKey: ['id']).eq('evento_id', eventoId);
 }

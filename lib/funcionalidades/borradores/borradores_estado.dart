@@ -29,25 +29,27 @@ final class BorradoresCargados extends BorradoresEstado {
 
   final List<BorradorEvento> borradores;
   final List<BorradorEvento> borradoresFiltrados;
-  final bool                 hayMas;
-  final String?              publicandoId;
-  final String?              errorPublicacion;
+  final bool hayMas;
+  final String? publicandoId;
+  final String? errorPublicacion;
 
   BorradoresCargados copiarCon({
     List<BorradorEvento>? borradores,
     List<BorradorEvento>? borradoresFiltrados,
-    bool?                 hayMas,
-    String?               publicandoId,
-    bool                  limpiarPublicando = false,
-    String?               errorPublicacion,
-    bool                  limpiarError      = false,
+    bool? hayMas,
+    String? publicandoId,
+    bool limpiarPublicando = false,
+    String? errorPublicacion,
+    bool limpiarError = false,
   }) =>
       BorradoresCargados(
-        borradores:          borradores          ?? this.borradores,
+        borradores: borradores ?? this.borradores,
         borradoresFiltrados: borradoresFiltrados ?? this.borradoresFiltrados,
-        hayMas:              hayMas              ?? this.hayMas,
-        publicandoId:        limpiarPublicando ? null : (publicandoId ?? this.publicandoId),
-        errorPublicacion:    limpiarError ? null : (errorPublicacion ?? this.errorPublicacion),
+        hayMas: hayMas ?? this.hayMas,
+        publicandoId:
+            limpiarPublicando ? null : (publicandoId ?? this.publicandoId),
+        errorPublicacion:
+            limpiarError ? null : (errorPublicacion ?? this.errorPublicacion),
       );
 
   @override

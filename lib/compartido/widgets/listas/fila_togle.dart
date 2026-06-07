@@ -11,24 +11,24 @@ class FilaTogle extends StatelessWidget {
     this.icono,
   });
 
-  final String           titulo;
-  final String           descripcion;
-  final bool             valor;
+  final String titulo;
+  final String descripcion;
+  final bool valor;
   final ValueChanged<bool>? alCambiar;
-  final IconData?        icono;
+  final IconData? icono;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficieSecund,
+        color: ColoresApp.superficieSecund,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
-            color:      ColoresApp.sombraTarjeta,
+            color: ColoresApp.sombraTarjeta,
             blurRadius: 4,
-            offset:     Offset(0, 1),
+            offset: Offset(0, 1),
           ),
         ],
       ),
@@ -56,7 +56,7 @@ class FilaTogle extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Switch(
-            value:     valor,
+            value: valor,
             onChanged: alCambiar,
           ),
         ],

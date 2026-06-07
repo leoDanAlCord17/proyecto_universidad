@@ -25,10 +25,10 @@ class CrearTagPantalla extends StatefulWidget {
 }
 
 class _CrearTagPantallaState extends State<CrearTagPantalla> {
-  final _nombreCtrl      = TextEditingController();
+  final _nombreCtrl = TextEditingController();
   final _descripcionCtrl = TextEditingController();
-  bool  _estaIniciado    = false;
-  bool  _estaPrelleno    = false;
+  bool _estaIniciado = false;
+  bool _estaPrelleno = false;
 
   @override
   void didChangeDependencies() {
@@ -53,10 +53,13 @@ class _CrearTagPantallaState extends State<CrearTagPantalla> {
     if (estado is CrearTagGuardado) {
       context.pop();
     } else if (estado is CrearTagError) {
-      AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
-    } else if (estado is CrearTagCargado && estado.tagId != null && !_estaPrelleno) {
-      _estaPrelleno         = true;
-      _nombreCtrl.text      = estado.nombreInicial;
+      AvisoApp.mostrar(context,
+          texto: estado.mensaje, estilo: EstiloAviso.error);
+    } else if (estado is CrearTagCargado &&
+        estado.tagId != null &&
+        !_estaPrelleno) {
+      _estaPrelleno = true;
+      _nombreCtrl.text = estado.nombreInicial;
       _descripcionCtrl.text = estado.descripcionInicial;
     }
   }
@@ -65,15 +68,17 @@ class _CrearTagPantallaState extends State<CrearTagPantalla> {
     final authEstado = context.read<AuthCubit>().state;
     if (authEstado is! Autenticado || authEstado.usuario.id == null) return;
     await context.read<CrearTagCubit>().guardar(
-      nombre:      _nombreCtrl.text.trim(),
-      descripcion: _descripcionCtrl.text.trim(),
-      tipo:        estado.tipoSeleccionado,
-      creadorId:   authEstado.usuario.id!,
-    );
+          nombre: _nombreCtrl.text.trim(),
+          descripcion: _descripcionCtrl.text.trim(),
+          tipo: estado.tipoSeleccionado,
+          creadorId: authEstado.usuario.id!,
+        );
     if (!context.mounted) return;
     final nuevoEstado = context.read<CrearTagCubit>().state;
-    if (nuevoEstado is CrearTagCargado && nuevoEstado.errorValidacion.isNotEmpty) {
-      AvisoApp.mostrar(context, texto: nuevoEstado.errorValidacion, estilo: EstiloAviso.error);
+    if (nuevoEstado is CrearTagCargado &&
+        nuevoEstado.errorValidacion.isNotEmpty) {
+      AvisoApp.mostrar(context,
+          texto: nuevoEstado.errorValidacion, estilo: EstiloAviso.error);
     }
   }
 
@@ -81,16 +86,16 @@ class _CrearTagPantallaState extends State<CrearTagPantalla> {
   Widget build(BuildContext context) {
     return BlocConsumer<CrearTagCubit, CrearTagEstado>(
       listener: _escucharEstado,
-      builder:  _construirVista,
+      builder: _construirVista,
     );
   }
 
   Widget _construirVista(BuildContext context, CrearTagEstado estado) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -107,10 +112,10 @@ class _CrearTagPantallaState extends State<CrearTagPantalla> {
                     Text(
                       widget.tagId != null ? 'Editar tag' : 'Crear tag',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontSize:   20,
-                        fontWeight: FontWeight.w700,
-                        color:      ColoresApp.textoPrimario,
-                      ),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: ColoresApp.textoPrimario,
+                          ),
                     ),
                   ],
                 ),
@@ -118,13 +123,13 @@ class _CrearTagPantallaState extends State<CrearTagPantalla> {
             ),
             Expanded(
               child: _Cuerpo(
-                estado:         estado,
-                nombreCtrl:     _nombreCtrl,
+                estado: estado,
+                nombreCtrl: _nombreCtrl,
                 descripcionCtrl: _descripcionCtrl,
               ),
             ),
             _BarraInferior(
-              estado:    estado,
+              estado: estado,
               alGuardar: () {
                 if (estado is CrearTagCargado) _alGuardar(context, estado);
               },
@@ -145,7 +150,7 @@ class _Cuerpo extends StatelessWidget {
     required this.descripcionCtrl,
   });
 
-  final CrearTagEstado        estado;
+  final CrearTagEstado estado;
   final TextEditingController nombreCtrl;
   final TextEditingController descripcionCtrl;
 
@@ -157,8 +162,8 @@ class _Cuerpo extends StatelessWidget {
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
       CrearTagCargado() => _Formulario(
-          estado:         e,
-          nombreCtrl:     nombreCtrl,
+          estado: e,
+          nombreCtrl: nombreCtrl,
           descripcionCtrl: descripcionCtrl,
         ),
       CrearTagGuardado() || CrearTagError() => const SizedBox.shrink(),
@@ -175,7 +180,7 @@ class _Formulario extends StatelessWidget {
     required this.descripcionCtrl,
   });
 
-  final CrearTagCargado       estado;
+  final CrearTagCargado estado;
   final TextEditingController nombreCtrl;
   final TextEditingController descripcionCtrl;
 
@@ -185,8 +190,8 @@ class _Formulario extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
       children: [
         _SeccionInfo(
-          estado:         estado,
-          nombreCtrl:     nombreCtrl,
+          estado: estado,
+          nombreCtrl: nombreCtrl,
           descripcionCtrl: descripcionCtrl,
         ),
       ],
@@ -203,7 +208,7 @@ class _SeccionInfo extends StatelessWidget {
     required this.descripcionCtrl,
   });
 
-  final CrearTagCargado       estado;
+  final CrearTagCargado estado;
   final TextEditingController nombreCtrl;
   final TextEditingController descripcionCtrl;
 
@@ -212,10 +217,13 @@ class _SeccionInfo extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 8, offset: Offset(0, 2)),
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 8,
+              offset: Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -224,11 +232,11 @@ class _SeccionInfo extends StatelessWidget {
           Text(
             'INFORMACIÓN DEL TAG',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color:         ColoresApp.acento,
-              letterSpacing: 0.8,
-              fontSize:      14,
-              fontWeight:    FontWeight.w800,
-            ),
+                  color: ColoresApp.acento,
+                  letterSpacing: 0.8,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                ),
           ),
           const SizedBox(height: 16),
           CampoTextoApp(
@@ -244,12 +252,13 @@ class _SeccionInfo extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           CampoSelectApp<String>(
-            etiqueta:     'Tipo*',
-            hintText:     'Selecciona el tipo',
-            opciones:     const ['principal', 'secundario'],
+            etiqueta: 'Tipo*',
+            hintText: 'Selecciona el tipo',
+            opciones: const ['principal', 'secundario'],
             mostrarTexto: (t) => t == 'principal' ? 'Principal' : 'Secundario',
-            valorActual:  estado.tipoSeleccionado,
-            alSeleccionar: (t) => context.read<CrearTagCubit>().seleccionarTipo(t),
+            valorActual: estado.tipoSeleccionado,
+            alSeleccionar: (t) =>
+                context.read<CrearTagCubit>().seleccionarTipo(t),
           ),
         ],
       ),
@@ -263,20 +272,21 @@ class _BarraInferior extends StatelessWidget {
   const _BarraInferior({required this.estado, required this.alGuardar});
 
   final CrearTagEstado estado;
-  final VoidCallback   alGuardar;
+  final VoidCallback alGuardar;
 
   @override
   Widget build(BuildContext context) {
-    final estaCargando = estado is CrearTagCargado && (estado as CrearTagCargado).estaGuardando;
+    final estaCargando =
+        estado is CrearTagCargado && (estado as CrearTagCargado).estaGuardando;
     final puedeGuardar = estado is CrearTagCargado && !estaCargando;
     return SafeArea(
       top: false,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
         child: BotonApp(
-          texto:        'Guardar',
+          texto: 'Guardar',
           estaCargando: estaCargando,
-          alPresionar:  puedeGuardar ? alGuardar : null,
+          alPresionar: puedeGuardar ? alGuardar : null,
         ),
       ),
     );

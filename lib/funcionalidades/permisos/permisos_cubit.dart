@@ -32,12 +32,16 @@ class PermisosCubit extends Cubit<PermisosEstado> {
       return;
     }
     final q = texto.toLowerCase();
-    emit(estadoActual.copiarCon(
-      permisosFiltrados: estadoActual.permisos
-          .where((p) =>
-              p.nombre.toLowerCase().contains(q) ||
-              p.descripcion.toLowerCase().contains(q),)
-          .toList(),
-    ),);
+    emit(
+      estadoActual.copiarCon(
+        permisosFiltrados: estadoActual.permisos
+            .where(
+              (p) =>
+                  p.nombre.toLowerCase().contains(q) ||
+                  p.descripcion.toLowerCase().contains(q),
+            )
+            .toList(),
+      ),
+    );
   }
 }

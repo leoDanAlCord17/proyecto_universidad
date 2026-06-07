@@ -7,20 +7,20 @@ void main() {
 
   group('ResultadoBusqueda.desdeUsuario', () {
     const filaBase = <String, dynamic>{
-      'id':                    'u-1',
-      'primer_nombre':         'Leo',
-      'primer_apellido':       'Alvarez',
-      'url_avatar':            null,
+      'id': 'u-1',
+      'primer_nombre': 'Leo',
+      'primer_apellido': 'Alvarez',
+      'url_avatar': null,
       'numero_identificacion': 'CI-123',
     };
 
     test('sin asistencia: nombre, iniciales y sin estatus', () {
       final r = ResultadoBusqueda.desdeUsuario(filaBase);
-      expect(r.usuarioId,  'u-1');
-      expect(r.nombre,     'Leo Alvarez');
-      expect(r.iniciales,  'LA');
-      expect(r.estatus,    isNull);
-      expect(r.esForaneo,  false);
+      expect(r.usuarioId, 'u-1');
+      expect(r.nombre, 'Leo Alvarez');
+      expect(r.iniciales, 'LA');
+      expect(r.estatus, isNull);
+      expect(r.esForaneo, false);
       expect(r.numeroIdentificacion, 'CI-123');
     });
 
@@ -28,21 +28,24 @@ void main() {
       final r = ResultadoBusqueda.desdeUsuario(
         filaBase,
         asistencia: const {
-          'id':      'a-1',
+          'id': 'a-1',
           'estatus': EstatusAsistencia.presente,
           'hora_entrada': null,
-          'hora_salida':  null,
+          'hora_salida': null,
           'entrada_registrada_por': null,
         },
       );
       expect(r.asistenciaId, 'a-1');
-      expect(r.estatus,      EstatusAsistencia.presente);
+      expect(r.estatus, EstatusAsistencia.presente);
     });
 
     test('nombre vacío resulta en "Sin nombre"', () {
       final r = ResultadoBusqueda.desdeUsuario(const <String, dynamic>{
-        'id': 'u-2', 'primer_nombre': null, 'primer_apellido': null,
-        'url_avatar': null, 'numero_identificacion': null,
+        'id': 'u-2',
+        'primer_nombre': null,
+        'primer_apellido': null,
+        'url_avatar': null,
+        'numero_identificacion': null,
       });
       expect(r.nombre, 'Sin nombre');
     });
@@ -61,25 +64,25 @@ void main() {
   group('ResultadoBusqueda.desdeForaneo', () {
     test('mapea nombre y estatus de la fila foránea', () {
       final r = ResultadoBusqueda.desdeForaneo(const <String, dynamic>{
-        'id':                        'f-1',
-        'visitante_primer_nombre':   'Juan',
+        'id': 'f-1',
+        'visitante_primer_nombre': 'Juan',
         'visitante_primer_apellido': 'Perez',
-        'estatus':                   EstatusAsistencia.presente,
-        'hora_entrada':              null,
+        'estatus': EstatusAsistencia.presente,
+        'hora_entrada': null,
       });
       expect(r.usuarioId, 'f-1');
-      expect(r.nombre,    'Juan Perez');
+      expect(r.nombre, 'Juan Perez');
       expect(r.iniciales, 'JP');
       expect(r.esForaneo, true);
     });
 
     test('nombre vacío en foráneo resulta en "Visitante"', () {
       final r = ResultadoBusqueda.desdeForaneo(const <String, dynamic>{
-        'id':                        'f-2',
-        'visitante_primer_nombre':   null,
+        'id': 'f-2',
+        'visitante_primer_nombre': null,
         'visitante_primer_apellido': null,
-        'estatus':                   EstatusAsistencia.presente,
-        'hora_entrada':              null,
+        'estatus': EstatusAsistencia.presente,
+        'hora_entrada': null,
       });
       expect(r.nombre, 'Visitante');
     });
@@ -88,11 +91,15 @@ void main() {
   // ── _iniciales ────────────────────────────────────────────────────────────
 
   group('ResultadoBusqueda._iniciales', () {
-    String iniciales(String nombre) =>
-        ResultadoBusqueda.desdeUsuario({'id': 'x', 'primer_nombre': nombre, 'primer_apellido': ''}).iniciales;
+    String iniciales(String nombre) => ResultadoBusqueda.desdeUsuario(
+        {'id': 'x', 'primer_nombre': nombre, 'primer_apellido': ''}).iniciales;
 
     test('dos palabras → primera letra de cada una en mayúsculas', () {
-      final r = ResultadoBusqueda.desdeUsuario(const {'id': 'x', 'primer_nombre': 'leo', 'primer_apellido': 'gomez'});
+      final r = ResultadoBusqueda.desdeUsuario(const {
+        'id': 'x',
+        'primer_nombre': 'leo',
+        'primer_apellido': 'gomez'
+      });
       expect(r.iniciales, 'LG');
     });
 
@@ -135,28 +142,28 @@ void main() {
 
   group('ResultadoBusqueda propiedades calculadas', () {
     ResultadoBusqueda conEstatus(String? estatus) => ResultadoBusqueda(
-      usuarioId: 'u-1',
-      nombre:    'Test',
-      iniciales: 'T',
-      estatus:   estatus,
-    );
+          usuarioId: 'u-1',
+          nombre: 'Test',
+          iniciales: 'T',
+          estatus: estatus,
+        );
 
     test('estaActivo es true para presente, completado y salioAnticipado', () {
-      expect(conEstatus(EstatusAsistencia.presente).estaActivo,       true);
-      expect(conEstatus(EstatusAsistencia.completado).estaActivo,      true);
+      expect(conEstatus(EstatusAsistencia.presente).estaActivo, true);
+      expect(conEstatus(EstatusAsistencia.completado).estaActivo, true);
       expect(conEstatus(EstatusAsistencia.salioAnticipado).estaActivo, true);
     });
 
     test('estaActivo es false para otros estatuses', () {
-      expect(conEstatus(EstatusAsistencia.esperado).estaActivo,  false);
-      expect(conEstatus(EstatusAsistencia.ausente).estaActivo,   false);
-      expect(conEstatus(null).estaActivo,                        false);
+      expect(conEstatus(EstatusAsistencia.esperado).estaActivo, false);
+      expect(conEstatus(EstatusAsistencia.ausente).estaActivo, false);
+      expect(conEstatus(null).estaActivo, false);
     });
 
     test('esEsperado es true solo para esperado', () {
-      expect(conEstatus(EstatusAsistencia.esperado).esEsperado,  true);
-      expect(conEstatus(EstatusAsistencia.presente).esEsperado,  false);
-      expect(conEstatus(null).esEsperado,                        false);
+      expect(conEstatus(EstatusAsistencia.esperado).esEsperado, true);
+      expect(conEstatus(EstatusAsistencia.presente).esEsperado, false);
+      expect(conEstatus(null).esEsperado, false);
     });
 
     test('esNoEsperado es true cuando no es foráneo y estatus es null', () {
@@ -166,7 +173,9 @@ void main() {
 
     test('esNoEsperado es false cuando es foráneo aunque estatus sea null', () {
       const r = ResultadoBusqueda(
-        usuarioId: 'f-1', nombre: 'Visitante', iniciales: 'V',
+        usuarioId: 'f-1',
+        nombre: 'Visitante',
+        iniciales: 'V',
         esForaneo: true,
       );
       expect(r.esNoEsperado, false);

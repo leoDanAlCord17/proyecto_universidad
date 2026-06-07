@@ -49,16 +49,17 @@ class _UsuariosPantallaState extends State<UsuariosPantalla> {
       listenWhen: (prev, curr) {
         if (curr is UsuariosOperacionFallida) return true;
         if (prev is UsuariosCargados && curr is UsuariosCargados) {
-          return curr.errorLote != null &&
-              curr.errorLote != prev.errorLote;
+          return curr.errorLote != null && curr.errorLote != prev.errorLote;
         }
         return false;
       },
       listener: (context, estado) {
         if (estado is UsuariosOperacionFallida) {
-          AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
+          AvisoApp.mostrar(context,
+              texto: estado.mensaje, estilo: EstiloAviso.error);
         } else if (estado is UsuariosCargados && estado.errorLote != null) {
-          AvisoApp.mostrar(context, texto: estado.errorLote!, estilo: EstiloAviso.error);
+          AvisoApp.mostrar(context,
+              texto: estado.errorLote!, estilo: EstiloAviso.error);
         }
       },
       builder: _construirVista,
@@ -67,26 +68,26 @@ class _UsuariosPantallaState extends State<UsuariosPantalla> {
 
   Widget _construirVista(BuildContext context, UsuariosEstado estado) {
     final cargados = switch (estado) {
-      UsuariosCargados()         => estado,
+      UsuariosCargados() => estado,
       UsuariosOperacionFallida() => estado.anterior,
-      UsuariosCargandoMas()      => UsuariosCargados(
-        usuarios:          estado.usuarios,
-        usuariosFiltrados: estado.usuariosFiltrados,
-        seleccionados:     estado.seleccionados,
-        modoSeleccion:     estado.modoSeleccion,
-        hayMas:            true,
-      ),
-      _                          => null,
+      UsuariosCargandoMas() => UsuariosCargados(
+          usuarios: estado.usuarios,
+          usuariosFiltrados: estado.usuariosFiltrados,
+          seleccionados: estado.seleccionados,
+          modoSeleccion: estado.modoSeleccion,
+          hayMas: true,
+        ),
+      _ => null,
     };
-    final modoSeleccion       = cargados?.modoSeleccion      ?? false;
+    final modoSeleccion = cargados?.modoSeleccion ?? false;
     final cantidadSeleccionados = cargados?.seleccionados.length ?? 0;
-    final estaEjecutandoLote  = cargados?.estaEjecutandoLote ?? false;
+    final estaEjecutandoLote = cargados?.estaEjecutandoLote ?? false;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: PopScope(
         canPop: !modoSeleccion,
@@ -101,7 +102,7 @@ class _UsuariosPantallaState extends State<UsuariosPantalla> {
                 bottom: false,
                 child: modoSeleccion
                     ? _BarraModoSeleccion(
-                        cantidad:   cantidadSeleccionados,
+                        cantidad: cantidadSeleccionados,
                         alCancelar: () =>
                             context.read<UsuariosCubit>().salirModoSeleccion(),
                       )
@@ -120,7 +121,7 @@ class _UsuariosPantallaState extends State<UsuariosPantalla> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                   child: BarraBusquedaApp(
-                    hintText:  'Buscar nombre, email, cédula...',
+                    hintText: 'Buscar nombre, email, cédula...',
                     alCambiar: (texto) =>
                         context.read<UsuariosCubit>().filtrar(texto),
                   ),
@@ -131,10 +132,10 @@ class _UsuariosPantallaState extends State<UsuariosPantalla> {
           bottomNavigationBar: modoSeleccion
               ? _BarraAccionesLote(
                   cantidadSeleccionados: cantidadSeleccionados,
-                  estaEjecutando:        estaEjecutandoLote,
+                  estaEjecutando: estaEjecutandoLote,
                   alAsignarRol: () => _mostrarSelectorRol(context),
                   alAsignarTag: () => _mostrarSelectorTag(context),
-                  alSuspender:  () => _mostrarConfirmarSuspenderLote(
+                  alSuspender: () => _mostrarConfirmarSuspenderLote(
                     context,
                     cantidadSeleccionados,
                   ),
@@ -148,22 +149,24 @@ class _UsuariosPantallaState extends State<UsuariosPantalla> {
   // ── Modales de acciones en lote ────────────────────────────────────────────
 
   void _mostrarSelectorRol(BuildContext context) {
-    final cubit   = context.read<UsuariosCubit>();
+    final cubit = context.read<UsuariosCubit>();
     final adminId = _adminId();
     showModalBottomSheet<void>(
-      context:            context,
+      context: context,
       isScrollControlled: true,
-      backgroundColor:    ColoresApp.superficiePrimaria,
+      backgroundColor: ColoresApp.superficiePrimaria,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) => _SelectorOpcionModal(
-        titulo:       'Asignar rol',
+        titulo: 'Asignar rol',
         futureOpciones: cubit.cargarRolesParaSelector().then(
-          (roles) => roles
-              .map<_SelectorOpcion>((r) => (id: r.id, nombre: r.nombre, subtitulo: null),)
-              .toList(),
-        ),
+              (roles) => roles
+                  .map<_SelectorOpcion>(
+                    (r) => (id: r.id, nombre: r.nombre, subtitulo: null),
+                  )
+                  .toList(),
+            ),
         alSeleccionar: (id) {
           Navigator.of(ctx).pop();
           cubit.asignarRolLote(id, adminId);
@@ -173,26 +176,29 @@ class _UsuariosPantallaState extends State<UsuariosPantalla> {
   }
 
   void _mostrarSelectorTag(BuildContext context) {
-    final cubit   = context.read<UsuariosCubit>();
+    final cubit = context.read<UsuariosCubit>();
     final adminId = _adminId();
     showModalBottomSheet<void>(
-      context:            context,
+      context: context,
       isScrollControlled: true,
-      backgroundColor:    ColoresApp.superficiePrimaria,
+      backgroundColor: ColoresApp.superficiePrimaria,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) => _SelectorOpcionModal(
-        titulo:       'Asignar tag',
+        titulo: 'Asignar tag',
         futureOpciones: cubit.cargarTagsParaSelector().then(
-          (tags) => tags
-              .map<_SelectorOpcion>((t) => (
-                    id:        t.id,
-                    nombre:    t.nombre,
-                    subtitulo: t.tipo == 'principal' ? 'Principal' : 'Secundario',
-                  ),)
-              .toList(),
-        ),
+              (tags) => tags
+                  .map<_SelectorOpcion>(
+                    (t) => (
+                      id: t.id,
+                      nombre: t.nombre,
+                      subtitulo:
+                          t.tipo == 'principal' ? 'Principal' : 'Secundario',
+                    ),
+                  )
+                  .toList(),
+            ),
         alSeleccionar: (id) {
           Navigator.of(ctx).pop();
           cubit.asignarTagLote(id, adminId);
@@ -203,10 +209,10 @@ class _UsuariosPantallaState extends State<UsuariosPantalla> {
 
   void _mostrarConfirmarSuspenderLote(BuildContext context, int cantidad) {
     showDialog<void>(
-      context:            context,
+      context: context,
       barrierDismissible: false,
       builder: (_) => _DialogoConfirmarSuspenderLote(
-        cantidad:    cantidad,
+        cantidad: cantidad,
         alConfirmar: () => context.read<UsuariosCubit>().suspenderLote(),
       ),
     );
@@ -221,7 +227,7 @@ class _BarraModoSeleccion extends StatelessWidget {
     required this.alCancelar,
   });
 
-  final int          cantidad;
+  final int cantidad;
   final VoidCallback alCancelar;
 
   @override
@@ -231,16 +237,16 @@ class _BarraModoSeleccion extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Material(
-            color:        Colors.transparent,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             child: InkWell(
-              onTap:        alCancelar,
+              onTap: alCancelar,
               borderRadius: BorderRadius.circular(8),
               child: const Padding(
                 padding: EdgeInsets.all(8),
                 child: Icon(
                   Icons.close_rounded,
-                  size:  22,
+                  size: 22,
                   color: ColoresApp.textoPrimario,
                 ),
               ),
@@ -250,10 +256,10 @@ class _BarraModoSeleccion extends StatelessWidget {
           Text(
             '$cantidad ${cantidad == 1 ? "seleccionado" : "seleccionados"}',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontSize:   18,
-              fontWeight: FontWeight.w700,
-              color:      ColoresApp.textoPrimario,
-            ),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: ColoresApp.textoPrimario,
+                ),
           ),
         ],
       ),
@@ -271,29 +277,29 @@ class _CabeceraTitulo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final total = switch (estado) {
-      UsuariosCargados(:final usuariosFiltrados)    => usuariosFiltrados.length,
+      UsuariosCargados(:final usuariosFiltrados) => usuariosFiltrados.length,
       UsuariosCargandoMas(:final usuariosFiltrados) => usuariosFiltrados.length,
-      _                                             => null,
+      _ => null,
     };
     return Column(
-      mainAxisAlignment:  MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Usuarios',
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontSize:   20,
-            fontWeight: FontWeight.w700,
-            color:      ColoresApp.textoPrimario,
-          ),
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: ColoresApp.textoPrimario,
+              ),
         ),
         if (total != null)
           Text(
             '$total registrados',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color:    ColoresApp.textoSecundario,
-              fontSize: 13,
-            ),
+                  color: ColoresApp.textoSecundario,
+                  fontSize: 13,
+                ),
           ),
       ],
     );
@@ -312,21 +318,21 @@ class _Cuerpo extends StatelessWidget {
     final e = estado;
     return switch (e) {
       UsuariosInicial() || UsuariosCargando() => const Center(
-        child: CircularProgressIndicator(color: ColoresApp.acento),
-      ),
-      UsuariosCargados()         => _Lista(estado: e),
-      UsuariosCargandoMas()      => _Lista(
-        estado: UsuariosCargados(
-          usuarios:          e.usuarios,
-          usuariosFiltrados: e.usuariosFiltrados,
-          seleccionados:     e.seleccionados,
-          modoSeleccion:     e.modoSeleccion,
-          hayMas:            true,
+          child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
-        cargandoMas: true,
-      ),
+      UsuariosCargados() => _Lista(estado: e),
+      UsuariosCargandoMas() => _Lista(
+          estado: UsuariosCargados(
+            usuarios: e.usuarios,
+            usuariosFiltrados: e.usuariosFiltrados,
+            seleccionados: e.seleccionados,
+            modoSeleccion: e.modoSeleccion,
+            hayMas: true,
+          ),
+          cargandoMas: true,
+        ),
       UsuariosOperacionFallida() => _Lista(estado: e.anterior),
-      UsuariosError()            => _VistaError(mensaje: e.mensaje),
+      UsuariosError() => _VistaError(mensaje: e.mensaje),
     };
   }
 }
@@ -337,7 +343,7 @@ class _Lista extends StatelessWidget {
   const _Lista({required this.estado, this.cargandoMas = false});
 
   final UsuariosCargados estado;
-  final bool             cargandoMas;
+  final bool cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -348,8 +354,8 @@ class _Lista extends StatelessWidget {
         child: Text(
           'No hay usuarios',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: ColoresApp.textoTerciario,
-          ),
+                color: ColoresApp.textoTerciario,
+              ),
         ),
       );
     }
@@ -361,14 +367,16 @@ class _Lista extends StatelessWidget {
           const _EncabezadoColumnas(),
           const SizedBox(height: 12),
         ],
-        ...items.map((u) => Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child:   _TarjetaUsuario(
-            usuario:          u,
-            modoSeleccion:    estado.modoSeleccion,
-            estaSeleccionado: estado.seleccionados.contains(u.id),
+        ...items.map(
+          (u) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _TarjetaUsuario(
+              usuario: u,
+              modoSeleccion: estado.modoSeleccion,
+              estaSeleccionado: estado.seleccionados.contains(u.id),
+            ),
           ),
-        ),),
+        ),
         if (cargandoMas)
           const Padding(
             padding: EdgeInsets.only(top: 8),
@@ -380,7 +388,7 @@ class _Lista extends StatelessWidget {
           Center(
             child: TextButton.icon(
               onPressed: () => context.read<UsuariosCubit>().cargarMas(),
-              icon:  const Icon(Icons.expand_more_rounded),
+              icon: const Icon(Icons.expand_more_rounded),
               label: const Text('Cargar más'),
             ),
           ),
@@ -395,10 +403,10 @@ class _EncabezadoColumnas extends StatelessWidget {
   const _EncabezadoColumnas();
 
   static const _estilo = TextStyle(
-    color:         ColoresApp.textoTerciario,
+    color: ColoresApp.textoTerciario,
     letterSpacing: 0.8,
-    fontSize:      13,
-    fontWeight:    FontWeight.w900,
+    fontSize: 13,
+    fontWeight: FontWeight.w900,
   );
 
   @override
@@ -424,15 +432,15 @@ class _TarjetaUsuario extends StatelessWidget {
   });
 
   final UsuarioItem usuario;
-  final bool        modoSeleccion;
-  final bool        estaSeleccionado;
+  final bool modoSeleccion;
+  final bool estaSeleccionado;
 
   static (Color, Color) _colorAvatar(String id) {
     final paleta = [
       (ColoresApp.acentoClaro, ColoresApp.acento),
-      (ColoresApp.tealClaro,   ColoresApp.teal),
-      (ColoresApp.verdeClaro,  ColoresApp.verde),
-      (ColoresApp.ambarClaro,  ColoresApp.ambar),
+      (ColoresApp.tealClaro, ColoresApp.teal),
+      (ColoresApp.verdeClaro, ColoresApp.verde),
+      (ColoresApp.ambarClaro, ColoresApp.ambar),
     ];
     return paleta[id.hashCode.abs() % paleta.length];
   }
@@ -441,75 +449,75 @@ class _TarjetaUsuario extends StatelessWidget {
     PanelOpciones.mostrar(
       context,
       encabezado: _EncabezadoPanel(usuario: usuario),
-      opciones:   _opciones(context),
+      opciones: _opciones(context),
     );
   }
 
   List<OpcionPanel> _opciones(BuildContext context) => [
-    OpcionPanel(
-      icono:       Icons.person_outline_rounded,
-      colorFondo:  ColoresApp.acentoClaro,
-      colorIcono:  ColoresApp.acento,
-      titulo:      'Ver perfil',
-      descripcion: 'Información completa del usuario',
-      alPresionar: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        context.push(Rutas.verPerfilUsuarioUrl(usuario.id));
-      },
-    ),
-    OpcionPanel(
-      icono:       Icons.people_outline_rounded,
-      colorFondo:  ColoresApp.tealClaro,
-      colorIcono:  ColoresApp.teal,
-      titulo:      'Gestionar Roles',
-      descripcion: 'Asignar o remover roles',
-      alPresionar: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        context.push(Rutas.gestionarRolesUsuarioUrl(usuario.id));
-      },
-    ),
-    OpcionPanel(
-      icono:       Icons.label_outline_rounded,
-      colorFondo:  ColoresApp.ambarClaro,
-      colorIcono:  ColoresApp.ambar,
-      titulo:      'Gestionar Tags',
-      descripcion: 'Etiquetas y categorías',
-      alPresionar: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        context.push(Rutas.gestionarTagsUsuarioUrl(usuario.id));
-      },
-    ),
-    OpcionPanel(
-      icono:       Icons.edit_outlined,
-      colorFondo:  ColoresApp.superficieTerciar,
-      colorIcono:  ColoresApp.textoSecundario,
-      titulo:      'Editar información',
-      descripcion: 'Datos personales y contacto',
-      alPresionar: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        context.push(Rutas.editarUsuarioUrl(usuario.id));
-      },
-    ),
-    OpcionPanel(
-      icono:        Icons.block_rounded,
-      colorFondo:   ColoresApp.rojoClaro,
-      colorIcono:   ColoresApp.rojo,
-      colorTitulo:  ColoresApp.rojo,
-      titulo:       'Suspender usuario',
-      descripcion:  'Bloquear acceso temporalmente',
-      alPresionar: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        _mostrarDialogoSuspender(context);
-      },
-    ),
-  ];
+        OpcionPanel(
+          icono: Icons.person_outline_rounded,
+          colorFondo: ColoresApp.acentoClaro,
+          colorIcono: ColoresApp.acento,
+          titulo: 'Ver perfil',
+          descripcion: 'Información completa del usuario',
+          alPresionar: () {
+            Navigator.of(context, rootNavigator: true).pop();
+            context.push(Rutas.verPerfilUsuarioUrl(usuario.id));
+          },
+        ),
+        OpcionPanel(
+          icono: Icons.people_outline_rounded,
+          colorFondo: ColoresApp.tealClaro,
+          colorIcono: ColoresApp.teal,
+          titulo: 'Gestionar Roles',
+          descripcion: 'Asignar o remover roles',
+          alPresionar: () {
+            Navigator.of(context, rootNavigator: true).pop();
+            context.push(Rutas.gestionarRolesUsuarioUrl(usuario.id));
+          },
+        ),
+        OpcionPanel(
+          icono: Icons.label_outline_rounded,
+          colorFondo: ColoresApp.ambarClaro,
+          colorIcono: ColoresApp.ambar,
+          titulo: 'Gestionar Tags',
+          descripcion: 'Etiquetas y categorías',
+          alPresionar: () {
+            Navigator.of(context, rootNavigator: true).pop();
+            context.push(Rutas.gestionarTagsUsuarioUrl(usuario.id));
+          },
+        ),
+        OpcionPanel(
+          icono: Icons.edit_outlined,
+          colorFondo: ColoresApp.superficieTerciar,
+          colorIcono: ColoresApp.textoSecundario,
+          titulo: 'Editar información',
+          descripcion: 'Datos personales y contacto',
+          alPresionar: () {
+            Navigator.of(context, rootNavigator: true).pop();
+            context.push(Rutas.editarUsuarioUrl(usuario.id));
+          },
+        ),
+        OpcionPanel(
+          icono: Icons.block_rounded,
+          colorFondo: ColoresApp.rojoClaro,
+          colorIcono: ColoresApp.rojo,
+          colorTitulo: ColoresApp.rojo,
+          titulo: 'Suspender usuario',
+          descripcion: 'Bloquear acceso temporalmente',
+          alPresionar: () {
+            Navigator.of(context, rootNavigator: true).pop();
+            _mostrarDialogoSuspender(context);
+          },
+        ),
+      ];
 
   void _mostrarDialogoSuspender(BuildContext context) {
     showDialog<void>(
-      context:            context,
+      context: context,
       barrierDismissible: false,
       builder: (_) => _DialogoSuspenderUsuario(
-        usuario:     usuario,
+        usuario: usuario,
         alConfirmar: () => context.read<UsuariosCubit>().suspender(usuario.id),
       ),
     );
@@ -525,9 +533,9 @@ class _TarjetaUsuario extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [
           BoxShadow(
-            color:      ColoresApp.sombraTarjeta,
+            color: ColoresApp.sombraTarjeta,
             blurRadius: 8,
-            offset:     Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -538,12 +546,10 @@ class _TarjetaUsuario extends StatelessWidget {
               ? ColoresApp.acentoClaro
               : ColoresApp.superficiePrimaria,
           child: InkWell(
-            onLongPress: modoSeleccion
-                ? null
-                : () => cubit.activarSeleccion(usuario.id),
-            onTap: modoSeleccion
-                ? () => cubit.toggleSeleccion(usuario.id)
-                : null,
+            onLongPress:
+                modoSeleccion ? null : () => cubit.activarSeleccion(usuario.id),
+            onTap:
+                modoSeleccion ? () => cubit.toggleSeleccion(usuario.id) : null,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               child: Row(
@@ -553,8 +559,8 @@ class _TarjetaUsuario extends StatelessWidget {
                     const SizedBox(width: 12),
                   ] else ...[
                     AvatarUsuario(
-                      iniciales:  usuario.iniciales,
-                      tamanio:    40,
+                      iniciales: usuario.iniciales,
+                      tamanio: 40,
                       colorFondo: colorFondo,
                       colorTexto: colorTexto,
                     ),
@@ -566,19 +572,21 @@ class _TarjetaUsuario extends StatelessWidget {
                       children: [
                         Text(
                           usuario.nombreCompleto,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color:      ColoresApp.textoPrimario,
-                            fontSize:   15,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: ColoresApp.textoPrimario,
+                                    fontSize: 15,
+                                  ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           usuario.correo,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color:    ColoresApp.textoSecundario,
-                            fontSize: 13,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: ColoresApp.textoSecundario,
+                                    fontSize: 13,
+                                  ),
                         ),
                       ],
                     ),
@@ -587,7 +595,8 @@ class _TarjetaUsuario extends StatelessWidget {
                   _InsigniaEstatus(activo: usuario.estatus),
                   if (!modoSeleccion) ...[
                     const SizedBox(width: 6),
-                    _BotonOpciones(alPresionar: () => _mostrarOpciones(context)),
+                    _BotonOpciones(
+                        alPresionar: () => _mostrarOpciones(context)),
                   ],
                 ],
               ),
@@ -610,7 +619,7 @@ class _CheckboxCircular extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
-      width:  22,
+      width: 22,
       height: 22,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
@@ -638,8 +647,8 @@ class _BarraAccionesLote extends StatelessWidget {
     required this.alSuspender,
   });
 
-  final int          cantidadSeleccionados;
-  final bool         estaEjecutando;
+  final int cantidadSeleccionados;
+  final bool estaEjecutando;
   final VoidCallback alAsignarRol;
   final VoidCallback alAsignarTag;
   final VoidCallback alSuspender;
@@ -654,9 +663,9 @@ class _BarraAccionesLote extends StatelessWidget {
           color: ColoresApp.superficiePrimaria,
           boxShadow: [
             BoxShadow(
-              color:      ColoresApp.sombraTarjeta,
+              color: ColoresApp.sombraTarjeta,
               blurRadius: 8,
-              offset:     Offset(0, -2),
+              offset: Offset(0, -2),
             ),
           ],
         ),
@@ -671,30 +680,30 @@ class _BarraAccionesLote extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _BotonAccionLote(
-                      icono:       Icons.people_alt_outlined,
-                      etiqueta:    'Asignar rol',
-                      color:       ColoresApp.teal,
-                      colorFondo:  ColoresApp.tealClaro,
+                      icono: Icons.people_alt_outlined,
+                      etiqueta: 'Asignar rol',
+                      color: ColoresApp.teal,
+                      colorFondo: ColoresApp.tealClaro,
                       alPresionar: alAsignarRol,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _BotonAccionLote(
-                      icono:       Icons.label_outlined,
-                      etiqueta:    'Asignar tag',
-                      color:       ColoresApp.ambar,
-                      colorFondo:  ColoresApp.ambarClaro,
+                      icono: Icons.label_outlined,
+                      etiqueta: 'Asignar tag',
+                      color: ColoresApp.ambar,
+                      colorFondo: ColoresApp.ambarClaro,
                       alPresionar: alAsignarTag,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _BotonAccionLote(
-                      icono:       Icons.block_rounded,
-                      etiqueta:    'Suspender',
-                      color:       ColoresApp.rojo,
-                      colorFondo:  ColoresApp.rojoClaro,
+                      icono: Icons.block_rounded,
+                      etiqueta: 'Suspender',
+                      color: ColoresApp.rojo,
+                      colorFondo: ColoresApp.rojoClaro,
                       alPresionar: alSuspender,
                     ),
                   ),
@@ -714,19 +723,19 @@ class _BotonAccionLote extends StatelessWidget {
     required this.alPresionar,
   });
 
-  final IconData     icono;
-  final String       etiqueta;
-  final Color        color;
-  final Color        colorFondo;
+  final IconData icono;
+  final String etiqueta;
+  final Color color;
+  final Color colorFondo;
   final VoidCallback alPresionar;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        colorFondo,
+      color: colorFondo,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap:        alPresionar,
+        onTap: alPresionar,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
@@ -738,8 +747,8 @@ class _BotonAccionLote extends StatelessWidget {
               Text(
                 etiqueta,
                 style: TextStyle(
-                  color:      color,
-                  fontSize:   12,
+                  color: color,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
                 textAlign: TextAlign.center,
@@ -761,9 +770,9 @@ class _SelectorOpcionModal extends StatefulWidget {
     required this.alSeleccionar,
   });
 
-  final String                         titulo;
-  final Future<List<_SelectorOpcion>>  futureOpciones;
-  final void Function(String id)       alSeleccionar;
+  final String titulo;
+  final Future<List<_SelectorOpcion>> futureOpciones;
+  final void Function(String id) alSeleccionar;
 
   @override
   State<_SelectorOpcionModal> createState() => _SelectorOpcionModalState();
@@ -779,17 +788,17 @@ class _SelectorOpcionModalState extends State<_SelectorOpcionModal> {
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       child: Column(
-        mainAxisSize:        MainAxisSize.min,
-        crossAxisAlignment:  CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Handle
           Center(
             child: Container(
-              width:  40,
+              width: 40,
               height: 4,
               margin: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color:        ColoresApp.bordeMedio,
+                color: ColoresApp.bordeMedio,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -799,10 +808,10 @@ class _SelectorOpcionModalState extends State<_SelectorOpcionModal> {
             child: Text(
               widget.titulo,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontSize:   18,
-                fontWeight: FontWeight.w700,
-                color:      ColoresApp.textoPrimario,
-              ),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: ColoresApp.textoPrimario,
+                  ),
             ),
           ),
           // Lista de opciones
@@ -817,7 +826,8 @@ class _SelectorOpcionModalState extends State<_SelectorOpcionModal> {
                   return const SizedBox(
                     height: 80,
                     child: Center(
-                      child: CircularProgressIndicator(color: ColoresApp.acento),
+                      child:
+                          CircularProgressIndicator(color: ColoresApp.acento),
                     ),
                   );
                 }
@@ -835,18 +845,20 @@ class _SelectorOpcionModalState extends State<_SelectorOpcionModal> {
                 final opciones = snapshot.data!;
                 return ListView.builder(
                   shrinkWrap: true,
-                  itemCount:  opciones.length,
+                  itemCount: opciones.length,
                   itemBuilder: (context, i) {
-                    final op          = opciones[i];
+                    final op = opciones[i];
                     final seleccionado = _seleccionado == op.id;
                     return ListTile(
                       leading: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
-                        width:  20,
+                        width: 20,
                         height: 20,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: seleccionado ? ColoresApp.acento : Colors.transparent,
+                          color: seleccionado
+                              ? ColoresApp.acento
+                              : Colors.transparent,
                           border: Border.all(
                             color: seleccionado
                                 ? ColoresApp.acento
@@ -854,21 +866,24 @@ class _SelectorOpcionModalState extends State<_SelectorOpcionModal> {
                           ),
                         ),
                         child: seleccionado
-                            ? const Icon(Icons.check, size: 12, color: ColoresApp.blanco)
+                            ? const Icon(Icons.check,
+                                size: 12, color: ColoresApp.blanco)
                             : null,
                       ),
                       title: Text(
                         op.nombre,
                         style: TextStyle(
-                          color:      ColoresApp.textoPrimario,
-                          fontWeight: seleccionado ? FontWeight.w600 : FontWeight.normal,
+                          color: ColoresApp.textoPrimario,
+                          fontWeight: seleccionado
+                              ? FontWeight.w600
+                              : FontWeight.normal,
                         ),
                       ),
                       subtitle: op.subtitulo != null
                           ? Text(
                               op.subtitulo!,
                               style: const TextStyle(
-                                color:    ColoresApp.textoSecundario,
+                                color: ColoresApp.textoSecundario,
                                 fontSize: 12,
                               ),
                             )
@@ -917,7 +932,7 @@ class _DialogoConfirmarSuspenderLote extends StatelessWidget {
     required this.alConfirmar,
   });
 
-  final int          cantidad;
+  final int cantidad;
   final VoidCallback alConfirmar;
 
   @override
@@ -932,8 +947,8 @@ class _DialogoConfirmarSuspenderLote extends StatelessWidget {
           Text(
             'Suspender usuarios',
             style: TextStyle(
-              color:      ColoresApp.textoPrimario,
-              fontSize:   17,
+              color: ColoresApp.textoPrimario,
+              fontSize: 17,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -944,9 +959,9 @@ class _DialogoConfirmarSuspenderLote extends StatelessWidget {
         '${cantidad == 1 ? "usuario seleccionado" : "usuarios seleccionados"}. '
         'Esta acción puede revertirse individualmente.',
         style: const TextStyle(
-          color:  ColoresApp.textoSecundario,
+          color: ColoresApp.textoSecundario,
           fontSize: 14,
-          height:   1.5,
+          height: 1.5,
         ),
       ),
       actions: [
@@ -987,7 +1002,7 @@ class _InsigniaEstatus extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color:        activo ? ColoresApp.verdeClaro : ColoresApp.rojoClaro,
+        color: activo ? ColoresApp.verdeClaro : ColoresApp.rojoClaro,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
           color: activo ? ColoresApp.bordeExito : ColoresApp.bordeError,
@@ -997,8 +1012,8 @@ class _InsigniaEstatus extends StatelessWidget {
       child: Text(
         activo ? 'Activo' : 'Inactivo',
         style: TextStyle(
-          color:      activo ? ColoresApp.verde : ColoresApp.rojo,
-          fontSize:   11,
+          color: activo ? ColoresApp.verde : ColoresApp.rojo,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -1016,17 +1031,17 @@ class _BotonOpciones extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
-        onTap:        alPresionar,
+        onTap: alPresionar,
         borderRadius: BorderRadius.circular(8),
         child: const Padding(
           padding: EdgeInsets.all(6),
           child: Icon(
             Icons.more_vert_rounded,
             color: ColoresApp.textoTerciario,
-            size:  20,
+            size: 20,
           ),
         ),
       ),
@@ -1047,8 +1062,8 @@ class _EncabezadoPanel extends StatelessWidget {
     return Row(
       children: [
         AvatarUsuario(
-          iniciales:  usuario.iniciales,
-          tamanio:    44,
+          iniciales: usuario.iniciales,
+          tamanio: 44,
           colorFondo: colorFondo,
           colorTexto: colorTexto,
         ),
@@ -1060,8 +1075,8 @@ class _EncabezadoPanel extends StatelessWidget {
               Text(
                 usuario.nombreCompleto,
                 style: const TextStyle(
-                  color:      ColoresApp.textoPrimario,
-                  fontSize:   16,
+                  color: ColoresApp.textoPrimario,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -1069,7 +1084,7 @@ class _EncabezadoPanel extends StatelessWidget {
               Text(
                 usuario.correo,
                 style: const TextStyle(
-                  color:    ColoresApp.textoSecundario,
+                  color: ColoresApp.textoSecundario,
                   fontSize: 13,
                 ),
               ),
@@ -1089,7 +1104,7 @@ class _DialogoSuspenderUsuario extends StatefulWidget {
     required this.alConfirmar,
   });
 
-  final UsuarioItem  usuario;
+  final UsuarioItem usuario;
   final VoidCallback alConfirmar;
 
   @override
@@ -1098,7 +1113,7 @@ class _DialogoSuspenderUsuario extends StatefulWidget {
 }
 
 class _DialogoSuspenderUsuarioState extends State<_DialogoSuspenderUsuario> {
-  final _ctrl    = TextEditingController();
+  final _ctrl = TextEditingController();
   bool _coincide = false;
 
   @override
@@ -1125,23 +1140,23 @@ class _DialogoSuspenderUsuarioState extends State<_DialogoSuspenderUsuario> {
           Text(
             'Suspender usuario',
             style: TextStyle(
-              color:      ColoresApp.textoPrimario,
-              fontSize:   17,
+              color: ColoresApp.textoPrimario,
+              fontSize: 17,
               fontWeight: FontWeight.w700,
             ),
           ),
         ],
       ),
       content: Column(
-        mainAxisSize:        MainAxisSize.min,
-        crossAxisAlignment:  CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           RichText(
             text: TextSpan(
               style: const TextStyle(
-                color:    ColoresApp.textoSecundario,
+                color: ColoresApp.textoSecundario,
                 fontSize: 14,
-                height:   1.5,
+                height: 1.5,
               ),
               children: [
                 const TextSpan(
@@ -1151,7 +1166,7 @@ class _DialogoSuspenderUsuarioState extends State<_DialogoSuspenderUsuario> {
                   text: widget.usuario.nombreCompleto,
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
-                    color:      ColoresApp.textoPrimario,
+                    color: ColoresApp.textoPrimario,
                   ),
                 ),
                 const TextSpan(text: ':'),
@@ -1161,23 +1176,23 @@ class _DialogoSuspenderUsuarioState extends State<_DialogoSuspenderUsuario> {
           const SizedBox(height: 16),
           TextField(
             controller: _ctrl,
-            onChanged:  _alCambiar,
+            onChanged: _alCambiar,
             style: const TextStyle(
-              color:    ColoresApp.textoPrimario,
+              color: ColoresApp.textoPrimario,
               fontSize: 14,
             ),
             decoration: InputDecoration(
-              hintText:    'Nombre completo',
-              hintStyle:   const TextStyle(color: ColoresApp.textoTerciario),
-              filled:      true,
-              fillColor:   ColoresApp.fondo,
+              hintText: 'Nombre completo',
+              hintStyle: const TextStyle(color: ColoresApp.textoTerciario),
+              filled: true,
+              fillColor: ColoresApp.fondo,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide:   const BorderSide(color: ColoresApp.bordeMedio),
+                borderSide: const BorderSide(color: ColoresApp.bordeMedio),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide:   const BorderSide(color: ColoresApp.bordeMedio),
+                borderSide: const BorderSide(color: ColoresApp.bordeMedio),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -1206,7 +1221,7 @@ class _DialogoSuspenderUsuarioState extends State<_DialogoSuspenderUsuario> {
                 }
               : null,
           style: FilledButton.styleFrom(
-            backgroundColor:         ColoresApp.rojo,
+            backgroundColor: ColoresApp.rojo,
             disabledBackgroundColor: ColoresApp.rojoClaro,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -1240,8 +1255,8 @@ class _VistaError extends StatelessWidget {
               mensaje,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
+                    color: ColoresApp.textoSecundario,
+                  ),
             ),
             const SizedBox(height: 24),
             FilledButton(

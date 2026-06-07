@@ -38,7 +38,6 @@ List<GoRoute> get rutasAjustes => [
           child: const PermisosPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.gestionRoles,
         builder: (context, state) => BlocProvider(
@@ -46,7 +45,6 @@ List<GoRoute> get rutasAjustes => [
           child: const RolesPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.crearRol,
         builder: (context, state) => BlocProvider(
@@ -54,7 +52,6 @@ List<GoRoute> get rutasAjustes => [
           child: const CrearRolPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.editarRol,
         builder: (context, state) => BlocProvider(
@@ -64,7 +61,6 @@ List<GoRoute> get rutasAjustes => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.gestionUsuarios,
         builder: (context, state) => BlocProvider(
@@ -72,7 +68,6 @@ List<GoRoute> get rutasAjustes => [
           child: const UsuariosPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.gestionarTagsUsuario,
         builder: (context, state) => BlocProvider(
@@ -82,7 +77,6 @@ List<GoRoute> get rutasAjustes => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.gestionarRolesUsuario,
         builder: (context, state) => BlocProvider(
@@ -92,7 +86,6 @@ List<GoRoute> get rutasAjustes => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.verPerfilUsuario,
         builder: (context, state) => BlocProvider(
@@ -102,7 +95,6 @@ List<GoRoute> get rutasAjustes => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.editarUsuario,
         builder: (context, state) => BlocProvider(
@@ -112,7 +104,6 @@ List<GoRoute> get rutasAjustes => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.gestionTags,
         builder: (context, state) => BlocProvider(
@@ -120,7 +111,6 @@ List<GoRoute> get rutasAjustes => [
           child: const TagsPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.crearTag,
         builder: (context, state) => BlocProvider(
@@ -128,7 +118,6 @@ List<GoRoute> get rutasAjustes => [
           child: const CrearTagPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.editarTag,
         builder: (context, state) => BlocProvider(
@@ -138,7 +127,6 @@ List<GoRoute> get rutasAjustes => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.revisionUsuarios,
         builder: (context, state) => BlocProvider(
@@ -146,7 +134,6 @@ List<GoRoute> get rutasAjustes => [
           child: const RevisionUsuariosPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.gestionTiposEvento,
         builder: (context, state) => BlocProvider(
@@ -154,7 +141,6 @@ List<GoRoute> get rutasAjustes => [
           child: const TiposEventoPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.crearTipoEvento,
         builder: (context, state) => BlocProvider(
@@ -162,7 +148,6 @@ List<GoRoute> get rutasAjustes => [
           child: const CrearTipoEventoPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.editarTipoEvento,
         builder: (context, state) => BlocProvider(

@@ -9,12 +9,15 @@ class GrupoAudiencia extends Equatable {
     this.tagsSecundarios = const [],
   });
 
-  final int             grupoIndex;
-  final TagOpcion       tagPrincipal;
+  final int grupoIndex;
+  final TagOpcion tagPrincipal;
   final List<TagOpcion> tagsSecundarios;
 
   String get etiqueta {
-    final partes = [tagPrincipal.nombre, ...tagsSecundarios.map((t) => t.nombre)];
+    final partes = [
+      tagPrincipal.nombre,
+      ...tagsSecundarios.map((t) => t.nombre)
+    ];
     return partes.join(' + ');
   }
 

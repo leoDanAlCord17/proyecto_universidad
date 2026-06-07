@@ -1,15 +1,14 @@
 import 'package:equatable/equatable.dart';
 
 class UsuarioItem extends Equatable {
-
   factory UsuarioItem.desdeJson(Map<String, dynamic> json) => UsuarioItem(
-    id:                   json['id']                    as String,
-    primerNombre:         json['primer_nombre']         as String? ?? '',
-    primerApellido:       json['primer_apellido']       as String? ?? '',
-    correo:               json['correo']                as String? ?? '',
-    estatus:              (json['estatus']              as bool?) ?? true,
-    numeroIdentificacion: json['numero_identificacion'] as String?,
-  );
+        id: json['id'] as String,
+        primerNombre: json['primer_nombre'] as String? ?? '',
+        primerApellido: json['primer_apellido'] as String? ?? '',
+        correo: json['correo'] as String? ?? '',
+        estatus: (json['estatus'] as bool?) ?? true,
+        numeroIdentificacion: json['numero_identificacion'] as String?,
+      );
   const UsuarioItem({
     required this.id,
     required this.primerNombre,
@@ -19,11 +18,11 @@ class UsuarioItem extends Equatable {
     this.numeroIdentificacion,
   });
 
-  final String  id;
-  final String  primerNombre;
-  final String  primerApellido;
-  final String  correo;
-  final bool    estatus;
+  final String id;
+  final String primerNombre;
+  final String primerApellido;
+  final String correo;
+  final bool estatus;
   final String? numeroIdentificacion;
 
   String get nombreCompleto => '$primerNombre $primerApellido';
@@ -35,6 +34,11 @@ class UsuarioItem extends Equatable {
 
   @override
   List<Object?> get props => [
-    id, primerNombre, primerApellido, correo, estatus, numeroIdentificacion,
-  ];
+        id,
+        primerNombre,
+        primerApellido,
+        correo,
+        estatus,
+        numeroIdentificacion,
+      ];
 }

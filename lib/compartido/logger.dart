@@ -14,12 +14,12 @@ import 'errores.dart';
 ///   log.e('error', error: e, stackTrace: st);
 final log = Logger(
   printer: PrettyPrinter(
-    methodCount:      2,
+    methodCount: 2,
     errorMethodCount: 8,
-    lineLength:       120,
-    colors:           true,
-    printEmojis:      true,
-    dateTimeFormat:   DateTimeFormat.onlyTimeAndSinceStart,
+    lineLength: 120,
+    colors: true,
+    printEmojis: true,
+    dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
   ),
   // En release solo mostramos warnings y errores
   level: kDebugMode ? Level.debug : Level.warning,

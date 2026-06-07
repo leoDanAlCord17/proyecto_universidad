@@ -27,8 +27,8 @@ class CacheLocal {
     Duration ttl = const Duration(hours: 24),
   }) async {
     final entrada = jsonEncode({
-      'd':   valor,
-      't':   DateTime.now().millisecondsSinceEpoch,
+      'd': valor,
+      't': DateTime.now().millisecondsSinceEpoch,
       'ttl': ttl.inMilliseconds,
     });
     await Hive.box<String>(_caja).put(clave, entrada);
@@ -40,9 +40,9 @@ class CacheLocal {
     final raw = Hive.box<String>(_caja).get(clave);
     if (raw == null) return null;
     try {
-      final entrada    = jsonDecode(raw) as Map<String, dynamic>;
+      final entrada = jsonDecode(raw) as Map<String, dynamic>;
       final guardadoEn = entrada['t'] as int;
-      final ttlMs      = entrada['ttl'] as int;
+      final ttlMs = entrada['ttl'] as int;
       if (DateTime.now().millisecondsSinceEpoch - guardadoEn > ttlMs) {
         Hive.box<String>(_caja).delete(clave);
         return null;

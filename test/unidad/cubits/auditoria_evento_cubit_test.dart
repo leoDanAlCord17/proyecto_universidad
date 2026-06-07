@@ -11,32 +11,32 @@ import '../../helpers.dart';
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 
 const _evento1 = EventoParaAuditoria(
-  id:      'ev-1',
-  titulo:  'Congreso',
+  id: 'ev-1',
+  titulo: 'Congreso',
   estatus: 'en_curso',
 );
 
 const _evento2 = EventoParaAuditoria(
-  id:      'ev-2',
-  titulo:  'Taller',
+  id: 'ev-2',
+  titulo: 'Taller',
   estatus: 'finalizado',
 );
 
 const _evento3 = EventoParaAuditoria(
-  id:      'ev-3',
-  titulo:  'Seminario',
+  id: 'ev-3',
+  titulo: 'Seminario',
   estatus: 'finalizado',
 );
 
 RegistroAuditoria _reg(String id, String estatus) => RegistroAuditoria(
-  id:          id,
-  nombre:      'Test $id',
-  iniciales:   'T',
-  estatus:     estatus,
-  esForaneo:   false,
-  horaEntrada: '',
-  horaSalida:  '',
-);
+      id: id,
+      nombre: 'Test $id',
+      iniciales: 'T',
+      estatus: estatus,
+      esForaneo: false,
+      horaEntrada: '',
+      horaSalida: '',
+    );
 
 void main() {
   late MockAuditoriaEventoRepositorio repositorio;
@@ -56,8 +56,8 @@ void main() {
     blocTest<AuditoriaEventoCubit, AuditoriaEventoEstado>(
       'emite [CargandoLista, ListaCargada] cuando el repositorio devuelve datos',
       build: () {
-        when(() => repositorio.obtenerEventos())
-            .thenAnswer((_) async => (eventos: [_evento1, _evento2], hayMas: false));
+        when(() => repositorio.obtenerEventos()).thenAnswer(
+            (_) async => (eventos: [_evento1, _evento2], hayMas: false));
         return AuditoriaEventoCubit(repositorio);
       },
       act: (c) => c.iniciar(),
@@ -70,8 +70,8 @@ void main() {
     blocTest<AuditoriaEventoCubit, AuditoriaEventoEstado>(
       'todosEventos se llena después de iniciar con éxito',
       build: () {
-        when(() => repositorio.obtenerEventos())
-            .thenAnswer((_) async => (eventos: [_evento1, _evento2], hayMas: false));
+        when(() => repositorio.obtenerEventos()).thenAnswer(
+            (_) async => (eventos: [_evento1, _evento2], hayMas: false));
         return AuditoriaEventoCubit(repositorio);
       },
       act: (c) => c.iniciar(),
@@ -85,8 +85,8 @@ void main() {
     blocTest<AuditoriaEventoCubit, AuditoriaEventoEstado>(
       'hayMasEventos=true cuando el repo indica más páginas',
       build: () {
-        when(() => repositorio.obtenerEventos())
-            .thenAnswer((_) async => (eventos: [_evento1, _evento2], hayMas: true));
+        when(() => repositorio.obtenerEventos()).thenAnswer(
+            (_) async => (eventos: [_evento1, _evento2], hayMas: true));
         return AuditoriaEventoCubit(repositorio);
       },
       act: (c) => c.iniciar(),
@@ -104,7 +104,9 @@ void main() {
       expect: () => [
         isA<AuditoriaEventoCargandoLista>(),
         isA<AuditoriaEventoError>().having(
-          (e) => e.mensaje, 'mensaje', 'Error de base de datos.',
+          (e) => e.mensaje,
+          'mensaje',
+          'Error de base de datos.',
         ),
       ],
     );
@@ -164,7 +166,8 @@ void main() {
       await cubit.close();
     });
 
-    test('no modifica todosEventos si el repositorio lanza excepción', () async {
+    test('no modifica todosEventos si el repositorio lanza excepción',
+        () async {
       var llamadas = 0;
       when(() => repositorio.obtenerEventos(offset: any(named: 'offset')))
           .thenAnswer((_) async {
@@ -188,20 +191,25 @@ void main() {
     blocTest<AuditoriaEventoCubit, AuditoriaEventoEstado>(
       'emite [CargandoAuditoria, Cargada] con registros y resumen',
       build: () {
-        when(() => repositorio.obtenerRegistros('ev-1'))
-            .thenAnswer((_) async => [
-              _reg('r1', 'presente'),
-              _reg('r2', 'ausente'),
-            ],);
+        when(() => repositorio.obtenerRegistros('ev-1')).thenAnswer(
+          (_) async => [
+            _reg('r1', 'presente'),
+            _reg('r2', 'ausente'),
+          ],
+        );
         return AuditoriaEventoCubit(repositorio);
       },
       act: (c) => c.seleccionarEvento(_evento1),
       expect: () => [
         isA<AuditoriaEventoCargandoAuditoria>().having(
-          (s) => s.eventoSeleccionado.id, 'eventoId', 'ev-1',
+          (s) => s.eventoSeleccionado.id,
+          'eventoId',
+          'ev-1',
         ),
         isA<AuditoriaEventoCargada>().having(
-          (s) => s.registros.length, 'registros.length', 2,
+          (s) => s.registros.length,
+          'registros.length',
+          2,
         ),
       ],
     );
@@ -209,19 +217,22 @@ void main() {
     blocTest<AuditoriaEventoCubit, AuditoriaEventoEstado>(
       'Cargada tiene resumen con totalRegistros correcto',
       build: () {
-        when(() => repositorio.obtenerRegistros(any()))
-            .thenAnswer((_) async => [
-              _reg('r1', 'presente'),
-              _reg('r2', 'ausente'),
-              _reg('r3', 'esperado'),
-            ],);
+        when(() => repositorio.obtenerRegistros(any())).thenAnswer(
+          (_) async => [
+            _reg('r1', 'presente'),
+            _reg('r2', 'ausente'),
+            _reg('r3', 'esperado'),
+          ],
+        );
         return AuditoriaEventoCubit(repositorio);
       },
       act: (c) => c.seleccionarEvento(_evento1),
       expect: () => [
         isA<AuditoriaEventoCargandoAuditoria>(),
         isA<AuditoriaEventoCargada>().having(
-          (s) => s.resumen.totalRegistros, 'totalRegistros', 3,
+          (s) => s.resumen.totalRegistros,
+          'totalRegistros',
+          3,
         ),
       ],
     );
@@ -237,7 +248,9 @@ void main() {
       expect: () => [
         isA<AuditoriaEventoCargandoAuditoria>(),
         isA<AuditoriaEventoError>().having(
-          (e) => e.mensaje, 'mensaje', 'Fallo DB.',
+          (e) => e.mensaje,
+          'mensaje',
+          'Fallo DB.',
         ),
       ],
     );
@@ -258,10 +271,14 @@ void main() {
       expect: () => [
         isA<AuditoriaEventoCargandoAuditoria>(),
         isA<AuditoriaEventoCargada>().having(
-          (s) => s.filtro, 'filtro', FiltroParticipantes.todos,
+          (s) => s.filtro,
+          'filtro',
+          FiltroParticipantes.todos,
         ),
         isA<AuditoriaEventoCargada>().having(
-          (s) => s.filtro, 'filtro', FiltroParticipantes.ausentes,
+          (s) => s.filtro,
+          'filtro',
+          FiltroParticipantes.ausentes,
         ),
       ],
     );
@@ -289,10 +306,14 @@ void main() {
       expect: () => [
         isA<AuditoriaEventoCargandoAuditoria>(),
         isA<AuditoriaEventoCargada>().having(
-          (s) => s.busquedaParticipante, 'busqueda', '',
+          (s) => s.busquedaParticipante,
+          'busqueda',
+          '',
         ),
         isA<AuditoriaEventoCargada>().having(
-          (s) => s.busquedaParticipante, 'busqueda', 'Leo',
+          (s) => s.busquedaParticipante,
+          'busqueda',
+          'Leo',
         ),
       ],
     );
@@ -311,19 +332,24 @@ void main() {
       _reg('r2', 'ausente'),
       _reg('r3', 'salio_anticipado'),
       const RegistroAuditoria(
-        id: 'r4', nombre: 'Carlos Foraneo', iniciales: 'CF',
-        estatus: 'esperado', esForaneo: true, horaEntrada: '', horaSalida: '',
+        id: 'r4',
+        nombre: 'Carlos Foraneo',
+        iniciales: 'CF',
+        estatus: 'esperado',
+        esForaneo: true,
+        horaEntrada: '',
+        horaSalida: '',
       ),
     ];
     final resumen = ResumenAuditoria.calcular(registros);
 
     AuditoriaEventoCargada estado(FiltroParticipantes f, [String q = '']) =>
         AuditoriaEventoCargada(
-          eventoSeleccionado:    _evento1,
-          registros:             registros,
-          resumen:               resumen,
-          filtro:                f,
-          busquedaParticipante:  q,
+          eventoSeleccionado: _evento1,
+          registros: registros,
+          resumen: resumen,
+          filtro: f,
+          busquedaParticipante: q,
         );
 
     test('todos devuelve todos los registros', () {
@@ -361,7 +387,8 @@ void main() {
     });
 
     test('búsqueda vacía no filtra nada', () {
-      expect(estado(FiltroParticipantes.todos, '   ').registrosFiltrados.length, 4);
+      expect(estado(FiltroParticipantes.todos, '   ').registrosFiltrados.length,
+          4);
     });
   });
 }

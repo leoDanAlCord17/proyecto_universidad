@@ -18,13 +18,14 @@ class BannerSinConexion extends StatelessWidget {
       liveRegion: true,
       label: 'Sin conexión — mostrando datos guardados',
       child: Container(
-        width:   double.infinity,
+        width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        color:   ColoresApp.ambarClaro,
+        color: ColoresApp.ambarClaro,
         child: Row(
           children: [
             const ExcludeSemantics(
-              child: Icon(Icons.wifi_off_rounded, size: 14, color: ColoresApp.ambar),
+              child: Icon(Icons.wifi_off_rounded,
+                  size: 14, color: ColoresApp.ambar),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -32,8 +33,8 @@ class BannerSinConexion extends StatelessWidget {
                 child: Text(
                   'Sin conexión — mostrando datos guardados',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: ColoresApp.ambar,
-                  ),
+                        color: ColoresApp.ambar,
+                      ),
                 ),
               ),
             ),
@@ -41,9 +42,9 @@ class BannerSinConexion extends StatelessWidget {
               onPressed: onReintentar,
               style: TextButton.styleFrom(
                 foregroundColor: ColoresApp.ambar,
-                minimumSize:     Size.zero,
-                padding:         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                tapTargetSize:   MaterialTapTargetSize.shrinkWrap,
+                minimumSize: Size.zero,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
               child: const Text('Reintentar', style: TextStyle(fontSize: 12)),
             ),

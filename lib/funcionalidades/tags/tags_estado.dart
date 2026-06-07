@@ -27,13 +27,14 @@ final class TagsCargados extends TagsEstado {
 
   final List<Tag> tags;
   final List<Tag> tagsFiltrados;
-  final bool      hayMas;
+  final bool hayMas;
 
-  TagsCargados copiarCon({List<Tag>? tagsFiltrados, bool? hayMas}) => TagsCargados(
-    tags:          tags,
-    tagsFiltrados: tagsFiltrados ?? this.tagsFiltrados,
-    hayMas:        hayMas        ?? this.hayMas,
-  );
+  TagsCargados copiarCon({List<Tag>? tagsFiltrados, bool? hayMas}) =>
+      TagsCargados(
+        tags: tags,
+        tagsFiltrados: tagsFiltrados ?? this.tagsFiltrados,
+        hayMas: hayMas ?? this.hayMas,
+      );
 
   @override
   List<Object?> get props => [tags, tagsFiltrados, hayMas];
@@ -63,7 +64,7 @@ final class TagsOperacionFallida extends TagsEstado {
   const TagsOperacionFallida({required this.anterior, required this.mensaje});
 
   final TagsCargados anterior;
-  final String       mensaje;
+  final String mensaje;
 
   @override
   List<Object?> get props => [anterior, mensaje];

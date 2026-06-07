@@ -14,8 +14,7 @@ class CrearEventoRepositorio {
   final SupabaseClient _cliente;
 
   /// Retorna los tipos de evento con estatus activo.
-  Future<List<TipoEvento>> obtenerTiposEvento() =>
-      conReintentos(() async {
+  Future<List<TipoEvento>> obtenerTiposEvento() => conReintentos(() async {
         try {
           final datos = await _cliente
               .from(TablasSupabase.tiposEvento)
@@ -31,8 +30,7 @@ class CrearEventoRepositorio {
       });
 
   /// Retorna los tags activos (principales y secundarios) — techo de 200 para el picker.
-  Future<List<TagOpcion>> obtenerTags() =>
-      conReintentos(() async {
+  Future<List<TagOpcion>> obtenerTags() => conReintentos(() async {
         try {
           final datos = await _cliente
               .from(TablasSupabase.tags)
@@ -51,8 +49,7 @@ class CrearEventoRepositorio {
       });
 
   /// Retorna el valor de max_tags_secundarios_por_usuario desde configuracion_int.
-  Future<int> obtenerMaxTagsSecundarios() =>
-      conReintentos(() async {
+  Future<int> obtenerMaxTagsSecundarios() => conReintentos(() async {
         try {
           final fila = await _cliente
               .from(TablasSupabase.configuracion)
@@ -126,12 +123,12 @@ class CrearEventoRepositorio {
               .eq('evento_id', eventoId)
               .timeout(kTimeoutSolicitud);
 
-          final Map<int, TagOpcion>       principalesPorGrupo  = {};
-          final Map<int, List<TagOpcion>> secundariosPorGrupo  = {};
+          final Map<int, TagOpcion> principalesPorGrupo = {};
+          final Map<int, List<TagOpcion>> secundariosPorGrupo = {};
 
           for (final fila in (datos as List).cast<Map<String, dynamic>>()) {
             final grupoIndex = fila['grupo_index'] as int;
-            final tagData    = fila['tags']         as Map<String, dynamic>?;
+            final tagData = fila['tags'] as Map<String, dynamic>?;
             if (tagData == null) continue;
             final tag = TagOpcion.desdeJson(tagData);
             if (tag.tipo == 'principal') {
@@ -141,11 +138,15 @@ class CrearEventoRepositorio {
             }
           }
 
-          return principalesPorGrupo.entries.map((e) => GrupoAudiencia(
-            grupoIndex:      e.key,
-            tagPrincipal:    e.value,
-            tagsSecundarios: secundariosPorGrupo[e.key] ?? [],
-          ),).toList();
+          return principalesPorGrupo.entries
+              .map(
+                (e) => GrupoAudiencia(
+                  grupoIndex: e.key,
+                  tagPrincipal: e.value,
+                  tagsSecundarios: secundariosPorGrupo[e.key] ?? [],
+                ),
+              )
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -155,15 +156,14 @@ class CrearEventoRepositorio {
 
   /// Actualiza un evento existente.
   Future<void> actualizarEvento({
-    required String               id,
+    required String id,
     required Map<String, dynamic> datos,
   }) async {
     try {
       final actualizadoPor = await _resolverUsuarioId();
       await _cliente
           .from(TablasSupabase.eventos)
-          .update({...datos, 'actualizado_por': actualizadoPor})
-          .eq('id', id);
+          .update({...datos, 'actualizado_por': actualizadoPor}).eq('id', id);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -173,7 +173,7 @@ class CrearEventoRepositorio {
 
   /// Inserta los grupos de audiencia de un evento nuevo.
   Future<void> guardarGruposEvento({
-    required String              eventoId,
+    required String eventoId,
     required List<GrupoAudiencia> grupos,
   }) async {
     try {
@@ -190,7 +190,7 @@ class CrearEventoRepositorio {
 
   /// Reemplaza todos los grupos de audiencia de un evento existente.
   Future<void> actualizarGruposEvento({
-    required String              eventoId,
+    required String eventoId,
     required List<GrupoAudiencia> grupos,
   }) async {
     try {
@@ -210,21 +210,21 @@ class CrearEventoRepositorio {
   }
 
   List<Map<String, dynamic>> _construirFilasGrupos(
-    String               eventoId,
+    String eventoId,
     List<GrupoAudiencia> grupos,
   ) {
     final filas = <Map<String, dynamic>>[];
     for (final grupo in grupos) {
       filas.add({
-        'evento_id':   eventoId,
+        'evento_id': eventoId,
         'grupo_index': grupo.grupoIndex,
-        'tag_id':      grupo.tagPrincipal.id,
+        'tag_id': grupo.tagPrincipal.id,
       });
       for (final sec in grupo.tagsSecundarios) {
         filas.add({
-          'evento_id':   eventoId,
+          'evento_id': eventoId,
           'grupo_index': grupo.grupoIndex,
-          'tag_id':      sec.id,
+          'tag_id': sec.id,
         });
       }
     }

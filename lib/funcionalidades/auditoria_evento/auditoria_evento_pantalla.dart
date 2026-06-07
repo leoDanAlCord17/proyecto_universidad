@@ -20,7 +20,8 @@ class AuditoriaEventoPantalla extends StatefulWidget {
   const AuditoriaEventoPantalla({super.key});
 
   @override
-  State<AuditoriaEventoPantalla> createState() => _AuditoriaEventoPantallaState();
+  State<AuditoriaEventoPantalla> createState() =>
+      _AuditoriaEventoPantallaState();
 }
 
 class _AuditoriaEventoPantallaState extends State<AuditoriaEventoPantalla> {
@@ -43,11 +44,11 @@ class _AuditoriaEventoPantallaState extends State<AuditoriaEventoPantalla> {
 
   void _abrirSelectorEvento(BuildContext ctx) {
     showModalBottomSheet<void>(
-      context:            ctx,
-      useRootNavigator:   true,
+      context: ctx,
+      useRootNavigator: true,
       isScrollControlled: true,
-      backgroundColor:    Colors.transparent,
-      barrierColor:       ColoresApp.sombraBarrera,
+      backgroundColor: Colors.transparent,
+      barrierColor: ColoresApp.sombraBarrera,
       builder: (_) => BlocProvider.value(
         value: ctx.read<AuditoriaEventoCubit>(),
         child: _ModalSelectorEvento(
@@ -65,9 +66,9 @@ class _AuditoriaEventoPantallaState extends State<AuditoriaEventoPantalla> {
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -90,7 +91,7 @@ class _AuditoriaEventoPantallaState extends State<AuditoriaEventoPantalla> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: _SelectorEventoCard(
-                    evento:  eventoActual,
+                    evento: eventoActual,
                     alTocar: () => _abrirSelectorEvento(context),
                   ),
                 ),
@@ -107,16 +108,17 @@ class _AuditoriaEventoPantallaState extends State<AuditoriaEventoPantalla> {
       switch (estado) {
         AuditoriaEventoInicial() ||
         AuditoriaEventoCargandoLista() =>
-          const Center(child: CircularProgressIndicator(color: ColoresApp.acento)),
+          const Center(
+              child: CircularProgressIndicator(color: ColoresApp.acento)),
         AuditoriaEventoListaCargada() => _EstadoVacioSinSeleccion(),
-        AuditoriaEventoCargandoAuditoria() =>
-          const Center(child: CircularProgressIndicator(color: ColoresApp.acento)),
+        AuditoriaEventoCargandoAuditoria() => const Center(
+            child: CircularProgressIndicator(color: ColoresApp.acento)),
         final AuditoriaEventoCargada cargada => _CuerpoAuditoria(
-            estado:              cargada,
+            estado: cargada,
             controladorBusqueda: _controladorBusqueda,
           ),
         AuditoriaEventoError(:final mensaje) => _VistaError(
-            mensaje:      mensaje,
+            mensaje: mensaje,
             alReintentar: () => context.read<AuditoriaEventoCubit>().iniciar(),
           ),
       };
@@ -136,9 +138,9 @@ class _BarraSuperiorAuditoria extends StatelessWidget {
           Text(
             'Auditoría',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontSize:   20,
-              fontWeight: FontWeight.w700,
-            ),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
           ),
         ],
       ),
@@ -155,27 +157,28 @@ class _SelectorEventoCard extends StatelessWidget {
   });
 
   final EventoParaAuditoria? evento;
-  final VoidCallback          alTocar;
+  final VoidCallback alTocar;
 
   @override
   Widget build(BuildContext context) {
     if (evento == null) {
       return Material(
-        color:        Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(18),
         child: InkWell(
-          onTap:        alTocar,
+          onTap: alTocar,
           borderRadius: BorderRadius.circular(18),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color:        ColoresApp.tealClaro,
+              color: ColoresApp.tealClaro,
               borderRadius: BorderRadius.circular(18),
-              border:       Border.all(color: ColoresApp.bordeAviso),
+              border: Border.all(color: ColoresApp.bordeAviso),
             ),
             child: Row(
               children: [
-                const Icon(Icons.touch_app_rounded, color: ColoresApp.teal, size: 22),
+                const Icon(Icons.touch_app_rounded,
+                    color: ColoresApp.teal, size: 22),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -184,20 +187,21 @@ class _SelectorEventoCard extends StatelessWidget {
                       Text(
                         'Seleccionar evento',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color:      ColoresApp.teal,
-                          fontWeight: FontWeight.w700,
-                        ),
+                              color: ColoresApp.teal,
+                              fontWeight: FontWeight.w700,
+                            ),
                       ),
                       Text(
                         'Toca para elegir el evento a auditar',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: ColoresApp.teal,
-                        ),
+                              color: ColoresApp.teal,
+                            ),
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: ColoresApp.teal, size: 20),
+                const Icon(Icons.chevron_right_rounded,
+                    color: ColoresApp.teal, size: 20),
               ],
             ),
           ),
@@ -216,11 +220,11 @@ class _SelectorEventoCard extends StatelessWidget {
                 Text(
                   evento!.titulo,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color:      ColoresApp.textoPrimario,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  maxLines:  2,
-                  overflow:  TextOverflow.ellipsis,
+                        color: ColoresApp.textoPrimario,
+                        fontWeight: FontWeight.w700,
+                      ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -233,8 +237,8 @@ class _SelectorEventoCard extends StatelessWidget {
                     Text(
                       evento!.fechaFormateada,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: ColoresApp.textoSecundario,
-                      ),
+                            color: ColoresApp.textoSecundario,
+                          ),
                     ),
                   ],
                 ),
@@ -243,24 +247,25 @@ class _SelectorEventoCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Material(
-            color:        Colors.transparent,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             child: InkWell(
-              onTap:        alTocar,
+              onTap: alTocar,
               borderRadius: BorderRadius.circular(10),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color:        ColoresApp.acentoClaro,
+                  color: ColoresApp.acentoClaro,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
                   'Cambiar',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color:      ColoresApp.acento,
-                    fontWeight: FontWeight.w700,
-                    fontSize:   12,
-                  ),
+                        color: ColoresApp.acento,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
                 ),
               ),
             ),
@@ -283,21 +288,23 @@ class _ModalSelectorEvento extends StatefulWidget {
 }
 
 class _ModalSelectorEventoState extends State<_ModalSelectorEvento> {
-  String _busqueda    = '';
-  bool   _cargandoMas = false;
+  String _busqueda = '';
+  bool _cargandoMas = false;
 
   @override
   Widget build(BuildContext context) {
-    final cubit     = context.read<AuditoriaEventoCubit>();
-    final todos     = cubit.todosEventos;
-    final hayMas    = cubit.hayMasEventos;
-    final q         = _busqueda.trim().toLowerCase();
+    final cubit = context.read<AuditoriaEventoCubit>();
+    final todos = cubit.todosEventos;
+    final hayMas = cubit.hayMasEventos;
+    final q = _busqueda.trim().toLowerCase();
     final filtrados = q.isEmpty
         ? todos
         : todos
-            .where((e) =>
-                e.titulo.toLowerCase().contains(q) ||
-                e.fechaFormateada.toLowerCase().contains(q),)
+            .where(
+              (e) =>
+                  e.titulo.toLowerCase().contains(q) ||
+                  e.fechaFormateada.toLowerCase().contains(q),
+            )
             .toList();
 
     return Container(
@@ -305,17 +312,17 @@ class _ModalSelectorEventoState extends State<_ModalSelectorEvento> {
         maxHeight: MediaQuery.of(context).size.height * 0.70,
       ),
       decoration: const BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         children: [
           const SizedBox(height: 12),
           Container(
-            width:  40,
+            width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color:        ColoresApp.superficieTerciar,
+              color: ColoresApp.superficieTerciar,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -324,34 +331,35 @@ class _ModalSelectorEventoState extends State<_ModalSelectorEvento> {
             child: Text(
               'Seleccionar evento',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+                    fontWeight: FontWeight.w700,
+                  ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: BarraBusquedaApp(
-              hintText:  'Buscar evento...',
+              hintText: 'Buscar evento...',
               alCambiar: (v) => setState(() => _busqueda = v),
             ),
           ),
           Expanded(
             child: ListView.separated(
-              padding:          const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              itemCount:        filtrados.length + 1,
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              itemCount: filtrados.length + 1,
               separatorBuilder: (_, __) => const SizedBox(height: 8),
               itemBuilder: (_, i) {
                 if (i < filtrados.length) {
                   return _FilaEvento(
-                    evento:        filtrados[i],
+                    evento: filtrados[i],
                     alSeleccionar: widget.alSeleccionar,
                   );
                 }
                 if (_cargandoMas) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16),
-                    child:   Center(
-                      child: CircularProgressIndicator(color: ColoresApp.acento),
+                    child: Center(
+                      child:
+                          CircularProgressIndicator(color: ColoresApp.acento),
                     ),
                   );
                 }
@@ -363,7 +371,7 @@ class _ModalSelectorEventoState extends State<_ModalSelectorEvento> {
                         await cubit.cargarMasEventos();
                         if (mounted) setState(() => _cargandoMas = false);
                       },
-                      icon:  const Icon(Icons.expand_more_rounded),
+                      icon: const Icon(Icons.expand_more_rounded),
                       label: const Text('Cargar más'),
                     ),
                   );
@@ -375,8 +383,8 @@ class _ModalSelectorEventoState extends State<_ModalSelectorEvento> {
                       child: Text(
                         'Sin resultados',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: ColoresApp.textoTerciario,
-                        ),
+                              color: ColoresApp.textoTerciario,
+                            ),
                       ),
                     ),
                   );
@@ -394,21 +402,21 @@ class _ModalSelectorEventoState extends State<_ModalSelectorEvento> {
 class _FilaEvento extends StatelessWidget {
   const _FilaEvento({required this.evento, required this.alSeleccionar});
 
-  final EventoParaAuditoria               evento;
+  final EventoParaAuditoria evento;
   final ValueChanged<EventoParaAuditoria> alSeleccionar;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
-        onTap:        () => alSeleccionar(evento),
+        onTap: () => alSeleccionar(evento),
         borderRadius: BorderRadius.circular(14),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color:        ColoresApp.superficieSecund,
+            color: ColoresApp.superficieSecund,
             borderRadius: BorderRadius.circular(14),
           ),
           child: Row(
@@ -425,17 +433,17 @@ class _FilaEvento extends StatelessWidget {
                     Text(
                       evento.titulo,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color:      ColoresApp.textoPrimario,
-                        fontWeight: FontWeight.w600,
-                      ),
+                            color: ColoresApp.textoPrimario,
+                            fontWeight: FontWeight.w600,
+                          ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       evento.fechaFormateada,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: ColoresApp.textoSecundario,
-                      ),
+                            color: ColoresApp.textoSecundario,
+                          ),
                     ),
                   ],
                 ),
@@ -443,7 +451,7 @@ class _FilaEvento extends StatelessWidget {
               const Icon(
                 Icons.chevron_right_rounded,
                 color: ColoresApp.textoTerciario,
-                size:  18,
+                size: 18,
               ),
             ],
           ),
@@ -461,8 +469,8 @@ class _CuerpoAuditoria extends StatelessWidget {
     required this.controladorBusqueda,
   });
 
-  final AuditoriaEventoCargada  estado;
-  final TextEditingController   controladorBusqueda;
+  final AuditoriaEventoCargada estado;
+  final TextEditingController controladorBusqueda;
 
   @override
   Widget build(BuildContext context) {
@@ -492,7 +500,8 @@ class _CuerpoAuditoria extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: _SeccionTimeline(timeline: estado.resumen.timelineEntradas),
+              child:
+                  _SeccionTimeline(timeline: estado.resumen.timelineEntradas),
             ),
           ),
         if (estado.resumen.registradores.isNotEmpty)
@@ -509,8 +518,8 @@ class _CuerpoAuditoria extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: _EncabezadoParticipantes(
-              total:               estado.registros.length,
-              filtroActual:        estado.filtro,
+              total: estado.registros.length,
+              filtroActual: estado.filtro,
               controladorBusqueda: controladorBusqueda,
             ),
           ),
@@ -523,8 +532,8 @@ class _CuerpoAuditoria extends StatelessWidget {
                 child: Text(
                   'Sin resultados',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: ColoresApp.textoTerciario,
-                  ),
+                        color: ColoresApp.textoTerciario,
+                      ),
                 ),
               ),
             ),
@@ -567,38 +576,38 @@ class _EncabezadoEvento extends StatelessWidget {
                 Text(
                   evento.titulo,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color:      ColoresApp.textoPrimario,
-                    fontWeight: FontWeight.w700,
-                  ),
+                        color: ColoresApp.textoPrimario,
+                        fontWeight: FontWeight.w700,
+                      ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
                     const Icon(
                       Icons.calendar_today_rounded,
-                      size:  13,
+                      size: 13,
                       color: ColoresApp.textoTerciario,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       evento.fechaFormateada,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: ColoresApp.textoSecundario,
-                      ),
+                            color: ColoresApp.textoSecundario,
+                          ),
                     ),
                     if (evento.horaInicio != null) ...[
                       const SizedBox(width: 10),
                       const Icon(
                         Icons.access_time_rounded,
-                        size:  13,
+                        size: 13,
                         color: ColoresApp.textoTerciario,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         evento.horaInicio!,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: ColoresApp.textoSecundario,
-                        ),
+                              color: ColoresApp.textoSecundario,
+                            ),
                       ),
                     ],
                   ],
@@ -634,9 +643,9 @@ class _GrillaKpis extends StatelessWidget {
           children: [
             Expanded(
               child: _TarjetaKpi(
-                valor:  resumen.haEntrado.toString(),
-                label:  'Entraron',
-                color:  ColoresApp.verde,
+                valor: resumen.haEntrado.toString(),
+                label: 'Entraron',
+                color: ColoresApp.verde,
               ),
             ),
             const SizedBox(width: 8),
@@ -699,7 +708,7 @@ class _TarjetaKpi extends StatelessWidget {
 
   final String valor;
   final String label;
-  final Color  color;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -711,18 +720,18 @@ class _TarjetaKpi extends StatelessWidget {
           Text(
             valor,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color:      color,
-              fontWeight: FontWeight.w800,
-              fontSize:   22,
-            ),
+                  color: color,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 22,
+                ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color:    ColoresApp.textoSecundario,
-              fontSize: 11,
-            ),
+                  color: ColoresApp.textoSecundario,
+                  fontSize: 11,
+                ),
           ),
         ],
       ),
@@ -739,41 +748,41 @@ class _SeccionDistribucion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final entraron  = (resumen.presentes + resumen.completados).toDouble();
+    final entraron = (resumen.presentes + resumen.completados).toDouble();
     final anticipado = resumen.salioAnticipado.toDouble();
-    final ausentes  = resumen.ausentes.toDouble();
+    final ausentes = resumen.ausentes.toDouble();
     final esperados = resumen.esperados.toDouble();
-    final total     = entraron + anticipado + ausentes + esperados;
+    final total = entraron + anticipado + ausentes + esperados;
 
     if (total == 0) return const SizedBox.shrink();
 
     final sections = <PieChartSectionData>[
       if (entraron > 0)
         PieChartSectionData(
-          value:     entraron,
-          color:     ColoresApp.verde,
-          radius:    40,
+          value: entraron,
+          color: ColoresApp.verde,
+          radius: 40,
           showTitle: false,
         ),
       if (anticipado > 0)
         PieChartSectionData(
-          value:     anticipado,
-          color:     ColoresApp.ambar,
-          radius:    40,
+          value: anticipado,
+          color: ColoresApp.ambar,
+          radius: 40,
           showTitle: false,
         ),
       if (ausentes > 0)
         PieChartSectionData(
-          value:     ausentes,
-          color:     ColoresApp.rojo,
-          radius:    40,
+          value: ausentes,
+          color: ColoresApp.rojo,
+          radius: 40,
           showTitle: false,
         ),
       if (esperados > 0)
         PieChartSectionData(
-          value:     esperados,
-          color:     ColoresApp.superficieTerciar,
-          radius:    40,
+          value: esperados,
+          color: ColoresApp.superficieTerciar,
+          radius: 40,
           showTitle: false,
         ),
     ];
@@ -786,23 +795,23 @@ class _SeccionDistribucion extends StatelessWidget {
           Text(
             'DISTRIBUCIÓN',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color:         ColoresApp.textoTerciario,
-              fontWeight:    FontWeight.w700,
-              letterSpacing: 1.2,
-              fontSize:      11,
-            ),
+                  color: ColoresApp.textoTerciario,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                  fontSize: 11,
+                ),
           ),
           const SizedBox(height: 16),
           Row(
             children: [
               SizedBox(
-                width:  110,
+                width: 110,
                 height: 110,
                 child: PieChart(
                   PieChartData(
-                    sections:        sections,
+                    sections: sections,
                     centerSpaceRadius: 35,
-                    sectionsSpace:   2,
+                    sectionsSpace: 2,
                     startDegreeOffset: -90,
                   ),
                 ),
@@ -814,31 +823,31 @@ class _SeccionDistribucion extends StatelessWidget {
                   children: [
                     if (entraron > 0)
                       _FilaLeyenda(
-                        color:  ColoresApp.verde,
-                        label:  'Entraron',
-                        valor:  entraron.toInt(),
-                        total:  total.toInt(),
+                        color: ColoresApp.verde,
+                        label: 'Entraron',
+                        valor: entraron.toInt(),
+                        total: total.toInt(),
                       ),
                     if (anticipado > 0)
                       _FilaLeyenda(
-                        color:  ColoresApp.ambar,
-                        label:  'Anticipado',
-                        valor:  anticipado.toInt(),
-                        total:  total.toInt(),
+                        color: ColoresApp.ambar,
+                        label: 'Anticipado',
+                        valor: anticipado.toInt(),
+                        total: total.toInt(),
                       ),
                     if (ausentes > 0)
                       _FilaLeyenda(
-                        color:  ColoresApp.rojo,
-                        label:  'Ausentes',
-                        valor:  ausentes.toInt(),
-                        total:  total.toInt(),
+                        color: ColoresApp.rojo,
+                        label: 'Ausentes',
+                        valor: ausentes.toInt(),
+                        total: total.toInt(),
                       ),
                     if (esperados > 0)
                       _FilaLeyenda(
-                        color:  ColoresApp.textoTerciario,
-                        label:  'Esperados',
-                        valor:  esperados.toInt(),
-                        total:  total.toInt(),
+                        color: ColoresApp.textoTerciario,
+                        label: 'Esperados',
+                        valor: esperados.toInt(),
+                        total: total.toInt(),
                       ),
                   ],
                 ),
@@ -859,10 +868,10 @@ class _FilaLeyenda extends StatelessWidget {
     required this.total,
   });
 
-  final Color  color;
+  final Color color;
   final String label;
-  final int    valor;
-  final int    total;
+  final int valor;
+  final int total;
 
   @override
   Widget build(BuildContext context) {
@@ -872,11 +881,11 @@ class _FilaLeyenda extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width:  10,
+            width: 10,
             height: 10,
             decoration: BoxDecoration(
-              color:  color,
-              shape:  BoxShape.circle,
+              color: color,
+              shape: BoxShape.circle,
             ),
           ),
           const SizedBox(width: 8),
@@ -884,17 +893,17 @@ class _FilaLeyenda extends StatelessWidget {
             child: Text(
               label,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
+                    color: ColoresApp.textoSecundario,
+                  ),
             ),
           ),
           Text(
             '$valor  ${pct.toStringAsFixed(0)}%',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color:      ColoresApp.textoPrimario,
-              fontWeight: FontWeight.w700,
-              fontSize:   11,
-            ),
+                  color: ColoresApp.textoPrimario,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 11,
+                ),
           ),
         ],
       ),
@@ -921,35 +930,39 @@ class _SeccionTimeline extends StatelessWidget {
           Text(
             'ENTRADAS POR HORA',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color:         ColoresApp.textoTerciario,
-              fontWeight:    FontWeight.w700,
-              letterSpacing: 1.2,
-              fontSize:      11,
-            ),
+                  color: ColoresApp.textoTerciario,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                  fontSize: 11,
+                ),
           ),
           const SizedBox(height: 16),
           SizedBox(
             height: 140,
             child: BarChart(
               BarChartData(
-                maxY:            maxVal == 0 ? 1 : maxVal * 1.25,
-                gridData:        FlGridData(
-                  show:                true,
-                  drawVerticalLine:    false,
-                  horizontalInterval:  maxVal == 0 ? 1 : (maxVal / 4).ceilToDouble(),
+                maxY: maxVal == 0 ? 1 : maxVal * 1.25,
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  horizontalInterval:
+                      maxVal == 0 ? 1 : (maxVal / 4).ceilToDouble(),
                   getDrawingHorizontalLine: (_) => const FlLine(
-                    color:       ColoresApp.bordesuave,
+                    color: ColoresApp.bordesuave,
                     strokeWidth: 1,
                   ),
                 ),
-                borderData:      FlBorderData(show: false),
-                titlesData:      FlTitlesData(
-                  leftTitles:   const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles:  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles:    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                borderData: FlBorderData(show: false),
+                titlesData: FlTitlesData(
+                  leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
-                      showTitles:   true,
+                      showTitles: true,
                       reservedSize: 28,
                       getTitlesWidget: (value, _) {
                         final idx = value.toInt();
@@ -962,7 +975,7 @@ class _SeccionTimeline extends StatelessWidget {
                             timeline[idx].label,
                             style: const TextStyle(
                               fontSize: 10,
-                              color:    ColoresApp.textoTerciario,
+                              color: ColoresApp.textoTerciario,
                             ),
                           ),
                         );
@@ -975,13 +988,13 @@ class _SeccionTimeline extends StatelessWidget {
                     x: i,
                     barRods: [
                       BarChartRodData(
-                        toY:            timeline[i].cantidad.toDouble(),
-                        color:          ColoresApp.acento,
-                        width:          18,
-                        borderRadius:   BorderRadius.circular(4),
+                        toY: timeline[i].cantidad.toDouble(),
+                        color: ColoresApp.acento,
+                        width: 18,
+                        borderRadius: BorderRadius.circular(4),
                         backDrawRodData: BackgroundBarChartRodData(
-                          show:  true,
-                          toY:   maxVal == 0 ? 1 : maxVal * 1.25,
+                          show: true,
+                          toY: maxVal == 0 ? 1 : maxVal * 1.25,
                           color: ColoresApp.acentoClaro,
                         ),
                       ),
@@ -1006,7 +1019,7 @@ class _SeccionRegistradores extends StatelessWidget {
   });
 
   final List<DatoRegistrador> registradores;
-  final int                   totalEntradas;
+  final int totalEntradas;
 
   @override
   Widget build(BuildContext context) {
@@ -1018,22 +1031,22 @@ class _SeccionRegistradores extends StatelessWidget {
           Text(
             'REGISTRADORES',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color:         ColoresApp.textoTerciario,
-              fontWeight:    FontWeight.w700,
-              letterSpacing: 1.2,
-              fontSize:      11,
-            ),
+                  color: ColoresApp.textoTerciario,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                  fontSize: 11,
+                ),
           ),
           const SizedBox(height: 12),
           ...registradores.take(5).map(
-            (r) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: _FilaRegistrador(
-                registrador:   r,
-                totalEntradas: totalEntradas,
+                (r) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _FilaRegistrador(
+                    registrador: r,
+                    totalEntradas: totalEntradas,
+                  ),
+                ),
               ),
-            ),
-          ),
         ],
       ),
     );
@@ -1047,7 +1060,7 @@ class _FilaRegistrador extends StatelessWidget {
   });
 
   final DatoRegistrador registrador;
-  final int             totalEntradas;
+  final int totalEntradas;
 
   @override
   Widget build(BuildContext context) {
@@ -1062,19 +1075,19 @@ class _FilaRegistrador extends StatelessWidget {
               child: Text(
                 registrador.nombre,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color:      ColoresApp.textoPrimario,
-                  fontWeight: FontWeight.w600,
-                ),
+                      color: ColoresApp.textoPrimario,
+                      fontWeight: FontWeight.w600,
+                    ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             Text(
               '${registrador.entradas}  ${pct.toStringAsFixed(0)}%',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color:      ColoresApp.textoSecundario,
-                fontWeight: FontWeight.w600,
-                fontSize:   11,
-              ),
+                    color: ColoresApp.textoSecundario,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 11,
+                  ),
             ),
           ],
         ),
@@ -1082,10 +1095,10 @@ class _FilaRegistrador extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
-            value:            pct / 100,
-            minHeight:        6,
-            backgroundColor:  ColoresApp.acentoClaro,
-            valueColor:       const AlwaysStoppedAnimation<Color>(ColoresApp.acento),
+            value: pct / 100,
+            minHeight: 6,
+            backgroundColor: ColoresApp.acentoClaro,
+            valueColor: const AlwaysStoppedAnimation<Color>(ColoresApp.acento),
           ),
         ),
       ],
@@ -1102,16 +1115,16 @@ class _EncabezadoParticipantes extends StatelessWidget {
     required this.controladorBusqueda,
   });
 
-  final int                   total;
-  final FiltroParticipantes   filtroActual;
+  final int total;
+  final FiltroParticipantes filtroActual;
   final TextEditingController controladorBusqueda;
 
   static const _tabs = [
-    (FiltroParticipantes.todos,           'Todos'),
-    (FiltroParticipantes.entraron,        'Entraron'),
-    (FiltroParticipantes.ausentes,        'Ausentes'),
+    (FiltroParticipantes.todos, 'Todos'),
+    (FiltroParticipantes.entraron, 'Entraron'),
+    (FiltroParticipantes.ausentes, 'Ausentes'),
     (FiltroParticipantes.salioAnticipado, 'Anticipado'),
-    (FiltroParticipantes.foraneos,        'Foráneos'),
+    (FiltroParticipantes.foraneos, 'Foráneos'),
   ];
 
   @override
@@ -1123,11 +1136,11 @@ class _EncabezadoParticipantes extends StatelessWidget {
         Text(
           'PARTICIPANTES ($total)',
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color:         ColoresApp.textoTerciario,
-            fontWeight:    FontWeight.w700,
-            letterSpacing: 1.2,
-            fontSize:      11,
-          ),
+                color: ColoresApp.textoTerciario,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
+                fontSize: 11,
+              ),
         ),
         const SizedBox(height: 10),
         SingleChildScrollView(
@@ -1138,28 +1151,36 @@ class _EncabezadoParticipantes extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: Material(
-                  color:        Colors.transparent,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
                   child: InkWell(
-                    onTap:        () => cubit.cambiarFiltro(tab.$1),
+                    onTap: () => cubit.cambiarFiltro(tab.$1),
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8,),
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
-                        color:        activo ? ColoresApp.acento : ColoresApp.superficiePrimaria,
+                        color: activo
+                            ? ColoresApp.acento
+                            : ColoresApp.superficiePrimaria,
                         borderRadius: BorderRadius.circular(20),
-                        border:       Border.all(
-                          color: activo ? ColoresApp.acento : ColoresApp.bordeMedio,
+                        border: Border.all(
+                          color: activo
+                              ? ColoresApp.acento
+                              : ColoresApp.bordeMedio,
                         ),
                       ),
                       child: Text(
                         tab.$2,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color:      activo ? ColoresApp.blanco : ColoresApp.textoSecundario,
-                          fontWeight: FontWeight.w700,
-                          fontSize:   12,
-                        ),
+                              color: activo
+                                  ? ColoresApp.blanco
+                                  : ColoresApp.textoSecundario,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
                       ),
                     ),
                   ),
@@ -1171,8 +1192,8 @@ class _EncabezadoParticipantes extends StatelessWidget {
         const SizedBox(height: 10),
         BarraBusquedaApp(
           controlador: controladorBusqueda,
-          hintText:    'Buscar participante...',
-          alCambiar:   cubit.buscarParticipante,
+          hintText: 'Buscar participante...',
+          alCambiar: cubit.buscarParticipante,
         ),
       ],
     );
@@ -1197,8 +1218,8 @@ class _TarjetaParticipante extends StatelessWidget {
             children: [
               AvatarUsuario(
                 iniciales: registro.iniciales,
-                urlFoto:   registro.urlFoto,
-                tamanio:   40,
+                urlFoto: registro.urlFoto,
+                tamanio: 40,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1208,9 +1229,9 @@ class _TarjetaParticipante extends StatelessWidget {
                     Text(
                       registro.nombre,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color:      ColoresApp.textoPrimario,
-                        fontWeight: FontWeight.w700,
-                      ),
+                            color: ColoresApp.textoPrimario,
+                            fontWeight: FontWeight.w700,
+                          ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -1218,15 +1239,15 @@ class _TarjetaParticipante extends StatelessWidget {
                       Text(
                         registro.numeroIdentificacion!,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: ColoresApp.textoTerciario,
-                        ),
+                              color: ColoresApp.textoTerciario,
+                            ),
                       )
                     else if (registro.contactoForaneo != null)
                       Text(
                         registro.contactoForaneo!,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: ColoresApp.textoTerciario,
-                        ),
+                              color: ColoresApp.textoTerciario,
+                            ),
                       ),
                   ],
                 ),
@@ -1243,18 +1264,20 @@ class _TarjetaParticipante extends StatelessWidget {
                     const SizedBox(height: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 7, vertical: 2,),
+                        horizontal: 7,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
-                        color:        ColoresApp.tealClaro,
+                        color: ColoresApp.tealClaro,
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Text(
                         'Foráneo',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color:      ColoresApp.teal,
-                          fontSize:   9,
-                          fontWeight: FontWeight.w700,
-                        ),
+                              color: ColoresApp.teal,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                            ),
                       ),
                     ),
                   ],
@@ -1290,18 +1313,18 @@ class _DetalleRegistro extends StatelessWidget {
         const SizedBox(height: 10),
         if (registro.horaEntrada.isNotEmpty)
           _FilaHora(
-            icono:  Icons.login_rounded,
-            color:  ColoresApp.verde,
-            hora:   registro.horaEntrada,
+            icono: Icons.login_rounded,
+            color: ColoresApp.verde,
+            hora: registro.horaEntrada,
             regPor: registro.registradoPorNombre,
           ),
         if (registro.horaSalida.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 6),
             child: _FilaHora(
-              icono:  Icons.logout_rounded,
-              color:  ColoresApp.ambar,
-              hora:   registro.horaSalida,
+              icono: Icons.logout_rounded,
+              color: ColoresApp.ambar,
+              hora: registro.horaSalida,
               regPor: registro.salidaRegistradaPorNombre,
             ),
           ),
@@ -1311,16 +1334,19 @@ class _DetalleRegistro extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.warning_amber_rounded,
-                    size: 14, color: ColoresApp.ambar,),
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  size: 14,
+                  color: ColoresApp.ambar,
+                ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     registro.motivoSalidaAnticipada!,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color:     ColoresApp.ambar,
-                      fontStyle: FontStyle.italic,
-                    ),
+                          color: ColoresApp.ambar,
+                          fontStyle: FontStyle.italic,
+                        ),
                   ),
                 ),
               ],
@@ -1340,9 +1366,9 @@ class _FilaHora extends StatelessWidget {
   });
 
   final IconData icono;
-  final Color    color;
-  final String   hora;
-  final String?  regPor;
+  final Color color;
+  final String hora;
+  final String? regPor;
 
   @override
   Widget build(BuildContext context) {
@@ -1353,9 +1379,9 @@ class _FilaHora extends StatelessWidget {
         Text(
           hora,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color:      ColoresApp.textoPrimario,
-            fontWeight: FontWeight.w700,
-          ),
+                color: ColoresApp.textoPrimario,
+                fontWeight: FontWeight.w700,
+              ),
         ),
         if (regPor != null) ...[
           const SizedBox(width: 8),
@@ -1363,9 +1389,9 @@ class _FilaHora extends StatelessWidget {
             child: Text(
               'Reg. por: $regPor',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color:    ColoresApp.textoTerciario,
-                fontSize: 11,
-              ),
+                    color: ColoresApp.textoTerciario,
+                    fontSize: 11,
+                  ),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -1387,15 +1413,15 @@ class _EstadoVacioSinSeleccion extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width:  72,
+              width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color:        ColoresApp.acentoClaro,
+                color: ColoresApp.acentoClaro,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Icon(
                 Icons.manage_search_rounded,
-                size:  36,
+                size: 36,
                 color: ColoresApp.acento,
               ),
             ),
@@ -1403,17 +1429,17 @@ class _EstadoVacioSinSeleccion extends StatelessWidget {
             Text(
               'Selecciona un evento',
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color:      ColoresApp.textoPrimario,
-                fontWeight: FontWeight.w700,
-              ),
+                    color: ColoresApp.textoPrimario,
+                    fontWeight: FontWeight.w700,
+                  ),
             ),
             const SizedBox(height: 6),
             Text(
               'Toca la tarjeta superior para elegir\nel evento que deseas auditar.',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
+                    color: ColoresApp.textoSecundario,
+                  ),
             ),
           ],
         ),
@@ -1427,7 +1453,7 @@ class _EstadoVacioSinSeleccion extends StatelessWidget {
 class _VistaError extends StatelessWidget {
   const _VistaError({required this.mensaje, required this.alReintentar});
 
-  final String       mensaje;
+  final String mensaje;
   final VoidCallback alReintentar;
 
   @override
@@ -1439,15 +1465,15 @@ class _VistaError extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width:  64,
+              width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color:        ColoresApp.rojoClaro,
+                color: ColoresApp.rojoClaro,
                 borderRadius: BorderRadius.circular(18),
               ),
               child: const Icon(
                 Icons.error_outline_rounded,
-                size:  32,
+                size: 32,
                 color: ColoresApp.rojo,
               ),
             ),
@@ -1456,28 +1482,29 @@ class _VistaError extends StatelessWidget {
               mensaje,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
+                    color: ColoresApp.textoSecundario,
+                  ),
             ),
             const SizedBox(height: 16),
             Material(
-              color:        Colors.transparent,
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(12),
               child: InkWell(
-                onTap:        alReintentar,
+                onTap: alReintentar,
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
-                    color:        ColoresApp.acentoClaro,
+                    color: ColoresApp.acentoClaro,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     'Reintentar',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color:      ColoresApp.acento,
-                      fontWeight: FontWeight.w700,
-                    ),
+                          color: ColoresApp.acento,
+                          fontWeight: FontWeight.w700,
+                        ),
                   ),
                 ),
               ),

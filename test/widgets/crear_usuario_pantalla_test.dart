@@ -25,14 +25,15 @@ void main() {
   setUp(() {
     registrarFallbacks();
     crearCubit = MockCrearUsuarioCubit();
-    authCubit  = MockAuthCubit();
+    authCubit = MockAuthCubit();
     when(() => crearCubit.correoSesion).thenReturn('leo@uni.edu');
     when(() => authCubit.verificarSesion()).thenAnswer((_) async {});
     when(() => authCubit.cerrarSesion()).thenAnswer((_) async {});
   });
 
   group('CrearUsuarioPantalla', () {
-    testWidgets('pre-llena el campo de correo con correoSesion', (tester) async {
+    testWidgets('pre-llena el campo de correo con correoSesion',
+        (tester) async {
       when(() => crearCubit.state).thenReturn(const CrearUsuarioInicial());
 
       await tester.pumpWidget(_marco(crearCubit, authCubit));
@@ -40,14 +41,15 @@ void main() {
       expect(find.text('leo@uni.edu'), findsOneWidget);
     });
 
-    testWidgets('renderiza los campos de nombre, apellido y botón', (tester) async {
+    testWidgets('renderiza los campos de nombre, apellido y botón',
+        (tester) async {
       when(() => crearCubit.state).thenReturn(const CrearUsuarioInicial());
 
       await tester.pumpWidget(_marco(crearCubit, authCubit));
 
-      expect(find.text('Primer Nombre'),      findsOneWidget);
-      expect(find.text('Primer Apellido'),     findsOneWidget);
-      expect(find.text('Finalizar Registro'),  findsOneWidget);
+      expect(find.text('Primer Nombre'), findsOneWidget);
+      expect(find.text('Primer Apellido'), findsOneWidget);
+      expect(find.text('Finalizar Registro'), findsOneWidget);
     });
 
     testWidgets('muestra CircularProgressIndicator cuando CrearUsuarioCargando',
@@ -57,7 +59,7 @@ void main() {
       await tester.pumpWidget(_marco(crearCubit, authCubit));
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text('Finalizar Registro'),        findsNothing);
+      expect(find.text('Finalizar Registro'), findsNothing);
     });
 
     testWidgets('muestra SnackBar con el mensaje cuando CrearUsuarioError',
@@ -84,14 +86,16 @@ void main() {
 
     testWidgets('llama guardarPerfil con los valores escritos', (tester) async {
       when(() => crearCubit.state).thenReturn(const CrearUsuarioInicial());
-      when(() => crearCubit.guardarPerfil(
-            primerNombre:   any(named: 'primerNombre'),
-            primerApellido: any(named: 'primerApellido'),
-            segundoNombre:        any(named: 'segundoNombre'),
-            segundoApellido:      any(named: 'segundoApellido'),
-            numeroIdentificacion: any(named: 'numeroIdentificacion'),
-            telefono:             any(named: 'telefono'),
-          ),).thenAnswer((_) async {});
+      when(
+        () => crearCubit.guardarPerfil(
+          primerNombre: any(named: 'primerNombre'),
+          primerApellido: any(named: 'primerApellido'),
+          segundoNombre: any(named: 'segundoNombre'),
+          segundoApellido: any(named: 'segundoApellido'),
+          numeroIdentificacion: any(named: 'numeroIdentificacion'),
+          telefono: any(named: 'telefono'),
+        ),
+      ).thenAnswer((_) async {});
 
       await tester.pumpWidget(_marco(crearCubit, authCubit));
 
@@ -105,14 +109,16 @@ void main() {
       await tester.ensureVisible(find.text('Finalizar Registro'));
       await tester.tap(find.text('Finalizar Registro'));
 
-      verify(() => crearCubit.guardarPerfil(
-            primerNombre:   'Leo',
-            primerApellido: 'Alvarez',
-            segundoNombre:        '',
-            segundoApellido:      '',
-            numeroIdentificacion: '',
-            telefono:             '',
-          ),).called(1);
+      verify(
+        () => crearCubit.guardarPerfil(
+          primerNombre: 'Leo',
+          primerApellido: 'Alvarez',
+          segundoNombre: '',
+          segundoApellido: '',
+          numeroIdentificacion: '',
+          telefono: '',
+        ),
+      ).called(1);
     });
 
     testWidgets('llama verificarSesion en AuthCubit cuando CrearUsuarioExito',

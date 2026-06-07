@@ -10,15 +10,15 @@ import '../../helpers.dart';
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 const _tagsRespuesta = (
-  tagPrincipal:    'Ingeniería',
+  tagPrincipal: 'Ingeniería',
   tagsSecundarios: <String>['Sistemas'],
 );
 
 PerfilCargado _cargado() => const PerfilCargado(
-  tagPrincipal:      'Ingeniería',
-  tagsSecundarios:   ['Sistemas'],
-  puedeEditarPerfil: true,
-);
+      tagPrincipal: 'Ingeniería',
+      tagsSecundarios: ['Sistemas'],
+      puedeEditarPerfil: true,
+    );
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
@@ -52,9 +52,10 @@ void main() {
       expect: () => [
         isA<PerfilCargando>(),
         isA<PerfilCargado>()
-            .having((e) => e.tagPrincipal,      'tagPrincipal',      'Ingeniería')
-            .having((e) => e.tagsSecundarios,   'tagsSecundarios',   ['Sistemas'])
-            .having((e) => e.puedeEditarPerfil, 'puedeEditarPerfil', true),
+            .having((e) => e.tagPrincipal, 'tagPrincipal', 'Ingeniería')
+            .having((e) => e.tagsSecundarios, 'tagsSecundarios', [
+          'Sistemas'
+        ]).having((e) => e.puedeEditarPerfil, 'puedeEditarPerfil', true),
       ],
     );
 
@@ -70,8 +71,7 @@ void main() {
       act: (c) => c.cargar('user-1'),
       expect: () => [
         isA<PerfilCargando>(),
-        isA<PerfilError>()
-            .having((e) => e.mensaje, 'mensaje', 'Sin conexión'),
+        isA<PerfilError>().having((e) => e.mensaje, 'mensaje', 'Sin conexión'),
       ],
     );
 
@@ -96,7 +96,7 @@ void main() {
 
   group('PerfilCubit.guardarPerfil', () {
     const campos = <String, dynamic>{
-      'primer_nombre':   'Leonardo',
+      'primer_nombre': 'Leonardo',
       'primer_apellido': 'Alvarez',
     };
 
@@ -105,7 +105,7 @@ void main() {
       build: build,
       act: (c) => c.guardarPerfil(
         usuarioActual: usuarioEjemplo,
-        campos:        campos,
+        campos: campos,
       ),
       expect: () => [],
     );
@@ -114,15 +114,17 @@ void main() {
       'emite [Cargado(guardando=true), PerfilGuardado] al guardar con éxito',
       build: build,
       setUp: () {
-        when(() => repositorio.actualizarPerfil(
-              usuarioId: any(named: 'usuarioId'),
-              datos:     any(named: 'datos'),
-            ),).thenAnswer((_) async {});
+        when(
+          () => repositorio.actualizarPerfil(
+            usuarioId: any(named: 'usuarioId'),
+            datos: any(named: 'datos'),
+          ),
+        ).thenAnswer((_) async {});
       },
       seed: _cargado,
       act: (c) => c.guardarPerfil(
         usuarioActual: usuarioEjemplo,
-        campos:        campos,
+        campos: campos,
       ),
       expect: () => [
         isA<PerfilCargado>()
@@ -139,22 +141,24 @@ void main() {
       'emite [guardando=true, Cargado(sin error), Cargado(con error)] cuando FallaServidor',
       build: build,
       setUp: () {
-        when(() => repositorio.actualizarPerfil(
-              usuarioId: any(named: 'usuarioId'),
-              datos:     any(named: 'datos'),
-            ),).thenThrow(const FallaServidor('DB error'));
+        when(
+          () => repositorio.actualizarPerfil(
+            usuarioId: any(named: 'usuarioId'),
+            datos: any(named: 'datos'),
+          ),
+        ).thenThrow(const FallaServidor('DB error'));
       },
       seed: _cargado,
       act: (c) => c.guardarPerfil(
         usuarioActual: usuarioEjemplo,
-        campos:        campos,
+        campos: campos,
       ),
       expect: () => [
         isA<PerfilCargado>()
-            .having((e) => e.estaGuardando,  'estaGuardando',  true),
+            .having((e) => e.estaGuardando, 'estaGuardando', true),
         isA<PerfilCargado>()
-            .having((e) => e.estaGuardando,  'estaGuardando',  false)
-            .having((e) => e.errorGuardado,  'errorGuardado',  isNull),
+            .having((e) => e.estaGuardando, 'estaGuardando', false)
+            .having((e) => e.errorGuardado, 'errorGuardado', isNull),
         isA<PerfilCargado>()
             .having((e) => e.errorGuardado, 'errorGuardado', 'DB error'),
       ],

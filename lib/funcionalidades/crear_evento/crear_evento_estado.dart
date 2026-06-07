@@ -29,116 +29,119 @@ final class CrearEventoCargado extends CrearEventoEstado {
     required this.tagsSecundarios,
     this.eventoId,
     this.tipoEventoSeleccionado,
-    this.alcance                 = AlcanceEvento.general,
-    this.grupos                  = const [],
-    this.maxTagsSecundarios      = 3,
-    this.titulo                  = '',
-    this.descripcion             = '',
-    this.lugar                   = '',
+    this.alcance = AlcanceEvento.general,
+    this.grupos = const [],
+    this.maxTagsSecundarios = 3,
+    this.titulo = '',
+    this.descripcion = '',
+    this.lugar = '',
     this.fechaInicio,
     this.horaInicio,
-    this.tieneFechaFin           = true,
+    this.tieneFechaFin = true,
     this.fechaFin,
     this.horaFin,
-    this.permiteManualAdmin      = true,
-    this.permiteQrEvento         = true,
-    this.permiteQrUsuario        = true,
-    this.permiteForaneos         = false,
-    this.requiereCicloCompleto   = false,
+    this.permiteManualAdmin = true,
+    this.permiteQrEvento = true,
+    this.permiteQrUsuario = true,
+    this.permiteForaneos = false,
+    this.requiereCicloCompleto = false,
     this.permiteSalidaAnticipada = false,
-    this.marcarAusentesAuto      = false,
-    this.estaGuardando           = false,
+    this.marcarAusentesAuto = false,
+    this.estaGuardando = false,
     this.errorValidacion,
-    this.pasoActual              = 0,
+    this.pasoActual = 0,
   });
 
-  final String?            eventoId;
-  final List<TipoEvento>   tiposEvento;
-  final List<TagOpcion>    tagsPrincipales;
-  final List<TagOpcion>    tagsSecundarios;
-  final TipoEvento?        tipoEventoSeleccionado;
-  final String             alcance;
+  final String? eventoId;
+  final List<TipoEvento> tiposEvento;
+  final List<TagOpcion> tagsPrincipales;
+  final List<TagOpcion> tagsSecundarios;
+  final TipoEvento? tipoEventoSeleccionado;
+  final String alcance;
   final List<GrupoAudiencia> grupos;
-  final int                maxTagsSecundarios;
-  final String             titulo;
-  final String             descripcion;
-  final String             lugar;
-  final DateTime?          fechaInicio;
-  final TimeOfDay?         horaInicio;
-  final bool               tieneFechaFin;
-  final DateTime?          fechaFin;
-  final TimeOfDay?         horaFin;
-  final bool               permiteManualAdmin;
-  final bool               permiteQrEvento;
-  final bool               permiteQrUsuario;
-  final bool               permiteForaneos;
-  final bool               requiereCicloCompleto;
-  final bool               permiteSalidaAnticipada;
-  final bool               marcarAusentesAuto;
-  final bool               estaGuardando;
-  final String?            errorValidacion;
+  final int maxTagsSecundarios;
+  final String titulo;
+  final String descripcion;
+  final String lugar;
+  final DateTime? fechaInicio;
+  final TimeOfDay? horaInicio;
+  final bool tieneFechaFin;
+  final DateTime? fechaFin;
+  final TimeOfDay? horaFin;
+  final bool permiteManualAdmin;
+  final bool permiteQrEvento;
+  final bool permiteQrUsuario;
+  final bool permiteForaneos;
+  final bool requiereCicloCompleto;
+  final bool permiteSalidaAnticipada;
+  final bool marcarAusentesAuto;
+  final bool estaGuardando;
+  final String? errorValidacion;
 
   /// Paso actual del wizard (0 = info básica, 1 = fecha/lugar, 2 = configuración).
-  final int                pasoActual;
+  final int pasoActual;
 
   CrearEventoCargado copiarCon({
-    String?              eventoId,
-    List<TipoEvento>?    tiposEvento,
-    List<TagOpcion>?     tagsPrincipales,
-    List<TagOpcion>?     tagsSecundarios,
-    TipoEvento?          tipoEventoSeleccionado,
-    String?              alcance,
+    String? eventoId,
+    List<TipoEvento>? tiposEvento,
+    List<TagOpcion>? tagsPrincipales,
+    List<TagOpcion>? tagsSecundarios,
+    TipoEvento? tipoEventoSeleccionado,
+    String? alcance,
     List<GrupoAudiencia>? grupos,
-    int?                 maxTagsSecundarios,
-    String?              titulo,
-    String?              descripcion,
-    String?              lugar,
-    DateTime?            fechaInicio,
-    TimeOfDay?           horaInicio,
-    bool?                tieneFechaFin,
-    DateTime?            fechaFin,
-    TimeOfDay?           horaFin,
-    bool?                permiteManualAdmin,
-    bool?                permiteQrEvento,
-    bool?                permiteQrUsuario,
-    bool?                permiteForaneos,
-    bool?                requiereCicloCompleto,
-    bool?                permiteSalidaAnticipada,
-    bool?                marcarAusentesAuto,
-    bool?                estaGuardando,
-    String?              errorValidacion,
-    bool                 limpiarErrorValidacion = false,
-    int?                 pasoActual,
+    int? maxTagsSecundarios,
+    String? titulo,
+    String? descripcion,
+    String? lugar,
+    DateTime? fechaInicio,
+    TimeOfDay? horaInicio,
+    bool? tieneFechaFin,
+    DateTime? fechaFin,
+    TimeOfDay? horaFin,
+    bool? permiteManualAdmin,
+    bool? permiteQrEvento,
+    bool? permiteQrUsuario,
+    bool? permiteForaneos,
+    bool? requiereCicloCompleto,
+    bool? permiteSalidaAnticipada,
+    bool? marcarAusentesAuto,
+    bool? estaGuardando,
+    String? errorValidacion,
+    bool limpiarErrorValidacion = false,
+    int? pasoActual,
   }) =>
       CrearEventoCargado(
-        eventoId:                eventoId                ?? this.eventoId,
-        tiposEvento:             tiposEvento             ?? this.tiposEvento,
-        tagsPrincipales:         tagsPrincipales         ?? this.tagsPrincipales,
-        tagsSecundarios:         tagsSecundarios         ?? this.tagsSecundarios,
-        tipoEventoSeleccionado:  tipoEventoSeleccionado  ?? this.tipoEventoSeleccionado,
-        alcance:                 alcance                 ?? this.alcance,
-        grupos:                  grupos                  ?? this.grupos,
-        maxTagsSecundarios:      maxTagsSecundarios      ?? this.maxTagsSecundarios,
-        titulo:                  titulo                  ?? this.titulo,
-        descripcion:             descripcion             ?? this.descripcion,
-        lugar:                   lugar                   ?? this.lugar,
-        fechaInicio:             fechaInicio             ?? this.fechaInicio,
-        horaInicio:              horaInicio              ?? this.horaInicio,
-        tieneFechaFin:           tieneFechaFin           ?? this.tieneFechaFin,
-        fechaFin:                fechaFin                ?? this.fechaFin,
-        horaFin:                 horaFin                 ?? this.horaFin,
-        permiteManualAdmin:      permiteManualAdmin      ?? this.permiteManualAdmin,
-        permiteQrEvento:         permiteQrEvento         ?? this.permiteQrEvento,
-        permiteQrUsuario:        permiteQrUsuario        ?? this.permiteQrUsuario,
-        permiteForaneos:         permiteForaneos         ?? this.permiteForaneos,
-        requiereCicloCompleto:   requiereCicloCompleto   ?? this.requiereCicloCompleto,
-        permiteSalidaAnticipada: permiteSalidaAnticipada ?? this.permiteSalidaAnticipada,
-        marcarAusentesAuto:      marcarAusentesAuto      ?? this.marcarAusentesAuto,
-        estaGuardando:           estaGuardando           ?? this.estaGuardando,
+        eventoId: eventoId ?? this.eventoId,
+        tiposEvento: tiposEvento ?? this.tiposEvento,
+        tagsPrincipales: tagsPrincipales ?? this.tagsPrincipales,
+        tagsSecundarios: tagsSecundarios ?? this.tagsSecundarios,
+        tipoEventoSeleccionado:
+            tipoEventoSeleccionado ?? this.tipoEventoSeleccionado,
+        alcance: alcance ?? this.alcance,
+        grupos: grupos ?? this.grupos,
+        maxTagsSecundarios: maxTagsSecundarios ?? this.maxTagsSecundarios,
+        titulo: titulo ?? this.titulo,
+        descripcion: descripcion ?? this.descripcion,
+        lugar: lugar ?? this.lugar,
+        fechaInicio: fechaInicio ?? this.fechaInicio,
+        horaInicio: horaInicio ?? this.horaInicio,
+        tieneFechaFin: tieneFechaFin ?? this.tieneFechaFin,
+        fechaFin: fechaFin ?? this.fechaFin,
+        horaFin: horaFin ?? this.horaFin,
+        permiteManualAdmin: permiteManualAdmin ?? this.permiteManualAdmin,
+        permiteQrEvento: permiteQrEvento ?? this.permiteQrEvento,
+        permiteQrUsuario: permiteQrUsuario ?? this.permiteQrUsuario,
+        permiteForaneos: permiteForaneos ?? this.permiteForaneos,
+        requiereCicloCompleto:
+            requiereCicloCompleto ?? this.requiereCicloCompleto,
+        permiteSalidaAnticipada:
+            permiteSalidaAnticipada ?? this.permiteSalidaAnticipada,
+        marcarAusentesAuto: marcarAusentesAuto ?? this.marcarAusentesAuto,
+        estaGuardando: estaGuardando ?? this.estaGuardando,
         errorValidacion: limpiarErrorValidacion
             ? null
             : (errorValidacion ?? this.errorValidacion),
-        pasoActual:              pasoActual              ?? this.pasoActual,
+        pasoActual: pasoActual ?? this.pasoActual,
       );
 
   @override

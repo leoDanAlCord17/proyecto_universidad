@@ -82,9 +82,8 @@ class AuthCubit extends Cubit<AuthEstado> {
       _tokenSesionActual = nuevoToken;
       await _repositorio.actualizarTokenSesion(usuarioId, nuevoToken);
       await _suscripcionSesion?.cancel();
-      _suscripcionSesion = _repositorio
-          .flujoTokenSesion(usuarioId)
-          .listen(_procesarCambioToken);
+      _suscripcionSesion =
+          _repositorio.flujoTokenSesion(usuarioId).listen(_procesarCambioToken);
     } on FallaServidor catch (_) {
       // El fallo en el token no bloquea la sesión principal
     } on FallaInesperada catch (_) {

@@ -33,28 +33,29 @@ class EditarUsuarioRepositorio {
   /// Actualiza la información personal del usuario. Los campos opcionales
   /// se envían como [null] cuando vienen vacíos para limpiar el valor en BD.
   Future<void> actualizarUsuario({
-    required String  usuarioId,
-    required String  primerNombre,
-    String?          segundoNombre,
-    required String  primerApellido,
-    String?          segundoApellido,
-    String?          numeroIdentificacion,
-    required String  correo,
-    String?          telefono,
+    required String usuarioId,
+    required String primerNombre,
+    String? segundoNombre,
+    required String primerApellido,
+    String? segundoApellido,
+    String? numeroIdentificacion,
+    required String correo,
+    String? telefono,
   }) async {
     try {
-      await _supabase
-          .from(TablasSupabase.usuarios)
-          .update({
-            'primer_nombre':         primerNombre,
-            'segundo_nombre':        segundoNombre?.isNotEmpty == true ? segundoNombre : null,
-            'primer_apellido':       primerApellido,
-            'segundo_apellido':      segundoApellido?.isNotEmpty == true ? segundoApellido : null,
-            'numero_identificacion': numeroIdentificacion?.isNotEmpty == true ? numeroIdentificacion : null,
-            'correo':                correo,
-            'telefono':              telefono?.isNotEmpty == true ? telefono : null,
-          })
-          .eq('id', usuarioId);
+      await _supabase.from(TablasSupabase.usuarios).update({
+        'primer_nombre': primerNombre,
+        'segundo_nombre':
+            segundoNombre?.isNotEmpty == true ? segundoNombre : null,
+        'primer_apellido': primerApellido,
+        'segundo_apellido':
+            segundoApellido?.isNotEmpty == true ? segundoApellido : null,
+        'numero_identificacion': numeroIdentificacion?.isNotEmpty == true
+            ? numeroIdentificacion
+            : null,
+        'correo': correo,
+        'telefono': telefono?.isNotEmpty == true ? telefono : null,
+      }).eq('id', usuarioId);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {

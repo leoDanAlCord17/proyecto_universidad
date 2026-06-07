@@ -18,20 +18,21 @@ final class NotificacionesCargando extends NotificacionesEstado {
 
 final class NotificacionesCargadas extends NotificacionesEstado {
   const NotificacionesCargadas({
-    this.cantidad      = 0,
+    this.cantidad = 0,
     this.notificaciones = const [],
   });
 
-  final int                  cantidad;
-  final List<Notificacion>   notificaciones;
+  final int cantidad;
+  final List<Notificacion> notificaciones;
 
   NotificacionesCargadas copyWith({
-    int?                 cantidad,
-    List<Notificacion>?  notificaciones,
-  }) => NotificacionesCargadas(
-    cantidad:       cantidad       ?? this.cantidad,
-    notificaciones: notificaciones ?? this.notificaciones,
-  );
+    int? cantidad,
+    List<Notificacion>? notificaciones,
+  }) =>
+      NotificacionesCargadas(
+        cantidad: cantidad ?? this.cantidad,
+        notificaciones: notificaciones ?? this.notificaciones,
+      );
 
   @override
   List<Object?> get props => [cantidad, notificaciones];

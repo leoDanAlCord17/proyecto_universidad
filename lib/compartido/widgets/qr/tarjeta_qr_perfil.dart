@@ -7,23 +7,23 @@ class TarjetaQrPerfil extends StatelessWidget {
   const TarjetaQrPerfil({
     super.key,
     required this.usuarioId,
-    this.roles           = const [],
+    this.roles = const [],
     this.tagPrincipal,
     this.tagsSecundarios = const [],
   });
 
-  final String       usuarioId;
+  final String usuarioId;
   final List<String> roles;
-  final String?      tagPrincipal;
+  final String? tagPrincipal;
   final List<String> tagsSecundarios;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:   double.infinity,
+      width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
       decoration: BoxDecoration(
-        gradient:     ColoresApp.degradadoPrincipal,
+        gradient: ColoresApp.degradadoPrincipal,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -32,17 +32,17 @@ class TarjetaQrPerfil extends StatelessWidget {
           Text(
             'MI CÓDIGO QR PERSONAL',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color:          ColoresApp.acentoBorde,
-              fontWeight:    FontWeight.w800,
-              letterSpacing: 1.4,
-            ),
+                  color: ColoresApp.acentoBorde,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.4,
+                ),
           ),
           const SizedBox(height: 4),
           Text(
             'Muéstralo al organizador para registrar tu asistencia',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: ColoresApp.blanco.withValues(alpha: 0.65),
-            ),
+                  color: ColoresApp.blanco.withValues(alpha: 0.65),
+                ),
           ),
           const SizedBox(height: 16),
           Row(
@@ -52,7 +52,7 @@ class TarjetaQrPerfil extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: _ColumnaInfo(
-                  roles:        roles,
+                  roles: roles,
                   tagPrincipal: tagPrincipal,
                 ),
               ),
@@ -82,7 +82,7 @@ class _ContenedorQr extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color:        ColoresApp.blanco,
+        color: ColoresApp.blanco,
         borderRadius: BorderRadius.circular(14),
       ),
       child: QrUsuario(usuarioId: usuarioId, tamanio: 110),
@@ -99,7 +99,7 @@ class _ColumnaInfo extends StatelessWidget {
   });
 
   final List<String> roles;
-  final String?      tagPrincipal;
+  final String? tagPrincipal;
 
   @override
   Widget build(BuildContext context) {
@@ -134,9 +134,9 @@ class _EtiquetaSeccion extends StatelessWidget {
     return Text(
       texto,
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color:      ColoresApp.blanco.withValues(alpha: 0.75),
-        fontWeight: FontWeight.w600,
-      ),
+            color: ColoresApp.blanco.withValues(alpha: 0.75),
+            fontWeight: FontWeight.w600,
+          ),
     );
   }
 }
@@ -176,18 +176,18 @@ class _ChipPerfil extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color:        ColoresApp.blanco.withValues(alpha: 0.18),
+        color: ColoresApp.blanco.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(30),
-        border:       Border.all(
+        border: Border.all(
           color: ColoresApp.blanco.withValues(alpha: 0.25),
         ),
       ),
       child: Text(
         texto,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color:      ColoresApp.blanco,
-          fontWeight: FontWeight.w600,
-        ),
+              color: ColoresApp.blanco,
+              fontWeight: FontWeight.w600,
+            ),
       ),
     );
   }

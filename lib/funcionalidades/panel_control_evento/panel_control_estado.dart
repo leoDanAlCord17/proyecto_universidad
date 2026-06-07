@@ -4,7 +4,15 @@ import '../../compartido/constantes.dart';
 import '../eventos/evento.dart';
 import 'asistente_item.dart';
 
-enum FiltroAsistentes { todos, esperados, pendientes, noEsperados, registrados, abandono, foraneos }
+enum FiltroAsistentes {
+  todos,
+  esperados,
+  pendientes,
+  noEsperados,
+  registrados,
+  abandono,
+  foraneos
+}
 
 sealed class PanelControlEstado extends Equatable {
   const PanelControlEstado();
@@ -12,12 +20,14 @@ sealed class PanelControlEstado extends Equatable {
 
 final class PanelControlInicial extends PanelControlEstado {
   const PanelControlInicial();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
 
 final class PanelControlCargando extends PanelControlEstado {
   const PanelControlCargando();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
 
 final class PanelControlCargado extends PanelControlEstado {
@@ -25,12 +35,12 @@ final class PanelControlCargado extends PanelControlEstado {
     required this.evento,
     required this.asistentes,
     required this.listaEsperados,
-    this.filtroActivo    = FiltroAsistentes.todos,
-    this.estaCerrando    = false,
+    this.filtroActivo = FiltroAsistentes.todos,
+    this.estaCerrando = false,
     this.estaRegistrando = false,
   });
 
-  final Evento              evento;
+  final Evento evento;
 
   /// Registros reales de la tabla asistencia (con flag eraEsperado aplicado).
   final List<AsistenteItem> asistentes;
@@ -40,8 +50,8 @@ final class PanelControlCargado extends PanelControlEstado {
   final List<AsistenteItem> listaEsperados;
 
   final FiltroAsistentes filtroActivo;
-  final bool             estaCerrando;
-  final bool             estaRegistrando;
+  final bool estaCerrando;
+  final bool estaRegistrando;
 
   // ─── Tipo de evento ──────────────────────────────────────────────────────────
 
@@ -59,8 +69,9 @@ final class PanelControlCargado extends PanelControlEstado {
       asistentes.where((a) => a.eraEsperado && _estaActivo(a)).length;
 
   /// Población B: usuarios del sistema que llegaron sin estar en la audiencia.
-  int get presentesNoEsperados =>
-      asistentes.where((a) => !a.esForaneo && !a.eraEsperado && _estaActivo(a)).length;
+  int get presentesNoEsperados => asistentes
+      .where((a) => !a.esForaneo && !a.eraEsperado && _estaActivo(a))
+      .length;
 
   /// Población C: visitantes sin cuenta en el sistema.
   int get presentesForaneos =>
@@ -70,15 +81,18 @@ final class PanelControlCargado extends PanelControlEstado {
   int get totalPresentes => asistentes.where(_estaActivo).length;
 
   /// Esperados de la audiencia que aún no han llegado.
-  int get pendientes =>
-      listaEsperados.where((a) => a.estatus == EstatusAsistencia.esperado).length;
+  int get pendientes => listaEsperados
+      .where((a) => a.estatus == EstatusAsistencia.esperado)
+      .length;
 
   /// Esperados de la audiencia marcados como ausentes al cerrar.
-  int get ausentes =>
-      asistentes.where((a) => a.eraEsperado && a.estatus == EstatusAsistencia.ausente).length;
+  int get ausentes => asistentes
+      .where((a) => a.eraEsperado && a.estatus == EstatusAsistencia.ausente)
+      .length;
 
-  int get cantidadAnticipados =>
-      asistentes.where((a) => a.estatus == EstatusAsistencia.salioAnticipado).length;
+  int get cantidadAnticipados => asistentes
+      .where((a) => a.estatus == EstatusAsistencia.salioAnticipado)
+      .length;
 
   // ─── Tasas ───────────────────────────────────────────────────────────────────
 
@@ -99,62 +113,64 @@ final class PanelControlCargado extends PanelControlEstado {
   // ─── Modos de registro ───────────────────────────────────────────────────────
 
   int get cantidadModos => [
-    evento.permiteQrEvento,
-    evento.permiteQrUsuario,
-    evento.permiteManualAdmin,
-  ].where((b) => b).length;
+        evento.permiteQrEvento,
+        evento.permiteQrUsuario,
+        evento.permiteManualAdmin,
+      ].where((b) => b).length;
 
   // ─── Lista filtrada ──────────────────────────────────────────────────────────
 
   List<AsistenteItem> get asistentesFiltrados => switch (filtroActivo) {
-    FiltroAsistentes.todos        => asistentes,
-    FiltroAsistentes.esperados    => listaEsperados,
-    FiltroAsistentes.pendientes   => listaEsperados
-        .where((a) => a.estatus == EstatusAsistencia.esperado)
-        .toList(),
-    FiltroAsistentes.noEsperados  => asistentes
-        .where((a) => !a.esForaneo && !a.eraEsperado)
-        .toList(),
-    FiltroAsistentes.registrados  => asistentes
-        .where((a) => a.esRegistrado)
-        .toList(),
-    FiltroAsistentes.abandono     => asistentes
-        .where((a) => a.esAbandono)
-        .toList(),
-    FiltroAsistentes.foraneos     => asistentes
-        .where((a) => a.esForaneo)
-        .toList(),
-  };
+        FiltroAsistentes.todos => asistentes,
+        FiltroAsistentes.esperados => listaEsperados,
+        FiltroAsistentes.pendientes => listaEsperados
+            .where((a) => a.estatus == EstatusAsistencia.esperado)
+            .toList(),
+        FiltroAsistentes.noEsperados =>
+          asistentes.where((a) => !a.esForaneo && !a.eraEsperado).toList(),
+        FiltroAsistentes.registrados =>
+          asistentes.where((a) => a.esRegistrado).toList(),
+        FiltroAsistentes.abandono =>
+          asistentes.where((a) => a.esAbandono).toList(),
+        FiltroAsistentes.foraneos =>
+          asistentes.where((a) => a.esForaneo).toList(),
+      };
 
   // ─── Helper interno ──────────────────────────────────────────────────────────
 
   bool _estaActivo(AsistenteItem a) =>
-      a.estatus == EstatusAsistencia.presente      ||
-      a.estatus == EstatusAsistencia.completado    ||
+      a.estatus == EstatusAsistencia.presente ||
+      a.estatus == EstatusAsistencia.completado ||
       a.estatus == EstatusAsistencia.salioAnticipado;
 
   // ─── Copia ───────────────────────────────────────────────────────────────────
 
   PanelControlCargado copiarCon({
-    Evento?              evento,
+    Evento? evento,
     List<AsistenteItem>? asistentes,
     List<AsistenteItem>? listaEsperados,
-    FiltroAsistentes?    filtroActivo,
-    bool?                estaCerrando,
-    bool?                estaRegistrando,
+    FiltroAsistentes? filtroActivo,
+    bool? estaCerrando,
+    bool? estaRegistrando,
   }) =>
       PanelControlCargado(
-        evento:          evento          ?? this.evento,
-        asistentes:      asistentes      ?? this.asistentes,
-        listaEsperados:  listaEsperados  ?? this.listaEsperados,
-        filtroActivo:    filtroActivo    ?? this.filtroActivo,
-        estaCerrando:    estaCerrando    ?? this.estaCerrando,
+        evento: evento ?? this.evento,
+        asistentes: asistentes ?? this.asistentes,
+        listaEsperados: listaEsperados ?? this.listaEsperados,
+        filtroActivo: filtroActivo ?? this.filtroActivo,
+        estaCerrando: estaCerrando ?? this.estaCerrando,
         estaRegistrando: estaRegistrando ?? this.estaRegistrando,
       );
 
   @override
-  List<Object?> get props =>
-      [evento, asistentes, listaEsperados, filtroActivo, estaCerrando, estaRegistrando];
+  List<Object?> get props => [
+        evento,
+        asistentes,
+        listaEsperados,
+        filtroActivo,
+        estaCerrando,
+        estaRegistrando
+      ];
 }
 
 final class PanelControlOperacionFallida extends PanelControlEstado {
@@ -164,18 +180,21 @@ final class PanelControlOperacionFallida extends PanelControlEstado {
   });
 
   final PanelControlCargado anterior;
-  final String              mensaje;
+  final String mensaje;
 
-  @override List<Object?> get props => [anterior, mensaje];
+  @override
+  List<Object?> get props => [anterior, mensaje];
 }
 
 final class PanelControlError extends PanelControlEstado {
   const PanelControlError({required this.mensaje});
   final String mensaje;
-  @override List<Object?> get props => [mensaje];
+  @override
+  List<Object?> get props => [mensaje];
 }
 
 final class PanelControlEventoCerrado extends PanelControlEstado {
   const PanelControlEventoCerrado();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }

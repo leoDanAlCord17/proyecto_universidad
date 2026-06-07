@@ -18,10 +18,12 @@ class EstadisticasRepositorio {
   Future<ResumenEstadisticas> obtenerResumen(FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
-          final datos = await _supabase.rpc(
-            'estadisticas_resumen',
-            params: _params(f),
-          ).timeout(kTimeoutSolicitud) as Map<String, dynamic>;
+          final datos = await _supabase
+              .rpc(
+                'estadisticas_resumen',
+                params: _params(f),
+              )
+              .timeout(kTimeoutSolicitud) as Map<String, dynamic>;
           return ResumenEstadisticas.desdeJson(datos);
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
@@ -34,14 +36,21 @@ class EstadisticasRepositorio {
   Future<List<DatoGrafica>> obtenerEventosPorTipo(FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
-          final filas = await _supabase.rpc(
-            'estadisticas_eventos_por_tipo',
-            params: _params(f),
-          ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map((r) => DatoGrafica(
-                etiqueta: (r['nombre']   as String?) ?? '',
-                valor:    (r['cantidad'] as num?)?.toDouble() ?? 0,
-              ),).toList();
+          final filas = await _supabase
+              .rpc(
+                'estadisticas_eventos_por_tipo',
+                params: _params(f),
+              )
+              .timeout(kTimeoutSolicitud) as List<dynamic>;
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(
+                (r) => DatoGrafica(
+                  etiqueta: (r['nombre'] as String?) ?? '',
+                  valor: (r['cantidad'] as num?)?.toDouble() ?? 0,
+                ),
+              )
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -53,15 +62,22 @@ class EstadisticasRepositorio {
   Future<List<DatoGrafica>> obtenerEventosPorMes(FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
-          final filas = await _supabase.rpc(
-            'estadisticas_eventos_por_mes',
-            params: _params(f),
-          ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map((r) => DatoGrafica(
-                etiqueta: (r['mes']      as String?) ?? '',
-                valor:    (r['cantidad'] as num?)?.toDouble() ?? 0,
-                valorSql: (r['mes']      as String?) ?? '',
-              ),).toList();
+          final filas = await _supabase
+              .rpc(
+                'estadisticas_eventos_por_mes',
+                params: _params(f),
+              )
+              .timeout(kTimeoutSolicitud) as List<dynamic>;
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(
+                (r) => DatoGrafica(
+                  etiqueta: (r['mes'] as String?) ?? '',
+                  valor: (r['cantidad'] as num?)?.toDouble() ?? 0,
+                  valorSql: (r['mes'] as String?) ?? '',
+                ),
+              )
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -70,18 +86,21 @@ class EstadisticasRepositorio {
       });
 
   /// Conteo de registros de asistencia agrupados por estatus (presente, ausente, etc.).
-  Future<List<DatoGrafica>> obtenerAsistenciaPorEstatus(FiltrosEstadisticas f) =>
+  Future<List<DatoGrafica>> obtenerAsistenciaPorEstatus(
+          FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
-          final filas = await _supabase.rpc(
-            'estadisticas_asistencia_por_estatus',
-            params: _params(f),
-          ).timeout(kTimeoutSolicitud) as List<dynamic>;
+          final filas = await _supabase
+              .rpc(
+                'estadisticas_asistencia_por_estatus',
+                params: _params(f),
+              )
+              .timeout(kTimeoutSolicitud) as List<dynamic>;
           return filas.cast<Map<String, dynamic>>().map((r) {
             final estatusSql = (r['estatus'] as String?) ?? '';
             return DatoGrafica(
               etiqueta: _traducirEstatus(estatusSql),
-              valor:    (r['cantidad'] as num?)?.toDouble() ?? 0,
+              valor: (r['cantidad'] as num?)?.toDouble() ?? 0,
               valorSql: estatusSql,
             );
           }).toList();
@@ -100,7 +119,10 @@ class EstadisticasRepositorio {
             'estadisticas_top_eventos',
             params: {..._params(f), 'p_limite': 5},
           ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map(EventoTopStat.desdeJson).toList();
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(EventoTopStat.desdeJson)
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -112,15 +134,22 @@ class EstadisticasRepositorio {
   Future<List<DatoGrafica>> obtenerAsistenciaDiaSemana(FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
-          final filas = await _supabase.rpc(
-            'estadisticas_asistencia_dia_semana',
-            params: _params(f),
-          ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map((r) => DatoGrafica(
-                etiqueta: (r['dia']      as String?) ?? '',
-                valor:    (r['cantidad'] as num?)?.toDouble() ?? 0,
-                valorSql: (r['dia']      as String?) ?? '',
-              ),).toList();
+          final filas = await _supabase
+              .rpc(
+                'estadisticas_asistencia_dia_semana',
+                params: _params(f),
+              )
+              .timeout(kTimeoutSolicitud) as List<dynamic>;
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(
+                (r) => DatoGrafica(
+                  etiqueta: (r['dia'] as String?) ?? '',
+                  valor: (r['cantidad'] as num?)?.toDouble() ?? 0,
+                  valorSql: (r['dia'] as String?) ?? '',
+                ),
+              )
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -136,7 +165,10 @@ class EstadisticasRepositorio {
             'estadisticas_eventos_por_creador',
             params: {..._params(f), 'p_limite': 8},
           ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map(DatoCreador.desdeJson).toList();
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(DatoCreador.desdeJson)
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -152,7 +184,7 @@ class EstadisticasRepositorio {
             'estadisticas_opciones_filtros',
             params: {
               'p_fecha_inicio': _fecha(f.rango.start),
-              'p_fecha_fin':    _fecha(f.rango.end),
+              'p_fecha_fin': _fecha(f.rango.end),
             },
           ).timeout(kTimeoutSolicitud) as Map<String, dynamic>;
           return OpcionesFiltros.desdeJson(datos);
@@ -166,8 +198,8 @@ class EstadisticasRepositorio {
   /// Detalle de eventos para drill-down según [dimension] y [valor] seleccionados.
   Future<List<EventoResumido>> obtenerDetalleEventos({
     required FiltrosEstadisticas filtros,
-    required String              dimension,
-    required String              valor,
+    required String dimension,
+    required String valor,
   }) =>
       conReintentos(() async {
         try {
@@ -176,10 +208,13 @@ class EstadisticasRepositorio {
             params: {
               ..._params(filtros),
               'p_dimension': dimension,
-              'p_valor':     valor,
+              'p_valor': valor,
             },
           ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map(EventoResumido.desdeJson).toList();
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(EventoResumido.desdeJson)
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -193,11 +228,16 @@ class EstadisticasRepositorio {
   Future<List<DatoTasaTipo>> obtenerTasaPorTipo(FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
-          final filas = await _supabase.rpc(
-            'estadisticas_tasa_por_tipo',
-            params: _params(f),
-          ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map(DatoTasaTipo.desdeJson).toList();
+          final filas = await _supabase
+              .rpc(
+                'estadisticas_tasa_por_tipo',
+                params: _params(f),
+              )
+              .timeout(kTimeoutSolicitud) as List<dynamic>;
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(DatoTasaTipo.desdeJson)
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -209,11 +249,16 @@ class EstadisticasRepositorio {
   Future<List<DatoTendenciaDual>> obtenerTendenciaDual(FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
-          final filas = await _supabase.rpc(
-            'estadisticas_tendencia_dual',
-            params: _params(f),
-          ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map(DatoTendenciaDual.desdeJson).toList();
+          final filas = await _supabase
+              .rpc(
+                'estadisticas_tendencia_dual',
+                params: _params(f),
+              )
+              .timeout(kTimeoutSolicitud) as List<dynamic>;
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(DatoTendenciaDual.desdeJson)
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -225,14 +270,21 @@ class EstadisticasRepositorio {
   Future<List<DatoGrafica>> obtenerEscalaEventos(FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
-          final filas = await _supabase.rpc(
-            'estadisticas_escala_eventos',
-            params: _params(f),
-          ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map((r) => DatoGrafica(
-                etiqueta: (r['rango']    as String?) ?? '',
-                valor:    (r['cantidad'] as num?)?.toDouble() ?? 0,
-              ),).toList();
+          final filas = await _supabase
+              .rpc(
+                'estadisticas_escala_eventos',
+                params: _params(f),
+              )
+              .timeout(kTimeoutSolicitud) as List<dynamic>;
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(
+                (r) => DatoGrafica(
+                  etiqueta: (r['rango'] as String?) ?? '',
+                  valor: (r['cantidad'] as num?)?.toDouble() ?? 0,
+                ),
+              )
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -248,7 +300,10 @@ class EstadisticasRepositorio {
             'estadisticas_top_tags',
             params: {..._params(f), 'p_limite': 10},
           ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map(DatoTag.desdeJson).toList();
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(DatoTag.desdeJson)
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -257,14 +312,18 @@ class EstadisticasRepositorio {
       });
 
   /// Top 10 usuarios con mayor número de asistencias en el período.
-  Future<List<AsistenteFrecuente>> obtenerTopAsistentes(FiltrosEstadisticas f) =>
+  Future<List<AsistenteFrecuente>> obtenerTopAsistentes(
+          FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
           final filas = await _supabase.rpc(
             'estadisticas_top_asistentes',
             params: {..._params(f), 'p_limite': 10},
           ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map(AsistenteFrecuente.desdeJson).toList();
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(AsistenteFrecuente.desdeJson)
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -273,18 +332,21 @@ class EstadisticasRepositorio {
       });
 
   /// Distribución de tipos de evento por mes (para barras apiladas).
-  Future<List<ComposicionMes>> obtenerComposicionMensual(FiltrosEstadisticas f) =>
+  Future<List<ComposicionMes>> obtenerComposicionMensual(
+          FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
-          final filas = await _supabase.rpc(
-            'estadisticas_composicion_mensual',
-            params: _params(f),
-          ).timeout(kTimeoutSolicitud) as List<dynamic>;
+          final filas = await _supabase
+              .rpc(
+                'estadisticas_composicion_mensual',
+                params: _params(f),
+              )
+              .timeout(kTimeoutSolicitud) as List<dynamic>;
           final mapa = <String, Map<String, double>>{};
           for (final r in filas.cast<Map<String, dynamic>>()) {
-            final mes  = (r['mes']         as String?) ?? '';
+            final mes = (r['mes'] as String?) ?? '';
             final tipo = (r['tipo_nombre'] as String?) ?? 'Sin tipo';
-            final cant = (r['cantidad']    as num?)?.toDouble() ?? 0;
+            final cant = (r['cantidad'] as num?)?.toDouble() ?? 0;
             mapa.putIfAbsent(mes, () => {})[tipo] = cant;
           }
           return mapa.entries
@@ -301,15 +363,17 @@ class EstadisticasRepositorio {
   Future<List<DatoGrafica>> obtenerEstadoEventos(FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
-          final filas = await _supabase.rpc(
-            'estadisticas_estado_eventos',
-            params: _params(f),
-          ).timeout(kTimeoutSolicitud) as List<dynamic>;
+          final filas = await _supabase
+              .rpc(
+                'estadisticas_estado_eventos',
+                params: _params(f),
+              )
+              .timeout(kTimeoutSolicitud) as List<dynamic>;
           return filas.cast<Map<String, dynamic>>().map((r) {
             final estatusSql = (r['estatus'] as String?) ?? '';
             return DatoGrafica(
               etiqueta: _traducirEstatusEvento(estatusSql),
-              valor:    (r['cantidad'] as num?)?.toDouble() ?? 0,
+              valor: (r['cantidad'] as num?)?.toDouble() ?? 0,
               valorSql: estatusSql,
             );
           }).toList();
@@ -324,11 +388,16 @@ class EstadisticasRepositorio {
   Future<List<DatoHeatmap>> obtenerHeatmapHora(FiltrosEstadisticas f) =>
       conReintentos(() async {
         try {
-          final filas = await _supabase.rpc(
-            'estadisticas_heatmap_hora',
-            params: _params(f),
-          ).timeout(kTimeoutSolicitud) as List<dynamic>;
-          return filas.cast<Map<String, dynamic>>().map(DatoHeatmap.desdeJson).toList();
+          final filas = await _supabase
+              .rpc(
+                'estadisticas_heatmap_hora',
+                params: _params(f),
+              )
+              .timeout(kTimeoutSolicitud) as List<dynamic>;
+          return filas
+              .cast<Map<String, dynamic>>()
+              .map(DatoHeatmap.desdeJson)
+              .toList();
         } on PostgrestException catch (e) {
           throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
@@ -340,29 +409,29 @@ class EstadisticasRepositorio {
 
   Map<String, dynamic> _params(FiltrosEstadisticas f) => {
         'p_fecha_inicio': _fecha(f.rango.start),
-        'p_fecha_fin':    _fecha(f.rango.end),
-        'p_tipo_ids':    f.tipoIds.isEmpty    ? null : f.tipoIds,
+        'p_fecha_fin': _fecha(f.rango.end),
+        'p_tipo_ids': f.tipoIds.isEmpty ? null : f.tipoIds,
         'p_creador_ids': f.creadorIds.isEmpty ? null : f.creadorIds,
-        'p_tag_ids':     f.tagIds.isEmpty     ? null : f.tagIds,
+        'p_tag_ids': f.tagIds.isEmpty ? null : f.tagIds,
       };
 
   String _fecha(DateTime d) => d.toIso8601String().substring(0, 10);
 
   String _traducirEstatus(String e) => switch (e) {
-        'presente'         => 'Presente',
-        'completado'       => 'Completado',
+        'presente' => 'Presente',
+        'completado' => 'Completado',
         'salio_anticipado' => 'Salió antes',
-        'ausente'          => 'Ausente',
-        'esperado'         => 'Esperado',
-        _                  => e,
+        'ausente' => 'Ausente',
+        'esperado' => 'Esperado',
+        _ => e,
       };
 
   String _traducirEstatusEvento(String e) => switch (e) {
         'programado' => 'Programado',
-        'en_curso'   => 'En curso',
+        'en_curso' => 'En curso',
         'finalizado' => 'Finalizado',
-        'cancelado'  => 'Cancelado',
-        'borrador'   => 'Borrador',
-        _            => e,
+        'cancelado' => 'Cancelado',
+        'borrador' => 'Borrador',
+        _ => e,
       };
 }

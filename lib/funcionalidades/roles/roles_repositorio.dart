@@ -39,8 +39,7 @@ class RolesRepositorio {
 
   /// Cuenta cuántos usuarios activos tienen asignado cada rol.
   /// Devuelve un mapa rolId → cantidad. Los roles sin asignaciones no aparecen.
-  Future<Map<String, int>> contarUsuariosPorRol() =>
-      conReintentos(() async {
+  Future<Map<String, int>> contarUsuariosPorRol() => conReintentos(() async {
         try {
           final datos = await _supabase
               .from(TablasSupabase.usuariosRoles)

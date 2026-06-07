@@ -15,7 +15,7 @@ class EventosCubit extends Cubit<EventosEstado> {
 
   final EventosRepositorio _repositorio;
 
-  List<EventoConGrupos> _enCurso  = [];
+  List<EventoConGrupos> _enCurso = [];
   List<EventoConGrupos> _proximos = [];
   Timer? _timer;
 
@@ -25,15 +25,20 @@ class EventosCubit extends Cubit<EventosEstado> {
     _timer?.cancel();
     emit(const EventosCargando());
     try {
-      final eventos     = await _repositorio.obtenerEventosConGrupos();
+      final eventos = await _repositorio.obtenerEventosConGrupos();
       final tagsUsuario = await _repositorio.obtenerTagsUsuario(usuarioId);
       if (isClosed) return;
-      final visibles    = eventos.where((e) => _esVisible(e, tagsUsuario)).toList();
+      final visibles =
+          eventos.where((e) => _esVisible(e, tagsUsuario)).toList();
 
-      _enCurso  = visibles.where((e) => e.evento.estatus == EstatusEvento.enCurso).toList();
-      _proximos = visibles.where((e) => e.evento.estatus == EstatusEvento.programado).toList();
+      _enCurso = visibles
+          .where((e) => e.evento.estatus == EstatusEvento.enCurso)
+          .toList();
+      _proximos = visibles
+          .where((e) => e.evento.estatus == EstatusEvento.programado)
+          .toList();
 
-      _enCurso  = await _enriquecerConPresentes(_enCurso);
+      _enCurso = await _enriquecerConPresentes(_enCurso);
       if (isClosed) return;
 
       // Conteos auxiliares — fallo silencioso para no bloquear la carga principal
@@ -43,12 +48,15 @@ class EventosCubit extends Cubit<EventosEstado> {
       } catch (_) {}
 
       if (isClosed) return;
-      emit(EventosCargado(
-        enCurso:            _enCurso,
-        proximos:           _proximos,
-        cantidadBorradores: cantidadBorradores,
-      ),);
-      _timer = Timer.periodic(_intervaloRefresh, (_) => _refrescarSilencioso(usuarioId));
+      emit(
+        EventosCargado(
+          enCurso: _enCurso,
+          proximos: _proximos,
+          cantidadBorradores: cantidadBorradores,
+        ),
+      );
+      _timer = Timer.periodic(
+          _intervaloRefresh, (_) => _refrescarSilencioso(usuarioId));
     } on FallaServidor catch (e) {
       if (isClosed) return;
       reportarError(e);
@@ -67,8 +75,12 @@ class EventosCubit extends Cubit<EventosEstado> {
       emit(EventosError(mensajeError));
       return;
     }
-    _enCurso  = desdeCache.where((e) => e.evento.estatus == EstatusEvento.enCurso).toList();
-    _proximos = desdeCache.where((e) => e.evento.estatus == EstatusEvento.programado).toList();
+    _enCurso = desdeCache
+        .where((e) => e.evento.estatus == EstatusEvento.enCurso)
+        .toList();
+    _proximos = desdeCache
+        .where((e) => e.evento.estatus == EstatusEvento.programado)
+        .toList();
     emit(EventosSinConexion(enCurso: _enCurso, proximos: _proximos));
   }
 
@@ -78,7 +90,7 @@ class EventosCubit extends Cubit<EventosEstado> {
   ) async {
     if (enCurso.isEmpty) return enCurso;
     try {
-      final ids     = enCurso.map((e) => e.evento.id).toList();
+      final ids = enCurso.map((e) => e.evento.id).toList();
       final conteos = await _repositorio.obtenerConteoPresentesPorEvento(ids);
       return enCurso.map((e) {
         final total = conteos[e.evento.id];
@@ -93,33 +105,42 @@ class EventosCubit extends Cubit<EventosEstado> {
     final estadoActual = state;
 
     if (estadoActual is EventosCargado) {
-      emit(estadoActual.copiarCon(
-        enCurso:       _aplicarFiltros(_enCurso,  texto, rango),
-        proximos:      _aplicarFiltros(_proximos, texto, rango),
-        textoBusqueda: texto,
-        rangoFechas:   rango,
-        limpiarRango:  rango == null,
-      ),);
+      emit(
+        estadoActual.copiarCon(
+          enCurso: _aplicarFiltros(_enCurso, texto, rango),
+          proximos: _aplicarFiltros(_proximos, texto, rango),
+          textoBusqueda: texto,
+          rangoFechas: rango,
+          limpiarRango: rango == null,
+        ),
+      );
     } else if (estadoActual is EventosSinConexion) {
-      emit(estadoActual.copiarCon(
-        enCurso:       _aplicarFiltros(_enCurso,  texto, rango),
-        proximos:      _aplicarFiltros(_proximos, texto, rango),
-        textoBusqueda: texto,
-        rangoFechas:   rango,
-        limpiarRango:  rango == null,
-      ),);
+      emit(
+        estadoActual.copiarCon(
+          enCurso: _aplicarFiltros(_enCurso, texto, rango),
+          proximos: _aplicarFiltros(_proximos, texto, rango),
+          textoBusqueda: texto,
+          rangoFechas: rango,
+          limpiarRango: rango == null,
+        ),
+      );
     }
   }
 
   Future<void> _refrescarSilencioso(String usuarioId) async {
     try {
-      final eventos     = await _repositorio.obtenerEventosConGrupos();
+      final eventos = await _repositorio.obtenerEventosConGrupos();
       final tagsUsuario = await _repositorio.obtenerTagsUsuario(usuarioId);
-      final visibles    = eventos.where((e) => _esVisible(e, tagsUsuario)).toList();
+      final visibles =
+          eventos.where((e) => _esVisible(e, tagsUsuario)).toList();
 
-      _enCurso  = visibles.where((e) => e.evento.estatus == EstatusEvento.enCurso).toList();
-      _proximos = visibles.where((e) => e.evento.estatus == EstatusEvento.programado).toList();
-      _enCurso  = await _enriquecerConPresentes(_enCurso);
+      _enCurso = visibles
+          .where((e) => e.evento.estatus == EstatusEvento.enCurso)
+          .toList();
+      _proximos = visibles
+          .where((e) => e.evento.estatus == EstatusEvento.programado)
+          .toList();
+      _enCurso = await _enriquecerConPresentes(_enCurso);
 
       final estadoActual = state;
       if (isClosed || estadoActual is! EventosCargado) return;
@@ -130,11 +151,15 @@ class EventosCubit extends Cubit<EventosEstado> {
       } catch (_) {}
 
       if (isClosed) return;
-      emit(estadoActual.copiarCon(
-        enCurso:            _aplicarFiltros(_enCurso,  estadoActual.textoBusqueda, estadoActual.rangoFechas),
-        proximos:           _aplicarFiltros(_proximos, estadoActual.textoBusqueda, estadoActual.rangoFechas),
-        cantidadBorradores: cantidadBorradores,
-      ),);
+      emit(
+        estadoActual.copiarCon(
+          enCurso: _aplicarFiltros(
+              _enCurso, estadoActual.textoBusqueda, estadoActual.rangoFechas),
+          proximos: _aplicarFiltros(
+              _proximos, estadoActual.textoBusqueda, estadoActual.rangoFechas),
+          cantidadBorradores: cantidadBorradores,
+        ),
+      );
     } catch (_) {
       // Fallo silencioso — no interrumpe al usuario
     }
@@ -142,8 +167,8 @@ class EventosCubit extends Cubit<EventosEstado> {
 
   List<EventoConGrupos> _aplicarFiltros(
     List<EventoConGrupos> lista,
-    String                texto,
-    DateTimeRange?        rango,
+    String texto,
+    DateTimeRange? rango,
   ) {
     var resultado = lista;
 
@@ -151,16 +176,18 @@ class EventosCubit extends Cubit<EventosEstado> {
       final q = texto.trim().toLowerCase();
       resultado = resultado.where((e) {
         final ev = e.evento;
-        return ev.titulo.toLowerCase().contains(q)               ||
+        return ev.titulo.toLowerCase().contains(q) ||
             (ev.descripcion?.toLowerCase().contains(q) ?? false) ||
-            (ev.lugar?.toLowerCase().contains(q)       ?? false) ||
+            (ev.lugar?.toLowerCase().contains(q) ?? false) ||
             e.nombresParaBusqueda.any((t) => t.toLowerCase().contains(q));
       }).toList();
     }
 
     if (rango != null) {
-      final inicio = DateTime(rango.start.year, rango.start.month, rango.start.day);
-      final fin    = DateTime(rango.end.year,   rango.end.month,   rango.end.day, 23, 59, 59);
+      final inicio =
+          DateTime(rango.start.year, rango.start.month, rango.start.day);
+      final fin =
+          DateTime(rango.end.year, rango.end.month, rango.end.day, 23, 59, 59);
       resultado = resultado.where((e) {
         final fecha = e.evento.fechaInicio;
         return fecha != null && !fecha.isBefore(inicio) && !fecha.isAfter(fin);
@@ -184,7 +211,8 @@ class EventosCubit extends Cubit<EventosEstado> {
     ({String? tagPrincipalId, List<String> tagsSecundariosIds}) tagsUsuario,
   ) {
     if (tagsUsuario.tagPrincipalId != grupo.tagPrincipalId) return false;
-    return grupo.tagsSecundariosIds.every(tagsUsuario.tagsSecundariosIds.contains);
+    return grupo.tagsSecundariosIds
+        .every(tagsUsuario.tagsSecundariosIds.contains);
   }
 
   @override

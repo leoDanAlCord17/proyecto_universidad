@@ -7,7 +7,7 @@ class TarjetaApp extends StatelessWidget {
   const TarjetaApp({
     super.key,
     required this.child,
-    this.variante    = VarianteTarjeta.normal,
+    this.variante = VarianteTarjeta.normal,
     this.alPresionar,
     this.relleno,
   });
@@ -17,11 +17,11 @@ class TarjetaApp extends StatelessWidget {
   final VoidCallback? alPresionar;
   final EdgeInsets? relleno;
 
-  static const _acento      = ColoresApp.acento;
+  static const _acento = ColoresApp.acento;
   static const _acentoClaro = ColoresApp.acentoClaro;
   static const _acentoBorde = ColoresApp.acentoBorde;
-  static const _borde       = ColoresApp.bordesuave;
-  static const _sombra      = ColoresApp.sombraTarjeta;
+  static const _borde = ColoresApp.bordesuave;
+  static const _sombra = ColoresApp.sombraTarjeta;
 
   @override
   Widget build(BuildContext context) {
@@ -39,83 +39,92 @@ class TarjetaApp extends StatelessWidget {
 
   Widget _construirTarjeta() {
     return switch (variante) {
-      VarianteTarjeta.normal    => _tarjetaNormal(),
-      VarianteTarjeta.pequena   => _tarjetaPequena(),
-      VarianteTarjeta.acento    => _tarjetaAcento(),
-      VarianteTarjeta.degradado => _ContenedorDegradado(relleno: relleno ?? const EdgeInsets.all(16), child: child),
-      VarianteTarjeta.punteada  => _tarjetaPunteada(),
+      VarianteTarjeta.normal => _tarjetaNormal(),
+      VarianteTarjeta.pequena => _tarjetaPequena(),
+      VarianteTarjeta.acento => _tarjetaAcento(),
+      VarianteTarjeta.degradado => _ContenedorDegradado(
+          relleno: relleno ?? const EdgeInsets.all(16), child: child),
+      VarianteTarjeta.punteada => _tarjetaPunteada(),
     };
   }
 
   Widget _tarjetaNormal() => _contenedor(
-    relleno: relleno ?? const EdgeInsets.all(14),
-    radio:   18,
-    fondo:   ColoresApp.superficiePrimaria,
-    borde:   Border.all(color: _borde),
-    sombra:  _sombra,
-  );
+        relleno: relleno ?? const EdgeInsets.all(14),
+        radio: 18,
+        fondo: ColoresApp.superficiePrimaria,
+        borde: Border.all(color: _borde),
+        sombra: _sombra,
+      );
 
   Widget _tarjetaPequena() => _contenedor(
-    relleno: relleno ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
-    radio:   12,
-    fondo:   ColoresApp.superficiePrimaria,
-    borde:   Border.all(color: _borde),
-    sombra:  _sombra,
-  );
+        relleno:
+            relleno ?? const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+        radio: 12,
+        fondo: ColoresApp.superficiePrimaria,
+        borde: Border.all(color: _borde),
+        sombra: _sombra,
+      );
 
   Widget _tarjetaAcento() => _contenedor(
-    relleno: relleno ?? const EdgeInsets.all(14),
-    radio:   18,
-    fondo:   _acentoClaro,
-    borde:   const Border(
-      top:    BorderSide(color: _acentoBorde),
-      right:  BorderSide(color: _acentoBorde),
-      bottom: BorderSide(color: _acentoBorde),
-      left:   BorderSide(color: _acento, width: 3),
-    ),
-    sombra: Colors.transparent,
-  );
+        relleno: relleno ?? const EdgeInsets.all(14),
+        radio: 18,
+        fondo: _acentoClaro,
+        borde: const Border(
+          top: BorderSide(color: _acentoBorde),
+          right: BorderSide(color: _acentoBorde),
+          bottom: BorderSide(color: _acentoBorde),
+          left: BorderSide(color: _acento, width: 3),
+        ),
+        sombra: Colors.transparent,
+      );
 
   Widget _tarjetaPunteada() => _contenedor(
-    relleno:    relleno ?? const EdgeInsets.all(14),
-    radio:      18,
-    fondo:      Colors.transparent,
-    borde:      Border.all(color: _acentoBorde, width: 1.5, strokeAlign: BorderSide.strokeAlignInside),
-    sombra:     Colors.transparent,
-    esPunteada: true,
-  );
+        relleno: relleno ?? const EdgeInsets.all(14),
+        radio: 18,
+        fondo: Colors.transparent,
+        borde: Border.all(
+            color: _acentoBorde,
+            width: 1.5,
+            strokeAlign: BorderSide.strokeAlignInside),
+        sombra: Colors.transparent,
+        esPunteada: true,
+      );
 
   Widget _contenedor({
     required EdgeInsets relleno,
-    required double     radio,
-    required Color      fondo,
-    required BoxBorder  borde,
-    required Color      sombra,
+    required double radio,
+    required Color fondo,
+    required BoxBorder borde,
+    required Color sombra,
     bool esPunteada = false,
   }) {
     return Container(
       padding: relleno,
       decoration: BoxDecoration(
-        color:        fondo,
+        color: fondo,
         borderRadius: BorderRadius.circular(radio),
-        border:       esPunteada ? null : borde,
-        boxShadow: sombra == Colors.transparent ? null : [
-          BoxShadow(color: sombra, blurRadius: 4, offset: const Offset(0, 1)),
-        ],
+        border: esPunteada ? null : borde,
+        boxShadow: sombra == Colors.transparent
+            ? null
+            : [
+                BoxShadow(
+                    color: sombra, blurRadius: 4, offset: const Offset(0, 1)),
+              ],
       ),
       child: esPunteada
-        ? CustomPaint(
-            painter: _PintadorBordePunteado(radio: radio, color: _acentoBorde, grosor: 1.5),
-            child: child,
-          )
-        : child,
+          ? CustomPaint(
+              painter: _PintadorBordePunteado(
+                  radio: radio, color: _acentoBorde, grosor: 1.5),
+              child: child,
+            )
+          : child,
     );
   }
 
   BorderRadius _obtenerRadio() {
     return switch (variante) {
       VarianteTarjeta.pequena => BorderRadius.circular(12),
-      _                       => BorderRadius.circular(18),
+      _ => BorderRadius.circular(18),
     };
   }
 }
@@ -152,26 +161,26 @@ class _PintadorBordePunteado extends CustomPainter {
   });
 
   final double radio;
-  final Color  color;
+  final Color color;
   final double grosor;
 
   @override
   void paint(Canvas canvas, Size size) {
     final pincel = Paint()
-      ..color       = color
+      ..color = color
       ..strokeWidth = grosor
-      ..style       = PaintingStyle.stroke
-      ..strokeCap   = StrokeCap.round;
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
 
-    final rect     = Rect.fromLTWH(0, 0, size.width, size.height);
-    final rrect    = RRect.fromRectAndRadius(rect, Radius.circular(radio));
-    final ruta     = Path()..addRRect(rrect);
-    final metrica  = ruta.computeMetrics().first;
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final rrect = RRect.fromRectAndRadius(rect, Radius.circular(radio));
+    final ruta = Path()..addRRect(rrect);
+    final metrica = ruta.computeMetrics().first;
     final longitud = metrica.length;
 
-    const largo    = 6.0;
-    const espacio  = 5.0;
-    var   distancia = 0.0;
+    const largo = 6.0;
+    const espacio = 5.0;
+    var distancia = 0.0;
 
     while (distancia < longitud) {
       final fin = (distancia + largo).clamp(0.0, longitud);

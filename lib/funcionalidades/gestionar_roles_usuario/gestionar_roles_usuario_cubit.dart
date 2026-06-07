@@ -15,23 +15,24 @@ class GestionarRolesUsuarioCubit extends Cubit<GestionarRolesUsuarioEstado> {
 
   Future<void> cargar(String usuarioId, {String? adminId}) async {
     _usuarioId = usuarioId;
-    _adminId   = adminId;
+    _adminId = adminId;
     emit(const GestionarRolesUsuarioCargando());
     try {
-      final info           = await _repositorio.obtenerInfoUsuario(usuarioId);
-      final rolesUsuario   = await _repositorio.obtenerRolesUsuario(usuarioId);
-      final todosLosRoles  = await _repositorio.obtenerRolesActivos();
+      final info = await _repositorio.obtenerInfoUsuario(usuarioId);
+      final rolesUsuario = await _repositorio.obtenerRolesUsuario(usuarioId);
+      final todosLosRoles = await _repositorio.obtenerRolesActivos();
 
       final idsActivos = rolesUsuario.map((r) => r.id).toSet();
 
-      emit(GestionarRolesUsuarioCargado(
-        nombreUsuario:   info.nombre,
-        correoUsuario:   info.correo,
-        rolesActivos:    rolesUsuario,
-        rolesDisponibles: todosLosRoles
-            .where((r) => !idsActivos.contains(r.id))
-            .toList(),
-      ),);
+      emit(
+        GestionarRolesUsuarioCargado(
+          nombreUsuario: info.nombre,
+          correoUsuario: info.correo,
+          rolesActivos: rolesUsuario,
+          rolesDisponibles:
+              todosLosRoles.where((r) => !idsActivos.contains(r.id)).toList(),
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(GestionarRolesUsuarioError(mensaje: e.mensaje));
@@ -56,10 +57,12 @@ class GestionarRolesUsuarioCubit extends Cubit<GestionarRolesUsuarioEstado> {
       await cargar(_usuarioId!, adminId: _adminId);
     } on FallaServidor catch (e) {
       reportarError(e);
-      emit(GestionarRolesUsuarioOperacionFallida(anterior: estadoActual, mensaje: e.mensaje));
+      emit(GestionarRolesUsuarioOperacionFallida(
+          anterior: estadoActual, mensaje: e.mensaje));
     } on FallaInesperada catch (e) {
       reportarError(e);
-      emit(GestionarRolesUsuarioOperacionFallida(anterior: estadoActual, mensaje: e.mensaje));
+      emit(GestionarRolesUsuarioOperacionFallida(
+          anterior: estadoActual, mensaje: e.mensaje));
     }
   }
 }

@@ -7,7 +7,8 @@ import 'colaboradores_evento_estado.dart';
 import 'colaboradores_evento_repositorio.dart';
 
 class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
-  ColaboradoresEventoCubit(this._repositorio) : super(const ColaboradoresEventoInicial());
+  ColaboradoresEventoCubit(this._repositorio)
+      : super(const ColaboradoresEventoInicial());
 
   final ColaboradoresEventoRepositorio _repositorio;
 
@@ -16,15 +17,17 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
 
   Future<void> iniciar(String eventoId, {String? adminId}) async {
     _eventoId = eventoId;
-    _adminId  = adminId;
+    _adminId = adminId;
     emit(const ColaboradoresEventoCargando());
     try {
       final colaboradores = await _repositorio.obtenerColaboradores(eventoId);
-      emit(ColaboradoresEventoCargado(
-        colaboradores:      colaboradores,
-        resultadosBusqueda: const [],
-        busqueda:           '',
-      ),);
+      emit(
+        ColaboradoresEventoCargado(
+          colaboradores: colaboradores,
+          resultadosBusqueda: const [],
+          busqueda: '',
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(ColaboradoresEventoError(mensaje: e.mensaje));
@@ -42,10 +45,12 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
       return;
     }
     try {
-      final todos       = await _repositorio.buscarUsuarios(query);
-      final idsAsignados = cargado.colaboradores.map((c) => c.usuarioId).toSet();
-      final filtrados   = todos.where((u) => !idsAsignados.contains(u.id)).toList();
-      final actual      = _extraerCargado(state) ?? cargado;
+      final todos = await _repositorio.buscarUsuarios(query);
+      final idsAsignados =
+          cargado.colaboradores.map((c) => c.usuarioId).toSet();
+      final filtrados =
+          todos.where((u) => !idsAsignados.contains(u.id)).toList();
+      final actual = _extraerCargado(state) ?? cargado;
       emit(actual.copiarCon(resultadosBusqueda: filtrados, busqueda: query));
     } on FallaServidor catch (e) {
       reportarError(e);
@@ -62,8 +67,8 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
     emit(cargado.copiarCon(idOperando: usuario.id));
     try {
       await _repositorio.asignarColaborador(
-        eventoId:      _eventoId!,
-        usuarioId:     usuario.id,
+        eventoId: _eventoId!,
+        usuarioId: usuario.id,
         asignadoPorId: _adminId!,
       );
       await _recargarColaboradores();
@@ -103,23 +108,26 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
   Future<void> _recargarColaboradores() async {
     if (_eventoId == null) return;
     final colaboradores = await _repositorio.obtenerColaboradores(_eventoId!);
-    final cargado       = _extraerCargado(state);
+    final cargado = _extraerCargado(state);
     if (cargado == null) return;
     emit(cargado.copiarCon(colaboradores: colaboradores, idOperando: null));
   }
 
   void _emitirFallo(ColaboradoresEventoCargado base, String mensaje) {
     final actual = _extraerCargado(state) ?? base;
-    emit(ColaboradoresEventoOperacionFallida(
-      anterior: actual.copiarCon(idOperando: null),
-      mensaje:  mensaje,
-    ),);
+    emit(
+      ColaboradoresEventoOperacionFallida(
+        anterior: actual.copiarCon(idOperando: null),
+        mensaje: mensaje,
+      ),
+    );
   }
 
-  ColaboradoresEventoCargado? _extraerCargado(ColaboradoresEventoEstado estado) =>
+  ColaboradoresEventoCargado? _extraerCargado(
+          ColaboradoresEventoEstado estado) =>
       switch (estado) {
-        ColaboradoresEventoCargado()          => estado,
+        ColaboradoresEventoCargado() => estado,
         ColaboradoresEventoOperacionFallida() => estado.anterior,
-        _                                     => null,
+        _ => null,
       };
 }

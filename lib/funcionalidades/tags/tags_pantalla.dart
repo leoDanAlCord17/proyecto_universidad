@@ -41,7 +41,8 @@ class _TagsPantallaState extends State<TagsPantalla> {
       listenWhen: (_, curr) => curr is TagsOperacionFallida,
       listener: (context, estado) {
         if (estado is TagsOperacionFallida) {
-          AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
+          AvisoApp.mostrar(context,
+              texto: estado.mensaje, estilo: EstiloAviso.error);
         }
       },
       builder: _construirVista,
@@ -51,9 +52,9 @@ class _TagsPantallaState extends State<TagsPantalla> {
   Widget _construirVista(BuildContext context, TagsEstado estado) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -70,10 +71,10 @@ class _TagsPantallaState extends State<TagsPantalla> {
                     Text(
                       'Tags',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontSize:   20,
-                        fontWeight: FontWeight.w700,
-                        color:      ColoresApp.textoPrimario,
-                      ),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: ColoresApp.textoPrimario,
+                          ),
                     ),
                   ],
                 ),
@@ -83,7 +84,7 @@ class _TagsPantallaState extends State<TagsPantalla> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: BarraBusquedaApp(
-                hintText:  'Buscar tags...',
+                hintText: 'Buscar tags...',
                 alCambiar: (texto) => context.read<TagsCubit>().filtrar(texto),
               ),
             ),
@@ -103,27 +104,28 @@ class _BotonCrearTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: () async {
           await context.push(Rutas.crearTag);
-          if (context.mounted) unawaited(context.read<TagsCubit>().cargarTags());
+          if (context.mounted)
+            unawaited(context.read<TagsCubit>().cargarTags());
         },
-        borderRadius:   BorderRadius.circular(12),
-        splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+        splashColor: ColoresApp.blanco.withValues(alpha: 0.3),
         highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
         child: Ink(
-          width:  40,
+          width: 40,
           height: 40,
           decoration: BoxDecoration(
-            gradient:     ColoresApp.degradadoPrincipal,
+            gradient: ColoresApp.degradadoPrincipal,
             borderRadius: BorderRadius.circular(12),
           ),
           child: const Icon(
             Icons.add_rounded,
             color: ColoresApp.blanco,
-            size:  22,
+            size: 22,
           ),
         ),
       ),
@@ -145,17 +147,17 @@ class _Cuerpo extends StatelessWidget {
       TagsInicial() || TagsCargando() => const Center(
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
-      TagsCargados()         => _Lista(estado: e),
-      TagsCargandoMas()      => _Lista(
+      TagsCargados() => _Lista(estado: e),
+      TagsCargandoMas() => _Lista(
           estado: TagsCargados(
-            tags:          e.tags,
+            tags: e.tags,
             tagsFiltrados: e.tagsFiltrados,
-            hayMas:        true,
+            hayMas: true,
           ),
           cargandoMas: true,
         ),
       TagsOperacionFallida() => _Lista(estado: e.anterior),
-      TagsError()            => _VistaError(mensaje: e.mensaje),
+      TagsError() => _VistaError(mensaje: e.mensaje),
     };
   }
 }
@@ -166,7 +168,7 @@ class _Lista extends StatelessWidget {
   const _Lista({required this.estado, this.cargandoMas = false});
 
   final TagsCargados estado;
-  final bool         cargandoMas;
+  final bool cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -177,8 +179,8 @@ class _Lista extends StatelessWidget {
         child: Text(
           'No hay tags',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: ColoresApp.textoTerciario,
-          ),
+                color: ColoresApp.textoTerciario,
+              ),
         ),
       );
     }
@@ -195,7 +197,7 @@ class _Lista extends StatelessWidget {
       if (estado.hayMas) {
         return TextButton.icon(
           onPressed: () => context.read<TagsCubit>().cargarMas(),
-          icon:  const Icon(Icons.expand_more_rounded),
+          icon: const Icon(Icons.expand_more_rounded),
           label: const Text('Cargar más'),
         );
       }
@@ -208,17 +210,19 @@ class _Lista extends StatelessWidget {
         Text(
           'TAG',
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color:         ColoresApp.textoTerciario,
-            letterSpacing: 0.8,
-            fontSize:      13,
-            fontWeight:    FontWeight.w900,
-          ),
+                color: ColoresApp.textoTerciario,
+                letterSpacing: 0.8,
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+              ),
         ),
         const SizedBox(height: 12),
-        ...items.map((t) => Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child:   _TarjetaTag(tag: t),
-        ),),
+        ...items.map(
+          (t) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _TarjetaTag(tag: t),
+          ),
+        ),
         pieDeLista(),
       ],
     );
@@ -233,31 +237,34 @@ class _TarjetaTag extends StatelessWidget {
   final Tag tag;
 
   void _mostrarOpciones(BuildContext context) {
-    PanelOpciones.mostrar(context, opciones: [
-      OpcionPanel(
-        icono:       Icons.edit_outlined,
-        colorFondo:  ColoresApp.acentoClaro,
-        colorIcono:  ColoresApp.acento,
-        titulo:      'Editar',
-        descripcion: 'Editar tag',
-        alPresionar: () {
-          Navigator.of(context, rootNavigator: true).pop();
-          _navegarYRecargar(context, Rutas.editarTagUrl(tag.id));
-        },
-      ),
-      _opcionToggle(context),
-      OpcionPanel(
-        icono:       Icons.add_rounded,
-        colorFondo:  ColoresApp.superficieTerciar,
-        colorIcono:  ColoresApp.textoSecundario,
-        titulo:      'Crear tag',
-        descripcion: 'Crear nuevo tag',
-        alPresionar: () {
-          Navigator.of(context, rootNavigator: true).pop();
-          _navegarYRecargar(context, Rutas.crearTag);
-        },
-      ),
-    ],);
+    PanelOpciones.mostrar(
+      context,
+      opciones: [
+        OpcionPanel(
+          icono: Icons.edit_outlined,
+          colorFondo: ColoresApp.acentoClaro,
+          colorIcono: ColoresApp.acento,
+          titulo: 'Editar',
+          descripcion: 'Editar tag',
+          alPresionar: () {
+            Navigator.of(context, rootNavigator: true).pop();
+            _navegarYRecargar(context, Rutas.editarTagUrl(tag.id));
+          },
+        ),
+        _opcionToggle(context),
+        OpcionPanel(
+          icono: Icons.add_rounded,
+          colorFondo: ColoresApp.superficieTerciar,
+          colorIcono: ColoresApp.textoSecundario,
+          titulo: 'Crear tag',
+          descripcion: 'Crear nuevo tag',
+          alPresionar: () {
+            Navigator.of(context, rootNavigator: true).pop();
+            _navegarYRecargar(context, Rutas.crearTag);
+          },
+        ),
+      ],
+    );
   }
 
   Future<void> _navegarYRecargar(BuildContext context, String ruta) async {
@@ -266,28 +273,31 @@ class _TarjetaTag extends StatelessWidget {
   }
 
   OpcionPanel _opcionToggle(BuildContext context) => OpcionPanel(
-    icono:       tag.estatus ? Icons.toggle_off_outlined         : Icons.toggle_on_outlined,
-    colorFondo:  tag.estatus ? ColoresApp.rojoClaro              : ColoresApp.verdeClaro,
-    colorIcono:  tag.estatus ? ColoresApp.rojo                   : ColoresApp.verde,
-    titulo:      tag.estatus ? 'Desactivar'                      : 'Activar',
-    descripcion: tag.estatus ? 'Desactiva el tag y asignaciones' : 'Activa el tag',
-    alPresionar: () {
-      Navigator.of(context, rootNavigator: true).pop();
-      if (tag.estatus) {
-        _confirmarDesactivar(context);
-      } else {
-        _confirmarActivar(context);
-      }
-    },
-  );
+        icono:
+            tag.estatus ? Icons.toggle_off_outlined : Icons.toggle_on_outlined,
+        colorFondo: tag.estatus ? ColoresApp.rojoClaro : ColoresApp.verdeClaro,
+        colorIcono: tag.estatus ? ColoresApp.rojo : ColoresApp.verde,
+        titulo: tag.estatus ? 'Desactivar' : 'Activar',
+        descripcion:
+            tag.estatus ? 'Desactiva el tag y asignaciones' : 'Activa el tag',
+        alPresionar: () {
+          Navigator.of(context, rootNavigator: true).pop();
+          if (tag.estatus) {
+            _confirmarDesactivar(context);
+          } else {
+            _confirmarActivar(context);
+          }
+        },
+      );
 
   Future<void> _confirmarActivar(BuildContext context) async {
     final confirmo = await DialogoConfirmacion.mostrar(
       context,
-      titulo:         'Activar tag',
-      descripcion:    'Se activará "${tag.nombre}". Las asignaciones previas a usuarios no se reactivarán automáticamente; deberán reasignarse manualmente.',
+      titulo: 'Activar tag',
+      descripcion:
+          'Se activará "${tag.nombre}". Las asignaciones previas a usuarios no se reactivarán automáticamente; deberán reasignarse manualmente.',
       textoConfirmar: 'Activar',
-      textoCancelar:  'Cancelar',
+      textoCancelar: 'Cancelar',
     );
     if (confirmo != true || !context.mounted) return;
     unawaited(context.read<TagsCubit>().activar(tag.id));
@@ -304,13 +314,13 @@ class _TarjetaTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [
           BoxShadow(
-            color:      ColoresApp.sombraTarjeta,
+            color: ColoresApp.sombraTarjeta,
             blurRadius: 8,
-            offset:     Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -326,10 +336,10 @@ class _TarjetaTag extends StatelessWidget {
                       child: Text(
                         tag.nombre,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color:      ColoresApp.textoPrimario,
-                          fontSize:   16,
-                        ),
+                              fontWeight: FontWeight.w600,
+                              color: ColoresApp.textoPrimario,
+                              fontSize: 16,
+                            ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -345,9 +355,9 @@ class _TarjetaTag extends StatelessWidget {
                   Text(
                     tag.descripcion,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color:    ColoresApp.textoSecundario,
-                      fontSize: 13,
-                    ),
+                          color: ColoresApp.textoSecundario,
+                          fontSize: 13,
+                        ),
                   ),
                 ],
               ],
@@ -373,7 +383,7 @@ class _InsigniaTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color:        esPrincipal ? ColoresApp.acentoClaro : ColoresApp.ambarClaro,
+        color: esPrincipal ? ColoresApp.acentoClaro : ColoresApp.ambarClaro,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
           color: esPrincipal ? ColoresApp.acentoBorde : ColoresApp.ambar,
@@ -383,8 +393,8 @@ class _InsigniaTag extends StatelessWidget {
       child: Text(
         esPrincipal ? 'Principal' : 'Secundario',
         style: TextStyle(
-          color:      esPrincipal ? ColoresApp.acento : ColoresApp.ambar,
-          fontSize:   11,
+          color: esPrincipal ? ColoresApp.acento : ColoresApp.ambar,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -404,7 +414,7 @@ class _InsigniaEstatus extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color:        activo ? ColoresApp.verdeClaro : ColoresApp.rojoClaro,
+        color: activo ? ColoresApp.verdeClaro : ColoresApp.rojoClaro,
         borderRadius: BorderRadius.circular(30),
         border: Border.all(
           color: activo ? ColoresApp.bordeExito : ColoresApp.bordeError,
@@ -414,8 +424,8 @@ class _InsigniaEstatus extends StatelessWidget {
       child: Text(
         activo ? 'Activo' : 'Inactivo',
         style: TextStyle(
-          color:      activo ? ColoresApp.verde : ColoresApp.rojo,
-          fontSize:   11,
+          color: activo ? ColoresApp.verde : ColoresApp.rojo,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -435,14 +445,14 @@ class _InsigniaUsuarios extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficieTerciar,
+        color: ColoresApp.superficieTerciar,
         borderRadius: BorderRadius.circular(30),
       ),
       child: Text(
         '$total',
         style: const TextStyle(
-          color:      ColoresApp.textoSecundario,
-          fontSize:   11,
+          color: ColoresApp.textoSecundario,
+          fontSize: 11,
           fontWeight: FontWeight.w600,
         ),
       ),
@@ -460,17 +470,17 @@ class _BotonOpciones extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
-        onTap:        alPresionar,
+        onTap: alPresionar,
         borderRadius: BorderRadius.circular(8),
         child: const Padding(
           padding: EdgeInsets.all(6),
           child: Icon(
             Icons.more_vert_rounded,
             color: ColoresApp.textoTerciario,
-            size:  20,
+            size: 20,
           ),
         ),
       ),
@@ -499,8 +509,8 @@ class _VistaError extends StatelessWidget {
               mensaje,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
+                    color: ColoresApp.textoSecundario,
+                  ),
             ),
             const SizedBox(height: 24),
             FilledButton(
@@ -532,8 +542,8 @@ class _DialogoDesactivarTag extends StatefulWidget {
 }
 
 class _DialogoDesactivarTagState extends State<_DialogoDesactivarTag> {
-  final _ctrl     = TextEditingController();
-  bool  _coincide = false;
+  final _ctrl = TextEditingController();
+  bool _coincide = false;
 
   @override
   void dispose() {
@@ -545,25 +555,28 @@ class _DialogoDesactivarTagState extends State<_DialogoDesactivarTag> {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding:    const EdgeInsets.symmetric(horizontal: 28),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
       child: Container(
         decoration: BoxDecoration(
-          color:        ColoresApp.superficiePrimaria,
+          color: ColoresApp.superficiePrimaria,
           borderRadius: BorderRadius.circular(20),
           boxShadow: const [
-            BoxShadow(color: ColoresApp.sombraGeneral, blurRadius: 24, offset: Offset(0, 8)),
+            BoxShadow(
+                color: ColoresApp.sombraGeneral,
+                blurRadius: 24,
+                offset: Offset(0, 8)),
           ],
         ),
         padding: const EdgeInsets.all(24),
         child: Column(
-          mainAxisSize:       MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               'Desactivar tag',
               style: TextStyle(
-                color:      ColoresApp.textoPrimario,
-                fontSize:   17,
+                color: ColoresApp.textoPrimario,
+                fontSize: 17,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -571,7 +584,7 @@ class _DialogoDesactivarTagState extends State<_DialogoDesactivarTag> {
             Text(
               'Al desactivar "${widget.tag.nombre}", todas sus asignaciones a usuarios también se desactivarán. Esta acción puede afectar a múltiples usuarios.\n\nEscribe el nombre exacto del tag para confirmar:',
               style: const TextStyle(
-                color:  ColoresApp.textoSecundario,
+                color: ColoresApp.textoSecundario,
                 fontSize: 14,
                 height: 1.5,
               ),
@@ -579,26 +592,28 @@ class _DialogoDesactivarTagState extends State<_DialogoDesactivarTag> {
             const SizedBox(height: 16),
             TextField(
               controller: _ctrl,
-              onChanged:  (v) => setState(() => _coincide = v == widget.tag.nombre),
+              onChanged: (v) =>
+                  setState(() => _coincide = v == widget.tag.nombre),
               decoration: InputDecoration(
                 hintText: widget.tag.nombre,
                 hintStyle: const TextStyle(color: ColoresApp.textoTerciario),
-                filled:    true,
+                filled: true,
                 fillColor: ColoresApp.superficieSecund,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide:   BorderSide.none,
+                  borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide:   const BorderSide(color: ColoresApp.bordeFuerte),
+                  borderSide: const BorderSide(color: ColoresApp.bordeFuerte),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
             const SizedBox(height: 24),
             _BotonDesactivarConfirmar(
-              habilitado:  _coincide,
+              habilitado: _coincide,
               alPresionar: () => Navigator.of(context).pop(true),
             ),
             const SizedBox(height: 10),
@@ -615,36 +630,41 @@ class _DialogoDesactivarTagState extends State<_DialogoDesactivarTag> {
 // ─── Botones del diálogo ──────────────────────────────────────────────────────
 
 class _BotonDesactivarConfirmar extends StatelessWidget {
-  const _BotonDesactivarConfirmar({required this.habilitado, required this.alPresionar});
+  const _BotonDesactivarConfirmar(
+      {required this.habilitado, required this.alPresionar});
 
-  final bool         habilitado;
+  final bool habilitado;
   final VoidCallback alPresionar;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:  double.infinity,
+      width: double.infinity,
       height: 48,
       child: Material(
-        color:        Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap:          habilitado ? alPresionar : null,
-          borderRadius:   BorderRadius.circular(12),
-          splashColor:    habilitado ? ColoresApp.blanco.withValues(alpha: 0.3) : null,
-          highlightColor: habilitado ? ColoresApp.blanco.withValues(alpha: 0.15) : null,
+          onTap: habilitado ? alPresionar : null,
+          borderRadius: BorderRadius.circular(12),
+          splashColor:
+              habilitado ? ColoresApp.blanco.withValues(alpha: 0.3) : null,
+          highlightColor:
+              habilitado ? ColoresApp.blanco.withValues(alpha: 0.15) : null,
           child: Ink(
             decoration: BoxDecoration(
-              gradient:     habilitado ? ColoresApp.degradadoPrincipal : null,
-              color:        habilitado ? null : ColoresApp.superficieTerciar,
+              gradient: habilitado ? ColoresApp.degradadoPrincipal : null,
+              color: habilitado ? null : ColoresApp.superficieTerciar,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
               child: Text(
                 'Desactivar',
                 style: TextStyle(
-                  color:      habilitado ? ColoresApp.blanco : ColoresApp.textoTerciario,
-                  fontSize:   14,
+                  color: habilitado
+                      ? ColoresApp.blanco
+                      : ColoresApp.textoTerciario,
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -664,27 +684,27 @@ class _BotonCancelarDialogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:  double.infinity,
+      width: double.infinity,
       height: 48,
       child: Material(
-        color:        Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap:          alPresionar,
-          borderRadius:   BorderRadius.circular(12),
+          onTap: alPresionar,
+          borderRadius: BorderRadius.circular(12),
           highlightColor: ColoresApp.rojoClaro,
-          splashColor:    ColoresApp.bordeError,
+          splashColor: ColoresApp.bordeError,
           child: Ink(
             decoration: BoxDecoration(
-              border:       Border.all(color: ColoresApp.bordeError),
+              border: Border.all(color: ColoresApp.bordeError),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Center(
               child: Text(
                 'Cancelar',
                 style: TextStyle(
-                  color:      ColoresApp.rojo,
-                  fontSize:   14,
+                  color: ColoresApp.rojo,
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),

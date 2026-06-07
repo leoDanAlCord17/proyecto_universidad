@@ -21,7 +21,8 @@ class TagsRepositorio {
         try {
           final respuesta = await _supabase
               .from(TablasSupabase.tags)
-              .select('id, nombre, tipo, estatus, descripcion, usuarios_tags(count)')
+              .select(
+                  'id, nombre, tipo, estatus, descripcion, usuarios_tags(count)')
               .eq('usuarios_tags.estatus', true)
               .order('nombre')
               .range(offset, offset + limite - 1)
@@ -42,8 +43,7 @@ class TagsRepositorio {
     try {
       await _supabase
           .from(TablasSupabase.tags)
-          .update({'estatus': true})
-          .eq('id', id);
+          .update({'estatus': true}).eq('id', id);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
@@ -58,12 +58,10 @@ class TagsRepositorio {
     try {
       await _supabase
           .from(TablasSupabase.usuariosTags)
-          .update({'estatus': false})
-          .eq('tag_id', id);
+          .update({'estatus': false}).eq('tag_id', id);
       await _supabase
           .from(TablasSupabase.tags)
-          .update({'estatus': false})
-          .eq('id', id);
+          .update({'estatus': false}).eq('id', id);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {

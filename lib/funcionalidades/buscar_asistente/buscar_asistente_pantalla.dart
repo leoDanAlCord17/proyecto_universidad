@@ -27,13 +27,14 @@ class BuscarAsistentePantalla extends StatefulWidget {
   final String eventoId;
 
   @override
-  State<BuscarAsistentePantalla> createState() => _BuscarAsistentePantallaState();
+  State<BuscarAsistentePantalla> createState() =>
+      _BuscarAsistentePantallaState();
 }
 
 class _BuscarAsistentePantallaState extends State<BuscarAsistentePantalla> {
   final _controladorBusqueda = TextEditingController();
   Timer? _debounce;
-  bool   _estaCargado = false;
+  bool _estaCargado = false;
 
   @override
   void didChangeDependencies() {
@@ -41,8 +42,10 @@ class _BuscarAsistentePantallaState extends State<BuscarAsistentePantalla> {
     if (_estaCargado) return;
     _estaCargado = true;
     final authEstado = context.read<AuthCubit>().state;
-    final adminId    = authEstado is Autenticado ? authEstado.usuario.id : null;
-    context.read<BuscarAsistenteCubit>().iniciar(widget.eventoId, adminId: adminId);
+    final adminId = authEstado is Autenticado ? authEstado.usuario.id : null;
+    context
+        .read<BuscarAsistenteCubit>()
+        .iniciar(widget.eventoId, adminId: adminId);
   }
 
   @override
@@ -64,28 +67,31 @@ class _BuscarAsistentePantallaState extends State<BuscarAsistentePantalla> {
   Widget build(BuildContext context) {
     return BlocConsumer<BuscarAsistenteCubit, BuscarAsistenteEstado>(
       listener: _escucharEstado,
-      builder:  _construirCuerpo,
+      builder: _construirCuerpo,
     );
   }
 
   void _escucharEstado(BuildContext context, BuscarAsistenteEstado state) {
     if (state is BuscarAsistenteOperacionFallida) {
-      AvisoApp.mostrar(context, texto: state.mensaje, estilo: EstiloAviso.error);
+      AvisoApp.mostrar(context,
+          texto: state.mensaje, estilo: EstiloAviso.error);
     }
   }
 
   Widget _construirCuerpo(BuildContext context, BuscarAsistenteEstado state) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
         body: Column(
           children: [
-            const SafeArea(bottom: false, child: BarraSuperiorApp(izquierda: _CabeceraTitulo())),
+            const SafeArea(
+                bottom: false,
+                child: BarraSuperiorApp(izquierda: _CabeceraTitulo())),
             _construirBarra(),
             Expanded(child: _construirContenido(state)),
           ],
@@ -99,20 +105,21 @@ class _BuscarAsistentePantallaState extends State<BuscarAsistentePantalla> {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: BarraBusquedaApp(
         controlador: _controladorBusqueda,
-        hintText:    'Buscar por nombre...',
-        alCambiar:   _onBusqueda,
+        hintText: 'Buscar por nombre...',
+        alCambiar: _onBusqueda,
       ),
     );
   }
 
   Widget _construirContenido(BuscarAsistenteEstado state) => switch (state) {
-    BuscarAsistenteInicial()          => const _EstadoInstruccion(),
-    BuscarAsistenteCargando()         => const Center(child: CircularProgressIndicator(color: ColoresApp.acento)),
-    BuscarAsistenteCargado()          => _ListaResultados(estado: state),
-    BuscarAsistenteOperacionFallida() => _ListaResultados(estado: state.anterior),
-    BuscarAsistenteError()            => VistaErrorApp(mensaje: state.mensaje),
-  };
-
+        BuscarAsistenteInicial() => const _EstadoInstruccion(),
+        BuscarAsistenteCargando() => const Center(
+            child: CircularProgressIndicator(color: ColoresApp.acento)),
+        BuscarAsistenteCargado() => _ListaResultados(estado: state),
+        BuscarAsistenteOperacionFallida() =>
+          _ListaResultados(estado: state.anterior),
+        BuscarAsistenteError() => VistaErrorApp(mensaje: state.mensaje),
+      };
 }
 
 // ─── Encabezado ───────────────────────────────────────────────────────────────
@@ -130,9 +137,10 @@ class _CabeceraTitulo extends StatelessWidget {
         Text(
           'Marcar asistencia',
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontSize: 20, fontWeight: FontWeight.w700,
-            color: ColoresApp.textoPrimario,
-          ),
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: ColoresApp.textoPrimario,
+              ),
         ),
       ],
     );
@@ -148,7 +156,7 @@ class _ListaResultados extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (estado.busqueda.trim().length < 2) return const _EstadoInstruccion();
-    if (estado.resultados.isEmpty)         return const _EstadoSinResultados();
+    if (estado.resultados.isEmpty) return const _EstadoSinResultados();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -157,20 +165,22 @@ class _ListaResultados extends StatelessWidget {
           child: Text(
             'RESULTADOS',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: ColoresApp.textoSecundario, fontWeight: FontWeight.w800,
-              letterSpacing: 0.8, fontSize: 11,
-            ),
+                  color: ColoresApp.textoSecundario,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.8,
+                  fontSize: 11,
+                ),
           ),
         ),
         Expanded(
           child: ListView.builder(
-            padding:     const EdgeInsets.fromLTRB(16, 0, 16, 32),
-            itemCount:   estado.resultados.length,
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
+            itemCount: estado.resultados.length,
             itemBuilder: (context, i) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: _TarjetaResultado(
-                resultado:  estado.resultados[i],
-                evento:     estado.evento,
+                resultado: estado.resultados[i],
+                evento: estado.evento,
                 cargandoId: estado.usuarioIdRegistrando,
               ),
             ),
@@ -190,55 +200,65 @@ class _TarjetaResultado extends StatelessWidget {
     this.cargandoId,
   });
   final ResultadoBusqueda resultado;
-  final Evento            evento;
-  final String?           cargandoId;
+  final Evento evento;
+  final String? cargandoId;
 
   @override
   Widget build(BuildContext context) {
-    final cubit      = context.read<BuscarAsistenteCubit>();
+    final cubit = context.read<BuscarAsistenteCubit>();
     final estaCargando = cargandoId == resultado.usuarioId;
 
     if (resultado.esForaneo) {
       return TarjetaAsistente(
-        iniciales:      resultado.iniciales,
-        nombre:         resultado.nombre,
-        estatus:        resultado.estatus ?? EstatusAsistencia.presente,
-        detalle:        resultado.horaEntrada != null ? 'Entrada ${resultado.horaEntrada}' : null,
-        accionTrailing: _TrailingForaneo(estatus: resultado.estatus ?? EstatusAsistencia.presente),
+        iniciales: resultado.iniciales,
+        nombre: resultado.nombre,
+        estatus: resultado.estatus ?? EstatusAsistencia.presente,
+        detalle: resultado.horaEntrada != null
+            ? 'Entrada ${resultado.horaEntrada}'
+            : null,
+        accionTrailing: _TrailingForaneo(
+            estatus: resultado.estatus ?? EstatusAsistencia.presente),
       );
     }
 
     if (resultado.estaActivo) {
       return TarjetaAsistente(
-        iniciales:        resultado.iniciales,
-        nombre:           resultado.nombre,
-        estatus:          resultado.estatus!,
-        detalle:          resultado.horaEntrada != null
+        iniciales: resultado.iniciales,
+        nombre: resultado.nombre,
+        estatus: resultado.estatus!,
+        detalle: resultado.horaEntrada != null
             ? 'Entrada ${resultado.horaEntrada}'
             : resultado.numeroIdentificacion,
-        subtitulo:        resultado.registradoPorNombre != null
+        subtitulo: resultado.registradoPorNombre != null
             ? 'Reg. por: ${resultado.registradoPorNombre}'
             : null,
-        urlFoto:          resultado.urlFoto,
-        textoBoton:       evento.permiteSalidaAnticipada ? 'MARCAR SALIDA' : null,
-        varianteBoton:    VarianteBoton.rojo,
+        urlFoto: resultado.urlFoto,
+        textoBoton: evento.permiteSalidaAnticipada ? 'MARCAR SALIDA' : null,
+        varianteBoton: VarianteBoton.rojo,
         alPresionarBoton: evento.permiteSalidaAnticipada
-            ? () => _HojaMarcarSalida.mostrar(context,
-                resultado: resultado, evento: evento, cubit: cubit,)
+            ? () => _HojaMarcarSalida.mostrar(
+                  context,
+                  resultado: resultado,
+                  evento: evento,
+                  cubit: cubit,
+                )
             : null,
       );
     }
 
     return TarjetaAsistente(
-      iniciales:         resultado.iniciales,
-      nombre:            resultado.nombre,
-      estatus:           resultado.estatus ?? EstatusAsistencia.esperado,
-      detalle:           resultado.numeroIdentificacion,
-      urlFoto:           resultado.urlFoto,
-      accionTrailing:    resultado.esNoEsperado ? const InsigniaEstado(estatus: 'no_esperado') : null,
-      textoBoton:        'Registrar entrada',
+      iniciales: resultado.iniciales,
+      nombre: resultado.nombre,
+      estatus: resultado.estatus ?? EstatusAsistencia.esperado,
+      detalle: resultado.numeroIdentificacion,
+      urlFoto: resultado.urlFoto,
+      accionTrailing: resultado.esNoEsperado
+          ? const InsigniaEstado(estatus: 'no_esperado')
+          : null,
+      textoBoton: 'Registrar entrada',
       estaCargandoBoton: estaCargando,
-      alPresionarBoton:  estaCargando ? null : () => cubit.registrarEntrada(resultado),
+      alPresionarBoton:
+          estaCargando ? null : () => cubit.registrarEntrada(resultado),
     );
   }
 }
@@ -251,16 +271,23 @@ class _TrailingForaneo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
-      mainAxisSize:       MainAxisSize.min,
+      mainAxisSize: MainAxisSize.min,
       children: [
         InsigniaEstado(estatus: estatus),
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(color: ColoresApp.tealClaro, borderRadius: BorderRadius.circular(30)),
-          child: Text('Foráneo', style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: ColoresApp.teal, fontWeight: FontWeight.w700, fontSize: 11,
-          ),),
+          decoration: BoxDecoration(
+              color: ColoresApp.tealClaro,
+              borderRadius: BorderRadius.circular(30)),
+          child: Text(
+            'Foráneo',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: ColoresApp.teal,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 11,
+                ),
+          ),
         ),
       ],
     );
@@ -273,18 +300,18 @@ class _HojaMarcarSalida extends StatefulWidget {
   const _HojaMarcarSalida({required this.resultado, required this.evento});
 
   final ResultadoBusqueda resultado;
-  final Evento            evento;
+  final Evento evento;
 
   static void mostrar(
     BuildContext context, {
-    required ResultadoBusqueda    resultado,
-    required Evento               evento,
+    required ResultadoBusqueda resultado,
+    required Evento evento,
     required BuscarAsistenteCubit cubit,
   }) {
     showModalBottomSheet<void>(
-      context:            context,
+      context: context,
       isScrollControlled: true,
-      backgroundColor:    Colors.transparent,
+      backgroundColor: Colors.transparent,
       builder: (_) => BlocProvider.value(
         value: cubit,
         child: _HojaMarcarSalida(resultado: resultado, evento: evento),
@@ -297,9 +324,9 @@ class _HojaMarcarSalida extends StatefulWidget {
 }
 
 class _HojaMarcarSalidaState extends State<_HojaMarcarSalida> {
-  bool  _esAnticipada = false;
-  final _motivoCtrl   = TextEditingController();
-  bool  _estaEnviado  = false;
+  bool _esAnticipada = false;
+  final _motivoCtrl = TextEditingController();
+  bool _estaEnviado = false;
 
   @override
   void dispose() {
@@ -309,7 +336,7 @@ class _HojaMarcarSalidaState extends State<_HojaMarcarSalida> {
 
   String _subtitulo() {
     final partes = <String>[widget.resultado.nombre];
-    final hora   = widget.resultado.horaEntrada;
+    final hora = widget.resultado.horaEntrada;
     if (hora != null) partes.add(hora);
     final mins = _minutosAntesCierre();
     if (mins != null) partes.add('$mins min antes del cierre');
@@ -321,9 +348,10 @@ class _HojaMarcarSalidaState extends State<_HojaMarcarSalida> {
     if (horaFin == null) return null;
     final p = horaFin.split(':');
     if (p.length < 2) return null;
-    final h    = int.tryParse(p[0]) ?? 0;
-    final m    = int.tryParse(p[1]) ?? 0;
-    final base = widget.evento.fechaFin ?? widget.evento.fechaInicio ?? DateTime.now();
+    final h = int.tryParse(p[0]) ?? 0;
+    final m = int.tryParse(p[1]) ?? 0;
+    final base =
+        widget.evento.fechaFin ?? widget.evento.fechaInicio ?? DateTime.now();
     final diff = DateTime(base.year, base.month, base.day, h, m)
         .difference(DateTime.now())
         .inMinutes;
@@ -334,10 +362,10 @@ class _HojaMarcarSalidaState extends State<_HojaMarcarSalida> {
     if (_esAnticipada && _motivoCtrl.text.trim().isEmpty) return;
     setState(() => _estaEnviado = true);
     ctx.read<BuscarAsistenteCubit>().marcarSalida(
-      asistenciaId: widget.resultado.asistenciaId!,
-      esAnticipada: _esAnticipada,
-      motivo:       _esAnticipada ? _motivoCtrl.text.trim() : null,
-    );
+          asistenciaId: widget.resultado.asistenciaId!,
+          esAnticipada: _esAnticipada,
+          motivo: _esAnticipada ? _motivoCtrl.text.trim() : null,
+        );
   }
 
   @override
@@ -345,18 +373,22 @@ class _HojaMarcarSalidaState extends State<_HojaMarcarSalida> {
     return BlocConsumer<BuscarAsistenteCubit, BuscarAsistenteEstado>(
       listener: (ctx, state) {
         if (!_estaEnviado) return;
-        if (state is BuscarAsistenteCargado && !state.estaMarcandoSalida) Navigator.of(ctx).pop();
-        if (state is BuscarAsistenteOperacionFallida) setState(() => _estaEnviado = false);
+        if (state is BuscarAsistenteCargado && !state.estaMarcandoSalida)
+          Navigator.of(ctx).pop();
+        if (state is BuscarAsistenteOperacionFallida)
+          setState(() => _estaEnviado = false);
       },
       builder: (ctx, state) {
-        final guardando = _estaEnviado && state is BuscarAsistenteCargado && state.estaMarcandoSalida;
+        final guardando = _estaEnviado &&
+            state is BuscarAsistenteCargado &&
+            state.estaMarcandoSalida;
         return _CuerpoHojaSalida(
-          subtitulo:          _subtitulo(),
-          esAnticipada:       _esAnticipada,
-          motivoCtrl:         _motivoCtrl,
-          guardando:          guardando,
+          subtitulo: _subtitulo(),
+          esAnticipada: _esAnticipada,
+          motivoCtrl: _motivoCtrl,
+          guardando: guardando,
           onToggleAnticipada: (val) => setState(() => _esAnticipada = val),
-          onConfirmar:        () => _confirmar(ctx),
+          onConfirmar: () => _confirmar(ctx),
         );
       },
     );
@@ -373,25 +405,26 @@ class _CuerpoHojaSalida extends StatelessWidget {
     required this.onConfirmar,
   });
 
-  final String                subtitulo;
-  final bool                  esAnticipada;
+  final String subtitulo;
+  final bool esAnticipada;
   final TextEditingController motivoCtrl;
-  final bool                  guardando;
-  final void Function(bool)   onToggleAnticipada;
-  final VoidCallback          onConfirmar;
+  final bool guardando;
+  final void Function(bool) onToggleAnticipada;
+  final VoidCallback onConfirmar;
 
   Widget _construirEncabezadoSalida(TextTheme texto) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          width:  44,
+          width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color:        ColoresApp.ambarClaro,
+            color: ColoresApp.ambarClaro,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Icon(Icons.warning_amber_rounded, color: ColoresApp.ambar, size: 24),
+          child: const Icon(Icons.warning_amber_rounded,
+              color: ColoresApp.ambar, size: 24),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -402,7 +435,9 @@ class _CuerpoHojaSalida extends StatelessWidget {
                 esAnticipada ? 'Salida anticipada' : 'Marcar salida',
                 style: texto.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
-              Text(subtitulo, style: texto.bodySmall?.copyWith(color: ColoresApp.textoSecundario)),
+              Text(subtitulo,
+                  style: texto.bodySmall
+                      ?.copyWith(color: ColoresApp.textoSecundario)),
             ],
           ),
         ),
@@ -417,12 +452,12 @@ class _CuerpoHojaSalida extends StatelessWidget {
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: Container(
         decoration: const BoxDecoration(
-          color:        ColoresApp.superficiePrimaria,
+          color: ColoresApp.superficiePrimaria,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
         child: Column(
-          mainAxisSize:       MainAxisSize.min,
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _construirEncabezadoSalida(texto),
@@ -430,25 +465,27 @@ class _CuerpoHojaSalida extends StatelessWidget {
             Text(
               '¿CÓMO REGISTRAR ESTA SALIDA?',
               style: texto.labelSmall?.copyWith(
-                color:         ColoresApp.textoSecundario,
-                fontWeight:    FontWeight.w800,
+                color: ColoresApp.textoSecundario,
+                fontWeight: FontWeight.w800,
                 letterSpacing: 0.8,
-                fontSize:      11,
+                fontSize: 11,
               ),
             ),
             const SizedBox(height: 10),
             _OpcionSalida(
-              titulo:       'Salida anticipada — con motivo',
-              descripcion:  "Se registra como 'Salió antes' con justificación obligatoria.",
+              titulo: 'Salida anticipada — con motivo',
+              descripcion:
+                  "Se registra como 'Salió antes' con justificación obligatoria.",
               seleccionada: esAnticipada,
-              onTap:        () => onToggleAnticipada(true),
+              onTap: () => onToggleAnticipada(true),
               extra: esAnticipada
                   ? Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: TextFormField(
                         controller: motivoCtrl,
                         decoration: const InputDecoration(
-                            hintText: 'Motivo de salida anticipada *',),
+                          hintText: 'Motivo de salida anticipada *',
+                        ),
                         maxLines: 2,
                       ),
                     )
@@ -456,15 +493,15 @@ class _CuerpoHojaSalida extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             _OpcionSalida(
-              titulo:       'Salida normal — sin motivo',
-              descripcion:  'Se registra sin observación adicional.',
+              titulo: 'Salida normal — sin motivo',
+              descripcion: 'Se registra sin observación adicional.',
               seleccionada: !esAnticipada,
-              onTap:        () => onToggleAnticipada(false),
+              onTap: () => onToggleAnticipada(false),
             ),
             const SizedBox(height: 20),
             BotonApp(
-              texto:        'Confirmar salida',
-              alPresionar:  guardando ? null : onConfirmar,
+              texto: 'Confirmar salida',
+              alPresionar: guardando ? null : onConfirmar,
               estaCargando: guardando,
             ),
             Center(
@@ -493,25 +530,25 @@ class _OpcionSalida extends StatelessWidget {
     this.extra,
   });
 
-  final String       titulo;
-  final String       descripcion;
-  final bool         seleccionada;
+  final String titulo;
+  final String descripcion;
+  final bool seleccionada;
   final VoidCallback onTap;
-  final Widget?      extra;
+  final Widget? extra;
 
   @override
   Widget build(BuildContext context) {
     final borderColor = seleccionada ? ColoresApp.ambar : ColoresApp.bordeMedio;
     return Material(
-      color:        Colors.transparent,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
-        onTap:        seleccionada ? null : onTap,
+        onTap: seleccionada ? null : onTap,
         borderRadius: BorderRadius.circular(14),
-        splashColor:  ColoresApp.ambarClaro,
+        splashColor: ColoresApp.ambarClaro,
         child: Ink(
           decoration: BoxDecoration(
-            color:        ColoresApp.superficiePrimaria,
+            color: ColoresApp.superficiePrimaria,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: borderColor,
@@ -523,7 +560,7 @@ class _OpcionSalida extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width:  18,
+                width: 18,
                 height: 18,
                 margin: const EdgeInsets.only(top: 2),
                 decoration: BoxDecoration(
@@ -540,16 +577,16 @@ class _OpcionSalida extends StatelessWidget {
                     Text(
                       titulo,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontSize:   14,
-                      ),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                          ),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       descripcion,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: ColoresApp.textoSecundario,
-                      ),
+                            color: ColoresApp.textoSecundario,
+                          ),
                     ),
                     if (extra != null) extra!,
                   ],
@@ -576,7 +613,10 @@ class _EstadoInstruccion extends StatelessWidget {
         child: Text(
           'Escribe al menos 2 caracteres\npara buscar.',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: ColoresApp.textoTerciario),
+          style: Theme.of(context)
+              .textTheme
+              .labelSmall
+              ?.copyWith(color: ColoresApp.textoTerciario),
         ),
       ),
     );
@@ -591,9 +631,11 @@ class _EstadoSinResultados extends StatelessWidget {
     return Center(
       child: Text(
         'Sin resultados.',
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: ColoresApp.textoTerciario),
+        style: Theme.of(context)
+            .textTheme
+            .labelSmall
+            ?.copyWith(color: ColoresApp.textoTerciario),
       ),
     );
   }
 }
-

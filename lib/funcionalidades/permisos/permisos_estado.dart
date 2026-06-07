@@ -29,7 +29,7 @@ final class PermisosCargados extends PermisosEstado {
 
   PermisosCargados copiarCon({List<Permiso>? permisosFiltrados}) =>
       PermisosCargados(
-        permisos:          permisos,
+        permisos: permisos,
         permisosFiltrados: permisosFiltrados ?? this.permisosFiltrados,
       );
 

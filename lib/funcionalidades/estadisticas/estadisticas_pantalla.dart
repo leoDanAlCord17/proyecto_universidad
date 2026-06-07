@@ -27,24 +27,27 @@ const _paleta = [
 ];
 
 Color _colorEstatus(String etiqueta) => switch (etiqueta) {
-      'Presente'    => ColoresApp.verde,
-      'Completado'  => ColoresApp.verde,
+      'Presente' => ColoresApp.verde,
+      'Completado' => ColoresApp.verde,
       'Salió antes' => ColoresApp.ambar,
-      'Ausente'     => ColoresApp.rojo,
-      'Esperado'    => ColoresApp.textoTerciario,
-      _             => ColoresApp.teal,
+      'Ausente' => ColoresApp.rojo,
+      'Esperado' => ColoresApp.textoTerciario,
+      _ => ColoresApp.teal,
     };
 
 Color _colorEstatusEvento(String etiqueta) => switch (etiqueta) {
       'Finalizado' => ColoresApp.verde,
-      'En curso'   => ColoresApp.acento,
+      'En curso' => ColoresApp.acento,
       'Programado' => ColoresApp.ambar,
-      'Cancelado'  => ColoresApp.rojo,
-      _            => ColoresApp.textoTerciario,
+      'Cancelado' => ColoresApp.rojo,
+      _ => ColoresApp.textoTerciario,
     };
 
-Color _colorTasa(double tasa) =>
-    tasa >= 75 ? ColoresApp.verde : tasa >= 50 ? ColoresApp.ambar : ColoresApp.rojo;
+Color _colorTasa(double tasa) => tasa >= 75
+    ? ColoresApp.verde
+    : tasa >= 50
+        ? ColoresApp.ambar
+        : ColoresApp.rojo;
 
 // ─── Pantalla principal ───────────────────────────────────────────────────────
 
@@ -75,14 +78,14 @@ class _EstadisticasPantallaState extends State<EstadisticasPantalla> {
 
   void _abrirFiltros(OpcionesFiltros opciones) {
     showModalBottomSheet<FiltrosEstadisticas>(
-      context:            context,
-      useRootNavigator:   true,
+      context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
-      backgroundColor:    Colors.transparent,
-      barrierColor:       ColoresApp.sombraBarrera,
+      backgroundColor: Colors.transparent,
+      barrierColor: ColoresApp.sombraBarrera,
       builder: (_) => _PanelFiltros(
         filtrosActuales: _filtros,
-        opciones:        opciones,
+        opciones: opciones,
         alAplicar: (nuevos) {
           Navigator.of(context, rootNavigator: true).pop();
           setState(() => _filtros = nuevos);
@@ -94,18 +97,18 @@ class _EstadisticasPantallaState extends State<EstadisticasPantalla> {
 
   void _abrirDetalle(String dimension, DatoGrafica dato) {
     showModalBottomSheet<void>(
-      context:            context,
-      useRootNavigator:   true,
+      context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
-      backgroundColor:    Colors.transparent,
-      barrierColor:       ColoresApp.sombraBarrera,
+      backgroundColor: Colors.transparent,
+      barrierColor: ColoresApp.sombraBarrera,
       builder: (_) => BlocProvider.value(
         value: context.read<EstadisticasCubit>(),
         child: _ModalDetalle(
-          titulo:    dato.etiqueta,
+          titulo: dato.etiqueta,
           dimension: dimension,
-          valor:     dato.valorSql ?? dato.etiqueta,
-          filtros:   _filtros,
+          valor: dato.valorSql ?? dato.etiqueta,
+          filtros: _filtros,
         ),
       ),
     );
@@ -119,7 +122,8 @@ class _EstadisticasPantallaState extends State<EstadisticasPantalla> {
 
   void _quitarFiltroTipo(OpcionFiltro opcion) {
     final nuevos = _filtros.copyWith(
-      tiposSeleccionados: _filtros.tiposSeleccionados.where((o) => o.id != opcion.id).toList(),
+      tiposSeleccionados:
+          _filtros.tiposSeleccionados.where((o) => o.id != opcion.id).toList(),
     );
     setState(() => _filtros = nuevos);
     context.read<EstadisticasCubit>().cargar(nuevos);
@@ -127,7 +131,9 @@ class _EstadisticasPantallaState extends State<EstadisticasPantalla> {
 
   void _quitarFiltroCreador(OpcionFiltro opcion) {
     final nuevos = _filtros.copyWith(
-      creadoresSeleccionados: _filtros.creadoresSeleccionados.where((o) => o.id != opcion.id).toList(),
+      creadoresSeleccionados: _filtros.creadoresSeleccionados
+          .where((o) => o.id != opcion.id)
+          .toList(),
     );
     setState(() => _filtros = nuevos);
     context.read<EstadisticasCubit>().cargar(nuevos);
@@ -135,7 +141,8 @@ class _EstadisticasPantallaState extends State<EstadisticasPantalla> {
 
   void _quitarFiltroTag(OpcionFiltro opcion) {
     final nuevos = _filtros.copyWith(
-      tagsSeleccionados: _filtros.tagsSeleccionados.where((o) => o.id != opcion.id).toList(),
+      tagsSeleccionados:
+          _filtros.tagsSeleccionados.where((o) => o.id != opcion.id).toList(),
     );
     setState(() => _filtros = nuevos);
     context.read<EstadisticasCubit>().cargar(nuevos);
@@ -146,9 +153,9 @@ class _EstadisticasPantallaState extends State<EstadisticasPantalla> {
     return BlocBuilder<EstadisticasCubit, EstadisticasEstado>(
       builder: (context, estado) => AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
-          statusBarColor:          Colors.transparent,
+          statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness:     Brightness.light,
+          statusBarBrightness: Brightness.light,
         ),
         child: Scaffold(
           backgroundColor: ColoresApp.fondo,
@@ -157,13 +164,13 @@ class _EstadisticasPantallaState extends State<EstadisticasPantalla> {
               SafeArea(
                 bottom: false,
                 child: _BarraTitulo(
-                  filtros:    _filtros,
-                  alFiltrar:  () => _abrirFiltros(
+                  filtros: _filtros,
+                  alFiltrar: () => _abrirFiltros(
                     estado is EstadisticasCargadas
                         ? estado.opciones
                         : OpcionesFiltros.vacio(),
                   ),
-                  alLimpiar:  _limpiarFiltros,
+                  alLimpiar: _limpiarFiltros,
                 ),
               ),
               Expanded(child: _construirCuerpo(estado)),
@@ -179,15 +186,16 @@ class _EstadisticasPantallaState extends State<EstadisticasPantalla> {
             child: CircularProgressIndicator(color: ColoresApp.acento),
           ),
         EstadisticasCargadas() => _CuerpoEstadisticas(
-            datos:           estado,
-            onDetalle:       _abrirDetalle,
-            onQuitarTipo:    _quitarFiltroTipo,
+            datos: estado,
+            onDetalle: _abrirDetalle,
+            onQuitarTipo: _quitarFiltroTipo,
             onQuitarCreador: _quitarFiltroCreador,
-            onQuitarTag:     _quitarFiltroTag,
+            onQuitarTag: _quitarFiltroTag,
           ),
         final EstadisticasError e => _VistaError(
-            mensaje:      e.mensaje,
-            alReintentar: () => context.read<EstadisticasCubit>().cargar(_filtros),
+            mensaje: e.mensaje,
+            alReintentar: () =>
+                context.read<EstadisticasCubit>().cargar(_filtros),
           ),
       };
 }
@@ -202,8 +210,8 @@ class _BarraTitulo extends StatelessWidget {
   });
 
   final FiltrosEstadisticas filtros;
-  final VoidCallback         alFiltrar;
-  final VoidCallback         alLimpiar;
+  final VoidCallback alFiltrar;
+  final VoidCallback alLimpiar;
 
   @override
   Widget build(BuildContext context) {
@@ -216,21 +224,21 @@ class _BarraTitulo extends StatelessWidget {
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize:       MainAxisSize.min,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 'Estadísticas',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontSize:   20,
-                  fontWeight: FontWeight.w700,
-                ),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
               ),
               Text(
                 filtros.etiquetaRango,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color:      ColoresApp.acento,
-                  fontWeight: FontWeight.w600,
-                ),
+                      color: ColoresApp.acento,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
             ],
           ),
@@ -241,44 +249,55 @@ class _BarraTitulo extends StatelessWidget {
         children: [
           if (totalActivos > 0) ...[
             Material(
-              color:        ColoresApp.rojoClaro,
+              color: ColoresApp.rojoClaro,
               borderRadius: BorderRadius.circular(10),
               child: InkWell(
-                onTap:        alLimpiar,
+                onTap: alLimpiar,
                 borderRadius: BorderRadius.circular(10),
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                  child: Icon(Icons.filter_alt_off_rounded, color: ColoresApp.rojo, size: 15),
+                  child: Icon(Icons.filter_alt_off_rounded,
+                      color: ColoresApp.rojo, size: 15),
                 ),
               ),
             ),
             const SizedBox(width: 6),
           ],
           Material(
-            color:        Colors.transparent,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             child: InkWell(
-              onTap:        alFiltrar,
+              onTap: alFiltrar,
               borderRadius: BorderRadius.circular(10),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color:        totalActivos > 0 ? ColoresApp.acento : ColoresApp.acentoClaro,
+                  color: totalActivos > 0
+                      ? ColoresApp.acento
+                      : ColoresApp.acentoClaro,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.tune_rounded,
-                      color: totalActivos > 0 ? ColoresApp.blanco : ColoresApp.acento, size: 15,),
+                    Icon(
+                      Icons.tune_rounded,
+                      color: totalActivos > 0
+                          ? ColoresApp.blanco
+                          : ColoresApp.acento,
+                      size: 15,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       totalActivos > 0 ? 'Filtros ($totalActivos)' : 'Filtros',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color:      totalActivos > 0 ? ColoresApp.blanco : ColoresApp.acento,
-                        fontWeight: FontWeight.w700,
-                        fontSize:   12,
-                      ),
+                            color: totalActivos > 0
+                                ? ColoresApp.blanco
+                                : ColoresApp.acento,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
                     ),
                   ],
                 ),
@@ -302,11 +321,11 @@ class _CuerpoEstadisticas extends StatelessWidget {
     required this.onQuitarTag,
   });
 
-  final EstadisticasCargadas               datos;
+  final EstadisticasCargadas datos;
   final void Function(String, DatoGrafica) onDetalle;
-  final ValueChanged<OpcionFiltro>         onQuitarTipo;
-  final ValueChanged<OpcionFiltro>         onQuitarCreador;
-  final ValueChanged<OpcionFiltro>         onQuitarTag;
+  final ValueChanged<OpcionFiltro> onQuitarTipo;
+  final ValueChanged<OpcionFiltro> onQuitarCreador;
+  final ValueChanged<OpcionFiltro> onQuitarTag;
 
   @override
   Widget build(BuildContext context) {
@@ -317,10 +336,10 @@ class _CuerpoEstadisticas extends StatelessWidget {
         children: [
           if (datos.filtros.tieneFiltrosActivos) ...[
             _ChipsFiltrosActivos(
-              filtros:         datos.filtros,
-              onQuitarTipo:    onQuitarTipo,
+              filtros: datos.filtros,
+              onQuitarTipo: onQuitarTipo,
               onQuitarCreador: onQuitarCreador,
-              onQuitarTag:     onQuitarTag,
+              onQuitarTag: onQuitarTag,
             ),
             const SizedBox(height: 12),
           ],
@@ -333,146 +352,147 @@ class _CuerpoEstadisticas extends StatelessWidget {
   }
 
   List<Widget> _seccionSuperior(BuildContext context) => [
-    Material(
-      color:        Colors.transparent,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap:        () => context.push(Rutas.auditoriaEvento),
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          width:   double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            color:        ColoresApp.tealClaro,
+        Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap: () => context.push(Rutas.auditoriaEvento),
             borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.manage_search_rounded, color: ColoresApp.teal, size: 18),
-              const SizedBox(width: 8),
-              Text(
-                'Auditoría por evento',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color:      ColoresApp.teal,
-                  fontWeight: FontWeight.w700,
-                ),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: ColoresApp.tealClaro,
+                borderRadius: BorderRadius.circular(12),
               ),
-            ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.manage_search_rounded,
+                      color: ColoresApp.teal, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Auditoría por evento',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: ColoresApp.teal,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
-      ),
-    ),
-    const SizedBox(height: 10),
-    _SeccionKpis(resumen: datos.resumen),
-    const SizedBox(height: 12),
-    _TarjetaGrafica(
-      titulo:    'Embudo de asistencia',
-      subtitulo: 'Conversión de convocados a completados',
-      child: _GraficaEmbudo(porEstatus: datos.porEstatus),
-    ),
-    const SizedBox(height: 16),
-    _SeccionEstadoEventos(estadoEventos: datos.estadoEventos),
-    const SizedBox(height: 16),
-    _TarjetaGrafica(
-      titulo:    'Tendencia mensual',
-      subtitulo: 'Volumen de eventos y tasa de asistencia por mes',
-      altura:    220,
-      child: _GraficaTendenciaDual(
-        datos:  datos.tendenciaDual,
-        onTap: (d) => onDetalle('mes', d),
-      ),
-    ),
-    const SizedBox(height: 16),
-    if (datos.composicionMensual.isNotEmpty) ...[
-      _TarjetaGrafica(
-        titulo:    'Composición por tipo',
-        subtitulo: 'Distribución de tipos de evento por mes',
-        altura:    240,
-        child: _GraficaComposicion(
-          datos:  datos.composicionMensual,
-          onTap: (d) => onDetalle('mes', d),
+        const SizedBox(height: 10),
+        _SeccionKpis(resumen: datos.resumen),
+        const SizedBox(height: 12),
+        _TarjetaGrafica(
+          titulo: 'Embudo de asistencia',
+          subtitulo: 'Conversión de convocados a completados',
+          child: _GraficaEmbudo(porEstatus: datos.porEstatus),
         ),
-      ),
-      const SizedBox(height: 16),
-    ],
-  ];
+        const SizedBox(height: 16),
+        _SeccionEstadoEventos(estadoEventos: datos.estadoEventos),
+        const SizedBox(height: 16),
+        _TarjetaGrafica(
+          titulo: 'Tendencia mensual',
+          subtitulo: 'Volumen de eventos y tasa de asistencia por mes',
+          altura: 220,
+          child: _GraficaTendenciaDual(
+            datos: datos.tendenciaDual,
+            onTap: (d) => onDetalle('mes', d),
+          ),
+        ),
+        const SizedBox(height: 16),
+        if (datos.composicionMensual.isNotEmpty) ...[
+          _TarjetaGrafica(
+            titulo: 'Composición por tipo',
+            subtitulo: 'Distribución de tipos de evento por mes',
+            altura: 240,
+            child: _GraficaComposicion(
+              datos: datos.composicionMensual,
+              onTap: (d) => onDetalle('mes', d),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+      ];
 
   List<Widget> _seccionMedia() => [
-    _TarjetaGrafica(
-      titulo:    'Por tipo de evento',
-      subtitulo: 'Distribución según categoría',
-      altura:    220,
-      child: _GraficaDonut(
-        datos:  datos.porTipo,
-        onTap: (d) => onDetalle('tipo', d),
-      ),
-    ),
-    const SizedBox(height: 16),
-    if (datos.tasaPorTipo.isNotEmpty) ...[
-      _TarjetaGrafica(
-        titulo:    'Calidad por tipo de evento',
-        subtitulo: 'Tasa de asistencia según categoría',
-        child: _GraficaTasaPorTipo(datos: datos.tasaPorTipo),
-      ),
-      const SizedBox(height: 16),
-    ],
-    _TarjetaGrafica(
-      titulo:    'Asistencia por estatus',
-      subtitulo: 'Toca una barra para ver los eventos',
-      altura:    200,
-      child: _GraficaBarrasEstatus(
-        datos:  datos.porEstatus,
-        onTap: (d) => onDetalle('estatus_asistencia', d),
-      ),
-    ),
-    const SizedBox(height: 16),
-    _SeccionPorCreador(
-      porCreador: datos.porCreador,
-      onTap: (d) => onDetalle('creador', d.toDatoGrafica()),
-    ),
-    const SizedBox(height: 16),
-    if (datos.topAsistentes.isNotEmpty) ...[
-      _SeccionTopAsistentes(datos: datos.topAsistentes),
-      const SizedBox(height: 16),
-    ],
-  ];
+        _TarjetaGrafica(
+          titulo: 'Por tipo de evento',
+          subtitulo: 'Distribución según categoría',
+          altura: 220,
+          child: _GraficaDonut(
+            datos: datos.porTipo,
+            onTap: (d) => onDetalle('tipo', d),
+          ),
+        ),
+        const SizedBox(height: 16),
+        if (datos.tasaPorTipo.isNotEmpty) ...[
+          _TarjetaGrafica(
+            titulo: 'Calidad por tipo de evento',
+            subtitulo: 'Tasa de asistencia según categoría',
+            child: _GraficaTasaPorTipo(datos: datos.tasaPorTipo),
+          ),
+          const SizedBox(height: 16),
+        ],
+        _TarjetaGrafica(
+          titulo: 'Asistencia por estatus',
+          subtitulo: 'Toca una barra para ver los eventos',
+          altura: 200,
+          child: _GraficaBarrasEstatus(
+            datos: datos.porEstatus,
+            onTap: (d) => onDetalle('estatus_asistencia', d),
+          ),
+        ),
+        const SizedBox(height: 16),
+        _SeccionPorCreador(
+          porCreador: datos.porCreador,
+          onTap: (d) => onDetalle('creador', d.toDatoGrafica()),
+        ),
+        const SizedBox(height: 16),
+        if (datos.topAsistentes.isNotEmpty) ...[
+          _SeccionTopAsistentes(datos: datos.topAsistentes),
+          const SizedBox(height: 16),
+        ],
+      ];
 
   List<Widget> _seccionInferior() => [
-    _TarjetaGrafica(
-      titulo:    'Actividad por día',
-      subtitulo: 'Asistentes presentes según día de semana',
-      altura:    180,
-      child: _GraficaBarrasDia(
-        datos:  datos.porDiaSemana,
-        onTap: (d) => onDetalle('dia_semana', d),
-      ),
-    ),
-    const SizedBox(height: 16),
-    if (datos.heatmapHora.isNotEmpty) ...[
-      _TarjetaGrafica(
-        titulo:    'Horario de asistencia',
-        subtitulo: 'Entradas registradas por hora y día de semana',
-        child: _GraficaHeatmap(datos: datos.heatmapHora),
-      ),
-      const SizedBox(height: 16),
-    ],
-    _TarjetaGrafica(
-      titulo:    'Escala de eventos',
-      subtitulo: 'Distribución por número de asistentes',
-      altura:    180,
-      child: _GraficaEscala(datos: datos.escalaPorTamano),
-    ),
-    const SizedBox(height: 16),
-    if (datos.topTags.isNotEmpty) ...[
-      _SeccionTopTags(
-        datos:  datos.topTags,
-        onTap: (d) => onDetalle('tipo', d),
-      ),
-      const SizedBox(height: 16),
-    ],
-    _SeccionTopEventos(topEventos: datos.topEventos),
-  ];
+        _TarjetaGrafica(
+          titulo: 'Actividad por día',
+          subtitulo: 'Asistentes presentes según día de semana',
+          altura: 180,
+          child: _GraficaBarrasDia(
+            datos: datos.porDiaSemana,
+            onTap: (d) => onDetalle('dia_semana', d),
+          ),
+        ),
+        const SizedBox(height: 16),
+        if (datos.heatmapHora.isNotEmpty) ...[
+          _TarjetaGrafica(
+            titulo: 'Horario de asistencia',
+            subtitulo: 'Entradas registradas por hora y día de semana',
+            child: _GraficaHeatmap(datos: datos.heatmapHora),
+          ),
+          const SizedBox(height: 16),
+        ],
+        _TarjetaGrafica(
+          titulo: 'Escala de eventos',
+          subtitulo: 'Distribución por número de asistentes',
+          altura: 180,
+          child: _GraficaEscala(datos: datos.escalaPorTamano),
+        ),
+        const SizedBox(height: 16),
+        if (datos.topTags.isNotEmpty) ...[
+          _SeccionTopTags(
+            datos: datos.topTags,
+            onTap: (d) => onDetalle('tipo', d),
+          ),
+          const SizedBox(height: 16),
+        ],
+        _SeccionTopEventos(topEventos: datos.topEventos),
+      ];
 }
 
 // ─── Chips de filtros activos ─────────────────────────────────────────────────
@@ -485,7 +505,7 @@ class _ChipsFiltrosActivos extends StatelessWidget {
     required this.onQuitarTag,
   });
 
-  final FiltrosEstadisticas    filtros;
+  final FiltrosEstadisticas filtros;
   final ValueChanged<OpcionFiltro> onQuitarTipo;
   final ValueChanged<OpcionFiltro> onQuitarCreador;
   final ValueChanged<OpcionFiltro> onQuitarTag;
@@ -493,20 +513,33 @@ class _ChipsFiltrosActivos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 8, runSpacing: 6,
+      spacing: 8,
+      runSpacing: 6,
       children: [
         for (final o in filtros.tiposSeleccionados)
-          _ChipFiltro(prefijo: 'Tipo',    nombre: o.nombre,
-            color: ColoresApp.acento, fondo: ColoresApp.acentoClaro,
-            alQuitar: () => onQuitarTipo(o),),
+          _ChipFiltro(
+            prefijo: 'Tipo',
+            nombre: o.nombre,
+            color: ColoresApp.acento,
+            fondo: ColoresApp.acentoClaro,
+            alQuitar: () => onQuitarTipo(o),
+          ),
         for (final o in filtros.creadoresSeleccionados)
-          _ChipFiltro(prefijo: 'Creador', nombre: o.nombre,
-            color: ColoresApp.teal, fondo: ColoresApp.tealClaro,
-            alQuitar: () => onQuitarCreador(o),),
+          _ChipFiltro(
+            prefijo: 'Creador',
+            nombre: o.nombre,
+            color: ColoresApp.teal,
+            fondo: ColoresApp.tealClaro,
+            alQuitar: () => onQuitarCreador(o),
+          ),
         for (final o in filtros.tagsSeleccionados)
-          _ChipFiltro(prefijo: 'Tag',     nombre: o.nombre,
-            color: ColoresApp.ambar, fondo: ColoresApp.ambarClaro,
-            alQuitar: () => onQuitarTag(o),),
+          _ChipFiltro(
+            prefijo: 'Tag',
+            nombre: o.nombre,
+            color: ColoresApp.ambar,
+            fondo: ColoresApp.ambarClaro,
+            alQuitar: () => onQuitarTag(o),
+          ),
       ],
     );
   }
@@ -521,10 +554,10 @@ class _ChipFiltro extends StatelessWidget {
     required this.alQuitar,
   });
 
-  final String       prefijo;
-  final String       nombre;
-  final Color        color;
-  final Color        fondo;
+  final String prefijo;
+  final String nombre;
+  final Color color;
+  final Color fondo;
   final VoidCallback alQuitar;
 
   @override
@@ -532,23 +565,31 @@ class _ChipFiltro extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.only(left: 10, right: 4, top: 5, bottom: 5),
       decoration: BoxDecoration(
-        color:        fondo,
+        color: fondo,
         borderRadius: BorderRadius.circular(20),
-        border:       Border.all(color: color.withValues(alpha: 0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('$prefijo: ',
-            style: TextStyle(fontSize: 12, color: color.withValues(alpha: 0.7), fontWeight: FontWeight.w500),),
-          Text(nombre,
-            style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w700),),
+          Text(
+            '$prefijo: ',
+            style: TextStyle(
+                fontSize: 12,
+                color: color.withValues(alpha: 0.7),
+                fontWeight: FontWeight.w500),
+          ),
+          Text(
+            nombre,
+            style: TextStyle(
+                fontSize: 12, color: color, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(width: 4),
           Material(
-            color:        Colors.transparent,
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(12),
             child: InkWell(
-              onTap:        alQuitar,
+              onTap: alQuitar,
               borderRadius: BorderRadius.circular(12),
               child: Padding(
                 padding: const EdgeInsets.all(4),
@@ -572,25 +613,53 @@ class _SeccionKpis extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(children: [
-          Expanded(child: _TarjetaKpi(icono: Icons.event_outlined,
-            valor: '${resumen.totalEventos}', label: 'Eventos',
-            color: ColoresApp.acento, fondo: ColoresApp.acentoClaro,),),
-          const SizedBox(width: 12),
-          Expanded(child: _TarjetaKpi(icono: Icons.people_outline_rounded,
-            valor: '${resumen.totalAsistencias}', label: 'Asistencias',
-            color: ColoresApp.verde, fondo: ColoresApp.verdeClaro,),),
-        ],),
+        Row(
+          children: [
+            Expanded(
+              child: _TarjetaKpi(
+                icono: Icons.event_outlined,
+                valor: '${resumen.totalEventos}',
+                label: 'Eventos',
+                color: ColoresApp.acento,
+                fondo: ColoresApp.acentoClaro,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _TarjetaKpi(
+                icono: Icons.people_outline_rounded,
+                valor: '${resumen.totalAsistencias}',
+                label: 'Asistencias',
+                color: ColoresApp.verde,
+                fondo: ColoresApp.verdeClaro,
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 12),
-        Row(children: [
-          Expanded(child: _TarjetaKpi(icono: Icons.percent_rounded,
-            valor: '${resumen.tasaAsistencia.toStringAsFixed(1)}%', label: 'Tasa asistencia',
-            color: ColoresApp.ambar, fondo: ColoresApp.ambarClaro,),),
-          const SizedBox(width: 12),
-          Expanded(child: _TarjetaKpi(icono: Icons.person_outline_rounded,
-            valor: '${resumen.usuariosActivos}', label: 'Usuarios activos',
-            color: ColoresApp.teal, fondo: ColoresApp.tealClaro,),),
-        ],),
+        Row(
+          children: [
+            Expanded(
+              child: _TarjetaKpi(
+                icono: Icons.percent_rounded,
+                valor: '${resumen.tasaAsistencia.toStringAsFixed(1)}%',
+                label: 'Tasa asistencia',
+                color: ColoresApp.ambar,
+                fondo: ColoresApp.ambarClaro,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _TarjetaKpi(
+                icono: Icons.person_outline_rounded,
+                valor: '${resumen.usuariosActivos}',
+                label: 'Usuarios activos',
+                color: ColoresApp.teal,
+                fondo: ColoresApp.tealClaro,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -606,37 +675,52 @@ class _TarjetaKpi extends StatelessWidget {
   });
 
   final IconData icono;
-  final String   valor;
-  final String   label;
-  final Color    color;
-  final Color    fondo;
+  final String valor;
+  final String label;
+  final Color color;
+  final Color fondo;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 8, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 8,
+              offset: Offset(0, 2))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize:        MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 40, height: 40,
-            decoration: BoxDecoration(color: fondo, borderRadius: BorderRadius.circular(10)),
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+                color: fondo, borderRadius: BorderRadius.circular(10)),
             child: Icon(icono, color: color, size: 20),
           ),
           const SizedBox(height: 10),
-          Text(valor, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontSize: 22, fontWeight: FontWeight.w800, color: ColoresApp.textoPrimario,
-          ),),
+          Text(
+            valor,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: ColoresApp.textoPrimario,
+                ),
+          ),
           const SizedBox(height: 2),
-          Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: ColoresApp.textoTerciario,
-          ),),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: ColoresApp.textoTerciario,
+                ),
+          ),
         ],
       ),
     );
@@ -653,20 +737,25 @@ class _TarjetaGrafica extends StatelessWidget {
     this.altura,
   });
 
-  final String  titulo;
+  final String titulo;
   final String? subtitulo;
-  final Widget  child;
+  final Widget child;
   final double? altura;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:   double.infinity,
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 8, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 8,
+              offset: Offset(0, 2))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -674,9 +763,12 @@ class _TarjetaGrafica extends StatelessWidget {
           Text(titulo, style: Theme.of(context).textTheme.headlineSmall),
           if (subtitulo != null) ...[
             const SizedBox(height: 2),
-            Text(subtitulo!, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: ColoresApp.textoTerciario,
-            ),),
+            Text(
+              subtitulo!,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: ColoresApp.textoTerciario,
+                  ),
+            ),
           ],
           const SizedBox(height: 16),
           altura != null ? SizedBox(height: altura!, child: child) : child,
@@ -700,17 +792,33 @@ class _GraficaEmbudo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _FilaEmbudo(etiqueta: 'Convocados',  cantidad: m.total,       pct: 1.0,
-            color: ColoresApp.acento,),
+        _FilaEmbudo(
+          etiqueta: 'Convocados',
+          cantidad: m.total,
+          pct: 1.0,
+          color: ColoresApp.acento,
+        ),
         const SizedBox(height: 10),
-        _FilaEmbudo(etiqueta: 'Llegaron',    cantidad: m.llegaron,    pct: m.total == 0 ? 0 : m.llegaron / m.total,
-            color: ColoresApp.verde,),
+        _FilaEmbudo(
+          etiqueta: 'Llegaron',
+          cantidad: m.llegaron,
+          pct: m.total == 0 ? 0 : m.llegaron / m.total,
+          color: ColoresApp.verde,
+        ),
         const SizedBox(height: 10),
-        _FilaEmbudo(etiqueta: 'Completaron', cantidad: m.completaron, pct: m.total == 0 ? 0 : m.completaron / m.total,
-            color: ColoresApp.teal,),
+        _FilaEmbudo(
+          etiqueta: 'Completaron',
+          cantidad: m.completaron,
+          pct: m.total == 0 ? 0 : m.completaron / m.total,
+          color: ColoresApp.teal,
+        ),
         const SizedBox(height: 10),
-        _FilaEmbudo(etiqueta: 'No llegaron', cantidad: m.ausentes,    pct: m.total == 0 ? 0 : m.ausentes / m.total,
-            color: ColoresApp.rojo,),
+        _FilaEmbudo(
+          etiqueta: 'No llegaron',
+          cantidad: m.ausentes,
+          pct: m.total == 0 ? 0 : m.ausentes / m.total,
+          color: ColoresApp.rojo,
+        ),
       ],
     );
   }
@@ -727,7 +835,7 @@ class _FilaEmbudo extends StatelessWidget {
   final String etiqueta;
   final double cantidad;
   final double pct;
-  final Color  color;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -735,17 +843,21 @@ class _FilaEmbudo extends StatelessWidget {
       children: [
         SizedBox(
           width: 92,
-          child: Text(etiqueta, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: ColoresApp.textoSecundario, fontWeight: FontWeight.w600,
-          ),),
+          child: Text(
+            etiqueta,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: ColoresApp.textoSecundario,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
         ),
         Expanded(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: LinearProgressIndicator(
-              value:           pct,
-              minHeight:       14,
-              valueColor:      AlwaysStoppedAnimation<Color>(color),
+              value: pct,
+              minHeight: 14,
+              valueColor: AlwaysStoppedAnimation<Color>(color),
               backgroundColor: color.withValues(alpha: 0.1),
             ),
           ),
@@ -753,17 +865,23 @@ class _FilaEmbudo extends StatelessWidget {
         const SizedBox(width: 8),
         SizedBox(
           width: 36,
-          child: Text('${(pct * 100).toStringAsFixed(0)}%',
+          child: Text(
+            '${(pct * 100).toStringAsFixed(0)}%',
             textAlign: TextAlign.end,
-            style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 12),),
+            style: TextStyle(
+                color: color, fontWeight: FontWeight.w800, fontSize: 12),
+          ),
         ),
         const SizedBox(width: 4),
         SizedBox(
           width: 28,
-          child: Text('${cantidad.toInt()}',
+          child: Text(
+            '${cantidad.toInt()}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: ColoresApp.textoTerciario, fontSize: 11,
-            ),),
+                  color: ColoresApp.textoTerciario,
+                  fontSize: 11,
+                ),
+          ),
         ),
       ],
     );
@@ -783,59 +901,90 @@ class _SeccionEstadoEventos extends StatelessWidget {
     if (total == 0) return const SizedBox.shrink();
 
     return Container(
-      width:   double.infinity,
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 8, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 8,
+              offset: Offset(0, 2))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Salud operacional', style: Theme.of(context).textTheme.headlineSmall),
+          Text('Salud operacional',
+              style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 2),
-          Text('Estado de los eventos en el período',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
+          Text(
+            'Estado de los eventos en el período',
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: ColoresApp.textoTerciario),
+          ),
           const SizedBox(height: 14),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Row(
-              children: estadoEventos.map((d) => Flexible(
-                flex: d.valor.toInt().clamp(1, 9999),
-                child: Container(
-                  height: 16,
-                  color: _colorEstatusEvento(d.etiqueta),
-                ),
-              ),).toList(),
+              children: estadoEventos
+                  .map(
+                    (d) => Flexible(
+                      flex: d.valor.toInt().clamp(1, 9999),
+                      child: Container(
+                        height: 16,
+                        color: _colorEstatusEvento(d.etiqueta),
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
           ),
           const SizedBox(height: 12),
           Wrap(
-            spacing: 8, runSpacing: 8,
+            spacing: 8,
+            runSpacing: 8,
             children: estadoEventos.map((d) {
               final color = _colorEstatusEvento(d.etiqueta);
-              final pct   = (d.valor / total * 100).toStringAsFixed(0);
+              final pct = (d.valor / total * 100).toStringAsFixed(0);
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color:        color.withValues(alpha: 0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
-                  border:       Border.all(color: color.withValues(alpha: 0.3)),
+                  border: Border.all(color: color.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(width: 8, height: 8,
-                      decoration: BoxDecoration(color: color, shape: BoxShape.circle),),
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration:
+                          BoxDecoration(color: color, shape: BoxShape.circle),
+                    ),
                     const SizedBox(width: 5),
-                    Text(d.etiqueta, style: TextStyle(
-                      fontSize: 12, color: color, fontWeight: FontWeight.w600,
-                    ),),
+                    Text(
+                      d.etiqueta,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: color,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(width: 5),
-                    Text('${d.valor.toInt()} ($pct%)', style: TextStyle(
-                      fontSize: 12, color: color, fontWeight: FontWeight.w800,
-                    ),),
+                    Text(
+                      '${d.valor.toInt()} ($pct%)',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: color,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -852,56 +1001,68 @@ class _SeccionEstadoEventos extends StatelessWidget {
 class _GraficaTendenciaDual extends StatelessWidget {
   const _GraficaTendenciaDual({required this.datos, required this.onTap});
 
-  final List<DatoTendenciaDual>    datos;
-  final ValueChanged<DatoGrafica>  onTap;
+  final List<DatoTendenciaDual> datos;
+  final ValueChanged<DatoGrafica> onTap;
 
   LineTouchData _touchData(double maxCant) => LineTouchData(
-    touchCallback: (event, response) {
-      if (!event.isInterestedForInteractions) return;
-      final spots = response?.lineBarSpots;
-      if (spots == null || spots.isEmpty) return;
-      final i = spots.first.spotIndex;
-      if (i >= 0 && i < datos.length) {
-        onTap(DatoGrafica(etiqueta: datos[i].mes, valor: datos[i].cantidad, valorSql: datos[i].mes));
-      }
-    },
-    touchTooltipData: LineTouchTooltipData(
-      getTooltipColor: (_) => ColoresApp.textoPrimario,
-      getTooltipItems: (spots) => spots.map((s) {
-        final isRate = s.barIndex == 1;
-        return LineTooltipItem(
-          isRate
-              ? '${s.y.toStringAsFixed(0)}% tasa'
-              : '${(maxCant == 0 ? 0 : s.y / 100 * maxCant).toInt()} eventos',
-          TextStyle(
-            color: isRate ? ColoresApp.verde : ColoresApp.acento2,
-            fontWeight: FontWeight.w700, fontSize: 12,
-          ),
-        );
-      }).toList(),
-    ),
-  );
+        touchCallback: (event, response) {
+          if (!event.isInterestedForInteractions) return;
+          final spots = response?.lineBarSpots;
+          if (spots == null || spots.isEmpty) return;
+          final i = spots.first.spotIndex;
+          if (i >= 0 && i < datos.length) {
+            onTap(DatoGrafica(
+                etiqueta: datos[i].mes,
+                valor: datos[i].cantidad,
+                valorSql: datos[i].mes));
+          }
+        },
+        touchTooltipData: LineTouchTooltipData(
+          getTooltipColor: (_) => ColoresApp.textoPrimario,
+          getTooltipItems: (spots) => spots.map((s) {
+            final isRate = s.barIndex == 1;
+            return LineTooltipItem(
+              isRate
+                  ? '${s.y.toStringAsFixed(0)}% tasa'
+                  : '${(maxCant == 0 ? 0 : s.y / 100 * maxCant).toInt()} eventos',
+              TextStyle(
+                color: isRate ? ColoresApp.verde : ColoresApp.acento2,
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+              ),
+            );
+          }).toList(),
+        ),
+      );
 
   FlTitlesData _titlesData() => FlTitlesData(
-    leftTitles:   const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-    rightTitles:  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-    topTitles:    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-    bottomTitles: AxisTitles(
-      sideTitles: SideTitles(
-        showTitles: true, reservedSize: 28, interval: 1,
-        getTitlesWidget: (valor, meta) {
-          final i = valor.toInt();
-          if (i < 0 || i >= datos.length) return const SizedBox.shrink();
-          return Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: Text(datos[i].mes, style: const TextStyle(
-              fontSize: 10, color: ColoresApp.textoTerciario, fontWeight: FontWeight.w500,
-            ),),
-          );
-        },
-      ),
-    ),
-  );
+        leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles:
+            const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 28,
+            interval: 1,
+            getTitlesWidget: (valor, meta) {
+              final i = valor.toInt();
+              if (i < 0 || i >= datos.length) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Text(
+                  datos[i].mes,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: ColoresApp.textoTerciario,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -911,47 +1072,67 @@ class _GraficaTendenciaDual extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: LineChart(LineChartData(
-            minX: 0, maxX: (datos.length - 1).toDouble(),
-            minY: 0, maxY: 100,
-            gridData: FlGridData(
-              show: true, drawVerticalLine: false, horizontalInterval: 25,
-              getDrawingHorizontalLine: (_) =>
-                  const FlLine(color: ColoresApp.bordesuave, strokeWidth: 1),
+          child: LineChart(
+            LineChartData(
+              minX: 0,
+              maxX: (datos.length - 1).toDouble(),
+              minY: 0,
+              maxY: 100,
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: false,
+                horizontalInterval: 25,
+                getDrawingHorizontalLine: (_) =>
+                    const FlLine(color: ColoresApp.bordesuave, strokeWidth: 1),
+              ),
+              borderData: FlBorderData(show: false),
+              lineTouchData: _touchData(maxCant),
+              titlesData: _titlesData(),
+              lineBarsData: [
+                LineChartBarData(
+                  spots: List.generate(
+                    datos.length,
+                    (i) => FlSpot(
+                      i.toDouble(),
+                      maxCant == 0 ? 0 : (datos[i].cantidad / maxCant * 100),
+                    ),
+                  ),
+                  isCurved: true,
+                  color: ColoresApp.acento,
+                  barWidth: 2.5,
+                  dotData: const FlDotData(show: false),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    color: ColoresApp.acento.withValues(alpha: 0.06),
+                  ),
+                ),
+                LineChartBarData(
+                  spots: List.generate(
+                    datos.length,
+                    (i) => FlSpot(i.toDouble(), datos[i].tasa),
+                  ),
+                  isCurved: true,
+                  color: ColoresApp.verde,
+                  barWidth: 2.5,
+                  dotData: const FlDotData(show: false),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    color: ColoresApp.verde.withValues(alpha: 0.06),
+                  ),
+                  dashArray: [6, 3],
+                ),
+              ],
             ),
-            borderData:    FlBorderData(show: false),
-            lineTouchData: _touchData(maxCant),
-            titlesData:    _titlesData(),
-            lineBarsData: [
-              LineChartBarData(
-                spots: List.generate(datos.length, (i) => FlSpot(
-                  i.toDouble(),
-                  maxCant == 0 ? 0 : (datos[i].cantidad / maxCant * 100),
-                ),),
-                isCurved: true, color: ColoresApp.acento, barWidth: 2.5,
-                dotData: const FlDotData(show: false),
-                belowBarData: BarAreaData(show: true,
-                    color: ColoresApp.acento.withValues(alpha: 0.06),),
-              ),
-              LineChartBarData(
-                spots: List.generate(datos.length, (i) =>
-                    FlSpot(i.toDouble(), datos[i].tasa),),
-                isCurved: true, color: ColoresApp.verde, barWidth: 2.5,
-                dotData: const FlDotData(show: false),
-                belowBarData: BarAreaData(show: true,
-                    color: ColoresApp.verde.withValues(alpha: 0.06),),
-                dashArray: [6, 3],
-              ),
-            ],
-          ),),
+          ),
         ),
         const SizedBox(height: 10),
         const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _PuntoLeyenda(color: ColoresApp.acento, label: 'Eventos (relativo)'),
+            _PuntoLeyenda(
+                color: ColoresApp.acento, label: 'Eventos (relativo)'),
             SizedBox(width: 20),
-            _PuntoLeyenda(color: ColoresApp.verde,  label: 'Tasa asistencia %'),
+            _PuntoLeyenda(color: ColoresApp.verde, label: 'Tasa asistencia %'),
           ],
         ),
       ],
@@ -961,7 +1142,7 @@ class _GraficaTendenciaDual extends StatelessWidget {
 
 class _PuntoLeyenda extends StatelessWidget {
   const _PuntoLeyenda({required this.color, required this.label});
-  final Color  color;
+  final Color color;
   final String label;
 
   @override
@@ -969,13 +1150,22 @@ class _PuntoLeyenda extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 20, height: 3, decoration: BoxDecoration(
-          color: color, borderRadius: BorderRadius.circular(2),
-        ),),
+        Container(
+          width: 20,
+          height: 3,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
         const SizedBox(width: 5),
-        Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: ColoresApp.textoSecundario, fontSize: 11,
-        ),),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: ColoresApp.textoSecundario,
+                fontSize: 11,
+              ),
+        ),
       ],
     );
   }
@@ -986,8 +1176,8 @@ class _PuntoLeyenda extends StatelessWidget {
 class _GraficaComposicion extends StatelessWidget {
   const _GraficaComposicion({required this.datos, required this.onTap});
 
-  final List<ComposicionMes>       datos;
-  final ValueChanged<DatoGrafica>  onTap;
+  final List<ComposicionMes> datos;
+  final ValueChanged<DatoGrafica> onTap;
 
   List<BarChartGroupData> _construirBarras(List<String> tipos) =>
       List.generate(datos.length, (i) {
@@ -997,96 +1187,136 @@ class _GraficaComposicion extends StatelessWidget {
         for (int j = 0; j < tipos.length; j++) {
           final val = mes.porTipo[tipos[j]] ?? 0;
           if (val > 0) {
-            stackItems.add(BarChartRodStackItem(acum, acum + val, _paleta[j % _paleta.length]));
+            stackItems.add(BarChartRodStackItem(
+                acum, acum + val, _paleta[j % _paleta.length]));
             acum += val;
           }
         }
         return BarChartGroupData(
           x: i,
-          barRods: [BarChartRodData(
-            toY: acum, rodStackItems: stackItems, width: 18,
-            borderRadius: BorderRadius.circular(4),
-          ),],
+          barRods: [
+            BarChartRodData(
+              toY: acum,
+              rodStackItems: stackItems,
+              width: 18,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ],
         );
       });
 
   BarTouchData _touchData() => BarTouchData(
-    touchCallback: (event, response) {
-      if (!event.isInterestedForInteractions) return;
-      if (event is! FlTapUpEvent) return;
-      final i = response?.spot?.touchedBarGroupIndex ?? -1;
-      if (i >= 0 && i < datos.length) {
-        onTap(DatoGrafica(etiqueta: datos[i].mes, valor: datos[i].total, valorSql: datos[i].mes));
-      }
-    },
-    touchTooltipData: BarTouchTooltipData(
-      getTooltipColor: (_) => ColoresApp.textoPrimario,
-      getTooltipItem: (group, _, rod, __) => BarTooltipItem(
-        '${rod.toY.toInt()} eventos',
-        const TextStyle(color: ColoresApp.blanco, fontWeight: FontWeight.w700, fontSize: 12),
-      ),
-    ),
-  );
+        touchCallback: (event, response) {
+          if (!event.isInterestedForInteractions) return;
+          if (event is! FlTapUpEvent) return;
+          final i = response?.spot?.touchedBarGroupIndex ?? -1;
+          if (i >= 0 && i < datos.length) {
+            onTap(DatoGrafica(
+                etiqueta: datos[i].mes,
+                valor: datos[i].total,
+                valorSql: datos[i].mes));
+          }
+        },
+        touchTooltipData: BarTouchTooltipData(
+          getTooltipColor: (_) => ColoresApp.textoPrimario,
+          getTooltipItem: (group, _, rod, __) => BarTooltipItem(
+            '${rod.toY.toInt()} eventos',
+            const TextStyle(
+                color: ColoresApp.blanco,
+                fontWeight: FontWeight.w700,
+                fontSize: 12),
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
     if (datos.isEmpty) return const _SinDatos();
 
     final tiposSet = <String>{};
-    for (final m in datos) { tiposSet.addAll(m.porTipo.keys); }
+    for (final m in datos) {
+      tiposSet.addAll(m.porTipo.keys);
+    }
     final tipos = tiposSet.toList()..sort();
-    final maxY  = datos.map((m) => m.total).fold(0.0, max);
+    final maxY = datos.map((m) => m.total).fold(0.0, max);
 
     return Column(
       children: [
         Expanded(
-          child: BarChart(BarChartData(
-            maxY: (maxY * 1.3).ceilToDouble(),
-            gridData: FlGridData(
-              show: true, drawVerticalLine: false,
-              getDrawingHorizontalLine: (_) =>
-                  const FlLine(color: ColoresApp.bordesuave, strokeWidth: 1),
-            ),
-            borderData:   FlBorderData(show: false),
-            barTouchData: _touchData(),
-            titlesData: FlTitlesData(
-              leftTitles:   const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles:  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles:    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true, reservedSize: 28, interval: 1,
-                  getTitlesWidget: (val, meta) {
-                    final i = val.toInt();
-                    if (i < 0 || i >= datos.length) return const SizedBox.shrink();
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(datos[i].mes, style: const TextStyle(
-                        fontSize: 10, color: ColoresApp.textoTerciario, fontWeight: FontWeight.w500,
-                      ),),
-                    );
-                  },
+          child: BarChart(
+            BarChartData(
+              maxY: (maxY * 1.3).ceilToDouble(),
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: false,
+                getDrawingHorizontalLine: (_) =>
+                    const FlLine(color: ColoresApp.bordesuave, strokeWidth: 1),
+              ),
+              borderData: FlBorderData(show: false),
+              barTouchData: _touchData(),
+              titlesData: FlTitlesData(
+                leftTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 28,
+                    interval: 1,
+                    getTitlesWidget: (val, meta) {
+                      final i = val.toInt();
+                      if (i < 0 || i >= datos.length)
+                        return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Text(
+                          datos[i].mes,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: ColoresApp.textoTerciario,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
+              barGroups: _construirBarras(tipos),
             ),
-            barGroups: _construirBarras(tipos),
-          ),),
+          ),
         ),
         const SizedBox(height: 10),
         Wrap(
-          spacing: 10, runSpacing: 6,
-          children: List.generate(tipos.length, (j) => Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(width: 10, height: 10, decoration: BoxDecoration(
-                color: _paleta[j % _paleta.length], borderRadius: BorderRadius.circular(2),
-              ),),
-              const SizedBox(width: 5),
-              Text(tipos[j], style: const TextStyle(
-                fontSize: 11, color: ColoresApp.textoSecundario,
-              ),),
-            ],
-          ),),
+          spacing: 10,
+          runSpacing: 6,
+          children: List.generate(
+            tipos.length,
+            (j) => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: _paleta[j % _paleta.length],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  tipos[j],
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: ColoresApp.textoSecundario,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ],
     );
@@ -1097,7 +1327,7 @@ class _GraficaComposicion extends StatelessWidget {
 
 class _GraficaDonut extends StatefulWidget {
   const _GraficaDonut({required this.datos, required this.onTap});
-  final List<DatoGrafica>      datos;
+  final List<DatoGrafica> datos;
   final ValueChanged<DatoGrafica> onTap;
 
   @override
@@ -1115,39 +1345,49 @@ class _GraficaDonutState extends State<_GraficaDonut> {
     return Row(
       children: [
         Expanded(
-          child: PieChart(PieChartData(
-            pieTouchData: PieTouchData(
-              touchCallback: (event, response) {
-                if (!event.isInterestedForInteractions) {
-                  setState(() => _seleccionado = null);
-                  return;
-                }
-                final i = response?.touchedSection?.touchedSectionIndex ?? -1;
-                setState(() => _seleccionado = i >= 0 ? i : null);
-                if (event is FlTapUpEvent && i >= 0 && i < widget.datos.length) {
-                  widget.onTap(widget.datos[i]);
-                }
-              },
+          child: PieChart(
+            PieChartData(
+              pieTouchData: PieTouchData(
+                touchCallback: (event, response) {
+                  if (!event.isInterestedForInteractions) {
+                    setState(() => _seleccionado = null);
+                    return;
+                  }
+                  final i = response?.touchedSection?.touchedSectionIndex ?? -1;
+                  setState(() => _seleccionado = i >= 0 ? i : null);
+                  if (event is FlTapUpEvent &&
+                      i >= 0 &&
+                      i < widget.datos.length) {
+                    widget.onTap(widget.datos[i]);
+                  }
+                },
+              ),
+              sections: List.generate(widget.datos.length, (i) {
+                final d = widget.datos[i];
+                final color = _paleta[i % _paleta.length];
+                final activo = _seleccionado == i;
+                final pct = total == 0 ? 0.0 : d.valor / total;
+                return PieChartSectionData(
+                  value: d.valor,
+                  color: color,
+                  radius: activo ? 58 : 50,
+                  title: '${(pct * 100).toStringAsFixed(0)}%',
+                  titleStyle: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: ColoresApp.blanco,
+                  ),
+                );
+              }),
+              centerSpaceRadius: 44,
+              sectionsSpace: 2,
             ),
-            sections: List.generate(widget.datos.length, (i) {
-              final d      = widget.datos[i];
-              final color  = _paleta[i % _paleta.length];
-              final activo = _seleccionado == i;
-              final pct    = total == 0 ? 0.0 : d.valor / total;
-              return PieChartSectionData(
-                value:  d.valor, color: color,
-                radius: activo ? 58 : 50,
-                title:  '${(pct * 100).toStringAsFixed(0)}%',
-                titleStyle: const TextStyle(
-                  fontSize: 11, fontWeight: FontWeight.w700, color: ColoresApp.blanco,
-                ),
-              );
-            }),
-            centerSpaceRadius: 44, sectionsSpace: 2,
-          ),),
+          ),
         ),
         const SizedBox(width: 16),
-        Expanded(child: _LeyendaDonut(datos: widget.datos, seleccionado: _seleccionado)),
+        Expanded(
+            child: _LeyendaDonut(
+                datos: widget.datos, seleccionado: _seleccionado)),
       ],
     );
   }
@@ -1156,37 +1396,50 @@ class _GraficaDonutState extends State<_GraficaDonut> {
 class _LeyendaDonut extends StatelessWidget {
   const _LeyendaDonut({required this.datos, required this.seleccionado});
   final List<DatoGrafica> datos;
-  final int?              seleccionado;
+  final int? seleccionado;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment:  MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(datos.length, (i) {
-        final color  = _paleta[i % _paleta.length];
+        final color = _paleta[i % _paleta.length];
         final activo = seleccionado == i;
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
-          child: Row(children: [
-            Container(
-              width: activo ? 12 : 10, height: activo ? 12 : 10,
-              decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(3)),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(datos[i].etiqueta, overflow: TextOverflow.ellipsis,
+          child: Row(
+            children: [
+              Container(
+                width: activo ? 12 : 10,
+                height: activo ? 12 : 10,
+                decoration: BoxDecoration(
+                    color: color, borderRadius: BorderRadius.circular(3)),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  datos[i].etiqueta,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: activo
+                            ? ColoresApp.textoPrimario
+                            : ColoresApp.textoSecundario,
+                        fontWeight: activo ? FontWeight.w700 : FontWeight.w500,
+                        fontSize: 12,
+                      ),
+                ),
+              ),
+              Text(
+                '${datos[i].valor.toInt()}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color:      activo ? ColoresApp.textoPrimario : ColoresApp.textoSecundario,
-                  fontWeight: activo ? FontWeight.w700 : FontWeight.w500, fontSize: 12,
-                ),),
-            ),
-            Text('${datos[i].valor.toInt()}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: activo ? color : ColoresApp.textoPrimario,
-                fontWeight: FontWeight.w700, fontSize: 12,
-              ),),
-          ],),
+                      color: activo ? color : ColoresApp.textoPrimario,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
+              ),
+            ],
+          ),
         );
       }),
     );
@@ -1203,44 +1456,61 @@ class _GraficaTasaPorTipo extends StatelessWidget {
   Widget build(BuildContext context) {
     if (datos.isEmpty) return const _SinDatos();
     return Column(
-      children: datos.map((d) => Padding(
-        padding: const EdgeInsets.only(bottom: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(children: [
-              Expanded(
-                child: Text(d.tipoNombre,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600, fontSize: 13,
-                  ), overflow: TextOverflow.ellipsis,),
-              ),
-              const SizedBox(width: 8),
-              Text('${d.tasa.toStringAsFixed(0)}%', style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w800,
-                color: _colorTasa(d.tasa),
-              ),),
-            ],),
-            const SizedBox(height: 5),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value:           d.tasa / 100,
-                minHeight:       10,
-                backgroundColor: ColoresApp.superficieTerciar,
-                valueColor:      AlwaysStoppedAnimation<Color>(_colorTasa(d.tasa)),
+      children: datos
+          .map(
+            (d) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          d.tipoNombre,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${d.tasa.toStringAsFixed(0)}%',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: _colorTasa(d.tasa),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: d.tasa / 100,
+                      minHeight: 10,
+                      backgroundColor: ColoresApp.superficieTerciar,
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(_colorTasa(d.tasa)),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${d.presentes} presentes · ${d.totalRegistros} registros · ${d.totalEventos} eventos',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: ColoresApp.textoTerciario,
+                          fontSize: 11,
+                        ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              '${d.presentes} presentes · ${d.totalRegistros} registros · ${d.totalEventos} eventos',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: ColoresApp.textoTerciario, fontSize: 11,
-              ),
-            ),
-          ],
-        ),
-      ),).toList(),
+          )
+          .toList(),
     );
   }
 }
@@ -1249,7 +1519,7 @@ class _GraficaTasaPorTipo extends StatelessWidget {
 
 class _GraficaBarrasEstatus extends StatelessWidget {
   const _GraficaBarrasEstatus({required this.datos, required this.onTap});
-  final List<DatoGrafica>      datos;
+  final List<DatoGrafica> datos;
   final ValueChanged<DatoGrafica> onTap;
 
   @override
@@ -1257,60 +1527,80 @@ class _GraficaBarrasEstatus extends StatelessWidget {
     if (datos.isEmpty) return const _SinDatos();
     final maxY = datos.map((d) => d.valor).reduce(max);
 
-    return BarChart(BarChartData(
-      maxY: (maxY * 1.35).ceilToDouble(),
-      gridData: FlGridData(
-        show: true, drawVerticalLine: false,
-        getDrawingHorizontalLine: (_) =>
-            const FlLine(color: ColoresApp.bordesuave, strokeWidth: 1),
-      ),
-      borderData: FlBorderData(show: false),
-      barTouchData: BarTouchData(
-        touchCallback: (event, response) {
-          if (!event.isInterestedForInteractions) return;
-          if (event is! FlTapUpEvent) return;
-          final i = response?.spot?.touchedBarGroupIndex ?? -1;
-          if (i >= 0 && i < datos.length) onTap(datos[i]);
-        },
-        touchTooltipData: BarTouchTooltipData(
-          getTooltipColor: (_) => ColoresApp.textoPrimario,
-          getTooltipItem: (group, _, rod, __) => BarTooltipItem(
-            '${rod.toY.toInt()}',
-            const TextStyle(color: ColoresApp.blanco, fontWeight: FontWeight.w700, fontSize: 12),
+    return BarChart(
+      BarChartData(
+        maxY: (maxY * 1.35).ceilToDouble(),
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          getDrawingHorizontalLine: (_) =>
+              const FlLine(color: ColoresApp.bordesuave, strokeWidth: 1),
+        ),
+        borderData: FlBorderData(show: false),
+        barTouchData: BarTouchData(
+          touchCallback: (event, response) {
+            if (!event.isInterestedForInteractions) return;
+            if (event is! FlTapUpEvent) return;
+            final i = response?.spot?.touchedBarGroupIndex ?? -1;
+            if (i >= 0 && i < datos.length) onTap(datos[i]);
+          },
+          touchTooltipData: BarTouchTooltipData(
+            getTooltipColor: (_) => ColoresApp.textoPrimario,
+            getTooltipItem: (group, _, rod, __) => BarTooltipItem(
+              '${rod.toY.toInt()}',
+              const TextStyle(
+                  color: ColoresApp.blanco,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12),
+            ),
+          ),
+        ),
+        titlesData: FlTitlesData(
+          leftTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 36,
+              getTitlesWidget: (valor, meta) {
+                final i = valor.toInt();
+                if (i < 0 || i >= datos.length) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    datos[i].etiqueta,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: ColoresApp.textoTerciario,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        barGroups: List.generate(
+          datos.length,
+          (i) => BarChartGroupData(
+            x: i,
+            barRods: [
+              BarChartRodData(
+                toY: datos[i].valor,
+                color: _colorEstatus(datos[i].etiqueta),
+                width: 28,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ],
           ),
         ),
       ),
-      titlesData: FlTitlesData(
-        leftTitles:   const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        rightTitles:  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        topTitles:    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true, reservedSize: 36,
-            getTitlesWidget: (valor, meta) {
-              final i = valor.toInt();
-              if (i < 0 || i >= datos.length) return const SizedBox.shrink();
-              return Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(datos[i].etiqueta, textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 10, color: ColoresApp.textoTerciario, fontWeight: FontWeight.w500,
-                  ),),
-              );
-            },
-          ),
-        ),
-      ),
-      barGroups: List.generate(datos.length, (i) => BarChartGroupData(
-        x: i,
-        barRods: [BarChartRodData(
-          toY:          datos[i].valor,
-          color:        _colorEstatus(datos[i].etiqueta),
-          width:        28,
-          borderRadius: BorderRadius.circular(6),
-        ),],
-      ),),
-    ),);
+    );
   }
 }
 
@@ -1318,7 +1608,7 @@ class _GraficaBarrasEstatus extends StatelessWidget {
 
 class _GraficaBarrasDia extends StatelessWidget {
   const _GraficaBarrasDia({required this.datos, required this.onTap});
-  final List<DatoGrafica>      datos;
+  final List<DatoGrafica> datos;
   final ValueChanged<DatoGrafica> onTap;
 
   @override
@@ -1326,65 +1616,83 @@ class _GraficaBarrasDia extends StatelessWidget {
     if (datos.isEmpty) return const _SinDatos();
     final maxY = datos.map((d) => d.valor).reduce(max);
 
-    return BarChart(BarChartData(
-      maxY: (maxY * 1.35).ceilToDouble(),
-      gridData: FlGridData(
-        show: true, drawVerticalLine: false,
-        getDrawingHorizontalLine: (_) =>
-            const FlLine(color: ColoresApp.bordesuave, strokeWidth: 1),
-      ),
-      borderData: FlBorderData(show: false),
-      barTouchData: BarTouchData(
-        touchCallback: (event, response) {
-          if (!event.isInterestedForInteractions) return;
-          if (event is! FlTapUpEvent) return;
-          final i = response?.spot?.touchedBarGroupIndex ?? -1;
-          if (i >= 0 && i < datos.length) onTap(datos[i]);
-        },
-        touchTooltipData: BarTouchTooltipData(
-          getTooltipColor: (_) => ColoresApp.textoPrimario,
-          getTooltipItem: (group, _, rod, __) => BarTooltipItem(
-            '${rod.toY.toInt()} asistentes',
-            const TextStyle(color: ColoresApp.blanco, fontWeight: FontWeight.w700, fontSize: 12),
+    return BarChart(
+      BarChartData(
+        maxY: (maxY * 1.35).ceilToDouble(),
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          getDrawingHorizontalLine: (_) =>
+              const FlLine(color: ColoresApp.bordesuave, strokeWidth: 1),
+        ),
+        borderData: FlBorderData(show: false),
+        barTouchData: BarTouchData(
+          touchCallback: (event, response) {
+            if (!event.isInterestedForInteractions) return;
+            if (event is! FlTapUpEvent) return;
+            final i = response?.spot?.touchedBarGroupIndex ?? -1;
+            if (i >= 0 && i < datos.length) onTap(datos[i]);
+          },
+          touchTooltipData: BarTouchTooltipData(
+            getTooltipColor: (_) => ColoresApp.textoPrimario,
+            getTooltipItem: (group, _, rod, __) => BarTooltipItem(
+              '${rod.toY.toInt()} asistentes',
+              const TextStyle(
+                  color: ColoresApp.blanco,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12),
+            ),
           ),
         ),
-      ),
-      titlesData: FlTitlesData(
-        leftTitles:   const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        rightTitles:  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        topTitles:    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true, reservedSize: 32,
-            getTitlesWidget: (valor, meta) {
-              final i = valor.toInt();
-              if (i < 0 || i >= datos.length) return const SizedBox.shrink();
-              final activo = datos[i].valor == maxY;
-              return Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(datos[i].etiqueta, style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: activo ? FontWeight.w700 : FontWeight.w500,
-                  color: activo ? ColoresApp.teal : ColoresApp.textoTerciario,
-                ),),
-              );
-            },
+        titlesData: FlTitlesData(
+          leftTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 32,
+              getTitlesWidget: (valor, meta) {
+                final i = valor.toInt();
+                if (i < 0 || i >= datos.length) return const SizedBox.shrink();
+                final activo = datos[i].valor == maxY;
+                return Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    datos[i].etiqueta,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: activo ? FontWeight.w700 : FontWeight.w500,
+                      color:
+                          activo ? ColoresApp.teal : ColoresApp.textoTerciario,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ),
+        barGroups: List.generate(datos.length, (i) {
+          final activo = datos[i].valor == maxY;
+          return BarChartGroupData(
+            x: i,
+            barRods: [
+              BarChartRodData(
+                toY: datos[i].valor,
+                color: activo
+                    ? ColoresApp.teal
+                    : ColoresApp.teal.withValues(alpha: 0.45),
+                width: 22,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ],
+          );
+        }),
       ),
-      barGroups: List.generate(datos.length, (i) {
-        final activo = datos[i].valor == maxY;
-        return BarChartGroupData(
-          x: i,
-          barRods: [BarChartRodData(
-            toY:          datos[i].valor,
-            color:        activo ? ColoresApp.teal : ColoresApp.teal.withValues(alpha: 0.45),
-            width:        22,
-            borderRadius: BorderRadius.circular(6),
-          ),],
-        );
-      }),
-    ),);
+    );
   }
 }
 
@@ -1401,56 +1709,81 @@ class _GraficaHeatmap extends StatelessWidget {
     if (datos.isEmpty) return const _SinDatos();
 
     final maxCant = datos.map((d) => d.cantidad).reduce(max).toDouble();
-    final horas   = datos.map((d) => d.hora).toSet().toList()..sort();
-    final mapa    = {for (final d in datos) '${d.dia}_${d.hora}': d.cantidad};
+    final horas = datos.map((d) => d.hora).toSet().toList()..sort();
+    final mapa = {for (final d in datos) '${d.dia}_${d.hora}': d.cantidad};
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            const SizedBox(width: 44),
-            ..._dias.map((d) => SizedBox(
-              width: 38,
-              child: Text(d, textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 10, color: ColoresApp.textoTerciario, fontWeight: FontWeight.w700,
-                ),),
-            ),),
-          ],),
-          const SizedBox(height: 6),
-          ...horas.map((hora) => Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: Row(children: [
-              SizedBox(
-                width: 44,
-                child: Text('${hora.toString().padLeft(2, '0')}h',
-                  style: const TextStyle(fontSize: 10, color: ColoresApp.textoTerciario),),
-              ),
-              ..._dias.map((dia) {
-                final cant      = mapa['${dia}_$hora'] ?? 0;
-                final intensity = maxCant == 0 ? 0.0 : cant / maxCant;
-                return Container(
-                  width: 34, height: 24,
-                  margin: const EdgeInsets.only(right: 4),
-                  decoration: BoxDecoration(
-                    color: intensity == 0
-                        ? ColoresApp.superficieTerciar
-                        : ColoresApp.acento.withValues(alpha: 0.15 + intensity * 0.85),
-                    borderRadius: BorderRadius.circular(5),
+          Row(
+            children: [
+              const SizedBox(width: 44),
+              ..._dias.map(
+                (d) => SizedBox(
+                  width: 38,
+                  child: Text(
+                    d,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: ColoresApp.textoTerciario,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                  child: cant > 0
-                      ? Center(child: Text('$cant', style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: intensity > 0.55 ? ColoresApp.blanco : ColoresApp.acento,
-                        ),),)
-                      : null,
-                );
-              }),
-            ],),
-          ),),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          ...horas.map(
+            (hora) => Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 44,
+                    child: Text(
+                      '${hora.toString().padLeft(2, '0')}h',
+                      style: const TextStyle(
+                          fontSize: 10, color: ColoresApp.textoTerciario),
+                    ),
+                  ),
+                  ..._dias.map((dia) {
+                    final cant = mapa['${dia}_$hora'] ?? 0;
+                    final intensity = maxCant == 0 ? 0.0 : cant / maxCant;
+                    return Container(
+                      width: 34,
+                      height: 24,
+                      margin: const EdgeInsets.only(right: 4),
+                      decoration: BoxDecoration(
+                        color: intensity == 0
+                            ? ColoresApp.superficieTerciar
+                            : ColoresApp.acento
+                                .withValues(alpha: 0.15 + intensity * 0.85),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: cant > 0
+                          ? Center(
+                              child: Text(
+                                '$cant',
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w700,
+                                  color: intensity > 0.55
+                                      ? ColoresApp.blanco
+                                      : ColoresApp.acento,
+                                ),
+                              ),
+                            )
+                          : null,
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1468,56 +1801,73 @@ class _GraficaEscala extends StatelessWidget {
     if (datos.isEmpty) return const _SinDatos();
     final maxY = datos.map((d) => d.valor).reduce(max);
 
-    return BarChart(BarChartData(
-      maxY: (maxY * 1.35).ceilToDouble(),
-      gridData: FlGridData(
-        show: true, drawVerticalLine: false,
-        getDrawingHorizontalLine: (_) =>
-            const FlLine(color: ColoresApp.bordesuave, strokeWidth: 1),
-      ),
-      borderData: FlBorderData(show: false),
-      barTouchData: BarTouchData(
-        touchTooltipData: BarTouchTooltipData(
-          getTooltipColor: (_) => ColoresApp.textoPrimario,
-          getTooltipItem: (group, _, rod, __) => BarTooltipItem(
-            '${rod.toY.toInt()} eventos',
-            const TextStyle(color: ColoresApp.blanco, fontWeight: FontWeight.w700, fontSize: 12),
+    return BarChart(
+      BarChartData(
+        maxY: (maxY * 1.35).ceilToDouble(),
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          getDrawingHorizontalLine: (_) =>
+              const FlLine(color: ColoresApp.bordesuave, strokeWidth: 1),
+        ),
+        borderData: FlBorderData(show: false),
+        barTouchData: BarTouchData(
+          touchTooltipData: BarTouchTooltipData(
+            getTooltipColor: (_) => ColoresApp.textoPrimario,
+            getTooltipItem: (group, _, rod, __) => BarTooltipItem(
+              '${rod.toY.toInt()} eventos',
+              const TextStyle(
+                  color: ColoresApp.blanco,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12),
+            ),
           ),
         ),
-      ),
-      titlesData: FlTitlesData(
-        leftTitles:   const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        rightTitles:  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        topTitles:    const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true, reservedSize: 32,
-            getTitlesWidget: (valor, meta) {
-              final i = valor.toInt();
-              if (i < 0 || i >= datos.length) return const SizedBox.shrink();
-              return Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(datos[i].etiqueta, style: const TextStyle(
-                  fontSize: 10, color: ColoresApp.textoTerciario, fontWeight: FontWeight.w500,
-                ),),
-              );
-            },
+        titlesData: FlTitlesData(
+          leftTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 32,
+              getTitlesWidget: (valor, meta) {
+                final i = valor.toInt();
+                if (i < 0 || i >= datos.length) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    datos[i].etiqueta,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: ColoresApp.textoTerciario,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ),
+        barGroups: List.generate(datos.length, (i) {
+          final pct = maxY == 0 ? 0.0 : datos[i].valor / maxY;
+          return BarChartGroupData(
+            x: i,
+            barRods: [
+              BarChartRodData(
+                toY: datos[i].valor,
+                color: ColoresApp.acento.withValues(alpha: 0.3 + pct * 0.7),
+                width: 32,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ],
+          );
+        }),
       ),
-      barGroups: List.generate(datos.length, (i) {
-        final pct = maxY == 0 ? 0.0 : datos[i].valor / maxY;
-        return BarChartGroupData(
-          x: i,
-          barRods: [BarChartRodData(
-            toY:          datos[i].valor,
-            color:        ColoresApp.acento.withValues(alpha: 0.3 + pct * 0.7),
-            width:        32,
-            borderRadius: BorderRadius.circular(6),
-          ),],
-        );
-      }),
-    ),);
+    );
   }
 }
 
@@ -1525,8 +1875,8 @@ class _GraficaEscala extends StatelessWidget {
 
 class _SeccionPorCreador extends StatelessWidget {
   const _SeccionPorCreador({required this.porCreador, required this.onTap});
-  final List<DatoCreador>          porCreador;
-  final ValueChanged<DatoCreador>  onTap;
+  final List<DatoCreador> porCreador;
+  final ValueChanged<DatoCreador> onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -1534,25 +1884,39 @@ class _SeccionPorCreador extends StatelessWidget {
     final maxCant = porCreador.map((d) => d.cantidad.toDouble()).reduce(max);
 
     return Container(
-      width:   double.infinity,
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 8, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 8,
+              offset: Offset(0, 2))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Eventos por organizador', style: Theme.of(context).textTheme.headlineSmall),
+          Text('Eventos por organizador',
+              style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 2),
-          Text('Toca un nombre para ver sus eventos',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
+          Text(
+            'Toca un nombre para ver sus eventos',
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: ColoresApp.textoTerciario),
+          ),
           const SizedBox(height: 16),
-          ...porCreador.map((d) => Padding(
-            padding: const EdgeInsets.only(bottom: 14),
-            child:   _FilaCreador(dato: d, maxCant: maxCant, onTap: () => onTap(d)),
-          ),),
+          ...porCreador.map(
+            (d) => Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: _FilaCreador(
+                  dato: d, maxCant: maxCant, onTap: () => onTap(d)),
+            ),
+          ),
         ],
       ),
     );
@@ -1560,45 +1924,56 @@ class _SeccionPorCreador extends StatelessWidget {
 }
 
 class _FilaCreador extends StatelessWidget {
-  const _FilaCreador({required this.dato, required this.maxCant, required this.onTap});
-  final DatoCreador  dato;
-  final double       maxCant;
+  const _FilaCreador(
+      {required this.dato, required this.maxCant, required this.onTap});
+  final DatoCreador dato;
+  final double maxCant;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final pctEventos   = maxCant == 0 ? 0.0 : dato.cantidad / maxCant;
+    final pctEventos = maxCant == 0 ? 0.0 : dato.cantidad / maxCant;
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap:        onTap,
+        onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                Expanded(
-                  child: Text(dato.nombre,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600, color: ColoresApp.textoPrimario, fontSize: 13,
-                    ), overflow: TextOverflow.ellipsis,),
-                ),
-                const SizedBox(width: 8),
-                Text('${dato.cantidad} eventos · ${dato.presentes} presentes',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: ColoresApp.textoTerciario,
-                  ),),
-              ],),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      dato.nombre,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: ColoresApp.textoPrimario,
+                            fontSize: 13,
+                          ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${dato.cantidad} eventos · ${dato.presentes} presentes',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: ColoresApp.textoTerciario,
+                        ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 5),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
-                  value:           pctEventos,
+                  value: pctEventos,
                   backgroundColor: ColoresApp.acentoClaro,
-                  valueColor:      const AlwaysStoppedAnimation<Color>(ColoresApp.acento),
-                  minHeight:       7,
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(ColoresApp.acento),
+                  minHeight: 7,
                 ),
               ),
             ],
@@ -1618,25 +1993,38 @@ class _SeccionTopAsistentes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:   double.infinity,
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 8, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 8,
+              offset: Offset(0, 2))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Asistentes más frecuentes', style: Theme.of(context).textTheme.headlineSmall),
+          Text('Asistentes más frecuentes',
+              style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 2),
-          Text('Usuarios con mayor presencia en eventos',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
+          Text(
+            'Usuarios con mayor presencia en eventos',
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: ColoresApp.textoTerciario),
+          ),
           const SizedBox(height: 16),
-          ...datos.asMap().entries.map((e) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child:   _FilaAsistente(puesto: e.key + 1, dato: e.value),
-          ),),
+          ...datos.asMap().entries.map(
+                (e) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _FilaAsistente(puesto: e.key + 1, dato: e.value),
+                ),
+              ),
         ],
       ),
     );
@@ -1645,7 +2033,7 @@ class _SeccionTopAsistentes extends StatelessWidget {
 
 class _FilaAsistente extends StatelessWidget {
   const _FilaAsistente({required this.puesto, required this.dato});
-  final int              puesto;
+  final int puesto;
   final AsistenteFrecuente dato;
 
   @override
@@ -1654,48 +2042,76 @@ class _FilaAsistente extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 26, height: 26,
+          width: 26,
+          height: 26,
           decoration: BoxDecoration(
-            color:  puesto <= 3 ? ColoresApp.acentoClaro : ColoresApp.superficieTerciar,
-            shape:  BoxShape.circle,
+            color: puesto <= 3
+                ? ColoresApp.acentoClaro
+                : ColoresApp.superficieTerciar,
+            shape: BoxShape.circle,
           ),
-          child: Center(child: Text('$puesto', style: TextStyle(
-            fontSize: 11, fontWeight: FontWeight.w800,
-            color: puesto <= 3 ? ColoresApp.acento : ColoresApp.textoTerciario,
-          ),),),
+          child: Center(
+            child: Text(
+              '$puesto',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color:
+                    puesto <= 3 ? ColoresApp.acento : ColoresApp.textoTerciario,
+              ),
+            ),
+          ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                Expanded(
-                  child: Text(dato.nombre,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600, fontSize: 13,
-                    ), overflow: TextOverflow.ellipsis,),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color:        color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      dato.nombre,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  child: Text('${dato.tasa.toStringAsFixed(0)}%', style: TextStyle(
-                    fontSize: 12, fontWeight: FontWeight.w800, color: color,
-                  ),),
-                ),
-              ],),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${dato.tasa.toStringAsFixed(0)}%',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: color,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 3),
-              Row(children: [
-                const Icon(Icons.event_outlined, size: 11, color: ColoresApp.textoTerciario),
-                const SizedBox(width: 3),
-                Text('${dato.totalAsistencias} asistencias en ${dato.totalEventos} eventos',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: ColoresApp.textoTerciario, fontSize: 11,
-                  ),),
-              ],),
+              Row(
+                children: [
+                  const Icon(Icons.event_outlined,
+                      size: 11, color: ColoresApp.textoTerciario),
+                  const SizedBox(width: 3),
+                  Text(
+                    '${dato.totalAsistencias} asistencias en ${dato.totalEventos} eventos',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: ColoresApp.textoTerciario,
+                          fontSize: 11,
+                        ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -1708,34 +2124,51 @@ class _FilaAsistente extends StatelessWidget {
 
 class _SeccionTopTags extends StatelessWidget {
   const _SeccionTopTags({required this.datos, required this.onTap});
-  final List<DatoTag>              datos;
-  final ValueChanged<DatoGrafica>  onTap;
+  final List<DatoTag> datos;
+  final ValueChanged<DatoGrafica> onTap;
 
   @override
   Widget build(BuildContext context) {
     final maxCant = datos.map((d) => d.cantidad.toDouble()).reduce(max);
     return Container(
-      width:   double.infinity,
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 8, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 8,
+              offset: Offset(0, 2))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Tags más usados', style: Theme.of(context).textTheme.headlineSmall),
+          Text('Tags más usados',
+              style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 2),
-          Text('Etiquetas por cantidad de eventos y tasa de asistencia',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
+          Text(
+            'Etiquetas por cantidad de eventos y tasa de asistencia',
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: ColoresApp.textoTerciario),
+          ),
           const SizedBox(height: 16),
-          ...datos.map((d) => Padding(
-            padding: const EdgeInsets.only(bottom: 14),
-            child:   _FilaTag(dato: d, maxCant: maxCant, onTap: () => onTap(
-              DatoGrafica(etiqueta: d.nombre, valor: d.cantidad.toDouble()),
-            ),),
-          ),),
+          ...datos.map(
+            (d) => Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: _FilaTag(
+                dato: d,
+                maxCant: maxCant,
+                onTap: () => onTap(
+                  DatoGrafica(etiqueta: d.nombre, valor: d.cantidad.toDouble()),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1743,66 +2176,89 @@ class _SeccionTopTags extends StatelessWidget {
 }
 
 class _FilaTag extends StatelessWidget {
-  const _FilaTag({required this.dato, required this.maxCant, required this.onTap});
-  final DatoTag      dato;
-  final double       maxCant;
+  const _FilaTag(
+      {required this.dato, required this.maxCant, required this.onTap});
+  final DatoTag dato;
+  final double maxCant;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final pct       = maxCant == 0 ? 0.0 : dato.cantidad / maxCant;
+    final pct = maxCant == 0 ? 0.0 : dato.cantidad / maxCant;
     final colorTasa = _colorTasa(dato.tasa);
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap:        onTap,
+        onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color:        ColoresApp.ambarClaro,
-                    borderRadius: BorderRadius.circular(12),
-                    border:       Border.all(color: ColoresApp.ambar.withValues(alpha: 0.3)),
+              Row(
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: ColoresApp.ambarClaro,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                          color: ColoresApp.ambar.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.tag,
+                            size: 11, color: ColoresApp.ambar),
+                        const SizedBox(width: 3),
+                        Text(
+                          dato.nombre,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: ColoresApp.ambar,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    const Icon(Icons.tag, size: 11, color: ColoresApp.ambar),
-                    const SizedBox(width: 3),
-                    Text(dato.nombre, style: const TextStyle(
-                      fontSize: 11, color: ColoresApp.ambar, fontWeight: FontWeight.w700,
-                    ),),
-                  ],),
-                ),
-                const Spacer(),
-                Text('${dato.cantidad} eventos',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: ColoresApp.textoTerciario,
-                  ),),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                  decoration: BoxDecoration(
-                    color:        colorTasa.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                  const Spacer(),
+                  Text(
+                    '${dato.cantidad} eventos',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: ColoresApp.textoTerciario,
+                        ),
                   ),
-                  child: Text('${dato.tasa.toStringAsFixed(0)}%', style: TextStyle(
-                    fontSize: 11, color: colorTasa, fontWeight: FontWeight.w700,
-                  ),),
-                ),
-              ],),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: colorTasa.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${dato.tasa.toStringAsFixed(0)}%',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colorTasa,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 6),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
-                  value:           pct,
+                  value: pct,
                   backgroundColor: ColoresApp.ambarClaro,
-                  valueColor:      const AlwaysStoppedAnimation<Color>(ColoresApp.ambar),
-                  minHeight:       5,
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(ColoresApp.ambar),
+                  minHeight: 5,
                 ),
               ),
             ],
@@ -1822,28 +2278,41 @@ class _SeccionTopEventos extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:   double.infinity,
+      width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 8, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 8,
+              offset: Offset(0, 2))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Top eventos por asistencia', style: Theme.of(context).textTheme.headlineSmall),
+          Text('Top eventos por asistencia',
+              style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 2),
-          Text('Los 5 con mayor participación',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
+          Text(
+            'Los 5 con mayor participación',
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: ColoresApp.textoTerciario),
+          ),
           const SizedBox(height: 16),
           if (topEventos.isEmpty)
             const _SinDatos()
           else
-            ...topEventos.asMap().entries.map((e) => Padding(
-              padding: const EdgeInsets.only(bottom: 14),
-              child:   _FilaTopEvento(rango: e.key + 1, evento: e.value),
-            ),),
+            ...topEventos.asMap().entries.map(
+                  (e) => Padding(
+                    padding: const EdgeInsets.only(bottom: 14),
+                    child: _FilaTopEvento(rango: e.key + 1, evento: e.value),
+                  ),
+                ),
         ],
       ),
     );
@@ -1852,59 +2321,86 @@ class _SeccionTopEventos extends StatelessWidget {
 
 class _FilaTopEvento extends StatelessWidget {
   const _FilaTopEvento({required this.rango, required this.evento});
-  final int           rango;
+  final int rango;
   final EventoTopStat evento;
 
   @override
   Widget build(BuildContext context) {
-    final pct   = evento.porcentajeAsistencia;
+    final pct = evento.porcentajeAsistencia;
     final color = _colorTasa(pct * 100);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 24, height: 24,
+          width: 24,
+          height: 24,
           decoration: BoxDecoration(
-            color:  pct >= 0.75 ? ColoresApp.verdeClaro : ColoresApp.superficieTerciar,
-            shape:  BoxShape.circle,
+            color: pct >= 0.75
+                ? ColoresApp.verdeClaro
+                : ColoresApp.superficieTerciar,
+            shape: BoxShape.circle,
           ),
-          child: Center(child: Text('$rango', style: TextStyle(
-            fontSize: 11, fontWeight: FontWeight.w800,
-            color: pct >= 0.75 ? ColoresApp.verde : ColoresApp.textoTerciario,
-          ),),),
+          child: Center(
+            child: Text(
+              '$rango',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color:
+                    pct >= 0.75 ? ColoresApp.verde : ColoresApp.textoTerciario,
+              ),
+            ),
+          ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                Expanded(child: Text(evento.titulo,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600, color: ColoresApp.textoPrimario, fontSize: 13,
-                  ), overflow: TextOverflow.ellipsis, maxLines: 1,),),
-                const SizedBox(width: 8),
-                Text('${(pct * 100).toStringAsFixed(0)}%',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: color, fontWeight: FontWeight.w700, fontSize: 12,
-                  ),),
-              ],),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      evento.titulo,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: ColoresApp.textoPrimario,
+                            fontSize: 13,
+                          ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${(pct * 100).toStringAsFixed(0)}%',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: color,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                        ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 5),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
-                  value:           pct,
+                  value: pct,
                   backgroundColor: color.withValues(alpha: 0.12),
-                  valueColor:      AlwaysStoppedAnimation<Color>(color),
-                  minHeight:       7,
+                  valueColor: AlwaysStoppedAnimation<Color>(color),
+                  minHeight: 7,
                 ),
               ),
               const SizedBox(height: 3),
-              Text('${evento.totalPresentes} de ${evento.totalEsperados} asistentes',
+              Text(
+                '${evento.totalPresentes} de ${evento.totalEsperados} asistentes',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: ColoresApp.textoTerciario, fontSize: 11,
-                ),),
+                      color: ColoresApp.textoTerciario,
+                      fontSize: 11,
+                    ),
+              ),
             ],
           ),
         ),
@@ -1923,9 +2419,9 @@ class _ModalDetalle extends StatefulWidget {
     required this.filtros,
   });
 
-  final String              titulo;
-  final String              dimension;
-  final String              valor;
+  final String titulo;
+  final String dimension;
+  final String valor;
   final FiltrosEstadisticas filtros;
 
   @override
@@ -1934,8 +2430,8 @@ class _ModalDetalle extends StatefulWidget {
 
 class _ModalDetalleState extends State<_ModalDetalle> {
   List<EventoResumido>? _eventos;
-  bool                  _cargando = true;
-  String?               _error;
+  bool _cargando = true;
+  String? _error;
 
   @override
   void initState() {
@@ -1946,13 +2442,21 @@ class _ModalDetalleState extends State<_ModalDetalle> {
   Future<void> _cargar() async {
     try {
       final eventos = await context.read<EstadisticasCubit>().cargarDetalle(
-        filtros:   widget.filtros,
-        dimension: widget.dimension,
-        valor:     widget.valor,
-      );
-      if (mounted) setState(() { _eventos = eventos; _cargando = false; });
+            filtros: widget.filtros,
+            dimension: widget.dimension,
+            valor: widget.valor,
+          );
+      if (mounted)
+        setState(() {
+          _eventos = eventos;
+          _cargando = false;
+        });
     } catch (e) {
-      if (mounted) setState(() { _error = e.toString(); _cargando = false; });
+      if (mounted)
+        setState(() {
+          _error = e.toString();
+          _cargando = false;
+        });
     }
   }
 
@@ -1960,34 +2464,54 @@ class _ModalDetalleState extends State<_ModalDetalle> {
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     return Container(
-      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.8),
+      constraints:
+          BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.8),
       decoration: const BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         children: [
           const SizedBox(height: 14),
-          Container(width: 36, height: 4,
-            decoration: BoxDecoration(color: ColoresApp.bordeMedio, borderRadius: BorderRadius.circular(2)),),
+          Container(
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+                color: ColoresApp.bordeMedio,
+                borderRadius: BorderRadius.circular(2)),
+          ),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(children: [
-              const Icon(Icons.bar_chart_rounded, color: ColoresApp.acento, size: 20),
-              const SizedBox(width: 10),
-              Expanded(child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(_etiquetaDimension(), style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: ColoresApp.acento, letterSpacing: 1.1,
-                  ),),
-                  Text(widget.titulo, style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ), overflow: TextOverflow.ellipsis,),
-                ],
-              ),),
-            ],),
+            child: Row(
+              children: [
+                const Icon(Icons.bar_chart_rounded,
+                    color: ColoresApp.acento, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _etiquetaDimension(),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: ColoresApp.acento,
+                              letterSpacing: 1.1,
+                            ),
+                      ),
+                      Text(
+                        widget.titulo,
+                        style:
+                            Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 4),
           const Divider(height: 24),
@@ -1999,28 +2523,31 @@ class _ModalDetalleState extends State<_ModalDetalle> {
 
   Widget _construirCuerpo(double bottomPadding) {
     if (_cargando) {
-      return const Center(child: CircularProgressIndicator(color: ColoresApp.acento));
+      return const Center(
+          child: CircularProgressIndicator(color: ColoresApp.acento));
     }
     if (_error != null) {
-      return Center(child: Text(_error!, style: const TextStyle(color: ColoresApp.rojo)));
+      return Center(
+          child: Text(_error!, style: const TextStyle(color: ColoresApp.rojo)));
     }
     final lista = _eventos ?? [];
     if (lista.isEmpty) return const _SinDatos();
     return ListView.separated(
-      padding:          EdgeInsets.fromLTRB(20, 0, 20, bottomPadding + 24),
-      itemCount:        lista.length,
-      separatorBuilder: (_, __) => const Divider(height: 1, color: ColoresApp.bordesuave),
-      itemBuilder:      (_, i)  => _FilaEventoDetalle(evento: lista[i]),
+      padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPadding + 24),
+      itemCount: lista.length,
+      separatorBuilder: (_, __) =>
+          const Divider(height: 1, color: ColoresApp.bordesuave),
+      itemBuilder: (_, i) => _FilaEventoDetalle(evento: lista[i]),
     );
   }
 
   String _etiquetaDimension() => switch (widget.dimension) {
-        'tipo'               => 'TIPO DE EVENTO',
-        'creador'            => 'ORGANIZADOR',
-        'mes'                => 'MES',
+        'tipo' => 'TIPO DE EVENTO',
+        'creador' => 'ORGANIZADOR',
+        'mes' => 'MES',
         'estatus_asistencia' => 'ESTATUS DE ASISTENCIA',
-        'dia_semana'         => 'DÍA DE SEMANA',
-        _                    => 'FILTRO',
+        'dia_semana' => 'DÍA DE SEMANA',
+        _ => 'FILTRO',
       };
 }
 
@@ -2030,63 +2557,98 @@ class _FilaEventoDetalle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pct       = evento.tasa;
-    final color     = _colorTasa(pct * 100);
-    final fecha     = evento.fechaInicio;
-    final fechaStr  = fecha != null ? '${fecha.day}/${fecha.month}/${fecha.year}' : '';
+    final pct = evento.tasa;
+    final color = _colorTasa(pct * 100);
+    final fecha = evento.fechaInicio;
+    final fechaStr =
+        fecha != null ? '${fecha.day}/${fecha.month}/${fecha.year}' : '';
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  evento.titulo,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: ColoresApp.textoPrimario,
+                      ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 3),
+                Row(
+                  children: [
+                    const Icon(Icons.category_outlined,
+                        size: 11, color: ColoresApp.textoTerciario),
+                    const SizedBox(width: 3),
+                    Text(
+                      evento.tipoNombre,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: ColoresApp.textoTerciario,
+                            fontSize: 11,
+                          ),
+                    ),
+                    if (fechaStr.isNotEmpty) ...[
+                      const SizedBox(width: 10),
+                      const Icon(Icons.calendar_today_outlined,
+                          size: 11, color: ColoresApp.textoTerciario),
+                      const SizedBox(width: 3),
+                      Text(
+                        fechaStr,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: ColoresApp.textoTerciario,
+                              fontSize: 11,
+                            ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Row(
+                  children: [
+                    const Icon(Icons.person_outline_rounded,
+                        size: 11, color: ColoresApp.textoTerciario),
+                    const SizedBox(width: 3),
+                    Expanded(
+                      child: Text(
+                        evento.creadorNombre,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: ColoresApp.textoTerciario,
+                              fontSize: 11,
+                            ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(evento.titulo,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600, color: ColoresApp.textoPrimario,
-                ), maxLines: 1, overflow: TextOverflow.ellipsis,),
-              const SizedBox(height: 3),
-              Row(children: [
-                const Icon(Icons.category_outlined, size: 11, color: ColoresApp.textoTerciario),
-                const SizedBox(width: 3),
-                Text(evento.tipoNombre, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: ColoresApp.textoTerciario, fontSize: 11,
-                ),),
-                if (fechaStr.isNotEmpty) ...[
-                  const SizedBox(width: 10),
-                  const Icon(Icons.calendar_today_outlined, size: 11, color: ColoresApp.textoTerciario),
-                  const SizedBox(width: 3),
-                  Text(fechaStr, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: ColoresApp.textoTerciario, fontSize: 11,
-                  ),),
-                ],
-              ],),
-              const SizedBox(height: 3),
-              Row(children: [
-                const Icon(Icons.person_outline_rounded, size: 11, color: ColoresApp.textoTerciario),
-                const SizedBox(width: 3),
-                Expanded(child: Text(evento.creadorNombre,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: ColoresApp.textoTerciario, fontSize: 11,
-                  ), overflow: TextOverflow.ellipsis,),),
-              ],),
+              Text(
+                '${(pct * 100).toStringAsFixed(0)}%',
+                style: TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w800, color: color),
+              ),
+              Text(
+                '${evento.presentes}/${evento.total}',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: ColoresApp.textoTerciario,
+                      fontSize: 11,
+                    ),
+              ),
             ],
           ),
-        ),
-        const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text('${(pct * 100).toStringAsFixed(0)}%',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: color),),
-            Text('${evento.presentes}/${evento.total}',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: ColoresApp.textoTerciario, fontSize: 11,
-              ),),
-          ],
-        ),
-      ],),
+        ],
+      ),
     );
   }
 }
@@ -2104,10 +2666,16 @@ class _SinDatos extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.bar_chart_outlined, color: ColoresApp.textoTerciario, size: 36),
+            const Icon(Icons.bar_chart_outlined,
+                color: ColoresApp.textoTerciario, size: 36),
             const SizedBox(height: 8),
-            Text('Sin datos para este período',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
+            Text(
+              'Sin datos para este período',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: ColoresApp.textoTerciario),
+            ),
           ],
         ),
       ),
@@ -2117,7 +2685,7 @@ class _SinDatos extends StatelessWidget {
 
 class _VistaError extends StatelessWidget {
   const _VistaError({required this.mensaje, required this.alReintentar});
-  final String       mensaje;
+  final String mensaje;
   final VoidCallback alReintentar;
 
   @override
@@ -2130,12 +2698,18 @@ class _VistaError extends StatelessWidget {
           children: [
             const Icon(Icons.error_outline, color: ColoresApp.rojo, size: 48),
             const SizedBox(height: 16),
-            Text(mensaje, textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: ColoresApp.textoSecundario),),
+            Text(
+              mensaje,
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: ColoresApp.textoSecundario),
+            ),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: alReintentar,
-              icon:  const Icon(Icons.refresh_rounded),
+              icon: const Icon(Icons.refresh_rounded),
               label: const Text('Reintentar'),
             ),
           ],
@@ -2154,8 +2728,8 @@ class _PanelFiltros extends StatefulWidget {
     required this.alAplicar,
   });
 
-  final FiltrosEstadisticas              filtrosActuales;
-  final OpcionesFiltros                  opciones;
+  final FiltrosEstadisticas filtrosActuales;
+  final OpcionesFiltros opciones;
   final ValueChanged<FiltrosEstadisticas> alAplicar;
 
   @override
@@ -2164,20 +2738,21 @@ class _PanelFiltros extends StatefulWidget {
 
 class _PanelFiltrosState extends State<_PanelFiltros>
     with SingleTickerProviderStateMixin {
-  late TabController       _tabController;
-  late DateTimeRange       _rango;
-  late List<OpcionFiltro>  _tiposSeleccionados;
-  late List<OpcionFiltro>  _creadoresSeleccionados;
-  late List<OpcionFiltro>  _tagsSeleccionados;
+  late TabController _tabController;
+  late DateTimeRange _rango;
+  late List<OpcionFiltro> _tiposSeleccionados;
+  late List<OpcionFiltro> _creadoresSeleccionados;
+  late List<OpcionFiltro> _tagsSeleccionados;
 
   @override
   void initState() {
     super.initState();
-    _tabController          = TabController(length: 4, vsync: this);
-    _rango                  = widget.filtrosActuales.rango;
-    _tiposSeleccionados     = List.from(widget.filtrosActuales.tiposSeleccionados);
-    _creadoresSeleccionados = List.from(widget.filtrosActuales.creadoresSeleccionados);
-    _tagsSeleccionados      = List.from(widget.filtrosActuales.tagsSeleccionados);
+    _tabController = TabController(length: 4, vsync: this);
+    _rango = widget.filtrosActuales.rango;
+    _tiposSeleccionados = List.from(widget.filtrosActuales.tiposSeleccionados);
+    _creadoresSeleccionados =
+        List.from(widget.filtrosActuales.creadoresSeleccionados);
+    _tagsSeleccionados = List.from(widget.filtrosActuales.tagsSeleccionados);
   }
 
   @override
@@ -2188,25 +2763,29 @@ class _PanelFiltrosState extends State<_PanelFiltros>
 
   void _seleccionarRango(int dias) {
     final ahora = DateTime.now();
-    setState(() => _rango = DateTimeRange(
-      start: ahora.subtract(Duration(days: dias)),
-      end:   ahora,
-    ),);
+    setState(
+      () => _rango = DateTimeRange(
+        start: ahora.subtract(Duration(days: dias)),
+        end: ahora,
+      ),
+    );
   }
 
   void _seleccionarAnio() {
     final ahora = DateTime.now();
-    setState(() => _rango = DateTimeRange(
-      start: DateTime(ahora.year, 1, 1),
-      end:   ahora,
-    ),);
+    setState(
+      () => _rango = DateTimeRange(
+        start: DateTime(ahora.year, 1, 1),
+        end: ahora,
+      ),
+    );
   }
 
   Future<void> _seleccionarPersonalizado() async {
     final resultado = await showDateRangePicker(
-      context:          context,
-      firstDate:        DateTime(2020),
-      lastDate:         DateTime.now(),
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
       initialDateRange: _rango,
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
@@ -2219,91 +2798,105 @@ class _PanelFiltrosState extends State<_PanelFiltros>
   }
 
   void _toggleTipo(OpcionFiltro o) => setState(() {
-    _tiposSeleccionados.any((e) => e.id == o.id)
-        ? _tiposSeleccionados.removeWhere((e) => e.id == o.id)
-        : _tiposSeleccionados.add(o);
-  });
+        _tiposSeleccionados.any((e) => e.id == o.id)
+            ? _tiposSeleccionados.removeWhere((e) => e.id == o.id)
+            : _tiposSeleccionados.add(o);
+      });
 
   void _toggleCreador(OpcionFiltro o) => setState(() {
-    _creadoresSeleccionados.any((e) => e.id == o.id)
-        ? _creadoresSeleccionados.removeWhere((e) => e.id == o.id)
-        : _creadoresSeleccionados.add(o);
-  });
+        _creadoresSeleccionados.any((e) => e.id == o.id)
+            ? _creadoresSeleccionados.removeWhere((e) => e.id == o.id)
+            : _creadoresSeleccionados.add(o);
+      });
 
   void _toggleTag(OpcionFiltro o) => setState(() {
-    _tagsSeleccionados.any((e) => e.id == o.id)
-        ? _tagsSeleccionados.removeWhere((e) => e.id == o.id)
-        : _tagsSeleccionados.add(o);
-  });
+        _tagsSeleccionados.any((e) => e.id == o.id)
+            ? _tagsSeleccionados.removeWhere((e) => e.id == o.id)
+            : _tagsSeleccionados.add(o);
+      });
 
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
-    final totalActivos  = _tiposSeleccionados.length +
+    final totalActivos = _tiposSeleccionados.length +
         _creadoresSeleccionados.length +
         _tagsSeleccionados.length;
 
     return ConstrainedBox(
-      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.88),
+      constraints:
+          BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.88),
       child: Container(
         decoration: const BoxDecoration(
-          color:        ColoresApp.superficiePrimaria,
+          color: ColoresApp.superficiePrimaria,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           children: [
             const SizedBox(height: 14),
-            Container(width: 36, height: 4,
-              decoration: BoxDecoration(color: ColoresApp.bordeMedio, borderRadius: BorderRadius.circular(2)),),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                  color: ColoresApp.bordeMedio,
+                  borderRadius: BorderRadius.circular(2)),
+            ),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(children: [
-                Text('Filtros', style: Theme.of(context).textTheme.headlineSmall),
-                const Spacer(),
-                if (totalActivos > 0)
-                  TextButton(
-                    onPressed: () => setState(() {
-                      _tiposSeleccionados.clear();
-                      _creadoresSeleccionados.clear();
-                      _tagsSeleccionados.clear();
-                    }),
-                    child: const Text('Limpiar todo',
-                      style: TextStyle(color: ColoresApp.rojo, fontSize: 13),),
-                  ),
-              ],),
+              child: Row(
+                children: [
+                  Text('Filtros',
+                      style: Theme.of(context).textTheme.headlineSmall),
+                  const Spacer(),
+                  if (totalActivos > 0)
+                    TextButton(
+                      onPressed: () => setState(() {
+                        _tiposSeleccionados.clear();
+                        _creadoresSeleccionados.clear();
+                        _tagsSeleccionados.clear();
+                      }),
+                      child: const Text(
+                        'Limpiar todo',
+                        style: TextStyle(color: ColoresApp.rojo, fontSize: 13),
+                      ),
+                    ),
+                ],
+              ),
             ),
             const SizedBox(height: 8),
-            _TabsFiltros(controller: _tabController, totalActivos: totalActivos),
+            _TabsFiltros(
+                controller: _tabController, totalActivos: totalActivos),
             const SizedBox(height: 4),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
                 children: [
                   _TabPeriodo(
-                    rango:             _rango,
-                    alSeleccionar7:    () => _seleccionarRango(7),
-                    alSeleccionar30:   () => _seleccionarRango(30),
-                    alSeleccionar90:   () => _seleccionarRango(90),
+                    rango: _rango,
+                    alSeleccionar7: () => _seleccionarRango(7),
+                    alSeleccionar30: () => _seleccionarRango(30),
+                    alSeleccionar90: () => _seleccionarRango(90),
                     alSeleccionarAnio: _seleccionarAnio,
-                    alPersonalizado:   _seleccionarPersonalizado,
+                    alPersonalizado: _seleccionarPersonalizado,
                   ),
                   _TabMultiselect(
-                    opciones:      widget.opciones.tipos,
+                    opciones: widget.opciones.tipos,
                     seleccionados: _tiposSeleccionados,
-                    onToggle:      _toggleTipo,
-                    etiquetaVacia: 'No hay tipos de evento disponibles para el período',
+                    onToggle: _toggleTipo,
+                    etiquetaVacia:
+                        'No hay tipos de evento disponibles para el período',
                   ),
                   _TabMultiselect(
-                    opciones:      widget.opciones.creadores,
+                    opciones: widget.opciones.creadores,
                     seleccionados: _creadoresSeleccionados,
-                    onToggle:      _toggleCreador,
-                    etiquetaVacia: 'No hay organizadores disponibles para el período',
+                    onToggle: _toggleCreador,
+                    etiquetaVacia:
+                        'No hay organizadores disponibles para el período',
                   ),
                   _TabMultiselect(
-                    opciones:      widget.opciones.tags,
+                    opciones: widget.opciones.tags,
                     seleccionados: _tagsSeleccionados,
-                    onToggle:      _toggleTag,
+                    onToggle: _toggleTag,
                     etiquetaVacia: 'No hay tags disponibles para el período',
                   ),
                 ],
@@ -2312,19 +2905,24 @@ class _PanelFiltrosState extends State<_PanelFiltros>
             Padding(
               padding: EdgeInsets.fromLTRB(20, 12, 20, bottomPadding + 16),
               child: FilledButton(
-                onPressed: () => widget.alAplicar(FiltrosEstadisticas(
-                  rango:                  _rango,
-                  tiposSeleccionados:     _tiposSeleccionados,
-                  creadoresSeleccionados: _creadoresSeleccionados,
-                  tagsSeleccionados:      _tagsSeleccionados,
-                ),),
+                onPressed: () => widget.alAplicar(
+                  FiltrosEstadisticas(
+                    rango: _rango,
+                    tiposSeleccionados: _tiposSeleccionados,
+                    creadoresSeleccionados: _creadoresSeleccionados,
+                    tagsSeleccionados: _tagsSeleccionados,
+                  ),
+                ),
                 style: FilledButton.styleFrom(
                   backgroundColor: ColoresApp.acento,
-                  minimumSize:     const Size.fromHeight(50),
-                  shape:           RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  minimumSize: const Size.fromHeight(50),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
                 ),
-                child: const Text('Aplicar filtros',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),),
+                child: const Text(
+                  'Aplicar filtros',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                ),
               ),
             ),
           ],
@@ -2339,29 +2937,30 @@ class _PanelFiltrosState extends State<_PanelFiltros>
 class _TabsFiltros extends StatelessWidget {
   const _TabsFiltros({required this.controller, required this.totalActivos});
   final TabController controller;
-  final int           totalActivos;
+  final int totalActivos;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficieSecund,
+        color: ColoresApp.superficieSecund,
         borderRadius: BorderRadius.circular(12),
       ),
       child: TabBar(
-        controller:           controller,
-        isScrollable:         false,
-        dividerColor:         Colors.transparent,
-        indicatorSize:        TabBarIndicatorSize.tab,
+        controller: controller,
+        isScrollable: false,
+        dividerColor: Colors.transparent,
+        indicatorSize: TabBarIndicatorSize.tab,
         indicator: BoxDecoration(
-          color:        ColoresApp.acento,
+          color: ColoresApp.acento,
           borderRadius: BorderRadius.circular(10),
         ),
-        labelColor:           ColoresApp.blanco,
+        labelColor: ColoresApp.blanco,
         unselectedLabelColor: ColoresApp.textoSecundario,
-        labelStyle:           const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-        unselectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+        labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        unselectedLabelStyle:
+            const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
         padding: const EdgeInsets.all(4),
         tabs: const [
           Tab(text: 'Período'),
@@ -2387,11 +2986,11 @@ class _TabPeriodo extends StatelessWidget {
   });
 
   final DateTimeRange rango;
-  final VoidCallback  alSeleccionar7;
-  final VoidCallback  alSeleccionar30;
-  final VoidCallback  alSeleccionar90;
-  final VoidCallback  alSeleccionarAnio;
-  final VoidCallback  alPersonalizado;
+  final VoidCallback alSeleccionar7;
+  final VoidCallback alSeleccionar30;
+  final VoidCallback alSeleccionar90;
+  final VoidCallback alSeleccionarAnio;
+  final VoidCallback alPersonalizado;
 
   @override
   Widget build(BuildContext context) {
@@ -2401,46 +3000,73 @@ class _TabPeriodo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Rango activo', style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            letterSpacing: 1.1, color: ColoresApp.textoTerciario,
-          ),),
+          Text(
+            'Rango activo',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  letterSpacing: 1.1,
+                  color: ColoresApp.textoTerciario,
+                ),
+          ),
           const SizedBox(height: 6),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color:        ColoresApp.acentoClaro,
+              color: ColoresApp.acentoClaro,
               borderRadius: BorderRadius.circular(12),
-              border:       Border.all(color: ColoresApp.acentoBorde),
+              border: Border.all(color: ColoresApp.acentoBorde),
             ),
-            child: Row(children: [
-              const Icon(Icons.calendar_today_outlined, color: ColoresApp.acento, size: 16),
-              const SizedBox(width: 8),
-              Text(
-                '${rango.start.day}/${rango.start.month}/${rango.start.year}'
-                '  →  '
-                '${rango.end.day}/${rango.end.month}/${rango.end.year}',
-                style: const TextStyle(
-                  color: ColoresApp.acento, fontWeight: FontWeight.w600, fontSize: 13,
+            child: Row(
+              children: [
+                const Icon(Icons.calendar_today_outlined,
+                    color: ColoresApp.acento, size: 16),
+                const SizedBox(width: 8),
+                Text(
+                  '${rango.start.day}/${rango.start.month}/${rango.start.year}'
+                  '  →  '
+                  '${rango.end.day}/${rango.end.month}/${rango.end.year}',
+                  style: const TextStyle(
+                    color: ColoresApp.acento,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
                 ),
-              ),
-            ],),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
-          Text('Presets', style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            letterSpacing: 1.1, color: ColoresApp.textoTerciario,
-          ),),
+          Text(
+            'Presets',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  letterSpacing: 1.1,
+                  color: ColoresApp.textoTerciario,
+                ),
+          ),
           const SizedBox(height: 10),
           Wrap(
-            spacing: 8, runSpacing: 8,
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              _ChipPreset(label: '7 días',   activo: dias <= 8,   alTap: alSeleccionar7),
-              _ChipPreset(label: '30 días',  activo: dias > 8 && dias <= 31,  alTap: alSeleccionar30),
-              _ChipPreset(label: '90 días',  activo: dias > 31 && dias <= 92, alTap: alSeleccionar90),
-              _ChipPreset(label: 'Este año',
+              _ChipPreset(
+                  label: '7 días', activo: dias <= 8, alTap: alSeleccionar7),
+              _ChipPreset(
+                  label: '30 días',
+                  activo: dias > 8 && dias <= 31,
+                  alTap: alSeleccionar30),
+              _ChipPreset(
+                  label: '90 días',
+                  activo: dias > 31 && dias <= 92,
+                  alTap: alSeleccionar90),
+              _ChipPreset(
+                label: 'Este año',
                 activo: rango.start.month == 1 && rango.start.day == 1,
-                alTap: alSeleccionarAnio,),
-              _ChipPreset(label: 'Personalizado',
-                icono: Icons.edit_calendar_outlined, activo: false, alTap: alPersonalizado,),
+                alTap: alSeleccionarAnio,
+              ),
+              _ChipPreset(
+                label: 'Personalizado',
+                icono: Icons.edit_calendar_outlined,
+                activo: false,
+                alTap: alPersonalizado,
+              ),
             ],
           ),
         ],
@@ -2450,39 +3076,52 @@ class _TabPeriodo extends StatelessWidget {
 }
 
 class _ChipPreset extends StatelessWidget {
-  const _ChipPreset({required this.label, required this.activo, required this.alTap, this.icono});
-  final String     label;
-  final bool       activo;
+  const _ChipPreset(
+      {required this.label,
+      required this.activo,
+      required this.alTap,
+      this.icono});
+  final String label;
+  final bool activo;
   final VoidCallback alTap;
-  final IconData?  icono;
+  final IconData? icono;
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color:        activo ? ColoresApp.acento : ColoresApp.superficieSecund,
+      color: activo ? ColoresApp.acento : ColoresApp.superficieSecund,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap:        alTap,
+        onTap: alTap,
         borderRadius: BorderRadius.circular(10),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
           decoration: BoxDecoration(
-            border:       Border.all(color: activo ? ColoresApp.acento : ColoresApp.bordeMedio),
+            border: Border.all(
+                color: activo ? ColoresApp.acento : ColoresApp.bordeMedio),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icono != null) ...[
-                Icon(icono, size: 14,
-                  color: activo ? ColoresApp.blanco : ColoresApp.textoSecundario,),
+                Icon(
+                  icono,
+                  size: 14,
+                  color:
+                      activo ? ColoresApp.blanco : ColoresApp.textoSecundario,
+                ),
                 const SizedBox(width: 6),
               ],
-              Text(label, style: TextStyle(
-                fontSize:   13,
-                fontWeight: FontWeight.w600,
-                color:      activo ? ColoresApp.blanco : ColoresApp.textoSecundario,
-              ),),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color:
+                      activo ? ColoresApp.blanco : ColoresApp.textoSecundario,
+                ),
+              ),
             ],
           ),
         ),
@@ -2501,10 +3140,10 @@ class _TabMultiselect extends StatelessWidget {
     required this.etiquetaVacia,
   });
 
-  final List<OpcionFiltro>     opciones;
-  final List<OpcionFiltro>     seleccionados;
+  final List<OpcionFiltro> opciones;
+  final List<OpcionFiltro> seleccionados;
   final ValueChanged<OpcionFiltro> onToggle;
-  final String                 etiquetaVacia;
+  final String etiquetaVacia;
 
   @override
   Widget build(BuildContext context) {
@@ -2512,37 +3151,55 @@ class _TabMultiselect extends StatelessWidget {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: Text(etiquetaVacia, textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: ColoresApp.textoTerciario),),
+          child: Text(
+            etiquetaVacia,
+            textAlign: TextAlign.center,
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: ColoresApp.textoTerciario),
+          ),
         ),
       );
     }
 
     return ListView.separated(
-      padding:          const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      itemCount:        opciones.length,
-      separatorBuilder: (_, __) => const Divider(height: 1, color: ColoresApp.bordesuave),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      itemCount: opciones.length,
+      separatorBuilder: (_, __) =>
+          const Divider(height: 1, color: ColoresApp.bordesuave),
       itemBuilder: (_, i) {
         final opcion = opciones[i];
         final activo = seleccionados.any((e) => e.id == opcion.id);
         return Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap:        () => onToggle(opcion),
+            onTap: () => onToggle(opcion),
             borderRadius: BorderRadius.circular(8),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 4),
-              child: Row(children: [
-                Expanded(child: Text(opcion.nombre,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: activo ? FontWeight.w700 : FontWeight.w500,
-                    color:      activo ? ColoresApp.acento : ColoresApp.textoPrimario,
-                  ),),),
-                if (activo)
-                  const Icon(Icons.check_circle_rounded, color: ColoresApp.acento, size: 22)
-                else
-                  const Icon(Icons.radio_button_unchecked_rounded, color: ColoresApp.bordeMedio, size: 22),
-              ],),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      opcion.nombre,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight:
+                                activo ? FontWeight.w700 : FontWeight.w500,
+                            color: activo
+                                ? ColoresApp.acento
+                                : ColoresApp.textoPrimario,
+                          ),
+                    ),
+                  ),
+                  if (activo)
+                    const Icon(Icons.check_circle_rounded,
+                        color: ColoresApp.acento, size: 22)
+                  else
+                    const Icon(Icons.radio_button_unchecked_rounded,
+                        color: ColoresApp.bordeMedio, size: 22),
+                ],
+              ),
             ),
           ),
         );

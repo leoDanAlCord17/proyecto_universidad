@@ -8,14 +8,15 @@ class AvisoApp {
 
   static void mostrar(
     BuildContext context, {
-    required String      texto,
+    required String texto,
     required EstiloAviso estilo,
-    Duration             duracion = const Duration(milliseconds: 2500),
+    Duration duracion = const Duration(milliseconds: 2500),
   }) {
     _entradaActual?.remove();
 
     final entrada = OverlayEntry(
-      builder: (_) => _VistaAviso(texto: texto, estilo: estilo, duracion: duracion),
+      builder: (_) =>
+          _VistaAviso(texto: texto, estilo: estilo, duracion: duracion),
     );
     _entradaActual = entrada;
     Overlay.of(context).insert(entrada);
@@ -38,9 +39,9 @@ class _VistaAviso extends StatefulWidget {
     required this.duracion,
   });
 
-  final String      texto;
+  final String texto;
   final EstiloAviso estilo;
-  final Duration    duracion;
+  final Duration duracion;
 
   @override
   State<_VistaAviso> createState() => _VistaAvisoState();
@@ -49,9 +50,9 @@ class _VistaAviso extends StatefulWidget {
 class _VistaAvisoState extends State<_VistaAviso>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
-  late final Animation<double>   _opacidad;
+  late final Animation<double> _opacidad;
 
-  static const _durFadeIn  = Duration(milliseconds: 200);
+  static const _durFadeIn = Duration(milliseconds: 200);
   static const _durFadeOut = Duration(milliseconds: 300);
 
   @override
@@ -83,20 +84,21 @@ class _VistaAvisoState extends State<_VistaAviso>
           child: FadeTransition(
             opacity: _opacidad,
             child: Material(
-              color:        Colors.transparent,
+              color: Colors.transparent,
               borderRadius: BorderRadius.circular(16),
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 300),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                 decoration: BoxDecoration(
-                  color:        colores.fondo,
+                  color: colores.fondo,
                   borderRadius: BorderRadius.circular(16),
-                  border:       Border.all(color: colores.borde),
+                  border: Border.all(color: colores.borde),
                   boxShadow: const [
                     BoxShadow(
-                      color:      ColoresApp.sombraGeneral,
+                      color: ColoresApp.sombraGeneral,
                       blurRadius: 16,
-                      offset:     Offset(0, 6),
+                      offset: Offset(0, 6),
                     ),
                   ],
                 ),
@@ -109,10 +111,10 @@ class _VistaAvisoState extends State<_VistaAviso>
                       child: Text(
                         widget.texto,
                         style: TextStyle(
-                          color:      colores.color,
-                          fontSize:   14,
+                          color: colores.color,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          height:     1.4,
+                          height: 1.4,
                         ),
                       ),
                     ),
@@ -137,9 +139,9 @@ class _ColoresAviso {
     required this.icono,
   });
 
-  final Color    color;
-  final Color    fondo;
-  final Color    borde;
+  final Color color;
+  final Color fondo;
+  final Color borde;
   final IconData icono;
 }
 

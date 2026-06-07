@@ -19,9 +19,12 @@ import 'selector_audiencia.dart';
 import 'tipo_evento.dart';
 
 const _decorTarjeta = BoxDecoration(
-  color:        ColoresApp.superficiePrimaria,
+  color: ColoresApp.superficiePrimaria,
   borderRadius: BorderRadius.all(Radius.circular(16)),
-  boxShadow:    [BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 4, offset: Offset(0, 1))],
+  boxShadow: [
+    BoxShadow(
+        color: ColoresApp.sombraTarjeta, blurRadius: 4, offset: Offset(0, 1))
+  ],
 );
 
 // ─── Pantalla ─────────────────────────────────────────────────────────────────
@@ -36,11 +39,11 @@ class CrearEventoPantalla extends StatefulWidget {
 }
 
 class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
-  final _tituloCtrl      = TextEditingController();
+  final _tituloCtrl = TextEditingController();
   final _descripcionCtrl = TextEditingController();
-  final _lugarCtrl       = TextEditingController();
-  bool _estaPrelleno  = false;
-  bool _estaIniciado  = false;
+  final _lugarCtrl = TextEditingController();
+  bool _estaPrelleno = false;
+  bool _estaIniciado = false;
 
   @override
   void initState() {
@@ -88,14 +91,14 @@ class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
             estado is CrearEventoCargado &&
             widget.eventoId != null) {
           _estaPrelleno = true;
-          _tituloCtrl.text      = estado.titulo;
+          _tituloCtrl.text = estado.titulo;
           _descripcionCtrl.text = estado.descripcion;
-          _lugarCtrl.text       = estado.lugar;
+          _lugarCtrl.text = estado.lugar;
         }
         if (estado is CrearEventoGuardado) {
           AvisoApp.mostrar(
             context,
-            texto:  estado.esBorrador
+            texto: estado.esBorrador
                 ? 'Borrador guardado ✓'
                 : 'Evento publicado ✓',
             estilo: EstiloAviso.exito,
@@ -103,10 +106,12 @@ class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
           context.go(Rutas.eventos);
         }
         if (estado is CrearEventoError) {
-          AvisoApp.mostrar(context, texto: estado.mensaje, estilo: EstiloAviso.error);
+          AvisoApp.mostrar(context,
+              texto: estado.mensaje, estilo: EstiloAviso.error);
         }
         if (estado is CrearEventoCargado && estado.errorValidacion != null) {
-          AvisoApp.mostrar(context, texto: estado.errorValidacion!, estilo: EstiloAviso.error);
+          AvisoApp.mostrar(context,
+              texto: estado.errorValidacion!, estilo: EstiloAviso.error);
         }
       },
       builder: _construirVista,
@@ -124,9 +129,9 @@ class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
-          statusBarColor:          Colors.transparent,
+          statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness:     Brightness.light,
+          statusBarBrightness: Brightness.light,
         ),
         child: Scaffold(
           backgroundColor: ColoresApp.fondo,
@@ -135,14 +140,14 @@ class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
                 child: CircularProgressIndicator(color: ColoresApp.acento),
               ),
             CrearEventoCargado() => _CuerpoFormulario(
-                estado:          estado,
-                tituloCtrl:      _tituloCtrl,
+                estado: estado,
+                tituloCtrl: _tituloCtrl,
                 descripcionCtrl: _descripcionCtrl,
-                lugarCtrl:       _lugarCtrl,
-                modoEdicion:     widget.eventoId != null,
+                lugarCtrl: _lugarCtrl,
+                modoEdicion: widget.eventoId != null,
               ),
             CrearEventoGuardado() => const SizedBox.shrink(),
-            CrearEventoError()    => _VistaError(mensaje: estado.mensaje),
+            CrearEventoError() => _VistaError(mensaje: estado.mensaje),
           },
         ),
       ),
@@ -161,11 +166,11 @@ class _CuerpoFormulario extends StatelessWidget {
     required this.modoEdicion,
   });
 
-  final CrearEventoCargado    estado;
+  final CrearEventoCargado estado;
   final TextEditingController tituloCtrl;
   final TextEditingController descripcionCtrl;
   final TextEditingController lugarCtrl;
-  final bool                  modoEdicion;
+  final bool modoEdicion;
 
   static const _nombresPasos = [
     'Información básica',
@@ -192,7 +197,7 @@ class _CuerpoFormulario extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Column(
-                  mainAxisAlignment:  MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -202,8 +207,8 @@ class _CuerpoFormulario extends StatelessWidget {
                     Text(
                       _nombresPasos[estado.pasoActual],
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: ColoresApp.textoSecundario,
-                      ),
+                            color: ColoresApp.textoSecundario,
+                          ),
                     ),
                   ],
                 ),
@@ -219,13 +224,15 @@ class _CuerpoFormulario extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
             child: Column(
               children: [
-                if (estado.pasoActual == 0) _TarjetaInfoBasica(
-                  estado:          estado,
-                  tituloCtrl:      tituloCtrl,
-                  descripcionCtrl: descripcionCtrl,
-                  lugarCtrl:       lugarCtrl,
-                ),
-                if (estado.pasoActual == 1) _TarjetaFechaDuracion(estado: estado),
+                if (estado.pasoActual == 0)
+                  _TarjetaInfoBasica(
+                    estado: estado,
+                    tituloCtrl: tituloCtrl,
+                    descripcionCtrl: descripcionCtrl,
+                    lugarCtrl: lugarCtrl,
+                  ),
+                if (estado.pasoActual == 1)
+                  _TarjetaFechaDuracion(estado: estado),
                 if (estado.pasoActual == 2) ...[
                   _TarjetaAudiencia(estado: estado),
                   const SizedBox(height: 16),
@@ -289,8 +296,8 @@ class _BotonesWizard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit   = context.read<CrearEventoCubit>();
-    final paso    = estado.pasoActual;
+    final cubit = context.read<CrearEventoCubit>();
+    final paso = estado.pasoActual;
     final esFinal = paso == _ultimoPaso;
 
     return Padding(
@@ -306,7 +313,7 @@ class _BotonesWizard extends StatelessWidget {
                     height: 52,
                     child: OutlinedButton.icon(
                       onPressed: () => cubit.irAPaso(paso - 1),
-                      icon:  const Icon(Icons.arrow_back_rounded, size: 18),
+                      icon: const Icon(Icons.arrow_back_rounded, size: 18),
                       label: const Text('Anterior'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: ColoresApp.textoSecundario,
@@ -321,31 +328,33 @@ class _BotonesWizard extends StatelessWidget {
                 child: SizedBox(
                   height: 52,
                   child: Material(
-                    color:        Colors.transparent,
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(14),
                     child: InkWell(
                       onTap: esFinal
                           ? (estado.estaGuardando ? null : cubit.publicarEvento)
                           : () => cubit.irAPaso(paso + 1),
-                      borderRadius:   BorderRadius.circular(14),
-                      splashColor:    ColoresApp.blanco.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(14),
+                      splashColor: ColoresApp.blanco.withValues(alpha: 0.3),
                       highlightColor: ColoresApp.blanco.withValues(alpha: 0.15),
                       child: Ink(
                         decoration: BoxDecoration(
-                          gradient:     ColoresApp.degradadoPrincipal,
+                          gradient: ColoresApp.degradadoPrincipal,
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Center(
                           child: esFinal
                               ? (estado.estaGuardando
                                   ? const CircularProgressIndicator(
-                                      color: ColoresApp.blanco, strokeWidth: 2,)
+                                      color: ColoresApp.blanco,
+                                      strokeWidth: 2,
+                                    )
                                   : const Text(
                                       'Publicar evento',
                                       style: TextStyle(
-                                        color:      ColoresApp.blanco,
+                                        color: ColoresApp.blanco,
                                         fontWeight: FontWeight.w700,
-                                        fontSize:   15,
+                                        fontSize: 15,
                                       ),
                                     ))
                               : const Row(
@@ -354,16 +363,16 @@ class _BotonesWizard extends StatelessWidget {
                                     Text(
                                       'Siguiente',
                                       style: TextStyle(
-                                        color:      ColoresApp.blanco,
+                                        color: ColoresApp.blanco,
                                         fontWeight: FontWeight.w700,
-                                        fontSize:   15,
+                                        fontSize: 15,
                                       ),
                                     ),
                                     SizedBox(width: 8),
                                     Icon(
                                       Icons.arrow_forward_rounded,
                                       color: ColoresApp.blanco,
-                                      size:  18,
+                                      size: 18,
                                     ),
                                   ],
                                 ),
@@ -378,27 +387,27 @@ class _BotonesWizard extends StatelessWidget {
           if (esFinal) ...[
             const SizedBox(height: 12),
             SizedBox(
-              width:  double.infinity,
+              width: double.infinity,
               height: 52,
               child: Material(
-                color:        Colors.transparent,
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(14),
                 child: InkWell(
-                  onTap:          estado.estaGuardando ? null : cubit.guardarBorrador,
-                  borderRadius:   BorderRadius.circular(14),
+                  onTap: estado.estaGuardando ? null : cubit.guardarBorrador,
+                  borderRadius: BorderRadius.circular(14),
                   highlightColor: ColoresApp.superficieTerciar,
-                  splashColor:    ColoresApp.bordeMedio,
+                  splashColor: ColoresApp.bordeMedio,
                   child: Ink(
                     decoration: BoxDecoration(
-                      border:       Border.all(color: ColoresApp.bordeMedio),
+                      border: Border.all(color: ColoresApp.bordeMedio),
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Center(
                       child: Text(
                         'Guardar como borrador',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: ColoresApp.textoSecundario,
-                        ),
+                              color: ColoresApp.textoSecundario,
+                            ),
                       ),
                     ),
                   ),
@@ -422,7 +431,7 @@ class _TarjetaInfoBasica extends StatelessWidget {
     required this.lugarCtrl,
   });
 
-  final CrearEventoCargado    estado;
+  final CrearEventoCargado estado;
   final TextEditingController tituloCtrl;
   final TextEditingController descripcionCtrl;
   final TextEditingController lugarCtrl;
@@ -432,21 +441,21 @@ class _TarjetaInfoBasica extends StatelessWidget {
     final cubit = context.read<CrearEventoCubit>();
     return Container(
       decoration: _decorTarjeta,
-      padding:    const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _tituloSeccion('INFORMACIÓN BÁSICA', context),
           const SizedBox(height: 16),
           CampoTextoApp(
-            etiqueta:   'Título *',
-            hintText:   'Ej. Cálculo III – Parcial 2',
+            etiqueta: 'Título *',
+            hintText: 'Ej. Cálculo III – Parcial 2',
             controller: tituloCtrl,
           ),
           const SizedBox(height: 16),
           CampoTextoApp(
-            etiqueta:   'Descripción',
-            hintText:   'Instrucciones o detalles del evento',
+            etiqueta: 'Descripción',
+            hintText: 'Instrucciones o detalles del evento',
             controller: descripcionCtrl,
           ),
           const SizedBox(height: 16),
@@ -454,11 +463,11 @@ class _TarjetaInfoBasica extends StatelessWidget {
             children: [
               Expanded(
                 child: CampoSelectApp<TipoEvento>(
-                  etiqueta:      'Tipo de evento',
-                  hintText:      'Selecciona',
-                  opciones:      estado.tiposEvento,
-                  mostrarTexto:  (t) => t.nombre,
-                  valorActual:   estado.tipoEventoSeleccionado,
+                  etiqueta: 'Tipo de evento',
+                  hintText: 'Selecciona',
+                  opciones: estado.tiposEvento,
+                  mostrarTexto: (t) => t.nombre,
+                  valorActual: estado.tipoEventoSeleccionado,
                   alSeleccionar: (t) => cubit.actualizarCampo(
                     (s) => s.copiarCon(tipoEventoSeleccionado: t),
                   ),
@@ -467,8 +476,8 @@ class _TarjetaInfoBasica extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: CampoTextoApp(
-                  etiqueta:   'Lugar',
-                  hintText:   'Aula 304',
+                  etiqueta: 'Lugar',
+                  hintText: 'Aula 304',
                   controller: lugarCtrl,
                 ),
               ),
@@ -492,7 +501,7 @@ class _TarjetaFechaDuracion extends StatelessWidget {
     final cubit = context.read<CrearEventoCubit>();
     return Container(
       decoration: _decorTarjeta,
-      padding:    const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -502,9 +511,9 @@ class _TarjetaFechaDuracion extends StatelessWidget {
             children: [
               Expanded(
                 child: CampoFechaApp(
-                  etiqueta:      'Fecha inicio',
-                  hintText:      'dd/mm/aaaa',
-                  fechaActual:   estado.fechaInicio,
+                  etiqueta: 'Fecha inicio',
+                  hintText: 'dd/mm/aaaa',
+                  fechaActual: estado.fechaInicio,
                   alSeleccionar: (f) => cubit.actualizarCampo(
                     (s) => s.copiarCon(fechaInicio: f, fechaFin: f),
                   ),
@@ -513,9 +522,9 @@ class _TarjetaFechaDuracion extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: CampoHoraApp(
-                  etiqueta:      'Hora inicio',
-                  hintText:      '08:00',
-                  horaActual:    estado.horaInicio,
+                  etiqueta: 'Hora inicio',
+                  hintText: '08:00',
+                  horaActual: estado.horaInicio,
                   alSeleccionar: (h) => cubit.actualizarCampo(
                     (s) => s.copiarCon(horaInicio: h),
                   ),
@@ -528,10 +537,10 @@ class _TarjetaFechaDuracion extends StatelessWidget {
             children: [
               Expanded(
                 child: CampoFechaApp(
-                  etiqueta:      'Fecha fin',
-                  hintText:      'dd/mm/aaaa',
-                  fechaActual:   estado.fechaFin,
-                  fechaMinima:   estado.fechaInicio,
+                  etiqueta: 'Fecha fin',
+                  hintText: 'dd/mm/aaaa',
+                  fechaActual: estado.fechaFin,
+                  fechaMinima: estado.fechaInicio,
                   alSeleccionar: (f) => cubit.actualizarCampo(
                     (s) => s.copiarCon(fechaFin: f),
                   ),
@@ -540,9 +549,9 @@ class _TarjetaFechaDuracion extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: CampoHoraApp(
-                  etiqueta:      'Hora fin *',
-                  hintText:      '10:00',
-                  horaActual:    estado.horaFin,
+                  etiqueta: 'Hora fin *',
+                  hintText: '10:00',
+                  horaActual: estado.horaFin,
                   alSeleccionar: (h) => cubit.actualizarCampo(
                     (s) => s.copiarCon(horaFin: h),
                   ),
@@ -567,7 +576,7 @@ class _TarjetaAudiencia extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: _decorTarjeta,
-      padding:    const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -592,48 +601,48 @@ class _TarjetaModosRegistro extends StatelessWidget {
     final cubit = context.read<CrearEventoCubit>();
     return Container(
       decoration: _decorTarjeta,
-      padding:    const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _tituloSeccion('MODOS DE REGISTRO', context),
           const SizedBox(height: 16),
           FilaTogle(
-            titulo:      'Marcado manual',
+            titulo: 'Marcado manual',
             descripcion: 'Admin busca por nombre o cédula',
-            icono:       Icons.manage_search_rounded,
-            valor:       estado.permiteManualAdmin,
-            alCambiar:   (v) => cubit.actualizarCampo(
+            icono: Icons.manage_search_rounded,
+            valor: estado.permiteManualAdmin,
+            alCambiar: (v) => cubit.actualizarCampo(
               (s) => s.copiarCon(permiteManualAdmin: v),
             ),
           ),
           const SizedBox(height: 12),
           FilaTogle(
-            titulo:      'Auto-registro (QR evento)',
+            titulo: 'Auto-registro (QR evento)',
             descripcion: 'Asistente escanea el QR proyectado',
-            icono:       Icons.qr_code_rounded,
-            valor:       estado.permiteQrEvento,
-            alCambiar:   (v) => cubit.actualizarCampo(
+            icono: Icons.qr_code_rounded,
+            valor: estado.permiteQrEvento,
+            alCambiar: (v) => cubit.actualizarCampo(
               (s) => s.copiarCon(permiteQrEvento: v),
             ),
           ),
           const SizedBox(height: 12),
           FilaTogle(
-            titulo:      'Escanear carnet QR',
+            titulo: 'Escanear carnet QR',
             descripcion: 'Admin escanea el QR del estudiante',
-            icono:       Icons.qr_code_scanner_rounded,
-            valor:       estado.permiteQrUsuario,
-            alCambiar:   (v) => cubit.actualizarCampo(
+            icono: Icons.qr_code_scanner_rounded,
+            valor: estado.permiteQrUsuario,
+            alCambiar: (v) => cubit.actualizarCampo(
               (s) => s.copiarCon(permiteQrUsuario: v),
             ),
           ),
           const SizedBox(height: 12),
           FilaTogle(
-            titulo:      'Registrar invitados foráneos',
+            titulo: 'Registrar invitados foráneos',
             descripcion: 'Sin cuenta en el sistema',
-            icono:       Icons.person_add_alt_1_outlined,
-            valor:       estado.permiteForaneos,
-            alCambiar:   (v) => cubit.actualizarCampo(
+            icono: Icons.person_add_alt_1_outlined,
+            valor: estado.permiteForaneos,
+            alCambiar: (v) => cubit.actualizarCampo(
               (s) => s.copiarCon(permiteForaneos: v),
             ),
           ),
@@ -655,35 +664,35 @@ class _TarjetaControlSalida extends StatelessWidget {
     final cubit = context.read<CrearEventoCubit>();
     return Container(
       decoration: _decorTarjeta,
-      padding:    const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _tituloSeccion('CONTROL DE SALIDA', context),
           const SizedBox(height: 16),
           FilaTogle(
-            titulo:      'Registrar salida (ciclo completo)',
+            titulo: 'Registrar salida (ciclo completo)',
             descripcion: 'Asistente debe marcar entrada Y salida',
-            valor:       estado.requiereCicloCompleto,
-            alCambiar:   (v) => cubit.actualizarCampo(
+            valor: estado.requiereCicloCompleto,
+            alCambiar: (v) => cubit.actualizarCampo(
               (s) => s.copiarCon(requiereCicloCompleto: v),
             ),
           ),
           const SizedBox(height: 12),
           FilaTogle(
-            titulo:      'Permitir salida anticipada',
+            titulo: 'Permitir salida anticipada',
             descripcion: 'Admin justifica caso por caso',
-            valor:       estado.permiteSalidaAnticipada,
-            alCambiar:   (v) => cubit.actualizarCampo(
+            valor: estado.permiteSalidaAnticipada,
+            alCambiar: (v) => cubit.actualizarCampo(
               (s) => s.copiarCon(permiteSalidaAnticipada: v),
             ),
           ),
           const SizedBox(height: 12),
           FilaTogle(
-            titulo:      'Marcar ausentes automáticamente',
+            titulo: 'Marcar ausentes automáticamente',
             descripcion: 'Al llegar la hora de cierre',
-            valor:       estado.marcarAusentesAuto,
-            alCambiar:   (v) => cubit.actualizarCampo(
+            valor: estado.marcarAusentesAuto,
+            alCambiar: (v) => cubit.actualizarCampo(
               (s) => s.copiarCon(marcarAusentesAuto: v),
             ),
           ),
@@ -714,12 +723,13 @@ class _VistaError extends StatelessWidget {
               mensaje,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
+                    color: ColoresApp.textoSecundario,
+                  ),
             ),
             const SizedBox(height: 24),
             FilledButton(
-              onPressed: () => context.read<CrearEventoCubit>().cargarOpciones(),
+              onPressed: () =>
+                  context.read<CrearEventoCubit>().cargarOpciones(),
               child: const Text('Reintentar'),
             ),
           ],
@@ -735,9 +745,9 @@ Widget _tituloSeccion(String texto, BuildContext context) {
   return Text(
     texto,
     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-      color:         ColoresApp.acento,
-      fontWeight:    FontWeight.w800,
-      letterSpacing: 1.5,
-    ),
+          color: ColoresApp.acento,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 1.5,
+        ),
   );
 }

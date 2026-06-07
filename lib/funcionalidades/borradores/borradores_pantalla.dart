@@ -25,8 +25,8 @@ class BorradoresPantalla extends StatefulWidget {
 }
 
 class _BorradoresPantallaState extends State<BorradoresPantalla> {
-  bool           _estaIniciado = false;
-  String         _textoBusqueda = '';
+  bool _estaIniciado = false;
+  String _textoBusqueda = '';
   DateTimeRange? _rango;
 
   @override
@@ -48,7 +48,7 @@ class _BorradoresPantallaState extends State<BorradoresPantalla> {
         if (estado is BorradoresCargados && estado.errorPublicacion != null) {
           AvisoApp.mostrar(
             context,
-            texto:  estado.errorPublicacion!,
+            texto: estado.errorPublicacion!,
             estilo: EstiloAviso.error,
           );
           context.read<BorradoresCubit>().limpiarError();
@@ -61,9 +61,9 @@ class _BorradoresPantallaState extends State<BorradoresPantalla> {
   Widget _construirVista(BuildContext context, BorradoresEstado estado) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -77,8 +77,10 @@ class _BorradoresPantallaState extends State<BorradoresPantalla> {
                   children: [
                     const BotonRegresar(),
                     const SizedBox(width: 12),
-                    Text('Borradores',
-                        style: Theme.of(context).textTheme.headlineSmall,),
+                    Text(
+                      'Borradores',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
                   ],
                 ),
               ),
@@ -92,7 +94,9 @@ class _BorradoresPantallaState extends State<BorradoresPantalla> {
                 },
                 alSeleccionarRango: (rango) {
                   setState(() => _rango = rango);
-                  context.read<BorradoresCubit>().filtrar(_textoBusqueda, rango);
+                  context
+                      .read<BorradoresCubit>()
+                      .filtrar(_textoBusqueda, rango);
                 },
                 alLimpiarRango: () {
                   setState(() => _rango = null);
@@ -123,12 +127,12 @@ class _Cuerpo extends StatelessWidget {
       BorradoresInicial() || BorradoresCargando() => const Center(
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
-      BorradoresCargados()    => _Lista(estado: e),
+      BorradoresCargados() => _Lista(estado: e),
       BorradoresCargandoMas() => _Lista(
           estado: BorradoresCargados(
-            borradores:          e.borradores,
+            borradores: e.borradores,
             borradoresFiltrados: e.borradoresFiltrados,
-            hayMas:              true,
+            hayMas: true,
           ),
           cargandoMas: true,
         ),
@@ -143,7 +147,7 @@ class _Lista extends StatelessWidget {
   const _Lista({required this.estado, this.cargandoMas = false});
 
   final BorradoresCargados estado;
-  final bool               cargandoMas;
+  final bool cargandoMas;
 
   @override
   Widget build(BuildContext context) {
@@ -154,15 +158,15 @@ class _Lista extends StatelessWidget {
         child: Text(
           'No hay borradores',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: ColoresApp.textoTerciario,
-          ),
+                color: ColoresApp.textoTerciario,
+              ),
         ),
       );
     }
 
     return ListView.separated(
-      padding:          const EdgeInsets.fromLTRB(20, 16, 20, 32),
-      itemCount:        items.length + 1,
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+      itemCount: items.length + 1,
       separatorBuilder: (_, __) => const SizedBox(height: 12),
       itemBuilder: (context, i) {
         if (i == items.length) {
@@ -185,14 +189,13 @@ class _Lista extends StatelessWidget {
         }
         final borrador = items[i];
         return TarjetaBorradorEvento(
-          titulo:         borrador.titulo,
-          horario:        _formatearHorario(borrador),
-          descripcion:    borrador.descripcion,
+          titulo: borrador.titulo,
+          horario: _formatearHorario(borrador),
+          descripcion: borrador.descripcion,
           estaPublicando: estado.publicandoId == borrador.id,
-          alVerDetalles:  () => context.push(Rutas.editarEventoUrl(borrador.id)),
-          alPublicar:     () => context
-              .read<BorradoresCubit>()
-              .publicarEvento(borrador.id),
+          alVerDetalles: () => context.push(Rutas.editarEventoUrl(borrador.id)),
+          alPublicar: () =>
+              context.read<BorradoresCubit>().publicarEvento(borrador.id),
         );
       },
     );
@@ -201,10 +204,18 @@ class _Lista extends StatelessWidget {
   String _formatearHorario(BorradorEvento borrador) {
     final fecha = borrador.fechaInicio;
     if (fecha == null) return '—';
-    const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-    final dia  = dias[fecha.weekday - 1];
-    final d    = fecha.day.toString().padLeft(2, '0');
-    final m    = fecha.month.toString().padLeft(2, '0');
+    const dias = [
+      'Lunes',
+      'Martes',
+      'Miércoles',
+      'Jueves',
+      'Viernes',
+      'Sábado',
+      'Domingo'
+    ];
+    final dia = dias[fecha.weekday - 1];
+    final d = fecha.day.toString().padLeft(2, '0');
+    final m = fecha.month.toString().padLeft(2, '0');
     final base = '$dia $d/$m';
     final hi = borrador.horaInicio;
     if (hi == null) return base;
@@ -216,12 +227,12 @@ class _Lista extends StatelessWidget {
   }
 
   static String _a12h(String hhmm) {
-    final p       = hhmm.split(':');
+    final p = hhmm.split(':');
     if (p.length < 2) return hhmm;
-    final h24     = int.tryParse(p[0]) ?? 0;
+    final h24 = int.tryParse(p[0]) ?? 0;
     final minutos = p[1].padLeft(2, '0');
-    final h12     = h24 % 12 == 0 ? 12 : h24 % 12;
-    final ampm    = h24 < 12 ? 'AM' : 'PM';
+    final h12 = h24 % 12 == 0 ? 12 : h24 % 12;
+    final ampm = h24 < 12 ? 'AM' : 'PM';
     return '$h12:$minutos $ampm';
   }
 }
@@ -247,8 +258,8 @@ class _VistaError extends StatelessWidget {
               mensaje,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColoresApp.textoSecundario,
-              ),
+                    color: ColoresApp.textoSecundario,
+                  ),
             ),
           ],
         ),

@@ -3,7 +3,7 @@ import 'colores_app.dart';
 
 final temaApp = ThemeData(
   useMaterial3: true,
-  fontFamily: 'Outfit', 
+  fontFamily: 'Outfit',
   scaffoldBackgroundColor: ColoresApp.fondo,
 
   colorScheme: ColorScheme.fromSeed(
@@ -48,21 +48,21 @@ final temaApp = ThemeData(
     ),
     // Títulos de tarjetas: nombre de evento, materia
     headlineSmall: TextStyle(
-      fontSize:   16,
+      fontSize: 16,
       fontWeight: FontWeight.w700,
-      color:      ColoresApp.textoPrimario,
+      color: ColoresApp.textoPrimario,
     ),
     // Subtítulos de tarjetas: horario, lugar, metadatos
     bodyLarge: TextStyle(
-      fontSize:   13,
+      fontSize: 13,
       fontWeight: FontWeight.w500,
-      color:      ColoresApp.textoSecundario,
+      color: ColoresApp.textoSecundario,
     ),
     // Etiquetas pequeñas: insignias, nav labels
     labelSmall: TextStyle(
-      fontSize:   11,
+      fontSize: 11,
       fontWeight: FontWeight.w600,
-      color:      ColoresApp.textoTerciario,
+      color: ColoresApp.textoTerciario,
     ),
   ),
 

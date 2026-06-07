@@ -13,10 +13,10 @@ class TarjetaBorradorEvento extends StatelessWidget {
     required this.alPublicar,
   });
 
-  final String       titulo;
-  final String       horario;
-  final String       descripcion;
-  final bool         estaPublicando;
+  final String titulo;
+  final String horario;
+  final String descripcion;
+  final bool estaPublicando;
   final VoidCallback alVerDetalles;
   final VoidCallback alPublicar;
 
@@ -24,10 +24,13 @@ class TarjetaBorradorEvento extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.all(Radius.circular(16)),
         boxShadow: [
-          BoxShadow(color: ColoresApp.sombraTarjeta, blurRadius: 4, offset: Offset(0, 1)),
+          BoxShadow(
+              color: ColoresApp.sombraTarjeta,
+              blurRadius: 4,
+              offset: Offset(0, 1)),
         ],
       ),
       padding: const EdgeInsets.all(20),
@@ -37,20 +40,21 @@ class TarjetaBorradorEvento extends StatelessWidget {
           Text(
             titulo,
             style: const TextStyle(
-              color:      ColoresApp.textoPrimario,
-              fontSize:   16,
+              color: ColoresApp.textoPrimario,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 6),
           Row(
             children: [
-              const Icon(Icons.access_time_rounded, size: 14, color: ColoresApp.textoTerciario),
+              const Icon(Icons.access_time_rounded,
+                  size: 14, color: ColoresApp.textoTerciario),
               const SizedBox(width: 4),
               Text(
                 horario,
                 style: const TextStyle(
-                  color:    ColoresApp.textoSecundario,
+                  color: ColoresApp.textoSecundario,
                   fontSize: 13,
                 ),
               ),
@@ -60,12 +64,12 @@ class TarjetaBorradorEvento extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               descripcion,
-              maxLines:  2,
-              overflow:  TextOverflow.ellipsis,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color:    ColoresApp.textoSecundario,
+                color: ColoresApp.textoSecundario,
                 fontSize: 14,
-                height:   1.4,
+                height: 1.4,
               ),
             ),
           ],
@@ -77,7 +81,7 @@ class TarjetaBorradorEvento extends StatelessWidget {
               Expanded(
                 child: _BotonPublicar(
                   estaPublicando: estaPublicando,
-                  alPresionar:    alPublicar,
+                  alPresionar: alPublicar,
                 ),
               ),
             ],
@@ -100,24 +104,24 @@ class _BotonDetalles extends StatelessWidget {
     return SizedBox(
       height: 42,
       child: Material(
-        color:        Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap:          alPresionar,
-          borderRadius:   BorderRadius.circular(12),
+          onTap: alPresionar,
+          borderRadius: BorderRadius.circular(12),
           highlightColor: ColoresApp.superficieTerciar,
-          splashColor:    ColoresApp.bordeMedio,
+          splashColor: ColoresApp.bordeMedio,
           child: Ink(
             decoration: BoxDecoration(
-              border:       Border.all(color: ColoresApp.bordeMedio),
+              border: Border.all(color: ColoresApp.bordeMedio),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Center(
               child: Text(
                 'Ver detalles',
                 style: TextStyle(
-                  color:      ColoresApp.textoSecundario,
-                  fontSize:   13,
+                  color: ColoresApp.textoSecundario,
+                  fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -137,7 +141,7 @@ class _BotonPublicar extends StatelessWidget {
     required this.alPresionar,
   });
 
-  final bool         estaPublicando;
+  final bool estaPublicando;
   final VoidCallback alPresionar;
 
   @override
@@ -145,31 +149,31 @@ class _BotonPublicar extends StatelessWidget {
     return SizedBox(
       height: 42,
       child: Material(
-        color:        Colors.transparent,
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap:        estaPublicando ? null : alPresionar,
+          onTap: estaPublicando ? null : alPresionar,
           borderRadius: BorderRadius.circular(12),
           child: Ink(
             decoration: BoxDecoration(
-              gradient:     ColoresApp.degradadoPrincipal,
+              gradient: ColoresApp.degradadoPrincipal,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
               child: estaPublicando
                   ? const SizedBox(
-                      width:  16,
+                      width: 16,
                       height: 16,
-                      child:  CircularProgressIndicator(
-                        color:       ColoresApp.blanco,
+                      child: CircularProgressIndicator(
+                        color: ColoresApp.blanco,
                         strokeWidth: 2,
                       ),
                     )
                   : const Text(
                       'Publicar',
                       style: TextStyle(
-                        color:      ColoresApp.blanco,
-                        fontSize:   13,
+                        color: ColoresApp.blanco,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

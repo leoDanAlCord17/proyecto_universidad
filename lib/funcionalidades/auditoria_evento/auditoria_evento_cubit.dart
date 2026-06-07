@@ -7,25 +7,26 @@ import 'auditoria_evento_modelo.dart';
 import 'auditoria_evento_repositorio.dart';
 
 class AuditoriaEventoCubit extends Cubit<AuditoriaEventoEstado> {
-  AuditoriaEventoCubit(this._repositorio) : super(const AuditoriaEventoInicial());
+  AuditoriaEventoCubit(this._repositorio)
+      : super(const AuditoriaEventoInicial());
 
   final AuditoriaEventoRepositorio _repositorio;
 
-  List<EventoParaAuditoria> _todosEventos  = [];
-  int                       _offsetEventos = 0;
-  bool                      _hayMasEventos = false;
+  List<EventoParaAuditoria> _todosEventos = [];
+  int _offsetEventos = 0;
+  bool _hayMasEventos = false;
 
-  List<EventoParaAuditoria> get todosEventos   => _todosEventos;
-  bool                      get hayMasEventos  => _hayMasEventos;
+  List<EventoParaAuditoria> get todosEventos => _todosEventos;
+  bool get hayMasEventos => _hayMasEventos;
 
   Future<void> iniciar() async {
     _offsetEventos = 0;
-    _todosEventos  = [];
+    _todosEventos = [];
     emit(const AuditoriaEventoCargandoLista());
     try {
       final resultado = await _repositorio.obtenerEventos(offset: 0);
       if (isClosed) return;
-      _todosEventos  = resultado.eventos;
+      _todosEventos = resultado.eventos;
       _offsetEventos = resultado.eventos.length;
       _hayMasEventos = resultado.hayMas;
       emit(const AuditoriaEventoListaCargada());
@@ -47,11 +48,12 @@ class AuditoriaEventoCubit extends Cubit<AuditoriaEventoEstado> {
   Future<void> cargarMasEventos() async {
     if (!_hayMasEventos) return;
     try {
-      final resultado = await _repositorio.obtenerEventos(offset: _offsetEventos);
+      final resultado =
+          await _repositorio.obtenerEventos(offset: _offsetEventos);
       if (isClosed) return;
-      _todosEventos   = [..._todosEventos, ...resultado.eventos];
+      _todosEventos = [..._todosEventos, ...resultado.eventos];
       _offsetEventos += resultado.eventos.length;
-      _hayMasEventos  = resultado.hayMas;
+      _hayMasEventos = resultado.hayMas;
     } on FallaServidor catch (_) {
       // La modal resetea el spinner; _hayMasEventos sigue true para reintentar.
     } on FallaRed catch (_) {
@@ -65,12 +67,14 @@ class AuditoriaEventoCubit extends Cubit<AuditoriaEventoEstado> {
     emit(AuditoriaEventoCargandoAuditoria(eventoSeleccionado: evento));
     try {
       final registros = await _repositorio.obtenerRegistros(evento.id);
-      final resumen   = ResumenAuditoria.calcular(registros);
-      emit(AuditoriaEventoCargada(
-        eventoSeleccionado: evento,
-        registros:          registros,
-        resumen:            resumen,
-      ),);
+      final resumen = ResumenAuditoria.calcular(registros);
+      emit(
+        AuditoriaEventoCargada(
+          eventoSeleccionado: evento,
+          registros: registros,
+          resumen: resumen,
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(AuditoriaEventoError(e.mensaje));

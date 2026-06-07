@@ -30,7 +30,6 @@ List<GoRoute> get rutasEventos => [
           child: const EventosPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.crearEvento,
         builder: (context, state) => BlocProvider(
@@ -38,7 +37,6 @@ List<GoRoute> get rutasEventos => [
           child: const CrearEventoPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.editarEvento,
         builder: (context, state) => BlocProvider(
@@ -48,7 +46,6 @@ List<GoRoute> get rutasEventos => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.borradores,
         builder: (context, state) => BlocProvider(
@@ -56,7 +53,6 @@ List<GoRoute> get rutasEventos => [
           child: const BorradoresPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.panelControl,
         builder: (context, state) => BlocProvider(
@@ -66,7 +62,6 @@ List<GoRoute> get rutasEventos => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.buscarAsistente,
         builder: (context, state) => BlocProvider(
@@ -76,7 +71,6 @@ List<GoRoute> get rutasEventos => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.escanearQrUsuario,
         builder: (context, state) => BlocProvider(
@@ -86,7 +80,6 @@ List<GoRoute> get rutasEventos => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.escanear,
         builder: (context, state) => BlocProvider(
@@ -94,7 +87,6 @@ List<GoRoute> get rutasEventos => [
           child: const EscanearEventoQrPantalla(),
         ),
       ),
-
       GoRoute(
         path: Rutas.colaboradoresEvento,
         builder: (context, state) => BlocProvider(
@@ -104,7 +96,6 @@ List<GoRoute> get rutasEventos => [
           ),
         ),
       ),
-
       GoRoute(
         path: Rutas.auditoriaEvento,
         builder: (context, state) => BlocProvider(

@@ -10,13 +10,14 @@ import 'escanear_evento_qr_estado.dart';
 import 'escanear_evento_qr_repositorio.dart';
 
 class EscanearEventoQrCubit extends Cubit<EscanearEventoQrEstado> {
-  EscanearEventoQrCubit(this._repositorio) : super(const EscanearEventoQrListo());
+  EscanearEventoQrCubit(this._repositorio)
+      : super(const EscanearEventoQrListo());
 
   final EscanearEventoQrRepositorio _repositorio;
 
   String? _usuarioId;
-  bool    _estaProcesando = false;
-  Timer?  _timerReset;
+  bool _estaProcesando = false;
+  Timer? _timerReset;
 
   void iniciar({required String usuarioId}) {
     _usuarioId = usuarioId;
@@ -58,7 +59,8 @@ class EscanearEventoQrCubit extends Cubit<EscanearEventoQrEstado> {
     }
 
     if (evento.alcance == AlcanceEvento.dirigido) {
-      final pertenece = await _repositorio.verificarPerteneceAudiencia(rawValue, _usuarioId!);
+      final pertenece =
+          await _repositorio.verificarPerteneceAudiencia(rawValue, _usuarioId!);
       if (!pertenece) {
         emit(EscanearEventoQrDirigidoNoPermitido(eventoNombre: evento.titulo));
         _programarReset();
@@ -67,7 +69,7 @@ class EscanearEventoQrCubit extends Cubit<EscanearEventoQrEstado> {
     }
 
     final registrado = await _repositorio.registrarEntrada(
-      eventoId:  rawValue,
+      eventoId: rawValue,
       usuarioId: _usuarioId!,
     );
     if (registrado) {

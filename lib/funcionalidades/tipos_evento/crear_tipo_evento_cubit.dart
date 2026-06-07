@@ -6,7 +6,8 @@ import 'crear_tipo_evento_estado.dart';
 import 'tipos_evento_repositorio.dart';
 
 class CrearTipoEventoCubit extends Cubit<CrearTipoEventoEstado> {
-  CrearTipoEventoCubit(this._repositorio) : super(const CrearTipoEventoInicial());
+  CrearTipoEventoCubit(this._repositorio)
+      : super(const CrearTipoEventoInicial());
 
   final TiposEventoRepositorio _repositorio;
 
@@ -18,11 +19,13 @@ class CrearTipoEventoCubit extends Cubit<CrearTipoEventoEstado> {
     emit(const CrearTipoEventoCargando());
     try {
       final datos = await _repositorio.obtenerTipoEvento(id);
-      emit(CrearTipoEventoCargado(
-        tipoEventoId:       id,
-        nombreInicial:      (datos['nombre']      as String?) ?? '',
-        descripcionInicial: (datos['descripcion'] as String?) ?? '',
-      ),);
+      emit(
+        CrearTipoEventoCargado(
+          tipoEventoId: id,
+          nombreInicial: (datos['nombre'] as String?) ?? '',
+          descripcionInicial: (datos['descripcion'] as String?) ?? '',
+        ),
+      );
     } on FallaServidor catch (falla) {
       reportarError(falla);
       emit(CrearTipoEventoError(mensaje: falla.mensaje));
@@ -42,13 +45,13 @@ class CrearTipoEventoCubit extends Cubit<CrearTipoEventoEstado> {
     try {
       if (estadoActual.tipoEventoId != null) {
         await _repositorio.actualizarTipoEvento(
-          id:          estadoActual.tipoEventoId!,
-          nombre:      nombre,
+          id: estadoActual.tipoEventoId!,
+          nombre: nombre,
           descripcion: descripcion,
         );
       } else {
         await _repositorio.crearTipoEvento(
-          nombre:      nombre,
+          nombre: nombre,
           descripcion: descripcion,
         );
       }

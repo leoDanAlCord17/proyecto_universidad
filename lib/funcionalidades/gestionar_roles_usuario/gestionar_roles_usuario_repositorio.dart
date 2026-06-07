@@ -12,7 +12,8 @@ class GestionarRolesUsuarioRepositorio {
   final SupabaseClient _supabase;
 
   /// Retorna nombre completo y correo del usuario.
-  Future<({String nombre, String correo})> obtenerInfoUsuario(String usuarioId) =>
+  Future<({String nombre, String correo})> obtenerInfoUsuario(
+          String usuarioId) =>
       conReintentos(() async {
         try {
           final fila = await _supabase
@@ -43,8 +44,9 @@ class GestionarRolesUsuarioRepositorio {
 
           if (asignaciones.isEmpty) return [];
 
-          final rolIds = asignaciones.map((r) => r['rol_id'] as String).toList();
-          final roles  = await _supabase
+          final rolIds =
+              asignaciones.map((r) => r['rol_id'] as String).toList();
+          final roles = await _supabase
               .from(TablasSupabase.roles)
               .select('id, nombre, descripcion')
               .inFilter('id', rolIds)
@@ -60,8 +62,7 @@ class GestionarRolesUsuarioRepositorio {
       });
 
   /// Retorna todos los roles activos del sistema.
-  Future<List<RolItem>> obtenerRolesActivos() =>
-      conReintentos(() async {
+  Future<List<RolItem>> obtenerRolesActivos() => conReintentos(() async {
         try {
           final datos = await _supabase
               .from(TablasSupabase.roles)
@@ -78,13 +79,14 @@ class GestionarRolesUsuarioRepositorio {
       });
 
   /// Asigna un rol al usuario. Usa upsert para reactivar si ya existía desactivado.
-  Future<void> asignarRol(String usuarioId, String rolId, String? adminId) async {
+  Future<void> asignarRol(
+      String usuarioId, String rolId, String? adminId) async {
     try {
       await _supabase.from(TablasSupabase.usuariosRoles).upsert(
         {
           'usuario_id': usuarioId,
-          'rol_id':     rolId,
-          'estatus':    true,
+          'rol_id': rolId,
+          'estatus': true,
           'creado_por': adminId,
         },
         onConflict: 'usuario_id,rol_id',
@@ -97,18 +99,19 @@ class GestionarRolesUsuarioRepositorio {
   }
 
   /// Desactiva el registro activo del rol, registrando quién y cuándo lo quitó.
-  Future<void> quitarRol(String usuarioId, String rolId, String? adminId) async {
+  Future<void> quitarRol(
+      String usuarioId, String rolId, String? adminId) async {
     try {
       await _supabase
           .from(TablasSupabase.usuariosRoles)
           .update({
-            'estatus':         false,
+            'estatus': false,
             'actualizado_por': adminId,
-            'actualizado_en':  DateTime.now().toUtc().toIso8601String(),
+            'actualizado_en': DateTime.now().toUtc().toIso8601String(),
           })
           .eq('usuario_id', usuarioId)
-          .eq('rol_id',     rolId)
-          .eq('estatus',    true);
+          .eq('rol_id', rolId)
+          .eq('estatus', true);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {

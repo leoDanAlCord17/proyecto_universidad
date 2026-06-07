@@ -87,8 +87,8 @@ void main() {
     blocTest<LoginCubit, LoginEstado>(
       'emite [LoginCargando, LoginError] propagando el mensaje de FallaAutenticacion',
       build: () {
-        when(() => repositorio.iniciarSesion(any(), any()))
-            .thenThrow(const FallaAutenticacion('Correo o contraseña incorrectos.'));
+        when(() => repositorio.iniciarSesion(any(), any())).thenThrow(
+            const FallaAutenticacion('Correo o contraseña incorrectos.'));
         return LoginCubit(repositorio);
       },
       act: (c) => c.ingresar('leo@uni.edu', 'clave123'),

@@ -19,20 +19,20 @@ EventoConGrupos _eventoGeneral({
   DateTime? fechaInicio,
 }) =>
     EventoConGrupos.desdeJson(<String, dynamic>{
-      'id':                        id,
-      'titulo':                    'Evento General',
-      'modo_registro':             'auto',
-      'estatus':                   estatus,
-      'alcance':                   'general',
-      'creado_en':                 '2025-01-01T00:00:00Z',
-      'actualizado_en':            '2025-01-01T00:00:00Z',
-      'permite_qr_evento':         true,
-      'permite_qr_usuario':        true,
-      'permite_manual_admin':      true,
-      'requiere_ciclo_completo':   false,
+      'id': id,
+      'titulo': 'Evento General',
+      'modo_registro': 'auto',
+      'estatus': estatus,
+      'alcance': 'general',
+      'creado_en': '2025-01-01T00:00:00Z',
+      'actualizado_en': '2025-01-01T00:00:00Z',
+      'permite_qr_evento': true,
+      'permite_qr_usuario': true,
+      'permite_manual_admin': true,
+      'requiere_ciclo_completo': false,
       'permite_salida_anticipada': false,
-      'marcar_ausentes_auto':      false,
-      'permite_foraneos':          false,
+      'marcar_ausentes_auto': false,
+      'permite_foraneos': false,
       if (fechaInicio != null) 'fecha_inicio': fechaInicio.toIso8601String(),
       'evento_grupos_tags': const <Map<String, dynamic>>[],
     });
@@ -45,59 +45,63 @@ EventoConGrupos _eventoDirigido({
   DateTime? fechaInicio,
 }) =>
     EventoConGrupos.desdeJson(<String, dynamic>{
-      'id':                        id,
-      'titulo':                    'Evento Dirigido',
-      'modo_registro':             'auto',
-      'estatus':                   estatus,
-      'alcance':                   'dirigido',
-      'creado_en':                 '2025-01-01T00:00:00Z',
-      'actualizado_en':            '2025-01-01T00:00:00Z',
-      'permite_qr_evento':         true,
-      'permite_qr_usuario':        true,
-      'permite_manual_admin':      true,
-      'requiere_ciclo_completo':   false,
+      'id': id,
+      'titulo': 'Evento Dirigido',
+      'modo_registro': 'auto',
+      'estatus': estatus,
+      'alcance': 'dirigido',
+      'creado_en': '2025-01-01T00:00:00Z',
+      'actualizado_en': '2025-01-01T00:00:00Z',
+      'permite_qr_evento': true,
+      'permite_qr_usuario': true,
+      'permite_manual_admin': true,
+      'requiere_ciclo_completo': false,
       'permite_salida_anticipada': false,
-      'marcar_ausentes_auto':      false,
-      'permite_foraneos':          false,
+      'marcar_ausentes_auto': false,
+      'permite_foraneos': false,
       if (fechaInicio != null) 'fecha_inicio': fechaInicio.toIso8601String(),
       'evento_grupos_tags': <Map<String, dynamic>>[
         <String, dynamic>{
           'grupo_index': 0,
-          'tag_id':      tagPrincipalId,
+          'tag_id': tagPrincipalId,
           'tags': const <String, dynamic>{'tipo': 'principal', 'nombre': 'Ing'},
         },
         <String, dynamic>{
           'grupo_index': 0,
-          'tag_id':      tagSecundarioId,
-          'tags': const <String, dynamic>{'tipo': 'secundario', 'nombre': 'Sis'},
+          'tag_id': tagSecundarioId,
+          'tags': const <String, dynamic>{
+            'tipo': 'secundario',
+            'nombre': 'Sis'
+          },
         },
       ],
     });
 
 EventoConGrupos _eventoDirigidoSinGrupos({String id = 'ev-sin-grupos'}) =>
     EventoConGrupos.desdeJson(<String, dynamic>{
-      'id':                        id,
-      'titulo':                    'Sin Grupos',
-      'modo_registro':             'auto',
-      'estatus':                   'programado',
-      'alcance':                   'dirigido',
-      'creado_en':                 '2025-01-01T00:00:00Z',
-      'actualizado_en':            '2025-01-01T00:00:00Z',
-      'permite_qr_evento':         true,
-      'permite_qr_usuario':        true,
-      'permite_manual_admin':      true,
-      'requiere_ciclo_completo':   false,
+      'id': id,
+      'titulo': 'Sin Grupos',
+      'modo_registro': 'auto',
+      'estatus': 'programado',
+      'alcance': 'dirigido',
+      'creado_en': '2025-01-01T00:00:00Z',
+      'actualizado_en': '2025-01-01T00:00:00Z',
+      'permite_qr_evento': true,
+      'permite_qr_usuario': true,
+      'permite_manual_admin': true,
+      'requiere_ciclo_completo': false,
       'permite_salida_anticipada': false,
-      'marcar_ausentes_auto':      false,
-      'permite_foraneos':          false,
-      'evento_grupos_tags':        const <Map<String, dynamic>>[],
+      'marcar_ausentes_auto': false,
+      'permite_foraneos': false,
+      'evento_grupos_tags': const <Map<String, dynamic>>[],
     });
 
 // ─── Helpers de stub ──────────────────────────────────────────────────────────
 
 void _stubVacio(MockEventosRepositorio repo) {
   when(() => repo.obtenerEventosConGrupos()).thenAnswer((_) async => []);
-  when(() => repo.obtenerTagsUsuario(any())).thenAnswer((_) async => _tagsVacios);
+  when(() => repo.obtenerTagsUsuario(any()))
+      .thenAnswer((_) async => _tagsVacios);
   when(() => repo.contarBorradores(any())).thenAnswer((_) async => 0);
   when(() => repo.obtenerConteoPresentesPorEvento(any()))
       .thenAnswer((_) async => {});
@@ -127,7 +131,7 @@ void main() {
       expect: () => [
         isA<EventosCargando>(),
         isA<EventosCargado>()
-            .having((e) => e.enCurso,  'enCurso',  isEmpty)
+            .having((e) => e.enCurso, 'enCurso', isEmpty)
             .having((e) => e.proximos, 'proximos', isEmpty),
       ],
     );
@@ -254,7 +258,7 @@ void main() {
         isA<EventosCargando>(),
         isA<EventosCargado>()
             .having((e) => e.proximos, 'proximos', isEmpty)
-            .having((e) => e.enCurso,  'enCurso',  isEmpty),
+            .having((e) => e.enCurso, 'enCurso', isEmpty),
       ],
     );
 
@@ -269,7 +273,7 @@ void main() {
         );
         when(() => repositorio.obtenerTagsUsuario(any())).thenAnswer(
           (_) async => (
-            tagPrincipalId:     'tp-1',
+            tagPrincipalId: 'tp-1',
             tagsSecundariosIds: ['ts-1'],
           ),
         );
@@ -297,7 +301,7 @@ void main() {
         );
         when(() => repositorio.obtenerTagsUsuario(any())).thenAnswer(
           (_) async => (
-            tagPrincipalId:     'tp-OTRO',
+            tagPrincipalId: 'tp-OTRO',
             tagsSecundariosIds: ['ts-1'],
           ),
         );
@@ -309,8 +313,7 @@ void main() {
       act: (c) => c.cargar('user-1'),
       expect: () => [
         isA<EventosCargando>(),
-        isA<EventosCargado>()
-            .having((e) => e.proximos, 'proximos', isEmpty),
+        isA<EventosCargado>().having((e) => e.proximos, 'proximos', isEmpty),
       ],
     );
 
@@ -325,7 +328,7 @@ void main() {
         );
         when(() => repositorio.obtenerTagsUsuario(any())).thenAnswer(
           (_) async => (
-            tagPrincipalId:     'tp-1',
+            tagPrincipalId: 'tp-1',
             tagsSecundariosIds: <String>[],
           ),
         );
@@ -337,8 +340,7 @@ void main() {
       act: (c) => c.cargar('user-1'),
       expect: () => [
         isA<EventosCargando>(),
-        isA<EventosCargado>()
-            .having((e) => e.proximos, 'proximos', isEmpty),
+        isA<EventosCargado>().having((e) => e.proximos, 'proximos', isEmpty),
       ],
     );
   });
@@ -349,26 +351,45 @@ void main() {
   group('EventosCubit.filtrar', () {
     final evGeneral = _eventoGeneral(id: 'ev-g');
     final evDescripcion = EventoConGrupos.desdeJson(const <String, dynamic>{
-      'id': 'ev-d', 'titulo': 'Sin nombre relevante',
+      'id': 'ev-d',
+      'titulo': 'Sin nombre relevante',
       'descripcion': 'Taller de robótica avanzada',
-      'modo_registro': 'auto', 'estatus': 'programado', 'alcance': 'general',
-      'creado_en': '2025-01-01T00:00:00Z', 'actualizado_en': '2025-01-01T00:00:00Z',
-      'permite_qr_evento': true, 'permite_qr_usuario': true,
-      'permite_manual_admin': true, 'requiere_ciclo_completo': false,
-      'permite_salida_anticipada': false, 'marcar_ausentes_auto': false,
-      'permite_foraneos': false, 'evento_grupos_tags': <Map<String, dynamic>>[],
+      'modo_registro': 'auto',
+      'estatus': 'programado',
+      'alcance': 'general',
+      'creado_en': '2025-01-01T00:00:00Z',
+      'actualizado_en': '2025-01-01T00:00:00Z',
+      'permite_qr_evento': true,
+      'permite_qr_usuario': true,
+      'permite_manual_admin': true,
+      'requiere_ciclo_completo': false,
+      'permite_salida_anticipada': false,
+      'marcar_ausentes_auto': false,
+      'permite_foraneos': false,
+      'evento_grupos_tags': <Map<String, dynamic>>[],
     });
     final evLugar = EventoConGrupos.desdeJson(const <String, dynamic>{
-      'id': 'ev-l', 'titulo': 'Otro titulo', 'lugar': 'Auditorio Central',
-      'modo_registro': 'auto', 'estatus': 'programado', 'alcance': 'general',
-      'creado_en': '2025-01-01T00:00:00Z', 'actualizado_en': '2025-01-01T00:00:00Z',
-      'permite_qr_evento': true, 'permite_qr_usuario': true,
-      'permite_manual_admin': true, 'requiere_ciclo_completo': false,
-      'permite_salida_anticipada': false, 'marcar_ausentes_auto': false,
-      'permite_foraneos': false, 'evento_grupos_tags': <Map<String, dynamic>>[],
+      'id': 'ev-l',
+      'titulo': 'Otro titulo',
+      'lugar': 'Auditorio Central',
+      'modo_registro': 'auto',
+      'estatus': 'programado',
+      'alcance': 'general',
+      'creado_en': '2025-01-01T00:00:00Z',
+      'actualizado_en': '2025-01-01T00:00:00Z',
+      'permite_qr_evento': true,
+      'permite_qr_usuario': true,
+      'permite_manual_admin': true,
+      'requiere_ciclo_completo': false,
+      'permite_salida_anticipada': false,
+      'marcar_ausentes_auto': false,
+      'permite_foraneos': false,
+      'evento_grupos_tags': <Map<String, dynamic>>[],
     });
-    final evEnero = _eventoGeneral(id: 'ev-enero', fechaInicio: DateTime.utc(2025, 1, 15));
-    final evMarzo = _eventoGeneral(id: 'ev-marzo', fechaInicio: DateTime.utc(2025, 3, 10));
+    final evEnero =
+        _eventoGeneral(id: 'ev-enero', fechaInicio: DateTime.utc(2025, 1, 15));
+    final evMarzo =
+        _eventoGeneral(id: 'ev-marzo', fechaInicio: DateTime.utc(2025, 3, 10));
 
     void stubConEventos(List<EventoConGrupos> eventos) {
       when(() => repositorio.obtenerEventosConGrupos())
@@ -409,12 +430,16 @@ void main() {
       'filtra por título',
       build: build,
       setUp: () => stubConEventos([evGeneral, evDescripcion, evLugar]),
-      act: (c) async { await c.cargar('user-1'); c.filtrar('Evento General', null); },
+      act: (c) async {
+        await c.cargar('user-1');
+        c.filtrar('Evento General', null);
+      },
       skip: 2,
       expect: () => [
         isA<EventosCargado>().having(
           (e) => e.proximos.map((x) => x.evento.id).toList(),
-          'ids', ['ev-g'],
+          'ids',
+          ['ev-g'],
         ),
       ],
     );
@@ -423,12 +448,16 @@ void main() {
       'filtra por descripción',
       build: build,
       setUp: () => stubConEventos([evGeneral, evDescripcion, evLugar]),
-      act: (c) async { await c.cargar('user-1'); c.filtrar('robótica', null); },
+      act: (c) async {
+        await c.cargar('user-1');
+        c.filtrar('robótica', null);
+      },
       skip: 2,
       expect: () => [
         isA<EventosCargado>().having(
           (e) => e.proximos.map((x) => x.evento.id).toList(),
-          'ids', ['ev-d'],
+          'ids',
+          ['ev-d'],
         ),
       ],
     );
@@ -437,12 +466,16 @@ void main() {
       'filtra por lugar',
       build: build,
       setUp: () => stubConEventos([evGeneral, evDescripcion, evLugar]),
-      act: (c) async { await c.cargar('user-1'); c.filtrar('auditorio', null); },
+      act: (c) async {
+        await c.cargar('user-1');
+        c.filtrar('auditorio', null);
+      },
       skip: 2,
       expect: () => [
         isA<EventosCargado>().having(
           (e) => e.proximos.map((x) => x.evento.id).toList(),
-          'ids', ['ev-l'],
+          'ids',
+          ['ev-l'],
         ),
       ],
     );
@@ -453,13 +486,18 @@ void main() {
       setUp: () => stubConEventos([evEnero, evMarzo]),
       act: (c) async {
         await c.cargar('user-1');
-        c.filtrar('', DateTimeRange(start: DateTime.utc(2025, 1, 1), end: DateTime.utc(2025, 2, 1)));
+        c.filtrar(
+            '',
+            DateTimeRange(
+                start: DateTime.utc(2025, 1, 1),
+                end: DateTime.utc(2025, 2, 1)));
       },
       skip: 2,
       expect: () => [
         isA<EventosCargado>().having(
           (e) => e.proximos.map((x) => x.evento.id).toList(),
-          'ids', ['ev-enero'],
+          'ids',
+          ['ev-enero'],
         ),
       ],
     );
@@ -470,15 +508,20 @@ void main() {
       setUp: () => stubConEventos([evEnero, evMarzo]),
       act: (c) async {
         await c.cargar('user-1');
-        c.filtrar('Evento General', DateTimeRange(
-          start: DateTime.utc(2025, 3, 1), end: DateTime.utc(2025, 3, 31),
-        ),);
+        c.filtrar(
+          'Evento General',
+          DateTimeRange(
+            start: DateTime.utc(2025, 3, 1),
+            end: DateTime.utc(2025, 3, 31),
+          ),
+        );
       },
       skip: 2,
       expect: () => [
         isA<EventosCargado>().having(
           (e) => e.proximos.map((x) => x.evento.id).toList(),
-          'ids', ['ev-marzo'],
+          'ids',
+          ['ev-marzo'],
         ),
       ],
     );
@@ -487,11 +530,13 @@ void main() {
       'texto sin coincidencia devuelve listas vacías',
       build: build,
       setUp: () => stubConEventos([evGeneral]),
-      act: (c) async { await c.cargar('user-1'); c.filtrar('zzzzz', null); },
+      act: (c) async {
+        await c.cargar('user-1');
+        c.filtrar('zzzzz', null);
+      },
       skip: 2,
       expect: () => [
-        isA<EventosCargado>()
-            .having((e) => e.proximos, 'proximos', isEmpty),
+        isA<EventosCargado>().having((e) => e.proximos, 'proximos', isEmpty),
       ],
     );
   });

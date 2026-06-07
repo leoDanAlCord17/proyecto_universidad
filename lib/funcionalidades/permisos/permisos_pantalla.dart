@@ -39,9 +39,9 @@ class _PermisosPantallaState extends State<PermisosPantalla> {
   Widget _construirVista(BuildContext context, PermisosEstado estado) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor:          Colors.transparent,
+        statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness:     Brightness.light,
+        statusBarBrightness: Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: ColoresApp.fondo,
@@ -54,14 +54,14 @@ class _PermisosPantallaState extends State<PermisosPantalla> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const BotonRegresar(),
-                    const SizedBox(width: 12),                   
+                    const SizedBox(width: 12),
                     Text(
                       'Permisos',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontSize:   20,
-                        fontWeight: FontWeight.w700,
-                        color:      ColoresApp.textoPrimario,
-                      ),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: ColoresApp.textoPrimario,
+                          ),
                     ),
                   ],
                 ),
@@ -70,7 +70,7 @@ class _PermisosPantallaState extends State<PermisosPantalla> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: BarraBusquedaApp(
-                hintText:  'Buscar permisos...',
+                hintText: 'Buscar permisos...',
                 alCambiar: (texto) =>
                     context.read<PermisosCubit>().filtrar(texto),
               ),
@@ -98,7 +98,9 @@ class _Cuerpo extends StatelessWidget {
           child: CircularProgressIndicator(color: ColoresApp.acento),
         ),
       PermisosCargados() => _Lista(estado: e),
-      PermisosError()    => VistaErrorApp(mensaje: e.mensaje, alReintentar: () => context.read<PermisosCubit>().cargarPermisos()),
+      PermisosError() => VistaErrorApp(
+          mensaje: e.mensaje,
+          alReintentar: () => context.read<PermisosCubit>().cargarPermisos()),
     };
   }
 }
@@ -119,8 +121,8 @@ class _Lista extends StatelessWidget {
         child: Text(
           'No hay permisos',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: ColoresApp.textoTerciario,
-          ),
+                color: ColoresApp.textoTerciario,
+              ),
         ),
       );
     }
@@ -131,17 +133,19 @@ class _Lista extends StatelessWidget {
         Text(
           'PERMISOS DEL SISTEMA',
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color:         ColoresApp.textoTerciario,
-            letterSpacing: 0.8,
-            fontSize:   13,
-            fontWeight:    FontWeight.w900,
-          ),
+                color: ColoresApp.textoTerciario,
+                letterSpacing: 0.8,
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+              ),
         ),
         const SizedBox(height: 12),
-        ...items.map((p) => Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child:   _TarjetaPermiso(permiso: p),
-        ),),
+        ...items.map(
+          (p) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _TarjetaPermiso(permiso: p),
+          ),
+        ),
       ],
     );
   }
@@ -159,13 +163,13 @@ class _TarjetaPermiso extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color:        ColoresApp.superficiePrimaria,
+        color: ColoresApp.superficiePrimaria,
         borderRadius: BorderRadius.circular(14),
         boxShadow: const [
           BoxShadow(
-            color:       ColoresApp.sombraTarjeta,
-            blurRadius:  8,
-            offset:      Offset(0, 2),
+            color: ColoresApp.sombraTarjeta,
+            blurRadius: 8,
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -175,19 +179,19 @@ class _TarjetaPermiso extends StatelessWidget {
           Text(
             permiso.nombre,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              color:      ColoresApp.textoPrimario,
-              fontSize:   16,
-            ),
+                  fontWeight: FontWeight.w600,
+                  color: ColoresApp.textoPrimario,
+                  fontSize: 16,
+                ),
           ),
           if (permiso.descripcion.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
               permiso.descripcion,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: ColoresApp.textoSecundario,
-                fontSize:   13,
-              ),
+                    color: ColoresApp.textoSecundario,
+                    fontSize: 13,
+                  ),
             ),
           ],
         ],
@@ -195,4 +199,3 @@ class _TarjetaPermiso extends StatelessWidget {
     );
   }
 }
-

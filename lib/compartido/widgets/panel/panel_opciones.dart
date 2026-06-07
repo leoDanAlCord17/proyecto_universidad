@@ -15,12 +15,12 @@ class OpcionPanel {
     this.alPresionar,
   });
 
-  final IconData      icono;
-  final Color         colorFondo;
-  final Color         colorIcono;
-  final String        titulo;
-  final String        descripcion;
-  final Color?        colorTitulo;
+  final IconData icono;
+  final Color colorFondo;
+  final Color colorIcono;
+  final String titulo;
+  final String descripcion;
+  final Color? colorTitulo;
   final VoidCallback? alPresionar;
 }
 
@@ -35,12 +35,13 @@ class PanelOpciones {
     Widget? encabezado,
   }) {
     showModalBottomSheet<void>(
-      context:            context,
-      useRootNavigator:   true,
+      context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
-      backgroundColor:    Colors.transparent,
-      barrierColor:       ColoresApp.sombraBarrera,
-      builder:            (_) => _ContenidoPanel(opciones: opciones, encabezado: encabezado),
+      backgroundColor: Colors.transparent,
+      barrierColor: ColoresApp.sombraBarrera,
+      builder: (_) =>
+          _ContenidoPanel(opciones: opciones, encabezado: encabezado),
     );
   }
 }
@@ -51,7 +52,7 @@ class _ContenidoPanel extends StatelessWidget {
   const _ContenidoPanel({required this.opciones, this.encabezado});
 
   final List<OpcionPanel> opciones;
-  final Widget?           encabezado;
+  final Widget? encabezado;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +64,7 @@ class _ContenidoPanel extends StatelessWidget {
       ),
       child: Container(
         decoration: const BoxDecoration(
-          color:        ColoresApp.superficiePrimaria,
+          color: ColoresApp.superficiePrimaria,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
@@ -83,13 +84,13 @@ class _ContenidoPanel extends StatelessWidget {
               const SizedBox(height: 20),
             Flexible(
               child: ListView.separated(
-                shrinkWrap:       true,
-                padding:          EdgeInsets.fromLTRB(16, 8, 16, bottomPadding + 20),
-                itemCount:        opciones.length,
+                shrinkWrap: true,
+                padding: EdgeInsets.fromLTRB(16, 8, 16, bottomPadding + 20),
+                itemCount: opciones.length,
                 separatorBuilder: (_, __) => const Divider(
                   height: 1,
                   indent: 74,
-                  color:  ColoresApp.bordesuave,
+                  color: ColoresApp.bordesuave,
                 ),
                 itemBuilder: (_, i) => _ItemOpcion(opcion: opciones[i]),
               ),
@@ -109,10 +110,10 @@ class _Handle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width:  36,
+      width: 36,
       height: 4,
       decoration: BoxDecoration(
-        color:        ColoresApp.bordeMedio,
+        color: ColoresApp.bordeMedio,
         borderRadius: BorderRadius.circular(2),
       ),
     );
@@ -131,19 +132,19 @@ class _ItemOpcion extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap:          opcion.alPresionar ?? () {},
-        borderRadius:   BorderRadius.circular(12),
+        onTap: opcion.alPresionar ?? () {},
+        borderRadius: BorderRadius.circular(12),
         highlightColor: ColoresApp.superficieSecund,
-        splashColor:    ColoresApp.bordeMedio,
+        splashColor: ColoresApp.bordeMedio,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 13),
           child: Row(
             children: [
               Container(
-                width:  46,
+                width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color:        opcion.colorFondo,
+                  color: opcion.colorFondo,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(opcion.icono, color: opcion.colorIcono, size: 22),
@@ -156,8 +157,8 @@ class _ItemOpcion extends StatelessWidget {
                     Text(
                       opcion.titulo,
                       style: TextStyle(
-                        color:      opcion.colorTitulo ?? ColoresApp.textoPrimario,
-                        fontSize:   15,
+                        color: opcion.colorTitulo ?? ColoresApp.textoPrimario,
+                        fontSize: 15,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -165,7 +166,7 @@ class _ItemOpcion extends StatelessWidget {
                     Text(
                       opcion.descripcion,
                       style: const TextStyle(
-                        color:    ColoresApp.textoTerciario,
+                        color: ColoresApp.textoTerciario,
                         fontSize: 13,
                       ),
                     ),
@@ -175,7 +176,7 @@ class _ItemOpcion extends StatelessWidget {
               const Icon(
                 Icons.chevron_right_rounded,
                 color: ColoresApp.textoTerciario,
-                size:  20,
+                size: 20,
               ),
             ],
           ),

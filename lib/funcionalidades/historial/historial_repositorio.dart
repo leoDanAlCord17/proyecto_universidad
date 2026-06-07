@@ -29,7 +29,8 @@ class HistorialRepositorio {
               .eq('usuario_id', usuarioId)
               .neq('estatus', EstatusAsistencia.esperado)
               .neq('estatus', EstatusAsistencia.anulado)
-              .order('fecha_inicio', ascending: false, referencedTable: 'eventos')
+              .order('fecha_inicio',
+                  ascending: false, referencedTable: 'eventos')
               .order('id', ascending: false)
               .range(offset, offset + limite - 1)
               .timeout(kTimeoutSolicitud);

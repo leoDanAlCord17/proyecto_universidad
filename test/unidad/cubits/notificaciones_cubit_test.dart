@@ -11,13 +11,13 @@ import '../../helpers.dart';
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 
 Notificacion _notificacion(String id, {bool leida = false}) => Notificacion(
-  id:       id,
-  titulo:   'Titulo $id',
-  cuerpo:   'Cuerpo $id',
-  tipo:     'evento',
-  leida:    leida,
-  creadoEn: DateTime(2024, 5, 10, 10),
-);
+      id: id,
+      titulo: 'Titulo $id',
+      cuerpo: 'Cuerpo $id',
+      tipo: 'evento',
+      leida: leida,
+      creadoEn: DateTime(2024, 5, 10, 10),
+    );
 
 void main() {
   late MockNotificacionesRepositorio repositorio;
@@ -46,7 +46,9 @@ void main() {
       act: (c) => c.iniciarStream('u1'),
       expect: () => [
         isA<NotificacionesCargadas>().having(
-          (s) => s.cantidad, 'cantidad', 3,
+          (s) => s.cantidad,
+          'cantidad',
+          3,
         ),
       ],
     );
@@ -103,13 +105,13 @@ void main() {
         return NotificacionesCubit(repositorio);
       },
       seed: () => NotificacionesCargadas(
-        cantidad:       2,
+        cantidad: 2,
         notificaciones: [_notificacion('n1')],
       ),
       act: (c) => c.iniciarStream('u1'),
       expect: () => [
         isA<NotificacionesCargadas>()
-            .having((s) => s.cantidad,               'cantidad', 5)
+            .having((s) => s.cantidad, 'cantidad', 5)
             .having((s) => s.notificaciones.length, 'lista.length', 1),
       ],
     );
@@ -129,8 +131,8 @@ void main() {
         // Stream vacío: solo establece _usuarioId, no emite estados
         when(() => repositorio.streamCantidadNoLeidas('u1'))
             .thenAnswer((_) => const Stream.empty());
-        when(() => repositorio.obtenerTodas('u1'))
-            .thenAnswer((_) async => [_notificacion('n1'), _notificacion('n2')]);
+        when(() => repositorio.obtenerTodas('u1')).thenAnswer(
+            (_) async => [_notificacion('n1'), _notificacion('n2')]);
         return NotificacionesCubit(repositorio);
       },
       act: (c) async {
@@ -140,7 +142,9 @@ void main() {
       expect: () => [
         isA<NotificacionesCargando>(),
         isA<NotificacionesCargadas>().having(
-          (s) => s.notificaciones.length, 'lista.length', 2,
+          (s) => s.notificaciones.length,
+          'lista.length',
+          2,
         ),
       ],
     );
@@ -164,7 +168,7 @@ void main() {
       expect: () => [
         isA<NotificacionesCargando>(),
         isA<NotificacionesCargadas>()
-            .having((s) => s.cantidad,               'cantidad',    4)
+            .having((s) => s.cantidad, 'cantidad', 4)
             .having((s) => s.notificaciones.length, 'lista.length', 1),
       ],
     );
@@ -185,7 +189,9 @@ void main() {
       expect: () => [
         isA<NotificacionesCargando>(),
         isA<NotificacionesError>().having(
-          (e) => e.mensaje, 'mensaje', 'Error en servidor.',
+          (e) => e.mensaje,
+          'mensaje',
+          'Error en servidor.',
         ),
       ],
     );
@@ -195,18 +201,19 @@ void main() {
     blocTest<NotificacionesCubit, NotificacionesEstado>(
       'actualiza la notificación de forma optimista',
       build: () {
-        when(() => repositorio.marcarLeida('n1'))
-            .thenAnswer((_) async {});
+        when(() => repositorio.marcarLeida('n1')).thenAnswer((_) async {});
         return NotificacionesCubit(repositorio);
       },
       seed: () => NotificacionesCargadas(
-        cantidad:       1,
+        cantidad: 1,
         notificaciones: [_notificacion('n1', leida: false)],
       ),
       act: (c) => c.marcarLeida('n1'),
       expect: () => [
         isA<NotificacionesCargadas>().having(
-          (s) => s.notificaciones.first.leida, 'leida', true,
+          (s) => s.notificaciones.first.leida,
+          'leida',
+          true,
         ),
       ],
     );
@@ -221,12 +228,11 @@ void main() {
     blocTest<NotificacionesCubit, NotificacionesEstado>(
       'llama al repositorio exactamente una vez',
       build: () {
-        when(() => repositorio.marcarLeida('n1'))
-            .thenAnswer((_) async {});
+        when(() => repositorio.marcarLeida('n1')).thenAnswer((_) async {});
         return NotificacionesCubit(repositorio);
       },
       seed: () => NotificacionesCargadas(
-        cantidad:       1,
+        cantidad: 1,
         notificaciones: [_notificacion('n1', leida: false)],
       ),
       act: (c) => c.marcarLeida('n1'),
@@ -238,12 +244,11 @@ void main() {
     blocTest<NotificacionesCubit, NotificacionesEstado>(
       'no revierte la UI si el repositorio falla (el stream corregirá el badge)',
       build: () {
-        when(() => repositorio.marcarLeida('n1'))
-            .thenThrow(Exception('fallo'));
+        when(() => repositorio.marcarLeida('n1')).thenThrow(Exception('fallo'));
         return NotificacionesCubit(repositorio);
       },
       seed: () => NotificacionesCargadas(
-        cantidad:       1,
+        cantidad: 1,
         notificaciones: [_notificacion('n1', leida: false)],
       ),
       act: (c) => c.marcarLeida('n1'),
@@ -263,7 +268,7 @@ void main() {
         return NotificacionesCubit(repositorio);
       },
       seed: () => NotificacionesCargadas(
-        cantidad:       3,
+        cantidad: 3,
         notificaciones: [
           _notificacion('n1', leida: false),
           _notificacion('n2', leida: false),
@@ -276,7 +281,9 @@ void main() {
       },
       expect: () => [
         isA<NotificacionesCargadas>().having(
-          (s) => s.notificaciones.every((n) => n.leida), 'todas leídas', isTrue,
+          (s) => s.notificaciones.every((n) => n.leida),
+          'todas leídas',
+          isTrue,
         ),
       ],
     );
