@@ -15,8 +15,9 @@ interface ServiceAccount {
 // Convierte el PEM de la private key a ArrayBuffer para Web Crypto
 async function pemToArrayBuffer(pem: string): Promise<ArrayBuffer> {
   const base64 = pem
-    .replace('-----BEGIN PRIVATE KEY-----', '')
-    .replace('-----END PRIVATE KEY-----', '')
+    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+    .replace(/-----END PRIVATE KEY-----/, '')
+    .replace(/\\n/g, '') // \n literales que Supabase Secrets guarda como texto
     .replace(/\s/g, '')
   const binary = atob(base64)
   const bytes = new Uint8Array(binary.length)
@@ -91,6 +92,8 @@ serve(async (req) => {
       )
     }
 
+    console.log('1. Parámetros recibidos:', { usuario_ids, titulo, cuerpo })
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
@@ -102,7 +105,9 @@ serve(async (req) => {
       .select('token')
       .in('usuario_id', usuario_ids)
 
-    if (error) throw error
+    console.log('2. Tokens encontrados:', tokens?.length ?? 0, 'Error DB:', error?.message)
+
+    if (error) throw new Error(`DB error: ${error.message} (code: ${error.code})`)
     if (!tokens?.length) {
       return new Response(
         JSON.stringify({ enviados: 0, motivo: 'Sin tokens registrados' }),
@@ -111,8 +116,13 @@ serve(async (req) => {
     }
 
     // Lee la service account desde la variable de entorno secreta
-    const sa: ServiceAccount = JSON.parse(Deno.env.get('FIREBASE_SERVICE_ACCOUNT')!)
+    console.log('3. Leyendo FIREBASE_SERVICE_ACCOUNT...')
+    const saRaw = Deno.env.get('FIREBASE_SERVICE_ACCOUNT')
+    if (!saRaw) throw new Error('FIREBASE_SERVICE_ACCOUNT no está configurado')
+    const sa: ServiceAccount = JSON.parse(saRaw)
+    console.log('4. Service account cargada, project_id:', sa.project_id)
     const accessToken = await getAccessToken(sa)
+    console.log('5. Access token obtenido, enviando a FCM...')
 
     // FCM HTTP v1 no soporta multicast — envía uno por uno en paralelo
     const resultados = await Promise.all(
@@ -150,8 +160,12 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
   } catch (e) {
+    const mensaje = e instanceof Error
+      ? { error: e.message, tipo: e.name, stack: e.stack }
+      : { error: JSON.stringify(e) }
+    console.error('ERROR en enviar-notificacion:', JSON.stringify(mensaje))
     return new Response(
-      JSON.stringify({ error: String(e) }),
+      JSON.stringify(mensaje),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
   }
