@@ -1,4 +1,7 @@
+import 'dart:async' show unawaited;
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
@@ -90,6 +93,20 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
     try {
       await _repositorio.suspenderUsuario(usuarioId);
       await cargar();
+      try {
+        unawaited(
+          Supabase.instance.client.functions.invoke(
+            'enviar-notificacion',
+            body: {
+              'usuario_ids': [usuarioId],
+              'titulo': 'Cuenta suspendida',
+              'cuerpo': 'Tu cuenta ha sido suspendida.',
+            },
+          ),
+        );
+      } catch (e) {
+        log.w('No se pudo enviar notificación push', error: e);
+      }
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(UsuariosOperacionFallida(anterior: cargados, mensaje: e.mensaje));
@@ -196,6 +213,20 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
       await _repositorio.asignarRolLote(ids, rolId, adminId);
       if (isClosed) return;
       await cargar();
+      try {
+        unawaited(
+          Supabase.instance.client.functions.invoke(
+            'enviar-notificacion',
+            body: {
+              'usuario_ids': ids,
+              'titulo': 'Nuevo rol asignado',
+              'cuerpo': 'Se te asignó un nuevo rol en el sistema.',
+            },
+          ),
+        );
+      } catch (e) {
+        log.w('No se pudo enviar notificación push', error: e);
+      }
     } on FallaServidor catch (e) {
       if (isClosed) return;
       reportarError(e);
@@ -238,6 +269,20 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
       await _repositorio.suspenderLote(ids);
       if (isClosed) return;
       await cargar();
+      try {
+        unawaited(
+          Supabase.instance.client.functions.invoke(
+            'enviar-notificacion',
+            body: {
+              'usuario_ids': ids,
+              'titulo': 'Cuenta suspendida',
+              'cuerpo': 'Tu cuenta ha sido suspendida.',
+            },
+          ),
+        );
+      } catch (e) {
+        log.w('No se pudo enviar notificación push', error: e);
+      }
     } on FallaServidor catch (e) {
       if (isClosed) return;
       reportarError(e);

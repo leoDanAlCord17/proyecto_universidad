@@ -664,9 +664,127 @@ e importantes identificados tras la primera auditoría.
 
 ---
 
+---
+
+## BLOQUE 12 — Notificaciones Push (2026-06-08)
+
+Infraestructura implementada: Firebase FCM + service worker + Edge Function `enviar-notificacion`.
+Las notificaciones se envían llamando a la Edge Function desde los cubits tras operaciones exitosas.
+
+---
+
+### Alta prioridad — Afectan directamente la cuenta del usuario
+
+- [x] **N1 — Cuenta aprobada**
+  - Cuándo: admin ejecuta `aprobar(usuarioId)` en `RevisionUsuariosCubit`
+  - Quién recibe: el usuario aprobado
+  - Mensaje: *"Tu cuenta fue aprobada. Ya puedes acceder a UniAsist."*
+  - _Archivo_: `lib/funcionalidades/revision_usuarios/revision_usuarios_cubit.dart`
+
+- [x] **N2 — Cuenta rechazada**
+  - Cuándo: admin ejecuta `rechazar(usuarioId)` en `RevisionUsuariosCubit`
+  - Quién recibe: el usuario rechazado
+  - Mensaje: *"Tu solicitud de cuenta fue rechazada."*
+  - _Archivo_: `lib/funcionalidades/revision_usuarios/revision_usuarios_cubit.dart`
+
+- [x] **N3 — Cuenta suspendida**
+  - Cuándo: `suspender(usuarioId)` o `suspenderLote(ids)` en `UsuariosCubit`
+  - Quién recibe: el/los usuarios suspendidos
+  - Mensaje: *"Tu cuenta ha sido suspendida."*
+  - _Archivo_: `lib/funcionalidades/usuarios/usuarios_cubit.dart`
+
+- [x] **N4 — Asignado como colaborador**
+  - Cuándo: `asignarColaborador()` en `ColaboradoresEventoCubit`
+  - Quién recibe: el usuario asignado
+  - Mensaje: *"Fuiste asignado como colaborador en un evento."*
+  - _Archivo_: `lib/funcionalidades/colaboradores_evento/colaboradores_evento_cubit.dart`
+
+- [x] **N5 — Removido como colaborador**
+  - Cuándo: `quitarColaborador()` en `ColaboradoresEventoCubit`
+  - Quién recibe: el usuario removido
+  - Mensaje: *"Ya no eres colaborador en el evento."*
+  - _Archivo_: `lib/funcionalidades/colaboradores_evento/colaboradores_evento_cubit.dart`
+
+- [x] **N6 — Rol asignado**
+  - Cuándo: `asignarRol()` en `GestionarRolesUsuarioCubit` o `asignarRolLote()` en `UsuariosCubit`
+  - Quién recibe: el/los usuarios afectados
+  - Mensaje: *"Se te asignó un nuevo rol en el sistema."*
+  - _Archivos_: `gestionar_roles_usuario_cubit.dart`, `usuarios_cubit.dart`
+
+- [x] **N7 — Rol removido**
+  - Cuándo: `quitarRol()` en `GestionarRolesUsuarioCubit`
+  - Quién recibe: el usuario afectado
+  - Mensaje: *"Se te removió un rol del sistema."*
+  - _Archivo_: `lib/funcionalidades/gestionar_roles_usuario/gestionar_roles_usuario_cubit.dart`
+
+---
+
+### Media prioridad — Afectan participación en eventos
+
+- [ ] **N8 — Evento publicado**
+  - Cuándo: `publicarEvento()` en `CrearEventoCubit`
+  - Quién recibe: usuarios con tags coincidentes (dirigido) o todos (general)
+  - Mensaje: *"Nuevo evento disponible: [título]."*
+  - _Archivo_: `lib/funcionalidades/crear_evento/crear_evento_cubit.dart`
+  - **Nota**: requiere consultar los usuarios destino por tags — lógica compleja, fase 2.
+
+- [ ] **N9 — Evento cancelado**
+  - Cuándo: estatus del evento cambia a `cancelado`
+  - Quién recibe: todos los asistentes registrados con estatus `esperado`
+  - Mensaje: *"El evento [título] fue cancelado."*
+  - **Nota**: requiere consultar asistentes, fase 2.
+
+- [ ] **N10 — Evento iniciado**
+  - Cuándo: estatus cambia a `en_curso`
+  - Quién recibe: colaboradores + asistentes `esperado`
+  - Mensaje: *"El evento [título] está comenzando ahora."*
+  - **Nota**: fase 2.
+
+- [ ] **N11 — Evento cerrado**
+  - Cuándo: `cerrarEvento()` en `PanelControlCubit`
+  - Quién recibe: colaboradores del evento
+  - Mensaje: *"El evento [título] fue cerrado."*
+  - _Archivo_: `lib/funcionalidades/panel_control_evento/panel_control_cubit.dart`
+
+---
+
+### Baja prioridad — Informativos operacionales
+
+- [ ] **N12 — Entrada registrada por QR**
+  - Cuándo: `registrarEntrada()` en `EscanearQrCubit`
+  - Quién recibe: el usuario escaneado
+  - Mensaje: *"Tu asistencia fue registrada."*
+
+- [ ] **N13 — Marcado como ausente automáticamente**
+  - Cuándo: `marcarAusentesAuto()` en `PanelControlCubit`
+  - Quién recibe: los usuarios marcados ausentes
+  - Mensaje: *"Fuiste marcado como ausente en el evento [título]."*
+
+---
+
+### Progreso BLOQUE 12
+
+| # | Notificación | Prioridad | Estado |
+|---|---|---|---|
+| N1 | Cuenta aprobada | Alta | [x] Hecho |
+| N2 | Cuenta rechazada | Alta | [x] Hecho |
+| N3 | Cuenta suspendida | Alta | [x] Hecho |
+| N4 | Asignado colaborador | Alta | [x] Hecho |
+| N5 | Removido colaborador | Alta | [x] Hecho |
+| N6 | Rol asignado | Alta | [x] Hecho |
+| N7 | Rol removido | Alta | [x] Hecho |
+| N8 | Evento publicado | Media | [ ] Pendiente |
+| N9 | Evento cancelado | Media | [ ] Pendiente |
+| N10 | Evento iniciado | Media | [ ] Pendiente |
+| N11 | Evento cerrado | Media | [ ] Pendiente |
+| N12 | Entrada por QR | Baja | [ ] Pendiente |
+| N13 | Ausente automático | Baja | [ ] Pendiente |
+
+---
+
 ## Progreso general
 
-**Completadas**: 37 de 37 tareas originales + BLOQUE 9 (paginación) + BLOQUE 10 (calidad) + BLOQUE 11 (hardening producción).
+**Completadas**: 37 de 37 tareas originales + BLOQUE 9 (paginación) + BLOQUE 10 (calidad) + BLOQUE 11 (hardening producción) + BLOQUE 12 alta prioridad (notificaciones push).
 
 **BLOQUE 9 — Paginación (100%)**:
 - P-1, P-5: paginación real con `cargarMas()` + estado `*CargandoMas`.
@@ -682,5 +800,10 @@ e importantes identificados tras la primera auditoría.
 - H3: timeout 15s en los 28 repositorios + `TimeoutException → FallaRed`.
 - H4: `conReintentos` extendido a todos los repos de lectura.
 - H5: `reportarError()` en todos los cubits → Sentry ve errores de producción.
+
+**BLOQUE 12 — Notificaciones Push (en progreso)**:
+- Infraestructura: Firebase FCM + service worker + Edge Function desplegada.
+- N1–N7 (alta prioridad): implementadas en cubits.
+- N8–N13 (media/baja): pendientes para fase 2.
 
 Quedan únicamente las acciones manuales de infraestructura (iconos PWA, GitHub Secrets, servidor HTTPS).

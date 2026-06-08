@@ -1,4 +1,7 @@
+import 'dart:async' show unawaited;
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
@@ -42,19 +45,59 @@ class GestionarRolesUsuarioCubit extends Cubit<GestionarRolesUsuarioEstado> {
     }
   }
 
-  Future<void> asignarRol(String rolId) =>
-      _ejecutar(() => _repositorio.asignarRol(_usuarioId!, rolId, _adminId));
-
-  Future<void> quitarRol(String rolId) =>
-      _ejecutar(() => _repositorio.quitarRol(_usuarioId!, rolId, _adminId));
-
-  Future<void> _ejecutar(Future<void> Function() operacion) async {
+  Future<void> asignarRol(String rolId) async {
     if (_usuarioId == null) return;
     final estadoActual = state;
     if (estadoActual is! GestionarRolesUsuarioCargado) return;
     try {
-      await operacion();
+      await _repositorio.asignarRol(_usuarioId!, rolId, _adminId);
       await cargar(_usuarioId!, adminId: _adminId);
+      try {
+        unawaited(
+          Supabase.instance.client.functions.invoke(
+            'enviar-notificacion',
+            body: {
+              'usuario_ids': [_usuarioId!],
+              'titulo': 'Nuevo rol asignado',
+              'cuerpo': 'Se te asignó un nuevo rol en el sistema.',
+            },
+          ),
+        );
+      } catch (e) {
+        log.w('No se pudo enviar notificación push', error: e);
+      }
+    } on FallaServidor catch (e) {
+      reportarError(e);
+      emit(GestionarRolesUsuarioOperacionFallida(
+          anterior: estadoActual, mensaje: e.mensaje));
+    } on FallaInesperada catch (e) {
+      reportarError(e);
+      emit(GestionarRolesUsuarioOperacionFallida(
+          anterior: estadoActual, mensaje: e.mensaje));
+    }
+  }
+
+  Future<void> quitarRol(String rolId) async {
+    if (_usuarioId == null) return;
+    final estadoActual = state;
+    if (estadoActual is! GestionarRolesUsuarioCargado) return;
+    try {
+      await _repositorio.quitarRol(_usuarioId!, rolId, _adminId);
+      await cargar(_usuarioId!, adminId: _adminId);
+      try {
+        unawaited(
+          Supabase.instance.client.functions.invoke(
+            'enviar-notificacion',
+            body: {
+              'usuario_ids': [_usuarioId!],
+              'titulo': 'Rol removido',
+              'cuerpo': 'Se te removió un rol del sistema.',
+            },
+          ),
+        );
+      } catch (e) {
+        log.w('No se pudo enviar notificación push', error: e);
+      }
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(GestionarRolesUsuarioOperacionFallida(

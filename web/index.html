@@ -34,5 +34,12 @@
 <body>
   <!-- Flutter carga y monta la app aquí -->
   <script src="flutter_bootstrap.js" async></script>
+
+  <!-- Registra el service worker de Firebase para notificaciones push en segundo plano -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    }
+  </script>
 </body>
 </html>
