@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'compartido/cache_local.dart';
 import 'compartido/logger.dart';
+import 'compartido/notificaciones_push_servicio.dart';
 import 'compartido/widgets/avisos/aviso_app.dart';
 import 'configuracion/colores_app.dart';
 import 'configuracion/dependencias.dart';
@@ -28,6 +30,18 @@ void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: 'AIzaSyD7NInOIx0MmiWCkxHw1wrAICvm_zf_kT4',
+          authDomain: 'activity-14938.firebaseapp.com',
+          projectId: 'activity-14938',
+          storageBucket: 'activity-14938.firebasestorage.app',
+          messagingSenderId: '734695397025',
+          appId: '1:734695397025:web:b31fc635597404703ac2e0',
+        ),
+      );
+      log.i('Firebase inicializado');
 
       // Evita que el caché de imágenes en memoria crezca indefinidamente
       // en sesiones largas (ej. operadores que dejan la app abierta todo el día).
@@ -71,6 +85,7 @@ void main() {
         final usuarioId = estado.usuario.id;
         if (usuarioId == null) return;
         notifCubit.iniciarStream(usuarioId);
+        unawaited(NotificacionesPushServicio.inicializar(usuarioId));
       });
 
       unawaited(authCubit.verificarSesion());

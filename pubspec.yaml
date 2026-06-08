@@ -54,6 +54,10 @@ dependencies:
   # Monitoreo de errores en producción
   sentry_flutter: ^8.0.0
 
+  # Firebase — notificaciones push PWA
+  firebase_core: ^3.0.0
+  firebase_messaging: ^15.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

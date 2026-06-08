@@ -1,4 +1,7 @@
+import 'dart:async' show unawaited;
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
@@ -84,6 +87,20 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
     try {
       await _repositorio.aprobar(usuarioId);
       await cargar();
+      try {
+        unawaited(
+          Supabase.instance.client.functions.invoke(
+            'enviar-notificacion',
+            body: {
+              'usuario_ids': [usuarioId],
+              'titulo': 'Cuenta aprobada',
+              'cuerpo': 'Tu cuenta fue aprobada. Ya puedes acceder a UniAsist.',
+            },
+          ),
+        );
+      } catch (e) {
+        log.w('No se pudo enviar notificación push', error: e);
+      }
     } on FallaServidor catch (falla) {
       reportarError(falla);
       emit(
@@ -115,6 +132,20 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
     try {
       await _repositorio.rechazar(usuarioId);
       await cargar();
+      try {
+        unawaited(
+          Supabase.instance.client.functions.invoke(
+            'enviar-notificacion',
+            body: {
+              'usuario_ids': [usuarioId],
+              'titulo': 'Solicitud rechazada',
+              'cuerpo': 'Tu solicitud de cuenta fue rechazada.',
+            },
+          ),
+        );
+      } catch (e) {
+        log.w('No se pudo enviar notificación push', error: e);
+      }
     } on FallaServidor catch (falla) {
       reportarError(falla);
       emit(
