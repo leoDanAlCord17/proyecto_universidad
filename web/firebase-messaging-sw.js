@@ -12,11 +12,5 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Muestra la notificación cuando la app está en segundo plano o cerrada
-messaging.onBackgroundMessage((payload) => {
-  self.registration.showNotification(payload.notification.title, {
-    body: payload.notification.body,
-    icon: '/icons/Icon-192.png',
-    badge: '/icons/Icon-192.png',
-  });
-});
+// FCM muestra automáticamente las notificaciones con campo 'notification'.
+// onBackgroundMessage solo se necesita para mensajes data-only.
