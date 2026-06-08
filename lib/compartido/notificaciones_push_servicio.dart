@@ -53,8 +53,11 @@ class NotificacionesPushServicio {
         log.i('Notificación recibida en primer plano: ${notif.title}');
       });
     } catch (e, st) {
-      log.e('Error al inicializar notificaciones push',
-          error: e, stackTrace: st,);
+      log.e(
+        'Error al inicializar notificaciones push',
+        error: e,
+        stackTrace: st,
+      );
     }
   }
 }
