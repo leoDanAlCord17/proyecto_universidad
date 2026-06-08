@@ -101,5 +101,5 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          npm i -g vercel@47
+          npm i -g vercel@48.0.0
           vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
