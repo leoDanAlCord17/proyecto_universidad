@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../compartido/notificaciones_push_servicio.dart';
 import '../../compartido/widgets/avisos/vista_error_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
 import '../../configuracion/colores_app.dart';
+import '../autenticacion/auth_cubit.dart';
+import '../autenticacion/auth_estado.dart';
 import 'notificacion.dart';
 import 'notificaciones_cubit.dart';
 import 'notificaciones_estado.dart';
@@ -19,6 +23,8 @@ class NotificacionesPantalla extends StatefulWidget {
 
 class _NotificacionesPantallaState extends State<NotificacionesPantalla> {
   bool _estaIniciado = false;
+  bool? _tieneToken;
+  bool _activando = false;
 
   @override
   void didChangeDependencies() {
@@ -26,6 +32,37 @@ class _NotificacionesPantallaState extends State<NotificacionesPantalla> {
     if (_estaIniciado) return;
     _estaIniciado = true;
     context.read<NotificacionesCubit>().cargarLista();
+    _verificarToken();
+  }
+
+  Future<void> _verificarToken() async {
+    final authState = context.read<AuthCubit>().state;
+    if (authState is! Autenticado) return;
+    final usuarioId = authState.usuario.id;
+    if (usuarioId == null) return;
+
+    try {
+      final data = await Supabase.instance.client
+          .from('tokens_dispositivo')
+          .select('id')
+          .eq('usuario_id', usuarioId)
+          .limit(1);
+      if (mounted) setState(() => _tieneToken = (data as List).isNotEmpty);
+    } catch (_) {
+      if (mounted) setState(() => _tieneToken = true);
+    }
+  }
+
+  Future<void> _activarNotificaciones() async {
+    final authState = context.read<AuthCubit>().state;
+    if (authState is! Autenticado) return;
+    final usuarioId = authState.usuario.id;
+    if (usuarioId == null) return;
+
+    setState(() => _activando = true);
+    await NotificacionesPushServicio.inicializar(usuarioId);
+    await _verificarToken();
+    if (mounted) setState(() => _activando = false);
   }
 
   @override
@@ -81,6 +118,11 @@ class _NotificacionesPantallaState extends State<NotificacionesPantalla> {
                     : null,
               ),
             ),
+            if (_tieneToken == false)
+              _BannerActivarNotificaciones(
+                activando: _activando,
+                onActivar: _activarNotificaciones,
+              ),
             Expanded(child: _Cuerpo(estado: estado)),
           ],
         ),
@@ -249,6 +291,74 @@ class _TarjetaNotificacion extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ─── Banner activar notificaciones ───────────────────────────────────────────
+
+class _BannerActivarNotificaciones extends StatelessWidget {
+  const _BannerActivarNotificaciones({
+    required this.activando,
+    required this.onActivar,
+  });
+
+  final bool activando;
+  final VoidCallback onActivar;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: ColoresApp.ambarClaro,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: ColoresApp.ambar.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.notifications_off_outlined,
+            color: ColoresApp.ambar,
+            size: 22,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Activa las notificaciones para recibir avisos en tiempo real.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: ColoresApp.textoPrimario,
+                    height: 1.4,
+                  ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          activando
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: ColoresApp.ambar,
+                  ),
+                )
+              : TextButton(
+                  onPressed: onActivar,
+                  style: TextButton.styleFrom(
+                    foregroundColor: ColoresApp.ambar,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text(
+                    'Activar',
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ),
+        ],
       ),
     );
   }

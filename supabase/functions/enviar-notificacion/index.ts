@@ -126,8 +126,8 @@ serve(async (req) => {
 
     // FCM HTTP v1 no soporta multicast — envía uno por uno en paralelo
     const resultados = await Promise.all(
-      tokens.map(({ token }: { token: string }) =>
-        fetch(
+      tokens.map(async ({ token }: { token: string }) => {
+        const res = await fetch(
           `https://fcm.googleapis.com/v1/projects/${sa.project_id}/messages:send`,
           {
             method: 'POST',
@@ -150,10 +150,29 @@ serve(async (req) => {
             }),
           },
         )
-      ),
+        const body = await res.json()
+        return { token, ok: res.ok, status: res.status, body }
+      }),
     )
 
-    const enviados = resultados.filter((r) => r.ok).length
+    // Elimina tokens que FCM reporta como inválidos o expirados
+    const tokensMuertos = resultados
+      .filter(({ ok, body }) => {
+        if (ok) return false
+        const code: string = body?.error?.status ?? ''
+        return code === 'UNREGISTERED' || code === 'INVALID_ARGUMENT'
+      })
+      .map(({ token }) => token)
+
+    if (tokensMuertos.length > 0) {
+      await supabase
+        .from('tokens_dispositivo')
+        .delete()
+        .in('token', tokensMuertos)
+      console.log(`Tokens muertos eliminados: ${tokensMuertos.length}`)
+    }
+
+    const enviados = resultados.filter(({ ok }) => ok).length
 
     return new Response(
       JSON.stringify({ enviados, total: tokens.length }),
