@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:uniasist/compartido/constantes.dart';
 import 'package:uniasist/compartido/errores.dart';
 import 'package:uniasist/funcionalidades/autenticacion/auth_cubit.dart';
 import 'package:uniasist/funcionalidades/autenticacion/auth_estado.dart';
@@ -11,15 +13,28 @@ import 'package:uniasist/funcionalidades/historial/historial_pantalla.dart';
 
 import '../helpers.dart';
 
-Widget _marco(HistorialCubit historial, MockAuthCubit auth) => MaterialApp(
-      home: MultiBlocProvider(
-        providers: [
-          BlocProvider<HistorialCubit>.value(value: historial),
-          BlocProvider<AuthCubit>.value(value: auth),
-        ],
-        child: const HistorialPantalla(),
+Widget _marco(HistorialCubit historial, MockAuthCubit auth) {
+  final router = GoRouter(
+    initialLocation: Rutas.historial,
+    routes: [
+      GoRoute(
+        path: Rutas.historial,
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider<HistorialCubit>.value(value: historial),
+            BlocProvider<AuthCubit>.value(value: auth),
+          ],
+          child: const HistorialPantalla(),
+        ),
       ),
-    );
+      GoRoute(path: Rutas.home, builder: (_, __) => const SizedBox()),
+      GoRoute(path: Rutas.eventos, builder: (_, __) => const SizedBox()),
+      GoRoute(path: Rutas.perfil, builder: (_, __) => const SizedBox()),
+      GoRoute(path: Rutas.escanear, builder: (_, __) => const SizedBox()),
+    ],
+  );
+  return MaterialApp.router(routerConfig: router);
+}
 
 void main() {
   late MockHistorialRepositorio repositorio;
@@ -57,6 +72,14 @@ void main() {
     testWidgets(
         'lista vacía: cubit emite HistorialCargado sin items y pantalla muestra estado vacío',
         (tester) async {
+      // El viewport por defecto (800×600) es demasiado pequeño para _VistaVacia
+      // con la barra de navegación inferior (70px). Se fija DPR=1 para que los
+      // píxeles físicos coincidan con los lógicos en cualquier máquina host.
+      tester.view.physicalSize = const Size(800, 900);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       when(() =>
               repositorio.obtenerHistorial(any(), offset: any(named: 'offset')))
           .thenAnswer((_) async => (items: <HistorialItem>[], hayMas: false));
