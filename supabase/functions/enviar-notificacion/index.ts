@@ -83,7 +83,7 @@ serve(async (req) => {
   }
 
   try {
-    const { usuario_ids, titulo, cuerpo } = await req.json()
+    const { usuario_ids, titulo, cuerpo, tipo = 'general', entidad_id = null, entidad_tipo = null } = await req.json()
 
     if (!usuario_ids?.length || !titulo || !cuerpo) {
       return new Response(
@@ -92,12 +92,22 @@ serve(async (req) => {
       )
     }
 
-    console.log('1. Parámetros recibidos:', { usuario_ids, titulo, cuerpo })
-
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     )
+
+    // Guarda la notificación en la tabla para cada usuario (in-app notification center)
+    const filas = usuario_ids.map((uid: string) => ({
+      usuario_id: uid,
+      titulo,
+      cuerpo,
+      tipo,
+      ...(entidad_id ? { entidad_id } : {}),
+      ...(entidad_tipo ? { entidad_tipo } : {}),
+    }))
+    const { error: insertError } = await supabase.from('notificaciones').insert(filas)
+    if (insertError) throw new Error(`Error guardando notificaciones: ${insertError.message}`)
 
     // Obtiene los tokens FCM de los usuarios destino
     const { data: tokens, error } = await supabase
@@ -105,24 +115,18 @@ serve(async (req) => {
       .select('token')
       .in('usuario_id', usuario_ids)
 
-    console.log('2. Tokens encontrados:', tokens?.length ?? 0, 'Error DB:', error?.message)
-
     if (error) throw new Error(`DB error: ${error.message} (code: ${error.code})`)
     if (!tokens?.length) {
       return new Response(
-        JSON.stringify({ enviados: 0, motivo: 'Sin tokens registrados' }),
+        JSON.stringify({ guardadas: usuario_ids.length, enviados: 0, motivo: 'Sin tokens registrados' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       )
     }
 
-    // Lee la service account desde la variable de entorno secreta
-    console.log('3. Leyendo FIREBASE_SERVICE_ACCOUNT...')
     const saRaw = Deno.env.get('FIREBASE_SERVICE_ACCOUNT')
     if (!saRaw) throw new Error('FIREBASE_SERVICE_ACCOUNT no está configurado')
     const sa: ServiceAccount = JSON.parse(saRaw)
-    console.log('4. Service account cargada, project_id:', sa.project_id)
     const accessToken = await getAccessToken(sa)
-    console.log('5. Access token obtenido, enviando a FCM...')
 
     // FCM HTTP v1 no soporta multicast — envía uno por uno en paralelo
     const resultados = await Promise.all(
@@ -175,7 +179,7 @@ serve(async (req) => {
     const enviados = resultados.filter(({ ok }) => ok).length
 
     return new Response(
-      JSON.stringify({ enviados, total: tokens.length }),
+      JSON.stringify({ guardadas: usuario_ids.length, enviados, total: tokens.length }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
   } catch (e) {
