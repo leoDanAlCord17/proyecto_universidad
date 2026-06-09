@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/widgets/avisos/vista_error_app.dart';
-import '../../compartido/widgets/botones/boton_regresar.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
+import '../../compartido/widgets/navegacion/barra_navegacion_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../configuracion/colores_app.dart';
 import '../autenticacion/auth_cubit.dart';
@@ -145,6 +146,14 @@ class _HistorialPantallaState extends State<HistorialPantalla>
             ),
           ],
         ),
+        bottomNavigationBar: BarraNavegacionApp(
+          indiceActual: 3,
+          alCambiarIndice: (indice) {
+            if (indice == 0) context.go(Rutas.home);
+            if (indice == 1) context.go(Rutas.eventos);
+            if (indice == 4) context.go(Rutas.perfil);
+          },
+        ),
       ),
     );
   }
@@ -182,20 +191,13 @@ class _BarraTitulo extends StatelessWidget {
     return SafeArea(
       bottom: false,
       child: BarraSuperiorApp(
-        izquierda: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const BotonRegresar(),
-            const SizedBox(width: 12),
-            Text(
-              'Mi historial',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: ColoresApp.textoPrimario,
-                  ),
-            ),
-          ],
+        izquierda: Text(
+          'Mi historial',
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: ColoresApp.textoPrimario,
+              ),
         ),
         derecha: alCompartir != null || estaExportando
             ? Material(
