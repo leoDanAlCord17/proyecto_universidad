@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
@@ -98,10 +99,60 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
     emit(cargado.copiarCon(estaCerrando: true));
     try {
       await _repositorio.cerrarEvento(_eventoId!);
+
+      // Captura esperados ANTES de marcarlos ausentes (N13)
+      List<String> esperadosIds = [];
       if (cargado.evento.marcarAusentesAuto) {
+        try {
+          esperadosIds = await _repositorio.obtenerEsperadosIds(_eventoId!);
+        } catch (e) {
+          log.w('No se pudo obtener esperados para N13', error: e);
+        }
         await _repositorio.marcarAusentesAuto(_eventoId!);
       }
+
       emit(const PanelControlEventoCerrado());
+
+      // N11 — notifica a colaboradores que el evento fue cerrado
+      try {
+        final colaboradoresIds =
+            await _repositorio.obtenerColaboradoresIds(_eventoId!);
+        if (colaboradoresIds.isNotEmpty) {
+          await Supabase.instance.client.functions.invoke(
+            'enviar-notificacion',
+            body: {
+              'usuario_ids': colaboradoresIds,
+              'titulo': 'Evento cerrado',
+              'cuerpo': 'El evento "${cargado.evento.titulo}" fue cerrado.',
+              'tipo': 'evento',
+              'entidad_id': _eventoId,
+              'entidad_tipo': 'evento',
+            },
+          );
+        }
+      } catch (e) {
+        log.w('No se pudo enviar notificación N11', error: e);
+      }
+
+      // N13 — notifica a los usuarios marcados ausentes automáticamente
+      if (cargado.evento.marcarAusentesAuto && esperadosIds.isNotEmpty) {
+        try {
+          await Supabase.instance.client.functions.invoke(
+            'enviar-notificacion',
+            body: {
+              'usuario_ids': esperadosIds,
+              'titulo': 'Ausencia registrada',
+              'cuerpo':
+                  'Fuiste marcado como ausente en "${cargado.evento.titulo}".',
+              'tipo': 'asistencia',
+              'entidad_id': _eventoId,
+              'entidad_tipo': 'evento',
+            },
+          );
+        } catch (e) {
+          log.w('No se pudo enviar notificación N13', error: e);
+        }
+      }
     } on FallaServidor catch (e) {
       reportarError(e);
       emit(

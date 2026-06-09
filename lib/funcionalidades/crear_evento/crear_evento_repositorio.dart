@@ -209,6 +209,51 @@ class CrearEventoRepositorio {
     }
   }
 
+  /// Retorna los IDs de usuarios cuya audiencia coincide con los grupos del evento.
+  /// Usado para notificar al publicar un evento dirigido (N8).
+  Future<List<String>> obtenerUsuariosIdsDirigidos(String eventoId) =>
+      conReintentos(() async {
+        try {
+          final grupoRows = await _cliente
+              .from(TablasSupabase.eventoGruposTags)
+              .select('grupo_index, tag_id')
+              .eq('evento_id', eventoId)
+              .timeout(kTimeoutSolicitud);
+          if ((grupoRows as List).isEmpty) return <String>[];
+
+          final grupos = <int, List<String>>{};
+          for (final row in (grupoRows).cast<Map<String, dynamic>>()) {
+            final idx = row['grupo_index'] as int;
+            grupos.putIfAbsent(idx, () => []).add(row['tag_id'] as String);
+          }
+
+          final allTagIds = grupos.values.expand((ids) => ids).toSet().toList();
+          final userTagRows = await _cliente
+              .from(TablasSupabase.usuariosTags)
+              .select('usuario_id, tag_id')
+              .inFilter('tag_id', allTagIds)
+              .eq('estatus', true)
+              .timeout(kTimeoutSolicitud);
+
+          final tagsPorUsuario = <String, Set<String>>{};
+          for (final row
+              in (userTagRows as List).cast<Map<String, dynamic>>()) {
+            final userId = row['usuario_id'] as String;
+            final tagId = row['tag_id'] as String;
+            tagsPorUsuario.putIfAbsent(userId, () => {}).add(tagId);
+          }
+
+          return tagsPorUsuario.entries
+              .where((e) => grupos.values.any(e.value.containsAll))
+              .map((e) => e.key)
+              .toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
+
   List<Map<String, dynamic>> _construirFilasGrupos(
     String eventoId,
     List<GrupoAudiencia> grupos,

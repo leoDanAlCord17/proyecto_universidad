@@ -721,44 +721,39 @@ Las notificaciones se envían llamando a la Edge Function desde los cubits tras 
 
 ### Media prioridad — Afectan participación en eventos
 
-- [ ] **N8 — Evento publicado**
+- [x] **N8 — Evento publicado**
   - Cuándo: `publicarEvento()` en `CrearEventoCubit`
-  - Quién recibe: usuarios con tags coincidentes (dirigido) o todos (general)
-  - Mensaje: *"Nuevo evento disponible: [título]."*
-  - _Archivo_: `lib/funcionalidades/crear_evento/crear_evento_cubit.dart`
-  - **Nota**: requiere consultar los usuarios destino por tags — lógica compleja, fase 2.
+  - Quién recibe: usuarios con tags coincidentes (alcance `dirigido`); eventos `general` se omiten
+  - Mensaje: *"Nuevo evento: [título]."*
+  - _Archivos_: `crear_evento_cubit.dart`, `crear_evento_repositorio.dart` (nuevo método `obtenerUsuariosIdsDirigidos`)
 
-- [ ] **N9 — Evento cancelado**
-  - Cuándo: estatus del evento cambia a `cancelado`
-  - Quién recibe: todos los asistentes registrados con estatus `esperado`
-  - Mensaje: *"El evento [título] fue cancelado."*
-  - **Nota**: requiere consultar asistentes, fase 2.
+- [-] **N9 — Evento cancelado**
+  - No aplica — no existe funcionalidad de cancelar eventos en el código actual.
 
-- [ ] **N10 — Evento iniciado**
-  - Cuándo: estatus cambia a `en_curso`
-  - Quién recibe: colaboradores + asistentes `esperado`
-  - Mensaje: *"El evento [título] está comenzando ahora."*
-  - **Nota**: fase 2.
+- [-] **N10 — Evento iniciado**
+  - No aplica — no existe funcionalidad de iniciar eventos (`en_curso`) en el código actual.
 
-- [ ] **N11 — Evento cerrado**
+- [x] **N11 — Evento cerrado**
   - Cuándo: `cerrarEvento()` en `PanelControlCubit`
-  - Quién recibe: colaboradores del evento
+  - Quién recibe: colaboradores del evento (tabla `eventos_usuarios_roles`)
   - Mensaje: *"El evento [título] fue cerrado."*
-  - _Archivo_: `lib/funcionalidades/panel_control_evento/panel_control_cubit.dart`
+  - _Archivos_: `panel_control_cubit.dart`, `panel_control_repositorio.dart` (nuevo método `obtenerColaboradoresIds`)
 
 ---
 
 ### Baja prioridad — Informativos operacionales
 
-- [ ] **N12 — Entrada registrada por QR**
-  - Cuándo: `registrarEntrada()` en `EscanearQrCubit`
-  - Quién recibe: el usuario escaneado
-  - Mensaje: *"Tu asistencia fue registrada."*
+- [x] **N12 — Entrada registrada por QR**
+  - Cuándo: `procesarQr()` en `EscanearQrCubit` cuando `registrado == true`
+  - Quién recibe: el usuario escaneado (`rawValue` = `usuarioId`)
+  - Mensaje: *"Tu entrada a [título] fue registrada."*
+  - _Archivo_: `escanear_qr_cubit.dart`
 
-- [ ] **N13 — Marcado como ausente automáticamente**
-  - Cuándo: `marcarAusentesAuto()` en `PanelControlCubit`
-  - Quién recibe: los usuarios marcados ausentes
-  - Mensaje: *"Fuiste marcado como ausente en el evento [título]."*
+- [x] **N13 — Marcado como ausente automáticamente**
+  - Cuándo: `cerrarEvento()` en `PanelControlCubit`, después de `marcarAusentesAuto()`
+  - Quién recibe: usuarios con estatus `esperado` capturados antes de la actualización
+  - Mensaje: *"Fuiste marcado como ausente en [título]."*
+  - _Archivos_: `panel_control_cubit.dart`, `panel_control_repositorio.dart` (nuevo método `obtenerEsperadosIds`)
 
 ---
 
@@ -773,12 +768,12 @@ Las notificaciones se envían llamando a la Edge Function desde los cubits tras 
 | N5 | Removido colaborador | Alta | [x] Hecho |
 | N6 | Rol asignado | Alta | [x] Hecho |
 | N7 | Rol removido | Alta | [x] Hecho |
-| N8 | Evento publicado | Media | [ ] Pendiente |
-| N9 | Evento cancelado | Media | [ ] Pendiente |
-| N10 | Evento iniciado | Media | [ ] Pendiente |
-| N11 | Evento cerrado | Media | [ ] Pendiente |
-| N12 | Entrada por QR | Baja | [ ] Pendiente |
-| N13 | Ausente automático | Baja | [ ] Pendiente |
+| N8 | Evento publicado | Media | [x] Hecho |
+| N9 | Evento cancelado | Media | [-] No aplica |
+| N10 | Evento iniciado | Media | [-] No aplica |
+| N11 | Evento cerrado | Media | [x] Hecho |
+| N12 | Entrada por QR | Baja | [x] Hecho |
+| N13 | Ausente automático | Baja | [x] Hecho |
 
 ---
 
@@ -801,9 +796,9 @@ Las notificaciones se envían llamando a la Edge Function desde los cubits tras 
 - H4: `conReintentos` extendido a todos los repos de lectura.
 - H5: `reportarError()` en todos los cubits → Sentry ve errores de producción.
 
-**BLOQUE 12 — Notificaciones Push (en progreso)**:
+**BLOQUE 12 — Notificaciones Push (100%)**:
 - Infraestructura: Firebase FCM + service worker + Edge Function desplegada.
 - N1–N7 (alta prioridad): implementadas en cubits.
-- N8–N13 (media/baja): pendientes para fase 2.
+- N8, N11, N12, N13: implementadas. N9 y N10: no aplica (funcionalidades no existen).
 
 Quedan únicamente las acciones manuales de infraestructura (iconos PWA, GitHub Secrets, servidor HTTPS).

@@ -165,6 +165,48 @@ class PanelControlRepositorio {
     }
   }
 
+  /// Retorna los IDs de usuarios con roles asignados en el evento.
+  Future<List<String>> obtenerColaboradoresIds(String eventoId) async {
+    try {
+      final rows = await _supabase
+          .from(TablasSupabase.eventosUsuariosRoles)
+          .select('usuario_id')
+          .eq('evento_id', eventoId)
+          .timeout(kTimeoutSolicitud);
+      return (rows as List)
+          .cast<Map<String, dynamic>>()
+          .map((r) => r['usuario_id'] as String)
+          .toSet()
+          .toList();
+    } on PostgrestException catch (e) {
+      throw FallaServidor(TraductorErrores.dePostgres(e));
+    } catch (e) {
+      TraductorErrores.lanzarInesperado(e);
+    }
+  }
+
+  /// Retorna los IDs de usuarios con estatus 'esperado' en el evento.
+  /// Se consulta antes de marcarAusentesAuto para capturar quiénes serán notificados.
+  Future<List<String>> obtenerEsperadosIds(String eventoId) async {
+    try {
+      final rows = await _supabase
+          .from(TablasSupabase.asistencia)
+          .select('usuario_id')
+          .eq('evento_id', eventoId)
+          .eq('estatus', EstatusAsistencia.esperado)
+          .timeout(kTimeoutSolicitud);
+      return (rows as List)
+          .cast<Map<String, dynamic>>()
+          .map((r) => r['usuario_id'] as String?)
+          .whereType<String>()
+          .toList();
+    } on PostgrestException catch (e) {
+      throw FallaServidor(TraductorErrores.dePostgres(e));
+    } catch (e) {
+      TraductorErrores.lanzarInesperado(e);
+    }
+  }
+
   // ─── Helpers privados ────────────────────────────────────────────────────────
 
   Future<Map<int, List<String>>> _obtenerGruposTags(String eventoId) async {

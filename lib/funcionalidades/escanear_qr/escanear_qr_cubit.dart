@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
@@ -67,6 +68,25 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
       );
       _emitirResultado(listo, registrado,
           nombre: datos.nombre, cedula: datos.cedula, rol: datos.rol);
+
+      // N12 — notifica al usuario que su entrada fue registrada
+      if (registrado) {
+        try {
+          await Supabase.instance.client.functions.invoke(
+            'enviar-notificacion',
+            body: {
+              'usuario_ids': [rawValue],
+              'titulo': 'Asistencia registrada',
+              'cuerpo': 'Tu entrada a "${listo.evento.titulo}" fue registrada.',
+              'tipo': 'asistencia',
+              'entidad_id': _eventoId,
+              'entidad_tipo': 'evento',
+            },
+          );
+        } catch (e) {
+          log.w('No se pudo enviar notificación N12', error: e);
+        }
+      }
     } on FallaServidor catch (e) {
       reportarError(e);
       _programarReset(listo);
