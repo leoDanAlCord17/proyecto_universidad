@@ -35,10 +35,53 @@
   <!-- Flutter carga y monta la app aquí -->
   <script src="flutter_bootstrap.js" async></script>
 
-  <!-- Registra el service worker de Firebase para notificaciones push en segundo plano -->
   <script>
     if ('serviceWorker' in navigator) {
+      // ── Firebase SW — push notifications en segundo plano ──────────────────
       navigator.serviceWorker.register('/firebase-messaging-sw.js');
+
+      // ── Actualización automática del Service Worker ────────────────────────
+      // Flutter genera flutter_service_worker.js con un hash único por build.
+      // El browser detecta el archivo nuevo, lo instala en segundo plano y,
+      // una vez activo, esta lógica recarga la app para mostrar la versión
+      // más reciente sin que el usuario tenga que desinstalar ni recargar.
+
+      let _recargando = false;
+
+      // Guarda el controlador actual ANTES de que cambie.
+      // Si era null (primera instalación) no recargamos — solo cuando hay
+      // una versión previa que está siendo reemplazada por la nueva.
+      const _controladorPrevio = navigator.serviceWorker.controller;
+
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (_controladorPrevio && !_recargando) {
+          _recargando = true;
+          window.location.reload();
+        }
+      });
+
+      // Fuerza la activación si el nuevo SW quedó en estado "waiting".
+      // Esto ocurre cuando el usuario tiene la app abierta en varias pestañas:
+      // el browser instala el SW nuevo pero no lo activa hasta que todas
+      // las pestañas con la versión anterior se cierren. El mensaje
+      // SKIP_WAITING le dice al SW que tome control inmediatamente.
+      navigator.serviceWorker.ready.then((reg) => {
+        const activar = (sw) => {
+          sw.addEventListener('statechange', () => {
+            if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+              sw.postMessage({ type: 'SKIP_WAITING' });
+            }
+          });
+        };
+
+        // Caso A: ya hay un SW en espera cuando la página termina de cargar
+        if (reg.waiting) activar(reg.waiting);
+
+        // Caso B: el nuevo SW comienza a instalarse después de la carga
+        reg.addEventListener('updatefound', () => {
+          if (reg.installing) activar(reg.installing);
+        });
+      });
     }
   </script>
 </body>
