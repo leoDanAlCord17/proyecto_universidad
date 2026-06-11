@@ -102,7 +102,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           npm i -g vercel@48.0.0
-          if [ "${{ github.ref }}" = "refs/heads/main-pwa" ]; then
+          if [ "${{ github.ref }}" = "refs/heads/main-pwa" ] || [ "${{ github.ref }}" = "refs/heads/dev-leo-pwa" ]; then
             vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
           else
             vercel --token=${{ secrets.VERCEL_TOKEN }} --yes
