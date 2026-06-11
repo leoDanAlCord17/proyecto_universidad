@@ -6,6 +6,21 @@ final temaApp = ThemeData(
   fontFamily: 'Outfit',
   scaffoldBackgroundColor: ColoresApp.fondo,
 
+  // Deshabilita el gesto swipe-back de iOS en todas las plataformas.
+  // CupertinoPageTransitionsBuilder (default en iOS) incluye un gesto
+  // que arrastra la pantalla desde el borde izquierdo — no es deseable en
+  // una PWA. ZoomPageTransitionsBuilder usa la transición Material 3 sin gestos.
+  pageTransitionsTheme: const PageTransitionsTheme(
+    builders: {
+      TargetPlatform.android: ZoomPageTransitionsBuilder(),
+      TargetPlatform.iOS: ZoomPageTransitionsBuilder(),
+      TargetPlatform.fuchsia: ZoomPageTransitionsBuilder(),
+      TargetPlatform.linux: ZoomPageTransitionsBuilder(),
+      TargetPlatform.macOS: ZoomPageTransitionsBuilder(),
+      TargetPlatform.windows: ZoomPageTransitionsBuilder(),
+    },
+  ),
+
   colorScheme: ColorScheme.fromSeed(
     seedColor: ColoresApp.acento,
     primary: ColoresApp.acento,

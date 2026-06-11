@@ -41,6 +41,60 @@
   <script src="flutter_bootstrap.js" async></script>
 
   <script>
+    // Bloquea el gesto de retroceso (swipe desde el borde izquierdo) en las
+    // pantallas principales de la PWA.
+    //
+    // En Android, el gesto del sistema operativo dispara un evento popstate en
+    // el historial del browser. GoRouter lo procesa via setNewRoutePath()
+    // (no via Navigator.pop()), por lo que PopScope no lo intercepta.
+    //
+    // Solución: capturamos popstate en fase capture (antes de que GoRouter
+    // lo vea), detectamos si veníamos de una ruta principal, y si es así
+    // cancelamos la navegación con stopImmediatePropagation + go(1).
+    (function () {
+      var RUTAS_PRINCIPALES = ['/home', '/eventos', '/historial', '/perfil'];
+
+      function esRutaPrincipal(urlCompleta) {
+        var hash = (urlCompleta || location.href).split('#')[1] || '';
+        return RUTAS_PRINCIPALES.some(function (r) {
+          return hash === r || hash.startsWith(r + '/') || hash.startsWith(r + '?');
+        });
+      }
+
+      var _urlAnterior = location.href;
+      var _ignorarSiguiente = false;
+
+      // Rastrear la URL actual interceptando las llamadas de GoRouter
+      ['pushState', 'replaceState'].forEach(function (fn) {
+        var orig = history[fn].bind(history);
+        history[fn] = function (state, title, url) {
+          orig(state, title, url);
+          _urlAnterior = location.href;
+        };
+      });
+
+      // Fase capture → se ejecuta ANTES que el listener bubble de GoRouter
+      window.addEventListener('popstate', function (e) {
+        if (_ignorarSiguiente) {
+          _ignorarSiguiente = false;
+          _urlAnterior = location.href;
+          return;
+        }
+
+        if (esRutaPrincipal(_urlAnterior)) {
+          // Evitar que GoRouter procese este popstate
+          e.stopImmediatePropagation();
+          // Deshacer la navegación atrás (go(1) dispara otro popstate que ignoramos)
+          _ignorarSiguiente = true;
+          history.go(1);
+        } else {
+          _urlAnterior = location.href;
+        }
+      }, true); // true = capture phase
+    })();
+  </script>
+
+  <script>
     if ('serviceWorker' in navigator) {
       // ── Firebase SW — push notifications en segundo plano ──────────────────
       navigator.serviceWorker.register('/firebase-messaging-sw.js');
