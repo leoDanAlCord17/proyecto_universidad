@@ -124,7 +124,7 @@ class _InicioPantallaState extends State<InicioPantalla> {
               indiceActual: 0,
               alCambiarIndice: (indice) {
                 if (indice == 1) context.go(Rutas.eventos);
-                if (indice == 3) context.push(Rutas.historial);
+                if (indice == 3) context.go(Rutas.historial);
                 if (indice == 4) context.go(Rutas.perfil);
               },
             ),

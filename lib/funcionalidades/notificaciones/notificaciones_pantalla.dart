@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,8 +33,15 @@ class _NotificacionesPantallaState extends State<NotificacionesPantalla> {
     super.didChangeDependencies();
     if (_estaIniciado) return;
     _estaIniciado = true;
-    context.read<NotificacionesCubit>().cargarLista();
+    unawaited(_cargarYMarcar());
     _verificarToken();
+  }
+
+  Future<void> _cargarYMarcar() async {
+    await context.read<NotificacionesCubit>().cargarLista();
+    if (mounted) {
+      context.read<NotificacionesCubit>().marcarTodasLeidas();
+    }
   }
 
   Future<void> _verificarToken() async {

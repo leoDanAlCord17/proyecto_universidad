@@ -152,7 +152,7 @@ class _EventosPantallaState extends State<EventosPantalla>
           indiceActual: 1,
           alCambiarIndice: (indice) {
             if (indice == 0) context.go(Rutas.home);
-            if (indice == 3) context.push(Rutas.historial);
+            if (indice == 3) context.go(Rutas.historial);
             if (indice == 4) context.go(Rutas.perfil);
           },
         ),
