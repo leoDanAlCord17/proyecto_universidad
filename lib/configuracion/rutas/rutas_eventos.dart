@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,9 +26,12 @@ import '../../funcionalidades/panel_control_evento/panel_control_pantalla.dart';
 List<GoRoute> get rutasEventos => [
       GoRoute(
         path: Rutas.eventos,
-        builder: (context, state) => BlocProvider(
-          create: (_) => obtenerIt<EventosCubit>(),
-          child: const EventosPantalla(),
+        builder: (context, state) => PopScope(
+          canPop: false,
+          child: BlocProvider(
+            create: (_) => obtenerIt<EventosCubit>(),
+            child: const EventosPantalla(),
+          ),
         ),
       ),
       GoRoute(

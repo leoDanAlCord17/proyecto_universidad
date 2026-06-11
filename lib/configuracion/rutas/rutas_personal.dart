@@ -19,12 +19,15 @@ import '../../funcionalidades/perfil/perfil_pantalla.dart';
 List<GoRoute> get rutasPersonal => [
       GoRoute(
         path: Rutas.home,
-        builder: (context, state) => MultiBlocProvider(
-          providers: [
-            BlocProvider(create: (_) => obtenerIt<InicioCubit>()),
-            BlocProvider(create: (_) => obtenerIt<EventosEnCursoCubit>()),
-          ],
-          child: const InicioPantalla(),
+        builder: (context, state) => PopScope(
+          canPop: false,
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => obtenerIt<InicioCubit>()),
+              BlocProvider(create: (_) => obtenerIt<EventosEnCursoCubit>()),
+            ],
+            child: const InicioPantalla(),
+          ),
         ),
       ),
       GoRoute(
@@ -35,16 +38,22 @@ List<GoRoute> get rutasPersonal => [
       ),
       GoRoute(
         path: Rutas.perfil,
-        builder: (context, state) => BlocProvider(
-          create: (_) => obtenerIt<PerfilCubit>(),
-          child: const PerfilPantalla(),
+        builder: (context, state) => PopScope(
+          canPop: false,
+          child: BlocProvider(
+            create: (_) => obtenerIt<PerfilCubit>(),
+            child: const PerfilPantalla(),
+          ),
         ),
       ),
       GoRoute(
         path: Rutas.historial,
-        builder: (context, state) => BlocProvider(
-          create: (_) => obtenerIt<HistorialCubit>(),
-          child: const HistorialPantalla(),
+        builder: (context, state) => PopScope(
+          canPop: false,
+          child: BlocProvider(
+            create: (_) => obtenerIt<HistorialCubit>(),
+            child: const HistorialPantalla(),
+          ),
         ),
       ),
       GoRoute(
