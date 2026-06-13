@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
+import '../../compartido/navegacion.dart';
 import '../../compartido/widgets/avisos/aviso_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
 import '../../compartido/widgets/formularios/campo_fecha_app.dart';
@@ -103,7 +104,8 @@ class _CrearEventoPantallaState extends State<CrearEventoPantalla> {
                 : 'Evento publicado ✓',
             estilo: EstiloAviso.exito,
           );
-          context.go(Rutas.eventos);
+          pestanaActiva.value = 1;
+          context.go(Rutas.home);
         }
         if (estado is CrearEventoError) {
           AvisoApp.mostrar(context,

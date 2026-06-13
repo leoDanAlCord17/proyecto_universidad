@@ -3,12 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../compartido/constantes.dart';
-import '../../compartido/navegacion.dart';
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
 import '../../compartido/widgets/utilidades/banner_sin_conexion.dart';
 import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
-import '../../compartido/widgets/navegacion/barra_navegacion_app.dart';
 import '../../compartido/widgets/qr/tarjeta_qr_usuario.dart';
 import '../../compartido/widgets/tarjetas/tarjeta_app.dart';
 import '../../compartido/widgets/tarjetas/tarjeta_info_personal.dart';
@@ -164,14 +161,6 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
                       ),
                     ),
                   ],
-                ),
-                bottomNavigationBar: BarraNavegacionApp(
-                  indiceActual: 4,
-                  alCambiarIndice: (indice) {
-                    if (indice == 0) irAPestana(context, Rutas.home);
-                    if (indice == 1) irAPestana(context, Rutas.eventos);
-                    if (indice == 3) irAPestana(context, Rutas.historial);
-                  },
                 ),
               ),
             );

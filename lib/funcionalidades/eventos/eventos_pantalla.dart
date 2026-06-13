@@ -6,11 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
-import '../../compartido/navegacion.dart';
 import '../../compartido/widgets/botones/boton_contorno_icono.dart';
 import '../../compartido/widgets/utilidades/banner_sin_conexion.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
-import '../../compartido/widgets/navegacion/barra_navegacion_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../compartido/widgets/tarjetas/tarjeta_evento.dart';
 import '../../compartido/widgets/utilidades/protector_por_permiso.dart';
@@ -148,14 +146,6 @@ class _EventosPantallaState extends State<EventosPantalla>
               ),
             ),
           ],
-        ),
-        bottomNavigationBar: BarraNavegacionApp(
-          indiceActual: 1,
-          alCambiarIndice: (indice) {
-            if (indice == 0) irAPestana(context, Rutas.home);
-            if (indice == 3) irAPestana(context, Rutas.historial);
-            if (indice == 4) irAPestana(context, Rutas.perfil);
-          },
         ),
       ),
     );

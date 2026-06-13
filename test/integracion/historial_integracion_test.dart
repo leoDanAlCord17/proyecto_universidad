@@ -72,9 +72,9 @@ void main() {
     testWidgets(
         'lista vacía: cubit emite HistorialCargado sin items y pantalla muestra estado vacío',
         (tester) async {
-      // El viewport por defecto (800×600) es demasiado pequeño para _VistaVacia
-      // con la barra de navegación inferior (70px). Se fija DPR=1 para que los
-      // píxeles físicos coincidan con los lógicos en cualquier máquina host.
+      // Se agranda el viewport y se fija DPR=1 para que los píxeles físicos
+      // coincidan con los lógicos en cualquier máquina host y _VistaVacia quepa
+      // sin desbordes.
       tester.view.physicalSize = const Size(800, 900);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);

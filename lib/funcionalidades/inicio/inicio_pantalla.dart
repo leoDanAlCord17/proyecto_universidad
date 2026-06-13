@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
 import '../../compartido/widgets/botones/boton_contorno_icono.dart';
-import '../../compartido/widgets/navegacion/barra_navegacion_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../compartido/widgets/panel/panel_opciones.dart';
 import '../../compartido/widgets/qr/tarjeta_qr_perfil.dart';
@@ -121,14 +120,6 @@ class _InicioPantallaState extends State<InicioPantalla> {
                 ),
               ],
             ),
-            bottomNavigationBar: BarraNavegacionApp(
-              indiceActual: 0,
-              alCambiarIndice: (indice) {
-                if (indice == 1) irAPestana(context, Rutas.eventos);
-                if (indice == 3) irAPestana(context, Rutas.historial);
-                if (indice == 4) irAPestana(context, Rutas.perfil);
-              },
-            ),
           ),
         );
       },
@@ -236,7 +227,7 @@ class _EstadoVacioEventos extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             TextButton.icon(
-              onPressed: () => context.go(Rutas.eventos),
+              onPressed: () => pestanaActiva.value = 1,
               icon: const Icon(Icons.calendar_month_outlined),
               label: const Text('Ver próximos eventos'),
             ),

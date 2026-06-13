@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,22 +17,10 @@ import '../../funcionalidades/escanear_evento_qr/escanear_evento_qr_cubit.dart';
 import '../../funcionalidades/escanear_evento_qr/escanear_evento_qr_pantalla.dart';
 import '../../funcionalidades/escanear_qr/escanear_qr_cubit.dart';
 import '../../funcionalidades/escanear_qr/escanear_qr_pantalla.dart';
-import '../../funcionalidades/eventos/eventos_cubit.dart';
-import '../../funcionalidades/eventos/eventos_pantalla.dart';
 import '../../funcionalidades/panel_control_evento/panel_control_cubit.dart';
 import '../../funcionalidades/panel_control_evento/panel_control_pantalla.dart';
 
 List<GoRoute> get rutasEventos => [
-      GoRoute(
-        path: Rutas.eventos,
-        builder: (context, state) => PopScope(
-          canPop: false,
-          child: BlocProvider(
-            create: (_) => obtenerIt<EventosCubit>(),
-            child: const EventosPantalla(),
-          ),
-        ),
-      ),
       GoRoute(
         path: Rutas.crearEvento,
         builder: (context, state) => BlocProvider(
