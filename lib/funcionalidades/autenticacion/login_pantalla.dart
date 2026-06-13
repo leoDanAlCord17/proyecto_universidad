@@ -74,7 +74,7 @@ class _CuerpoLogin extends StatelessWidget {
             const SizedBox(height: 45),
             CampoTextoApp(
               etiqueta: 'Correo electrónico',
-              hintText: 'leoalvarez18@gmail.com',
+              hintText: 'leoalvarez19s@gmail.com',
               controller: correoController,
             ),
             const SizedBox(height: 20),

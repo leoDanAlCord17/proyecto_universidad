@@ -10,6 +10,7 @@ import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../compartido/widgets/panel/panel_opciones.dart';
 import '../../compartido/widgets/qr/tarjeta_qr_perfil.dart';
 import '../../compartido/constantes.dart';
+import '../../compartido/navegacion.dart';
 import '../../configuracion/colores_app.dart';
 import '../autenticacion/auth_cubit.dart';
 import '../autenticacion/auth_estado.dart';
@@ -123,9 +124,9 @@ class _InicioPantallaState extends State<InicioPantalla> {
             bottomNavigationBar: BarraNavegacionApp(
               indiceActual: 0,
               alCambiarIndice: (indice) {
-                if (indice == 1) context.go(Rutas.eventos);
-                if (indice == 3) context.go(Rutas.historial);
-                if (indice == 4) context.go(Rutas.perfil);
+                if (indice == 1) irAPestana(context, Rutas.eventos);
+                if (indice == 3) irAPestana(context, Rutas.historial);
+                if (indice == 4) irAPestana(context, Rutas.perfil);
               },
             ),
           ),

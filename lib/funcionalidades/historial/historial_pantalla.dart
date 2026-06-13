@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-
 import '../../compartido/constantes.dart';
+import '../../compartido/navegacion.dart';
 import '../../compartido/widgets/avisos/vista_error_app.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_navegacion_app.dart';
@@ -149,9 +148,9 @@ class _HistorialPantallaState extends State<HistorialPantalla>
         bottomNavigationBar: BarraNavegacionApp(
           indiceActual: 3,
           alCambiarIndice: (indice) {
-            if (indice == 0) context.go(Rutas.home);
-            if (indice == 1) context.go(Rutas.eventos);
-            if (indice == 4) context.go(Rutas.perfil);
+            if (indice == 0) irAPestana(context, Rutas.home);
+            if (indice == 1) irAPestana(context, Rutas.eventos);
+            if (indice == 4) irAPestana(context, Rutas.perfil);
           },
         ),
       ),

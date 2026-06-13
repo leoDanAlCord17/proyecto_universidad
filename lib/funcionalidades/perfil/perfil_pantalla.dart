@@ -3,9 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-
 import '../../compartido/constantes.dart';
+import '../../compartido/navegacion.dart';
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
 import '../../compartido/widgets/utilidades/banner_sin_conexion.dart';
 import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
@@ -169,9 +168,9 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
                 bottomNavigationBar: BarraNavegacionApp(
                   indiceActual: 4,
                   alCambiarIndice: (indice) {
-                    if (indice == 0) context.go(Rutas.home);
-                    if (indice == 1) context.go(Rutas.eventos);
-                    if (indice == 3) context.go(Rutas.historial);
+                    if (indice == 0) irAPestana(context, Rutas.home);
+                    if (indice == 1) irAPestana(context, Rutas.eventos);
+                    if (indice == 3) irAPestana(context, Rutas.historial);
                   },
                 ),
               ),

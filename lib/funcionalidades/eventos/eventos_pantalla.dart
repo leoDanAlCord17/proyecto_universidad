@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
+import '../../compartido/navegacion.dart';
 import '../../compartido/widgets/botones/boton_contorno_icono.dart';
 import '../../compartido/widgets/utilidades/banner_sin_conexion.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
@@ -151,9 +152,9 @@ class _EventosPantallaState extends State<EventosPantalla>
         bottomNavigationBar: BarraNavegacionApp(
           indiceActual: 1,
           alCambiarIndice: (indice) {
-            if (indice == 0) context.go(Rutas.home);
-            if (indice == 3) context.go(Rutas.historial);
-            if (indice == 4) context.go(Rutas.perfil);
+            if (indice == 0) irAPestana(context, Rutas.home);
+            if (indice == 3) irAPestana(context, Rutas.historial);
+            if (indice == 4) irAPestana(context, Rutas.perfil);
           },
         ),
       ),
