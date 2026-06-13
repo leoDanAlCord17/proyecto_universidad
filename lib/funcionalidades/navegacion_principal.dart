@@ -100,17 +100,32 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
   @override
   Widget build(BuildContext context) {
     final actual = pestanaActiva.value;
-    return Scaffold(
-      body: IndexedStack(
-        index: _ordenTabs.indexOf(actual),
-        children: [
-          for (final i in _ordenTabs)
-            _visitadas.contains(i) ? _contenido(i) : const SizedBox.shrink(),
-        ],
-      ),
-      bottomNavigationBar: BarraNavegacionApp(
-        indiceActual: actual,
-        alCambiarIndice: _seleccionar,
+    // Anula el gesto "atrás" del sistema/navegador en la PWA instalada en
+    // Android. Al deslizar desde el borde izquierdo, Chrome dispara el back del
+    // historial; como cada context.push deja una entrada, el gesto asomaba y
+    // abría la pantalla anterior. Este shell queda montado mientras navegas a
+    // las pantallas internas (push), así que su BackButtonListener conserva la
+    // prioridad y atrapa ese back: devolver true significa "ya lo manejé, no
+    // propagar". La navegación interna (botón Regresar → context.pop /
+    // context.go) NO pasa por el BackButtonDispatcher, así que sigue igual.
+    //
+    // Debe vivir AQUÍ (debajo del Router de go_router) y no en el builder de
+    // MaterialApp.router, que está por encima del Router y haría que
+    // Router.of(context) lance "context does not include a Router".
+    return BackButtonListener(
+      onBackButtonPressed: () async => true,
+      child: Scaffold(
+        body: IndexedStack(
+          index: _ordenTabs.indexOf(actual),
+          children: [
+            for (final i in _ordenTabs)
+              _visitadas.contains(i) ? _contenido(i) : const SizedBox.shrink(),
+          ],
+        ),
+        bottomNavigationBar: BarraNavegacionApp(
+          indiceActual: actual,
+          alCambiarIndice: _seleccionar,
+        ),
       ),
     );
   }

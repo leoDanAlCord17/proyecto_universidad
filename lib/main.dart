@@ -200,27 +200,14 @@ class _App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: temaApp,
       routerConfig: routerApp.router,
-      builder: (context, child) => BackButtonListener(
-        // En la PWA instalada en Android, el gesto de borde (deslizar desde la
-        // izquierda) dispara el "atrás" del navegador. Como cada context.push
-        // deja una entrada en el historial, ese gesto asomaba y abría la
-        // pantalla anterior. Interceptamos el back del sistema/navegador y lo
-        // anulamos: devolver true significa "ya lo manejé, no propagar".
-        //
-        // La navegación interna (botón Regresar → context.pop / context.go) NO
-        // pasa por el BackButtonDispatcher, así que sigue funcionando igual.
-        // Las pestañas ya no acumulan historial (ver navegacion.dart), por lo
-        // que esto cubre el caso restante: las pantallas abiertas con push.
-        onBackButtonPressed: () async => true,
-        child: BlocListener<AuthCubit, AuthEstado>(
-          listenWhen: (_, curr) => curr is SesionDesplazada,
-          listener: (ctx, _) => AvisoApp.mostrar(
-            ctx,
-            texto: 'Tu sesión fue iniciada en otro dispositivo.',
-            estilo: EstiloAviso.informativa,
-          ),
-          child: child!,
+      builder: (context, child) => BlocListener<AuthCubit, AuthEstado>(
+        listenWhen: (_, curr) => curr is SesionDesplazada,
+        listener: (ctx, _) => AvisoApp.mostrar(
+          ctx,
+          texto: 'Tu sesión fue iniciada en otro dispositivo.',
+          estilo: EstiloAviso.informativa,
         ),
+        child: child!,
       ),
     );
   }
