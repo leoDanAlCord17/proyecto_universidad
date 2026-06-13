@@ -9,6 +9,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'compartido/cache_local.dart';
+import 'compartido/historial_navegador.dart';
 import 'compartido/logger.dart';
 import 'compartido/notificaciones_push_servicio.dart';
 import 'compartido/widgets/avisos/aviso_app.dart';
@@ -30,6 +31,11 @@ void main() {
   runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
+
+      // Historial del navegador sin acumular entradas (solo web). Debe ir antes
+      // de construir el router para que el gesto "atrás" de la PWA en Android no
+      // tenga ninguna pantalla anterior que asomar.
+      configurarHistorialSinAcumular();
 
       await Firebase.initializeApp(
         options: const FirebaseOptions(

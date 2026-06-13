@@ -10,6 +10,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # API de estrategia de URL del navegador (web). Se usa para que el historial
+  # no acumule entradas y así eliminar el gesto "atrás" en la PWA de Android.
+  flutter_web_plugins:
+    sdk: flutter
+
   # Supabase
   supabase_flutter: ^2.5.0
 
