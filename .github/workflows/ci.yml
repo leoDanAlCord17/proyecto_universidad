@@ -96,14 +96,35 @@ jobs:
           retention-days: 7
 
       - name: Deploy a Vercel
-        working-directory: ./build/web
+        timeout-minutes: 5
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           npm i -g vercel@48.0.0
+
+          # Empaqueta el build de Flutter ya compilado en el formato Build
+          # Output API v3 (.vercel/output). Con --prebuilt el CLI sube el
+          # artefacto directamente sin pedirle a Vercel que lo "construya"
+          # de nuevo — evita el build remoto cuyo log-streaming se quedaba
+          # colgado en CI aunque el deploy ya hubiera terminado del lado
+          # de Vercel. También asegura que el rewrite SPA (antes en
+          # vercel.json, en la raíz del repo y por tanto ignorado al
+          # desplegar solo build/web) viaje con cada deployment.
+          mkdir -p .vercel/output/static
+          cp -r build/web/. .vercel/output/static/
+          cat > .vercel/output/config.json <<'EOF'
+          {
+            "version": 3,
+            "routes": [
+              { "handle": "filesystem" },
+              { "src": "/(.*)", "dest": "/index.html" }
+            ]
+          }
+          EOF
+
           if [ "${{ github.ref }}" = "refs/heads/main-pwa" ] || [ "${{ github.ref }}" = "refs/heads/dev-leo-pwa" ]; then
-            vercel --prod --token=${{ secrets.VERCEL_TOKEN }} --yes
+            vercel deploy --prebuilt --prod --yes --token=${{ secrets.VERCEL_TOKEN }} < /dev/null
           else
-            vercel --token=${{ secrets.VERCEL_TOKEN }} --yes
+            vercel deploy --prebuilt --yes --token=${{ secrets.VERCEL_TOKEN }} < /dev/null
           fi
