@@ -137,6 +137,16 @@ class EstatusAsistencia {
   static const String anulado = 'anulado';
 }
 
+/// Valores válidos para notificaciones.tipo — usados tanto al enviar
+/// (`NotificacionesPushServicio.enviar`) como al pintar el ícono/color en
+/// `notificaciones_pantalla.dart`. Ver docs/mapa_notificaciones.md.
+class TiposNotificacion {
+  static const String evento = 'evento';
+  static const String asistencia = 'asistencia';
+  static const String aprobacion = 'aprobacion';
+  static const String general = 'general';
+}
+
 /// Nombres exactos de los permisos del sistema.
 /// Nunca escribir el nombre de un permiso como string directo en el código.
 class Permisos {

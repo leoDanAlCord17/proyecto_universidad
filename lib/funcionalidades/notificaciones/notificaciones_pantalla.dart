@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/notificaciones_push_servicio.dart';
 import '../../compartido/widgets/avisos/vista_error_app.dart';
@@ -50,16 +49,9 @@ class _NotificacionesPantallaState extends State<NotificacionesPantalla> {
     final usuarioId = authState.usuario.id;
     if (usuarioId == null) return;
 
-    try {
-      final data = await Supabase.instance.client
-          .from('tokens_dispositivo')
-          .select('id')
-          .eq('usuario_id', usuarioId)
-          .limit(1);
-      if (mounted) setState(() => _tieneToken = (data as List).isNotEmpty);
-    } catch (_) {
-      if (mounted) setState(() => _tieneToken = true);
-    }
+    final tieneToken =
+        await context.read<NotificacionesCubit>().tieneTokenRegistrado(usuarioId);
+    if (mounted) setState(() => _tieneToken = tieneToken);
   }
 
   Future<void> _activarNotificaciones() async {

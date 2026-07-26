@@ -214,24 +214,34 @@ class _Lista extends StatelessWidget {
       );
     }
 
+    final mostrarPie = cargandoMas || estado.hayMas;
+    final itemCount = 1 + estado.usuarios.length + (mostrarPie ? 1 : 0);
+
     return Stack(
       fit: StackFit.expand,
       children: [
-        ListView(
+        ListView.builder(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-          children: [
-            Text(
-              'USUARIOS PENDIENTES',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: ColoresApp.textoTerciario,
-                    letterSpacing: 0.8,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
-                  ),
-            ),
-            const SizedBox(height: 12),
-            ...estado.usuarios.map(
-              (usuario) => Padding(
+          itemCount: itemCount,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  'USUARIOS PENDIENTES',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: ColoresApp.textoTerciario,
+                        letterSpacing: 0.8,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+              );
+            }
+
+            if (index - 1 < estado.usuarios.length) {
+              final usuario = estado.usuarios[index - 1];
+              return Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: _TarjetaUsuarioPendiente(
                   usuario: usuario,
@@ -253,23 +263,24 @@ class _Lista extends StatelessWidget {
                         .rechazar(usuario.id));
                   },
                 ),
-              ),
-            ),
-            if (cargandoMas)
-              const Padding(
+              );
+            }
+
+            if (cargandoMas) {
+              return const Padding(
                 padding: EdgeInsets.only(top: 8),
                 child: Center(
                   child: CircularProgressIndicator(color: ColoresApp.acento),
                 ),
-              )
-            else if (estado.hayMas)
-              TextButton.icon(
-                onPressed: () =>
-                    context.read<RevisionUsuariosCubit>().cargarMas(),
-                icon: const Icon(Icons.expand_more_rounded),
-                label: const Text('Cargar más'),
-              ),
-          ],
+              );
+            }
+            return TextButton.icon(
+              onPressed: () =>
+                  context.read<RevisionUsuariosCubit>().cargarMas(),
+              icon: const Icon(Icons.expand_more_rounded),
+              label: const Text('Cargar más'),
+            );
+          },
         ),
         if (estado.usuarioIdProcessando != null)
           const ColoredBox(

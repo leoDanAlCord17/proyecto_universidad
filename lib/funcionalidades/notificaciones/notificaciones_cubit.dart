@@ -98,6 +98,17 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
     } catch (_) {}
   }
 
+  /// true si el usuario tiene al menos un token push registrado. Ante
+  /// cualquier error asume que sí — es preferible no mostrar el banner de
+  /// activación a insistir por un fallo transitorio de red.
+  Future<bool> tieneTokenRegistrado(String usuarioId) async {
+    try {
+      return await _repositorio.tieneTokenRegistrado(usuarioId);
+    } catch (_) {
+      return true;
+    }
+  }
+
   @override
   Future<void> close() {
     _subContador?.cancel();

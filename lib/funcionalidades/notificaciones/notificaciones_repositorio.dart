@@ -93,6 +93,25 @@ class NotificacionesRepositorio {
     }
   }
 
+  /// true si el usuario tiene al menos un token de dispositivo registrado.
+  /// Usado para decidir si mostrar el banner "Activar notificaciones".
+  Future<bool> tieneTokenRegistrado(String usuarioId) =>
+      conReintentos(() async {
+        try {
+          final filas = await _supabase
+              .from(TablasSupabase.tokensDispositivo)
+              .select('id')
+              .eq('usuario_id', usuarioId)
+              .limit(1)
+              .timeout(kTimeoutSolicitud);
+          return filas.isNotEmpty;
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
+
   /// Desactiva el token al cerrar sesión para no recibir notificaciones.
   Future<void> desactivarToken(String token) async {
     try {

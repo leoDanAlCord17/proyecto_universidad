@@ -360,39 +360,51 @@ class _Lista extends StatelessWidget {
       );
     }
 
-    return ListView(
+    final mostrarEncabezado = !estado.modoSeleccion;
+    final mostrarPie = cargandoMas || (estado.hayMas && !estado.modoSeleccion);
+    final indiceInicioItems = mostrarEncabezado ? 1 : 0;
+    final itemCount = indiceInicioItems + items.length + (mostrarPie ? 1 : 0);
+
+    return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-      children: [
-        if (!estado.modoSeleccion) ...[
-          const _EncabezadoColumnas(),
-          const SizedBox(height: 12),
-        ],
-        ...items.map(
-          (u) => Padding(
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (mostrarEncabezado && index == 0) {
+          return const Padding(
+            padding: EdgeInsets.only(bottom: 12),
+            child: _EncabezadoColumnas(),
+          );
+        }
+
+        final indiceItem = index - indiceInicioItems;
+        if (indiceItem < items.length) {
+          final u = items[indiceItem];
+          return Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: _TarjetaUsuario(
               usuario: u,
               modoSeleccion: estado.modoSeleccion,
               estaSeleccionado: estado.seleccionados.contains(u.id),
             ),
-          ),
-        ),
-        if (cargandoMas)
-          const Padding(
+          );
+        }
+
+        if (cargandoMas) {
+          return const Padding(
             padding: EdgeInsets.only(top: 8),
             child: Center(
               child: CircularProgressIndicator(color: ColoresApp.acento),
             ),
-          )
-        else if (estado.hayMas && !estado.modoSeleccion)
-          Center(
-            child: TextButton.icon(
-              onPressed: () => context.read<UsuariosCubit>().cargarMas(),
-              icon: const Icon(Icons.expand_more_rounded),
-              label: const Text('Cargar más'),
-            ),
+          );
+        }
+        return Center(
+          child: TextButton.icon(
+            onPressed: () => context.read<UsuariosCubit>().cargarMas(),
+            icon: const Icon(Icons.expand_more_rounded),
+            label: const Text('Cargar más'),
           ),
-      ],
+        );
+      },
     );
   }
 }

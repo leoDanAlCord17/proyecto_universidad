@@ -194,30 +194,39 @@ class _Lista extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return ListView(
+    // +1 encabezado, +1 pie de lista (siempre presente: cargando, botón o vacío).
+    final itemCount = items.length + 2;
+
+    return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-      children: [
-        Text(
-          'ROLES DEL SISTEMA',
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: ColoresApp.textoTerciario,
-                letterSpacing: 0.8,
-                fontSize: 13,
-                fontWeight: FontWeight.w900,
-              ),
-        ),
-        const SizedBox(height: 12),
-        ...items.map(
-          (r) => Padding(
+      itemCount: itemCount,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              'ROLES DEL SISTEMA',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: ColoresApp.textoTerciario,
+                    letterSpacing: 0.8,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          );
+        }
+        if (index - 1 < items.length) {
+          final r = items[index - 1];
+          return Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: _TarjetaRol(
               rol: r,
               cantidadUsuarios: estado.conteoUsuarios[r.id] ?? 0,
             ),
-          ),
-        ),
-        pieDeLista(),
-      ],
+          );
+        }
+        return pieDeLista();
+      },
     );
   }
 }

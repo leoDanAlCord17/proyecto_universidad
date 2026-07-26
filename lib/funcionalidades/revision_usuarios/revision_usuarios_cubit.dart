@@ -1,10 +1,11 @@
 import 'dart:async' show unawaited;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
+import '../../compartido/notificaciones_push_servicio.dart';
 import 'revision_usuario_item.dart';
 import 'revision_usuarios_estado.dart';
 import 'revision_usuarios_repositorio.dart';
@@ -87,20 +88,14 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
     try {
       await _repositorio.aprobar(usuarioId);
       await cargar();
-      try {
-        unawaited(
-          Supabase.instance.client.functions.invoke(
-            'enviar-notificacion',
-            body: {
-              'usuario_ids': [usuarioId],
-              'titulo': 'Cuenta aprobada',
-              'cuerpo': 'Tu cuenta fue aprobada. Ya puedes acceder a UniAsist.',
-            },
-          ),
-        );
-      } catch (e) {
-        log.w('No se pudo enviar notificación push', error: e);
-      }
+      unawaited(
+        NotificacionesPushServicio.enviar(
+          usuarioIds: [usuarioId],
+          titulo: 'Cuenta aprobada',
+          cuerpo: 'Tu cuenta fue aprobada. Ya puedes acceder a UniAsist.',
+          tipo: TiposNotificacion.aprobacion,
+        ),
+      );
     } on FallaServidor catch (falla) {
       reportarError(falla);
       emit(
@@ -132,20 +127,14 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
     try {
       await _repositorio.rechazar(usuarioId);
       await cargar();
-      try {
-        unawaited(
-          Supabase.instance.client.functions.invoke(
-            'enviar-notificacion',
-            body: {
-              'usuario_ids': [usuarioId],
-              'titulo': 'Solicitud rechazada',
-              'cuerpo': 'Tu solicitud de cuenta fue rechazada.',
-            },
-          ),
-        );
-      } catch (e) {
-        log.w('No se pudo enviar notificación push', error: e);
-      }
+      unawaited(
+        NotificacionesPushServicio.enviar(
+          usuarioIds: [usuarioId],
+          titulo: 'Solicitud rechazada',
+          cuerpo: 'Tu solicitud de cuenta fue rechazada.',
+          tipo: TiposNotificacion.aprobacion,
+        ),
+      );
     } on FallaServidor catch (falla) {
       reportarError(falla);
       emit(

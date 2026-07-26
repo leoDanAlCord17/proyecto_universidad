@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
+import '../../compartido/validadores.dart';
 import '../autenticacion/autenticacion_repositorio.dart';
 import 'recuperar_contrasena_estado.dart';
 
@@ -10,8 +11,6 @@ class RecuperarContrasenaCubit extends Cubit<RecuperarContrasenaEstado> {
 
   final AutenticacionRepositorio _repositorio;
 
-  static final _regexCorreo = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-
   Future<void> enviar(String correo) async {
     final correoLimpio = correo.trim();
     if (correoLimpio.isEmpty) {
@@ -19,7 +18,7 @@ class RecuperarContrasenaCubit extends Cubit<RecuperarContrasenaEstado> {
           mensaje: 'Ingresa tu correo institucional.'));
       return;
     }
-    if (!_regexCorreo.hasMatch(correoLimpio)) {
+    if (!Validadores.esCorreoValido(correoLimpio)) {
       emit(
           const RecuperarContrasenaError(mensaje: 'Ingresa un correo válido.'));
       return;

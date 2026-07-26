@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
+import '../../compartido/notificaciones_push_servicio.dart';
 import 'crear_evento_estado.dart';
 import 'crear_evento_repositorio.dart';
 import 'grupo_audiencia.dart';
@@ -215,19 +215,14 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
         try {
           final userIds =
               await _repositorio.obtenerUsuariosIdsDirigidos(eventoId);
-          if (userIds.isNotEmpty) {
-            await Supabase.instance.client.functions.invoke(
-              'enviar-notificacion',
-              body: {
-                'usuario_ids': userIds,
-                'titulo': 'Nuevo evento: ${estadoActual.titulo}',
-                'cuerpo': 'Se publicó un nuevo evento al que puedes asistir.',
-                'tipo': 'evento',
-                'entidad_id': eventoId,
-                'entidad_tipo': 'evento',
-              },
-            );
-          }
+          await NotificacionesPushServicio.enviar(
+            usuarioIds: userIds,
+            titulo: 'Nuevo evento: ${estadoActual.titulo}',
+            cuerpo: 'Se publicó un nuevo evento al que puedes asistir.',
+            tipo: TiposNotificacion.evento,
+            entidadId: eventoId,
+            entidadTipo: 'evento',
+          );
         } catch (e) {
           log.w('No se pudo enviar notificación N8', error: e);
         }

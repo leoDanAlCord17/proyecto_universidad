@@ -127,26 +127,29 @@ class _Lista extends StatelessWidget {
       );
     }
 
-    return ListView(
+    return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-      children: [
-        Text(
-          'PERMISOS DEL SISTEMA',
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: ColoresApp.textoTerciario,
-                letterSpacing: 0.8,
-                fontSize: 13,
-                fontWeight: FontWeight.w900,
-              ),
-        ),
-        const SizedBox(height: 12),
-        ...items.map(
-          (p) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: _TarjetaPermiso(permiso: p),
-          ),
-        ),
-      ],
+      itemCount: items.length + 1,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(
+              'PERMISOS DEL SISTEMA',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: ColoresApp.textoTerciario,
+                    letterSpacing: 0.8,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w900,
+                  ),
+            ),
+          );
+        }
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: _TarjetaPermiso(permiso: items[index - 1]),
+        );
+      },
     );
   }
 }

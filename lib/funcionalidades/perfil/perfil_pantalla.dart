@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../compartido/validadores.dart';
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
 import '../../compartido/widgets/utilidades/banner_sin_conexion.dart';
 import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
@@ -319,14 +320,11 @@ class _FormularioEditarState extends State<_FormularioEditar> {
               etiqueta: 'Correo electrónico',
               obligatorio: true,
               teclado: TextInputType.emailAddress,
-              validador: (v) {
-                if (v == null || v.trim().isEmpty)
-                  return 'El correo es obligatorio';
-                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v.trim())) {
-                  return 'Ingresa un correo válido';
-                }
-                return null;
-              },
+              validador: (v) => Validadores.validarCorreo(
+                v,
+                mensajeVacio: 'El correo es obligatorio',
+                mensajeInvalido: 'Ingresa un correo válido',
+              ),
             ),
             const SizedBox(height: 12),
             _Campo(

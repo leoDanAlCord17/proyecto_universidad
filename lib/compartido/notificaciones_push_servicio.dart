@@ -60,4 +60,42 @@ class NotificacionesPushServicio {
       );
     }
   }
+
+  /// Envía una notificación in-app + push a través de la Edge Function
+  /// `enviar-notificacion`, que inserta en la tabla `notificaciones` y
+  /// despacha FCM a los dispositivos registrados de cada usuario.
+  ///
+  /// Punto único de armado del payload — antes cada cubit construía el
+  /// `body` a mano, lo que produjo variantes inconsistentes (algunas sin
+  /// `tipo`, otras sin `entidad_id`/`entidad_tipo`). Ver docs/mapa_notificaciones.md
+  /// para el catálogo de notificaciones (N1–N13) y sus tipos correctos.
+  ///
+  /// Fire-and-forget: nunca lanza. Un fallo de notificación (Edge Function
+  /// caída, red intermitente) no debe interrumpir ni revertir la operación
+  /// de negocio que la origina — se registra como warning y se continúa.
+  static Future<void> enviar({
+    required List<String> usuarioIds,
+    required String titulo,
+    required String cuerpo,
+    required String tipo,
+    String? entidadId,
+    String? entidadTipo,
+  }) async {
+    if (usuarioIds.isEmpty) return;
+    try {
+      await _supabase.functions.invoke(
+        'enviar-notificacion',
+        body: {
+          'usuario_ids': usuarioIds,
+          'titulo': titulo,
+          'cuerpo': cuerpo,
+          'tipo': tipo,
+          if (entidadId != null) 'entidad_id': entidadId,
+          if (entidadTipo != null) 'entidad_tipo': entidadTipo,
+        },
+      );
+    } catch (e) {
+      log.w('No se pudo enviar notificación push ("$titulo")', error: e);
+    }
+  }
 }

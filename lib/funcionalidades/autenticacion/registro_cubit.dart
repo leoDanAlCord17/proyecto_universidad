@@ -3,14 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
+import '../../compartido/validadores.dart';
 import 'autenticacion_repositorio.dart';
 import 'registro_estado.dart';
 
 class RegistroCubit extends Cubit<RegistroEstado> {
   RegistroCubit(this._repositorio) : super(RegistroInicial());
   final AutenticacionRepositorio _repositorio;
-
-  static final _regexEmail = RegExp(r'^[\w.+\-]+@[\w\-]+\.[a-zA-Z]{2,}$');
 
   Future<void> registrarse(
     String correo,
@@ -24,7 +23,7 @@ class RegistroCubit extends Cubit<RegistroEstado> {
       return;
     }
 
-    if (!_regexEmail.hasMatch(correoLimpio)) {
+    if (!Validadores.esCorreoValido(correoLimpio)) {
       emit(RegistroError('Ingresa un correo con formato válido.'));
       return;
     }

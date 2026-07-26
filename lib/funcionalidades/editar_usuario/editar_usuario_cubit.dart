@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
+import '../../compartido/validadores.dart';
 import 'editar_usuario_estado.dart';
 import 'editar_usuario_repositorio.dart';
 
@@ -61,7 +62,7 @@ class EditarUsuarioCubit extends Cubit<EditarUsuarioEstado> {
       emit(estadoActual.copiarCon(errorValidacion: 'El correo es requerido.'));
       return;
     }
-    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(correo.trim())) {
+    if (!Validadores.esCorreoValido(correo)) {
       emit(estadoActual.copiarCon(
           errorValidacion: 'El correo no tiene un formato válido.'));
       return;

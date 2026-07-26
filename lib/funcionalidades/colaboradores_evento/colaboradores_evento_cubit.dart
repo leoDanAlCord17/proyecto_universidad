@@ -1,10 +1,11 @@
 import 'dart:async' show unawaited;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
+import '../../compartido/notificaciones_push_servicio.dart';
 import 'colaborador_item.dart';
 import 'colaboradores_evento_estado.dart';
 import 'colaboradores_evento_repositorio.dart';
@@ -81,20 +82,16 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
           .where((u) => !actual.colaboradores.any((c) => c.usuarioId == u.id))
           .toList();
       emit(actual.copiarCon(resultadosBusqueda: filtrados, idOperando: null));
-      try {
-        unawaited(
-          Supabase.instance.client.functions.invoke(
-            'enviar-notificacion',
-            body: {
-              'usuario_ids': [usuario.id],
-              'titulo': 'Nuevo rol en evento',
-              'cuerpo': 'Fuiste asignado como colaborador en un evento.',
-            },
-          ),
-        );
-      } catch (e) {
-        log.w('No se pudo enviar notificación push', error: e);
-      }
+      unawaited(
+        NotificacionesPushServicio.enviar(
+          usuarioIds: [usuario.id],
+          titulo: 'Nuevo rol en evento',
+          cuerpo: 'Fuiste asignado como colaborador en un evento.',
+          tipo: TiposNotificacion.evento,
+          entidadId: _eventoId,
+          entidadTipo: 'evento',
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
       _emitirFallo(cargado, e.mensaje);
@@ -111,20 +108,16 @@ class ColaboradoresEventoCubit extends Cubit<ColaboradoresEventoEstado> {
     try {
       await _repositorio.quitarColaborador(colaborador.asignacionId);
       await _recargarColaboradores();
-      try {
-        unawaited(
-          Supabase.instance.client.functions.invoke(
-            'enviar-notificacion',
-            body: {
-              'usuario_ids': [colaborador.usuarioId],
-              'titulo': 'Removido de evento',
-              'cuerpo': 'Ya no eres colaborador en el evento.',
-            },
-          ),
-        );
-      } catch (e) {
-        log.w('No se pudo enviar notificación push', error: e);
-      }
+      unawaited(
+        NotificacionesPushServicio.enviar(
+          usuarioIds: [colaborador.usuarioId],
+          titulo: 'Removido de evento',
+          cuerpo: 'Ya no eres colaborador en el evento.',
+          tipo: TiposNotificacion.evento,
+          entidadId: _eventoId,
+          entidadTipo: 'evento',
+        ),
+      );
     } on FallaServidor catch (e) {
       reportarError(e);
       _emitirFallo(cargado, e.mensaje);

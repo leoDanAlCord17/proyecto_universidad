@@ -1,27 +1,19 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../compartido/asistencia_registro_base.dart';
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
 import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
 import '../eventos/evento.dart';
 
-class EscanearEventoQrRepositorio {
-  const EscanearEventoQrRepositorio(this._supabase);
-
-  final SupabaseClient _supabase;
-
-  static final _regexUuid = RegExp(
-    r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
-  );
-
-  /// Retorna true si el valor tiene formato de UUID válido.
-  bool esUuidValido(String valor) => _regexUuid.hasMatch(valor);
+class EscanearEventoQrRepositorio extends AsistenciaRegistroBase {
+  const EscanearEventoQrRepositorio(super.supabase);
 
   /// Obtiene el evento por su UUID. Retorna null si no existe.
   Future<Evento?> obtenerEvento(String eventoId) => conReintentos(() async {
         try {
-          final fila = await _supabase
+          final fila = await supabase
               .from(TablasSupabase.eventos)
               .select()
               .eq('id', eventoId)
@@ -39,7 +31,7 @@ class EscanearEventoQrRepositorio {
   Future<bool> verificarPerteneceAudiencia(String eventoId, String usuarioId) =>
       conReintentos(() async {
         try {
-          final filas = await _supabase
+          final filas = await supabase
               .from(TablasSupabase.eventoGruposTags)
               .select('grupo_index, tag_id')
               .eq('evento_id', eventoId)
@@ -55,7 +47,7 @@ class EscanearEventoQrRepositorio {
           }
 
           final todosTagIds = mapa.values.expand((s) => s).toSet().toList();
-          final userTags = await _supabase
+          final userTags = await supabase
               .from(TablasSupabase.usuariosTags)
               .select('tag_id')
               .eq('usuario_id', usuarioId)
@@ -77,45 +69,6 @@ class EscanearEventoQrRepositorio {
   Future<bool> registrarEntrada({
     required String eventoId,
     required String usuarioId,
-  }) async {
-    try {
-      final existing = await _supabase
-          .from(TablasSupabase.asistencia)
-          .select('id, estatus')
-          .eq('evento_id', eventoId)
-          .eq('usuario_id', usuarioId)
-          .maybeSingle();
-
-      if (existing != null) {
-        if ((existing['estatus'] as String?) != EstatusAsistencia.esperado)
-          return false;
-        await _actualizarAsistencia(existing['id'] as String);
-      } else {
-        await _insertarAsistencia(eventoId: eventoId, usuarioId: usuarioId);
-      }
-      return true;
-    } on PostgrestException catch (e) {
-      if (e.code == '23505') return false;
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      TraductorErrores.lanzarInesperado(e);
-    }
-  }
-
-  Future<void> _actualizarAsistencia(String asistenciaId) =>
-      _supabase.from(TablasSupabase.asistencia).update({
-        'estatus': EstatusAsistencia.presente,
-        'hora_entrada': DateTime.now().toUtc().toIso8601String(),
-      }).eq('id', asistenciaId);
-
-  Future<void> _insertarAsistencia({
-    required String eventoId,
-    required String usuarioId,
   }) =>
-      _supabase.from(TablasSupabase.asistencia).insert({
-        'evento_id': eventoId,
-        'usuario_id': usuarioId,
-        'estatus': EstatusAsistencia.presente,
-        'hora_entrada': DateTime.now().toUtc().toIso8601String(),
-      });
+      registrarEntradaBase(eventoId: eventoId, usuarioId: usuarioId);
 }
