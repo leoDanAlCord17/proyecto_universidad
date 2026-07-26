@@ -20,7 +20,7 @@ import 'logger.dart';
 ///   final data = CacheLocal.leer('eventos');                  // null si expiró o no existe
 class CacheLocal {
   // Nombre versionado: migración limpia desde el formato anterior sin TTL.
-  static const _caja = 'uniasist_cache_v2';
+  static const _caja = 'activiti_cache_v2';
 
   static bool _disponible = false;
 

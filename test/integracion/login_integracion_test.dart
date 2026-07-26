@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:uniasist/compartido/errores.dart';
-import 'package:uniasist/funcionalidades/autenticacion/auth_cubit.dart';
-import 'package:uniasist/funcionalidades/autenticacion/auth_estado.dart';
-import 'package:uniasist/funcionalidades/autenticacion/login_cubit.dart';
-import 'package:uniasist/funcionalidades/autenticacion/login_pantalla.dart';
+import 'package:activiti/compartido/errores.dart';
+import 'package:activiti/funcionalidades/autenticacion/auth_cubit.dart';
+import 'package:activiti/funcionalidades/autenticacion/auth_estado.dart';
+import 'package:activiti/funcionalidades/autenticacion/login_cubit.dart';
+import 'package:activiti/funcionalidades/autenticacion/login_pantalla.dart';
 
 import '../helpers.dart';
 

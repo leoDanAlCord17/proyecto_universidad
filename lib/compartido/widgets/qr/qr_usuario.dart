@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:uniasist/configuracion/colores_app.dart';
+import 'package:activiti/configuracion/colores_app.dart';
 
 class QrUsuario extends StatelessWidget {
   const QrUsuario({

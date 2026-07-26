@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:uniasist/funcionalidades/auditoria_evento/auditoria_evento_modelo.dart';
+import 'package:activiti/funcionalidades/auditoria_evento/auditoria_evento_modelo.dart';
 
 // ─── Fixtures ────────────────────────────────────────────────────────────────
 

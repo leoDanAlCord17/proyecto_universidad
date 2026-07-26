@@ -1,4 +1,4 @@
-# Ciclo de vida de eventos — UniAsist
+# Ciclo de vida de eventos — Activiti
 
 ## Tabla de contenido
 
@@ -15,7 +15,7 @@
 
 ## Resumen general
 
-El sistema de ciclo de vida de eventos en UniAsist gestiona automáticamente el cambio de estatus de los eventos sin intervención manual del administrador. El proceso se divide en dos capas:
+El sistema de ciclo de vida de eventos en Activiti gestiona automáticamente el cambio de estatus de los eventos sin intervención manual del administrador. El proceso se divide en dos capas:
 
 | Capa | Tecnología | Responsabilidad |
 |------|-----------|-----------------|
@@ -295,4 +295,4 @@ un error. Revisar `cron.job_run_details`.
 
 ---
 
-*Documentación generada para UniAsist — ciclo de vida de eventos.*
+*Documentación generada para Activiti — ciclo de vida de eventos.*

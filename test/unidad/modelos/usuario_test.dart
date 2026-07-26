@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:uniasist/funcionalidades/autenticacion/usuario.dart';
+import 'package:activiti/funcionalidades/autenticacion/usuario.dart';
 
 void main() {
   const camposBase = {

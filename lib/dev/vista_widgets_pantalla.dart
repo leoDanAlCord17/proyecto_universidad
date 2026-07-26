@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:uniasist/compartido/widgets/avatares/avatar_usuario.dart';
-import 'package:uniasist/compartido/widgets/botones/boton_app.dart';
-import 'package:uniasist/compartido/widgets/botones/boton_icono.dart';
-import 'package:uniasist/compartido/widgets/botones/boton_contorno_icono.dart';
-import 'package:uniasist/compartido/widgets/botones/boton_regresar.dart';
-import 'package:uniasist/compartido/widgets/formularios/barra_busqueda_app.dart';
-import 'package:uniasist/compartido/widgets/formularios/campo_texto_app.dart';
-import 'package:uniasist/compartido/widgets/indicadores/barra_estadistica.dart';
-import 'package:uniasist/compartido/widgets/indicadores/insignia_estado.dart';
-import 'package:uniasist/compartido/widgets/listas/fila_rol.dart';
-import 'package:uniasist/compartido/widgets/avisos/aviso_app.dart';
-import 'package:uniasist/compartido/widgets/listas/fila_togle.dart';
-import 'package:uniasist/compartido/widgets/tarjetas/tarjeta_app.dart';
-import 'package:uniasist/compartido/widgets/tarjetas/tarjeta_asistente.dart';
-import 'package:uniasist/compartido/widgets/tarjetas/tarjeta_evento.dart';
-import 'package:uniasist/compartido/widgets/tarjetas/tarjeta_evento_compacta.dart';
-import 'package:uniasist/compartido/widgets/tarjetas/tarjeta_salida_anticipada.dart';
-import 'package:uniasist/configuracion/colores_app.dart';
+import 'package:activiti/compartido/widgets/avatares/avatar_usuario.dart';
+import 'package:activiti/compartido/widgets/botones/boton_app.dart';
+import 'package:activiti/compartido/widgets/botones/boton_icono.dart';
+import 'package:activiti/compartido/widgets/botones/boton_contorno_icono.dart';
+import 'package:activiti/compartido/widgets/botones/boton_regresar.dart';
+import 'package:activiti/compartido/widgets/formularios/barra_busqueda_app.dart';
+import 'package:activiti/compartido/widgets/formularios/campo_texto_app.dart';
+import 'package:activiti/compartido/widgets/indicadores/barra_estadistica.dart';
+import 'package:activiti/compartido/widgets/indicadores/insignia_estado.dart';
+import 'package:activiti/compartido/widgets/listas/fila_rol.dart';
+import 'package:activiti/compartido/widgets/avisos/aviso_app.dart';
+import 'package:activiti/compartido/widgets/listas/fila_togle.dart';
+import 'package:activiti/compartido/widgets/tarjetas/tarjeta_app.dart';
+import 'package:activiti/compartido/widgets/tarjetas/tarjeta_asistente.dart';
+import 'package:activiti/compartido/widgets/tarjetas/tarjeta_evento.dart';
+import 'package:activiti/compartido/widgets/tarjetas/tarjeta_evento_compacta.dart';
+import 'package:activiti/compartido/widgets/tarjetas/tarjeta_salida_anticipada.dart';
+import 'package:activiti/configuracion/colores_app.dart';
 
 /// Pantalla de desarrollo — muestra visualmente todos los widgets de la app.
 /// Solo para uso interno del equipo. No incluir en producción.

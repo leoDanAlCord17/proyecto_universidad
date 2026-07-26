@@ -20,6 +20,12 @@ import '../autenticacion/usuario.dart';
 import 'perfil_cubit.dart';
 import 'perfil_estado.dart';
 
+// Controla la visibilidad del botón "Probar integración con Sentry" de más
+// abajo. Por defecto oculto — cambiar a `true` solo para una verificación
+// manual puntual (ver docs/SENTRY.md → "Procedimiento para ejecutar la
+// prueba manual") y volver a dejarlo en `false` antes de mergear/desplegar.
+const bool _mostrarBotonPruebaSentry = false;
+
 class PerfilPantalla extends StatefulWidget {
   const PerfilPantalla({super.key});
 
@@ -168,12 +174,13 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
                                         ),
                                   ),
                                 ),
-                              // Botón discreto — visible en debug para QA y en
-                              // producción solo para usuarios con permiso de
-                              // ajustes, así se puede confirmar en vivo que
-                              // Sentry recibe eventos sin exponerlo al resto
-                              // de usuarios.
-                              if (!_editando &&
+                              // Botón discreto — oculto por defecto vía
+                              // _mostrarBotonPruebaSentry (ver docs/SENTRY.md).
+                              // Cuando se activa, sigue visible solo en debug
+                              // (QA) o para usuarios con permiso de ajustes en
+                              // producción, nunca para el resto de usuarios.
+                              if (_mostrarBotonPruebaSentry &&
+                                  !_editando &&
                                   (kDebugMode ||
                                       (usuario?.tienePermiso('ajustes') ??
                                           false)))

@@ -7,7 +7,7 @@ import 'errores.dart';
 /// Logger global de la aplicación.
 ///
 /// Uso:
-///   import 'package:uniasist/compartido/logger.dart';
+///   import 'package:activiti/compartido/logger.dart';
 ///   log.d('mensaje de debug');
 ///   log.i('información');
 ///   log.w('advertencia');

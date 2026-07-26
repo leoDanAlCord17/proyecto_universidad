@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:uniasist/compartido/widgets/avatares/avatar_usuario.dart';
-import 'package:uniasist/compartido/widgets/indicadores/insignia_estado.dart';
-import 'package:uniasist/compartido/widgets/tarjetas/tarjeta_app.dart';
+import 'package:activiti/compartido/widgets/avatares/avatar_usuario.dart';
+import 'package:activiti/compartido/widgets/indicadores/insignia_estado.dart';
+import 'package:activiti/compartido/widgets/tarjetas/tarjeta_app.dart';
 
 class TarjetaSalidaAnticipada extends StatelessWidget {
   const TarjetaSalidaAnticipada({

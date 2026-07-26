@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uniasist/configuracion/colores_app.dart';
+import 'package:activiti/configuracion/colores_app.dart';
 
 class CampoSelectApp<T> extends StatelessWidget {
   const CampoSelectApp({

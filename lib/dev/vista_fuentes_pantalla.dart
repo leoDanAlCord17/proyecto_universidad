@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uniasist/configuracion/colores_app.dart';
+import 'package:activiti/configuracion/colores_app.dart';
 
 /// Pantalla de desarrollo — muestra cada estilo de texto del tema con sus
 /// variantes de FontWeight disponibles.
@@ -187,7 +187,7 @@ class _FilaPeso extends StatelessWidget {
           // Muestra del estilo
           Expanded(
             child: Text(
-              'UniAsist 0123',
+              'Activiti 0123',
               style: estilo,
               overflow: TextOverflow.ellipsis,
             ),

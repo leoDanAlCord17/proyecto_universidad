@@ -64,7 +64,7 @@ class HistorialExportador {
     final bytes = await doc.save();
     final dir = await getTemporaryDirectory();
     final archivo = File(
-        '${dir.path}/historial_uniasist_${now.millisecondsSinceEpoch}.pdf');
+        '${dir.path}/historial_activiti_${now.millisecondsSinceEpoch}.pdf');
     await archivo.writeAsBytes(bytes);
 
     await Share.shareXFiles(
@@ -85,7 +85,7 @@ class HistorialExportador {
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
             pw.Text(
-              'UniAsist',
+              'Activiti',
               style: pw.TextStyle(
                 fontSize: 22,
                 fontWeight: pw.FontWeight.bold,
@@ -238,11 +238,11 @@ class HistorialExportador {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
             pw.Text(
-              'Generado por UniAsist  •  $fecha',
+              'Generado por Activiti  •  $fecha',
               style: pw.TextStyle(fontSize: 8, color: _grisMed),
             ),
             pw.Text(
-              'uniasist.app',
+              'activiti.app',
               style: pw.TextStyle(fontSize: 8, color: _grisMed),
             ),
           ],

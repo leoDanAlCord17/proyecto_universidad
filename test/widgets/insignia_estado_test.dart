@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:uniasist/compartido/widgets/indicadores/insignia_estado.dart';
+import 'package:activiti/compartido/widgets/indicadores/insignia_estado.dart';
 
 import '../helpers.dart';
 

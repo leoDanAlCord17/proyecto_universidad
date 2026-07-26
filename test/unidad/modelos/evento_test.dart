@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:uniasist/funcionalidades/eventos/evento.dart';
+import 'package:activiti/funcionalidades/eventos/evento.dart';
 
 void main() {
   // ── Evento.desdeJson ──────────────────────────────────────────────────────

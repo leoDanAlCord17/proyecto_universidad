@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// Todos los colores de UniAsist en un solo lugar.
+// Todos los colores de Activiti en un solo lugar.
 // Si el diseño cambia, solo se toca este archivo.
 // Ningún widget escribe colores directamente con Color(0xFF...).
 abstract class ColoresApp {

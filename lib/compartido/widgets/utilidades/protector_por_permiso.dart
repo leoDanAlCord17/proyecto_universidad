@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:uniasist/funcionalidades/autenticacion/auth_cubit.dart';
-import 'package:uniasist/funcionalidades/autenticacion/auth_estado.dart';
+import 'package:activiti/funcionalidades/autenticacion/auth_cubit.dart';
+import 'package:activiti/funcionalidades/autenticacion/auth_estado.dart';
 
 class ProtectorPorPermiso extends StatelessWidget {
   const ProtectorPorPermiso({

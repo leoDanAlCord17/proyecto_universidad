@@ -87,7 +87,7 @@ class AutenticacionRepositorio {
       await _supabase.auth
           .resetPasswordForEmail(
             correo,
-            redirectTo: 'com.uniasist.uniasist://reset-password',
+            redirectTo: 'com.activiti.activiti://reset-password',
           )
           .timeout(kTimeoutSolicitud);
     } on AuthException catch (e) {

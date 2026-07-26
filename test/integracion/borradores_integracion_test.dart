@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:uniasist/compartido/errores.dart';
-import 'package:uniasist/funcionalidades/borradores/borrador_evento.dart';
-import 'package:uniasist/funcionalidades/borradores/borradores_cubit.dart';
-import 'package:uniasist/funcionalidades/borradores/borradores_estado.dart';
+import 'package:activiti/compartido/errores.dart';
+import 'package:activiti/funcionalidades/borradores/borrador_evento.dart';
+import 'package:activiti/funcionalidades/borradores/borradores_cubit.dart';
+import 'package:activiti/funcionalidades/borradores/borradores_estado.dart';
 
 import '../helpers.dart';
 

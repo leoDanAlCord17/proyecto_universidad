@@ -1,4 +1,4 @@
-# UniAsist
+# Activiti
 
 Sistema de gestión de asistencia universitaria construido con Flutter + Supabase.
 
@@ -17,7 +17,7 @@ Sistema de gestión de asistencia universitaria construido con Flutter + Supabas
 
 ```bash
 git clone <url-del-repo>
-cd uniasist
+cd activiti
 ```
 
 ### 2. Crear el archivo de variables de entorno
@@ -152,6 +152,14 @@ Todos los errores pasan por excepciones tipadas antes de llegar a la UI:
 | `FallaServidor`      | Errores de Supabase/PostgreSQL         |
 | `FallaAutenticacion` | Errores de login/registro              |
 | `FallaInesperada`    | Errores de red u otros inesperados     |
+
+### Monitoreo (Sentry)
+
+Los errores de producción se reportan a [Sentry](https://sentry.io) —
+captura global (`runZonedGuarded`, `FlutterError.onError`), filtrado de ruido
+en `logger.dart` e inyección del DSN vía `--dart-define`/GitHub Secrets. Ver
+[`docs/SENTRY.md`](docs/SENTRY.md) para la arquitectura completa y el
+procedimiento de prueba manual.
 
 ---
 

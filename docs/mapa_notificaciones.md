@@ -1,4 +1,4 @@
-# Mapa de notificaciones — UniAsist
+# Mapa de notificaciones — Activiti
 
 Referencia de todos los puntos del código donde se envían notificaciones.
 Cada notificación usa la Edge Function `enviar-notificacion` que guarda en la tabla
@@ -18,7 +18,7 @@ Cada notificación usa la Edge Function `enviar-notificacion` que guarda en la t
 
 **Mensaje**:
 - Título: `Cuenta aprobada`
-- Cuerpo: `Tu cuenta fue aprobada. Ya puedes acceder a UniAsist.`
+- Cuerpo: `Tu cuenta fue aprobada. Ya puedes acceder a Activiti.`
 - Tipo: `aprobacion`
 
 ---

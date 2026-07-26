@@ -1,12 +1,12 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:uniasist/compartido/constantes.dart';
-import 'package:uniasist/compartido/errores.dart';
-import 'package:uniasist/funcionalidades/eventos/evento.dart';
-import 'package:uniasist/funcionalidades/panel_control_evento/asistente_item.dart';
-import 'package:uniasist/funcionalidades/panel_control_evento/panel_control_cubit.dart';
-import 'package:uniasist/funcionalidades/panel_control_evento/panel_control_estado.dart';
+import 'package:activiti/compartido/constantes.dart';
+import 'package:activiti/compartido/errores.dart';
+import 'package:activiti/funcionalidades/eventos/evento.dart';
+import 'package:activiti/funcionalidades/panel_control_evento/asistente_item.dart';
+import 'package:activiti/funcionalidades/panel_control_evento/panel_control_cubit.dart';
+import 'package:activiti/funcionalidades/panel_control_evento/panel_control_estado.dart';
 
 import '../../helpers.dart';
 

@@ -1,10 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:uniasist/compartido/errores.dart';
-import 'package:uniasist/funcionalidades/historial/historial_cubit.dart';
-import 'package:uniasist/funcionalidades/historial/historial_estado.dart';
-import 'package:uniasist/funcionalidades/historial/historial_item.dart';
+import 'package:activiti/compartido/errores.dart';
+import 'package:activiti/funcionalidades/historial/historial_cubit.dart';
+import 'package:activiti/funcionalidades/historial/historial_estado.dart';
+import 'package:activiti/funcionalidades/historial/historial_item.dart';
 
 import '../../helpers.dart';
 

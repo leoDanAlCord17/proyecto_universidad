@@ -1,10 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:uniasist/compartido/errores.dart';
-import 'package:uniasist/funcionalidades/auditoria_evento/auditoria_evento_cubit.dart';
-import 'package:uniasist/funcionalidades/auditoria_evento/auditoria_evento_estado.dart';
-import 'package:uniasist/funcionalidades/auditoria_evento/auditoria_evento_modelo.dart';
+import 'package:activiti/compartido/errores.dart';
+import 'package:activiti/funcionalidades/auditoria_evento/auditoria_evento_cubit.dart';
+import 'package:activiti/funcionalidades/auditoria_evento/auditoria_evento_estado.dart';
+import 'package:activiti/funcionalidades/auditoria_evento/auditoria_evento_modelo.dart';
 
 import '../../helpers.dart';
 

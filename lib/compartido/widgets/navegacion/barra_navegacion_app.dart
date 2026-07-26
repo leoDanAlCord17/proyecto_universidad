@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:uniasist/configuracion/colores_app.dart';
+import 'package:activiti/configuracion/colores_app.dart';
 
 import '../../constantes.dart';
 

@@ -1,6 +1,6 @@
 {
-    "name": "UniAsist",
-    "short_name": "UniAsist",
+    "name": "Activiti",
+    "short_name": "Activiti",
     "description": "Sistema de gestión de asistencia universitaria: eventos, escaneo QR y estadísticas.",
     "lang": "es",
     "start_url": "/",

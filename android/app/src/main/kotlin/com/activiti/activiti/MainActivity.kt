@@ -1,4 +1,4 @@
-package com.uniasist.uniasist
+package com.activiti.activiti
 
 import io.flutter.embedding.android.FlutterActivity
 

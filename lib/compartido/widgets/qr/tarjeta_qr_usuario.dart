@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:uniasist/compartido/widgets/qr/qr_usuario.dart';
-import 'package:uniasist/configuracion/colores_app.dart';
+import 'package:activiti/compartido/widgets/qr/qr_usuario.dart';
+import 'package:activiti/configuracion/colores_app.dart';
 
 class TarjetaQrUsuario extends StatelessWidget {
   const TarjetaQrUsuario({

@@ -163,7 +163,7 @@ class _PieRegistro extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 40),
-        Center(child: Text('v3.0 • UniAsist', style: estiloTexto.bodySmall)),
+        Center(child: Text('v3.0 • Activiti', style: estiloTexto.bodySmall)),
       ],
     );
   }

@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:uniasist/compartido/constantes.dart';
-import 'package:uniasist/compartido/errores.dart';
-import 'package:uniasist/funcionalidades/buscar_asistente/buscar_asistente_cubit.dart';
-import 'package:uniasist/funcionalidades/buscar_asistente/buscar_asistente_estado.dart';
-import 'package:uniasist/funcionalidades/buscar_asistente/resultado_busqueda.dart';
+import 'package:activiti/compartido/constantes.dart';
+import 'package:activiti/compartido/errores.dart';
+import 'package:activiti/funcionalidades/buscar_asistente/buscar_asistente_cubit.dart';
+import 'package:activiti/funcionalidades/buscar_asistente/buscar_asistente_estado.dart';
+import 'package:activiti/funcionalidades/buscar_asistente/resultado_busqueda.dart';
 
 import '../../helpers.dart';
 

@@ -1,4 +1,4 @@
-# Revisión de usuarios — UniAsist
+# Revisión de usuarios — Activiti
 
 ## Tabla de contenido
 

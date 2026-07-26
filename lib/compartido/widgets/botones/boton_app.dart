@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uniasist/configuracion/colores_app.dart';
+import 'package:activiti/configuracion/colores_app.dart';
 
 // Define los tres tipos de botón que existen en la app.
 // Si en el futuro necesitas otro tipo, lo agregas aquí.

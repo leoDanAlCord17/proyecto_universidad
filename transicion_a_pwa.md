@@ -1,4 +1,4 @@
-# Transición a PWA — UniAsist
+# Transición a PWA — Activiti
 
 Archivo de seguimiento de todas las tareas para convertir este proyecto Flutter Web
 en una PWA totalmente funcional. Cada tarea se marca cuando queda resuelta.
@@ -33,11 +33,11 @@ en una PWA totalmente funcional. Cada tarea se marca cuando queda resuelta.
     `web/icons/Icon-192.png`, `Icon-512.png`, `Icon-maskable-192.png`,
     `Icon-maskable-512.png` (rutas verificadas, sin 404).
   - **Verificado visualmente (2026-07-26)**: los 4 son el logo azul genérico
-    de Flutter, no un ícono de marca UniAsist. Alto impacto de marca — es lo
+    de Flutter, no un ícono de marca Activiti. Alto impacto de marca — es lo
     primero que ve un usuario al instalar la PWA en su pantalla de inicio.
   - **Acción manual pendiente**: generar los 4 PNG (192/512 estándar +
     192/512 maskable, con zona de seguridad ~40% para el recorte maskable)
-    a partir del logo real de UniAsist y reemplazar estos archivos
+    a partir del logo real de Activiti y reemplazar estos archivos
     manteniendo exactamente los mismos nombres — no requiere tocar
     `manifest.json` ni `index.html`, solo sustituir los binarios.
 
@@ -287,7 +287,7 @@ Cada hallazgo tiene su severidad, estado y archivo afectado.
   - `CacheLocal` reescrito con soporte de TTL (por defecto 24 horas).
   - Cada entrada almacena `{ d, t, ttl }`. Al leer, si expiró, devuelve null
     y la elimina silenciosamente.
-  - Box renombrado a `uniasist_cache_v2` para migración limpia desde el
+  - Box renombrado a `activiti_cache_v2` para migración limpia desde el
     formato anterior sin TTL.
   - _Archivo_: `lib/compartido/cache_local.dart`
 
@@ -686,7 +686,7 @@ Las notificaciones se envían llamando a la Edge Function desde los cubits tras 
 - [x] **N1 — Cuenta aprobada**
   - Cuándo: admin ejecuta `aprobar(usuarioId)` en `RevisionUsuariosCubit`
   - Quién recibe: el usuario aprobado
-  - Mensaje: *"Tu cuenta fue aprobada. Ya puedes acceder a UniAsist."*
+  - Mensaje: *"Tu cuenta fue aprobada. Ya puedes acceder a Activiti."*
   - _Archivo_: `lib/funcionalidades/revision_usuarios/revision_usuarios_cubit.dart`
 
 - [x] **N2 — Cuenta rechazada**

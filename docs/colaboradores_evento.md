@@ -1,4 +1,4 @@
-# Colaboradores de evento — UniAsist
+# Colaboradores de evento — Activiti
 
 ## Tabla de contenido
 
@@ -26,7 +26,7 @@ La asignación es **por evento** y se gestiona desde el panel de control → men
 
 ## Qué es un colaborador
 
-Un colaborador es cualquier usuario con cuenta en UniAsist al que un administrador le ha otorgado acceso operativo a un evento puntual. Su participación tiene tres características principales:
+Un colaborador es cualquier usuario con cuenta en Activiti al que un administrador le ha otorgado acceso operativo a un evento puntual. Su participación tiene tres características principales:
 
 - **Acotada:** solo tiene acceso al evento donde fue asignado, no a otros eventos ni al panel de control completo.
 - **Reversible:** el administrador puede quitarle el acceso en cualquier momento desde la misma pantalla de gestión.

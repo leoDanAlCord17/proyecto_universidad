@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = uniasist
+PRODUCT_NAME = activiti
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.uniasist.uniasist
+PRODUCT_BUNDLE_IDENTIFIER = com.activiti.activiti
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 com.uniasist. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 com.activiti. All rights reserved.

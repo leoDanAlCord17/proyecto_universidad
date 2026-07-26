@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:uniasist/funcionalidades/estadisticas/estadisticas_modelo.dart';
-import 'package:uniasist/funcionalidades/estadisticas/filtros_estadisticas.dart';
+import 'package:activiti/funcionalidades/estadisticas/estadisticas_modelo.dart';
+import 'package:activiti/funcionalidades/estadisticas/filtros_estadisticas.dart';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

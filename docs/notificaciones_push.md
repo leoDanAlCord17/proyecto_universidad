@@ -1,4 +1,4 @@
-# Sistema de notificaciones — UniAsist
+# Sistema de notificaciones — Activiti
 
 ## Tabla de contenido
 
@@ -21,7 +21,7 @@
 
 ## Resumen general
 
-UniAsist tiene un sistema de notificaciones que opera en dos canales simultáneos:
+Activiti tiene un sistema de notificaciones que opera en dos canales simultáneos:
 
 | Canal | Descripción | Cuándo funciona |
 |---|---|---|
@@ -200,7 +200,7 @@ await Supabase.instance.client.functions.invoke(
   body: {
     'usuario_ids': [usuarioId],
     'titulo': 'Tu solicitud fue aprobada',
-    'cuerpo': 'Ya puedes acceder al sistema UniAsist.',
+    'cuerpo': 'Ya puedes acceder al sistema Activiti.',
     'tipo': 'aprobacion',
     'entidad_id': usuarioId,
     'entidad_tipo': 'usuario',
@@ -273,7 +273,7 @@ FCM tiene dos tipos de mensajes:
 - **Notification message**: tiene campo `notification` → FCM lo muestra automáticamente en el sistema operativo
 - **Data message**: solo tiene campo `data` → el desarrollador decide cómo mostrarlo
 
-UniAsist usa *notification messages*. Si además se implementa `onBackgroundMessage`, el navegador muestra la notificación **dos veces**. Por eso el handler está omitido.
+Activiti usa *notification messages*. Si además se implementa `onBackgroundMessage`, el navegador muestra la notificación **dos veces**. Por eso el handler está omitido.
 
 ---
 

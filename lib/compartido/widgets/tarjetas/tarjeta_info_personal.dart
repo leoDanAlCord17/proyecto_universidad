@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:uniasist/compartido/widgets/tarjetas/tarjeta_app.dart';
-import 'package:uniasist/configuracion/colores_app.dart';
+import 'package:activiti/compartido/widgets/tarjetas/tarjeta_app.dart';
+import 'package:activiti/configuracion/colores_app.dart';
 
 class TarjetaInfoPersonal extends StatelessWidget {
   const TarjetaInfoPersonal({

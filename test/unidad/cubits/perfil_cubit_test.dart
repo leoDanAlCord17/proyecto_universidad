@@ -1,9 +1,9 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:uniasist/compartido/errores.dart';
-import 'package:uniasist/funcionalidades/perfil/perfil_cubit.dart';
-import 'package:uniasist/funcionalidades/perfil/perfil_estado.dart';
+import 'package:activiti/compartido/errores.dart';
+import 'package:activiti/funcionalidades/perfil/perfil_cubit.dart';
+import 'package:activiti/funcionalidades/perfil/perfil_estado.dart';
 
 import '../../helpers.dart';
 

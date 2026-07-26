@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:uniasist/compartido/constantes.dart';
-import 'package:uniasist/funcionalidades/buscar_asistente/resultado_busqueda.dart';
+import 'package:activiti/compartido/constantes.dart';
+import 'package:activiti/funcionalidades/buscar_asistente/resultado_busqueda.dart';
 
 void main() {
   // ── ResultadoBusqueda.desdeUsuario ────────────────────────────────────────
