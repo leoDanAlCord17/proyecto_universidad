@@ -113,7 +113,7 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
                               if (usuario?.id != null)
                                 TarjetaQrUsuario(usuarioId: usuario!.id!),
                               const SizedBox(height: 16),
-                              if (!_editando)
+                              if (!_editando) ...[
                                 TarjetaInfoPersonal(
                                   cedula: usuario?.numeroIdentificacion,
                                   telefono: usuario?.telefono,
@@ -124,8 +124,9 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
                                   alEditarTap: puedeEditar && usuario != null
                                       ? () => setState(() => _editando = true)
                                       : null,
-                                )
-                              else if (usuario != null)
+                                ),
+                                _EstadoTagsPerfil(usuarioId: usuario?.id),
+                              ] else if (usuario != null)
                                 _FormularioEditar(
                                   usuario: usuario,
                                   estaGuardando: estaGuardando,
@@ -183,6 +184,77 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
         PerfilSinConexion(:final tagsSecundarios) => tagsSecundarios,
         _ => [],
       };
+}
+
+// ─── Feedback de carga/error de tags (bajo TarjetaInfoPersonal) ──────────────
+
+/// `TarjetaInfoPersonal` es un componente de solo-presentación: no sabe si
+/// los tags que le faltan están cargando, fallaron o simplemente no existen.
+/// Este widget cubre esa diferencia — spinner mientras `PerfilCubit` resuelve
+/// y aviso con reintento si falla, sin tocar el componente compartido.
+class _EstadoTagsPerfil extends StatelessWidget {
+  const _EstadoTagsPerfil({required this.usuarioId});
+
+  final String? usuarioId;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<PerfilCubit, PerfilEstado>(
+      builder: (context, estado) => switch (estado) {
+        PerfilInicial() || PerfilCargando() => Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: ColoresApp.acento,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'Cargando etiquetas...',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: ColoresApp.textoSecundario,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        PerfilError() => Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  size: 16,
+                  color: ColoresApp.textoSecundario,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'No se pudieron cargar tus etiquetas',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: ColoresApp.textoSecundario,
+                        ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: usuarioId == null
+                      ? null
+                      : () => context.read<PerfilCubit>().cargar(usuarioId!),
+                  child: const Text('Reintentar'),
+                ),
+              ],
+            ),
+          ),
+        _ => const SizedBox.shrink(),
+      },
+    );
+  }
 }
 
 // ─── Formulario de edición de perfil ─────────────────────────────────────────

@@ -1,15 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
-import '../../configuracion/colores_app.dart';
 import '../../configuracion/dependencias.dart';
 import '../../funcionalidades/autenticacion/login_cubit.dart';
 import '../../funcionalidades/autenticacion/login_pantalla.dart';
 import '../../funcionalidades/autenticacion/pendiente_aprobacion_pantalla.dart';
 import '../../funcionalidades/autenticacion/registro_cubit.dart';
 import '../../funcionalidades/autenticacion/registro_pantalla.dart';
+import '../../funcionalidades/autenticacion/splash_pantalla.dart';
 import '../../funcionalidades/autenticacion/usuario_rechazado_pantalla.dart';
 import '../../funcionalidades/crear_usuario/crear_usuario_cubit.dart';
 import '../../funcionalidades/crear_usuario/crear_usuario_pantalla.dart';
@@ -21,12 +20,7 @@ import '../../funcionalidades/recuperar_contrasena/recuperar_contrasena_pantalla
 List<GoRoute> get rutasAuth => [
       GoRoute(
         path: Rutas.splash,
-        builder: (context, state) => const Scaffold(
-          backgroundColor: ColoresApp.fondo,
-          body: Center(
-            child: CircularProgressIndicator(color: ColoresApp.acento),
-          ),
-        ),
+        builder: (context, state) => const SplashPantalla(),
       ),
       GoRoute(
         path: Rutas.login,

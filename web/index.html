@@ -15,6 +15,55 @@
     html, body {
       overscroll-behavior: none;
     }
+
+    /* ── Splash HTML/CSS nativo ────────────────────────────────────────────
+       Visible desde el primer byte de HTML, antes de que el motor de Flutter
+       termine de descargarse e inicializar — evita la pantalla en blanco en
+       conexiones lentas. Se remueve en cuanto el motor dispara su primer
+       frame (ver el script al final de <body>). Usa los mismos colores que
+       manifest.json / theme-color para que la transición sea imperceptible. */
+    #splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: #EEEDF5;
+      transition: opacity 0.25s ease-out;
+    }
+
+    #splash.splash-oculto {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #splash .splash-anillo {
+      width: 44px;
+      height: 44px;
+      border: 4px solid rgba(91, 63, 212, 0.18);
+      border-top-color: #5B3FD4;
+      border-radius: 50%;
+      animation: splash-girar 0.8s linear infinite;
+    }
+
+    #splash .splash-texto {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #5B3FD4;
+      letter-spacing: 0.2px;
+    }
+
+    @keyframes splash-girar {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #splash { background: #14121F; }
+    }
   </style>
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="UniAsist — Sistema de gestión de asistencia universitaria con eventos, escaneo QR y estadísticas.">
@@ -37,10 +86,38 @@
   <title>UniAsist</title>
 </head>
 <body>
+  <!-- Splash nativo — visible de inmediato, sin depender de Flutter/JS pesado.
+       Se remueve con el listener de 'flutter-first-frame' más abajo. -->
+  <div id="splash">
+    <div class="splash-anillo"></div>
+    <div class="splash-texto">Cargando UniAsist...</div>
+  </div>
+
   <!-- Flutter carga y monta la app aquí -->
   <script src="flutter_bootstrap.js" async></script>
 
   <script>
+    // ── Remueve el splash nativo en cuanto Flutter pinta su primer frame ────
+    // 'flutter-first-frame' lo dispara el propio engine en window una vez que
+    // el árbol de widgets ya se renderizó — a partir de ahí el splash HTML
+    // sobra y se desvanece suavemente antes de quitarse del DOM.
+    (function () {
+      var yaOculto = false;
+      function ocultarSplash() {
+        if (yaOculto) return;
+        yaOculto = true;
+        var splash = document.getElementById('splash');
+        if (!splash) return;
+        splash.classList.add('splash-oculto');
+        splash.addEventListener('transitionend', function () {
+          splash.remove();
+        });
+        // Respaldo por si 'transitionend' no dispara (pestaña en segundo plano, etc.)
+        setTimeout(function () { splash.remove(); }, 400);
+      }
+      window.addEventListener('flutter-first-frame', ocultarSplash);
+    })();
+
     if ('serviceWorker' in navigator) {
       // ── Firebase SW — push notifications en segundo plano ──────────────────
       // Scope propio y distinto de "/" para no competir por el control de la

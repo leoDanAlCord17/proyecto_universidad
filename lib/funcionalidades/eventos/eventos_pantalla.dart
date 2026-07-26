@@ -124,8 +124,7 @@ class _EventosPantallaState extends State<EventosPantalla>
             Expanded(
               child: BlocBuilder<EventosCubit, EventosEstado>(
                 builder: (context, estado) => switch (estado) {
-                  EventosInicial() => const SizedBox.shrink(),
-                  EventosCargando() => const Center(
+                  EventosInicial() || EventosCargando() => const Center(
                       child:
                           CircularProgressIndicator(color: ColoresApp.acento),
                     ),

@@ -178,18 +178,94 @@ class _SeccionEventosEnCurso extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (estado is! EventosEnCursoCargado) return const SizedBox.shrink();
-    final eventos = (estado as EventosEnCursoCargado).eventos;
-    if (eventos.isEmpty) return const _EstadoVacioEventos();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        for (final evento in eventos) ...[
-          TarjetaEventoEnCurso(eventoEnCurso: evento),
-          const SizedBox(height: 12),
-        ],
-      ],
+    return switch (estado) {
+      EventosEnCursoInicial() ||
+      EventosEnCursoCargando() =>
+        const _CargandoEventosEnCurso(),
+      EventosEnCursoError(:final mensaje) =>
+        _ErrorEventosEnCurso(mensaje: mensaje),
+      EventosEnCursoCargado(:final eventos) => eventos.isEmpty
+          ? const _EstadoVacioEventos()
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                for (final evento in eventos) ...[
+                  TarjetaEventoEnCurso(eventoEnCurso: evento),
+                  const SizedBox(height: 12),
+                ],
+              ],
+            ),
+    };
+  }
+}
+
+// ─── Estado de carga: eventos en curso ───────────────────────────────────────
+
+class _CargandoEventosEnCurso extends StatelessWidget {
+  const _CargandoEventosEnCurso();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.only(top: 24),
+      child: Center(
+        child: CircularProgressIndicator(color: ColoresApp.acento),
+      ),
+    );
+  }
+}
+
+// ─── Estado de error: eventos en curso ───────────────────────────────────────
+
+class _ErrorEventosEnCurso extends StatelessWidget {
+  const _ErrorEventosEnCurso({required this.mensaje});
+
+  final String mensaje;
+
+  void _reintentar(BuildContext context) {
+    final authEstado = context.read<AuthCubit>().state;
+    if (authEstado is Autenticado && authEstado.usuario.id != null) {
+      context.read<EventosEnCursoCubit>().cargar(authEstado.usuario.id!);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final estilos = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        decoration: BoxDecoration(
+          color: ColoresApp.superficieTerciar,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            const Icon(
+              Icons.wifi_off_rounded,
+              size: 36,
+              color: ColoresApp.textoSecundario,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'No se pudieron cargar los eventos activos',
+              textAlign: TextAlign.center,
+              style: estilos.bodyMedium?.copyWith(
+                color: ColoresApp.textoSecundario,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton.icon(
+              onPressed: () => _reintentar(context),
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Reintentar'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

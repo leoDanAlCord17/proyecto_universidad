@@ -12,6 +12,7 @@ import 'compartido/cache_local.dart';
 import 'compartido/historial_navegador.dart';
 import 'compartido/logger.dart';
 import 'compartido/notificaciones_push_servicio.dart';
+import 'compartido/reiniciar_app.dart';
 import 'compartido/widgets/avisos/aviso_app.dart';
 import 'configuracion/colores_app.dart';
 import 'configuracion/dependencias.dart';
@@ -27,6 +28,12 @@ import 'funcionalidades/notificaciones/notificaciones_cubit.dart';
 const _dartUrl = String.fromEnvironment('SUPABASE_URL');
 const _dartAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
 
+// Tiempo máximo por paso de arranque. En conexiones lentas o caídas, evita
+// que main() se quede colgado indefinidamente antes de invocar runApp() —
+// sin esto, el usuario ve una pantalla en blanco sin ningún límite de tiempo
+// ni forma de saber que algo salió mal.
+const _timeoutInicializacion = Duration(seconds: 8);
+
 void main() {
   runZonedGuarded(
     () async {
@@ -37,80 +44,124 @@ void main() {
       // tenga ninguna pantalla anterior que asomar.
       configurarHistorialSinAcumular();
 
-      await Firebase.initializeApp(
-        options: const FirebaseOptions(
-          apiKey: 'AIzaSyD7NInOIx0MmiWCkxHw1wrAICvm_zf_kT4',
-          authDomain: 'activity-14938.firebaseapp.com',
-          projectId: 'activity-14938',
-          storageBucket: 'activity-14938.firebasestorage.app',
-          messagingSenderId: '734695397025',
-          appId: '1:734695397025:web:b31fc635597404703ac2e0',
-        ),
-      );
-      log.i('Firebase inicializado');
-
-      // Evita que el caché de imágenes en memoria crezca indefinidamente
-      // en sesiones largas (ej. operadores que dejan la app abierta todo el día).
-      PaintingBinding.instance.imageCache
-        ..maximumSize = 150 // máximo 150 imágenes descodificadas
-        ..maximumSizeBytes = 50 << 20; // máximo 50 MB en memoria
-
-      await CacheLocal.init();
-
-      _configurarErrorHandlers();
-
-      await _inicializarSentry();
-
-      final String url;
-      final String anonKey;
-
-      if (_dartUrl.isNotEmpty && _dartAnonKey.isNotEmpty) {
-        url = _dartUrl;
-        anonKey = _dartAnonKey;
-      } else {
-        await dotenv.load(fileName: '.env');
-        url = dotenv.env['SUPABASE_URL'] ??
-            (throw StateError(
-                'SUPABASE_URL no encontrado — configura .env o usa --dart-define-from-file'));
-        anonKey = dotenv.env['SUPABASE_ANON_KEY'] ??
-            (throw StateError(
-                'SUPABASE_ANON_KEY no encontrado — configura .env o usa --dart-define-from-file'));
-      }
-
-      await Supabase.initialize(url: url, anonKey: anonKey);
-      log.i('Supabase inicializado');
-
-      configurarDependencias();
-
-      final authCubit = obtenerIt<AuthCubit>();
-      final notifCubit = obtenerIt<NotificacionesCubit>();
-      final configuracionRouter = RouterApp(authCubit);
-
-      authCubit.stream.listen((estado) {
-        if (estado is! Autenticado) return;
-        final usuarioId = estado.usuario.id;
-        if (usuarioId == null) return;
-        notifCubit.iniciarStream(usuarioId);
-        unawaited(NotificacionesPushServicio.inicializar(usuarioId));
-      });
-
-      unawaited(authCubit.verificarSesion());
-
-      runApp(
-        MultiBlocProvider(
-          providers: [
-            BlocProvider.value(value: authCubit),
-            BlocProvider.value(value: notifCubit),
-          ],
-          child: _App(routerApp: configuracionRouter),
-        ),
-      );
+      await _iniciarApp();
     },
     (error, stack) {
       log.e('Error no capturado en zone', error: error, stackTrace: stack);
       Sentry.captureException(error, stackTrace: stack);
     },
   );
+}
+
+/// Orquesta el arranque. Firebase y Sentry son opcionales — si fallan o
+/// exceden el timeout, se degrada con gracia y la app sigue arrancando sin
+/// push/monitoreo. Supabase es imprescindible: sin él ningún repositorio
+/// funciona, así que su fallo lleva a [_AppFalloArranque] en vez de a un
+/// árbol de widgets a medio construir.
+Future<void> _iniciarApp() async {
+  try {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'AIzaSyD7NInOIx0MmiWCkxHw1wrAICvm_zf_kT4',
+        authDomain: 'activity-14938.firebaseapp.com',
+        projectId: 'activity-14938',
+        storageBucket: 'activity-14938.firebasestorage.app',
+        messagingSenderId: '734695397025',
+        appId: '1:734695397025:web:b31fc635597404703ac2e0',
+      ),
+    ).timeout(_timeoutInicializacion);
+    log.i('Firebase inicializado');
+  } catch (e, st) {
+    // Firebase solo alimenta las notificaciones push — su ausencia no debe
+    // impedir que el resto de la app arranque con normalidad.
+    log.w(
+      'Firebase no disponible al arrancar (push deshabilitado)',
+      error: e,
+      stackTrace: st,
+    );
+  }
+
+  // Evita que el caché de imágenes en memoria crezca indefinidamente
+  // en sesiones largas (ej. operadores que dejan la app abierta todo el día).
+  PaintingBinding.instance.imageCache
+    ..maximumSize = 150 // máximo 150 imágenes descodificadas
+    ..maximumSizeBytes = 50 << 20; // máximo 50 MB en memoria
+
+  await CacheLocal.init();
+
+  _configurarErrorHandlers();
+
+  try {
+    await _inicializarSentry().timeout(_timeoutInicializacion);
+  } catch (e, st) {
+    log.w('Sentry no disponible al arrancar', error: e, stackTrace: st);
+  }
+
+  String? url;
+  String? anonKey;
+
+  if (_dartUrl.isNotEmpty && _dartAnonKey.isNotEmpty) {
+    url = _dartUrl;
+    anonKey = _dartAnonKey;
+  } else {
+    try {
+      await dotenv.load(fileName: '.env').timeout(_timeoutInicializacion);
+      url = dotenv.env['SUPABASE_URL'];
+      anonKey = dotenv.env['SUPABASE_ANON_KEY'];
+    } catch (e, st) {
+      log.e(
+        'No se pudo cargar la configuración (.env)',
+        error: e,
+        stackTrace: st,
+      );
+    }
+  }
+
+  if (url == null || url.isEmpty || anonKey == null || anonKey.isEmpty) {
+    log.e('Configuración de Supabase no disponible — no se puede arrancar');
+    runApp(const _AppFalloArranque(alReintentar: _reintentarArranque));
+    return;
+  }
+
+  try {
+    await Supabase.initialize(url: url, anonKey: anonKey)
+        .timeout(_timeoutInicializacion);
+    log.i('Supabase inicializado');
+  } catch (e, st) {
+    log.e('No se pudo conectar con el servidor', error: e, stackTrace: st);
+    runApp(const _AppFalloArranque(alReintentar: _reintentarArranque));
+    return;
+  }
+
+  configurarDependencias();
+
+  final authCubit = obtenerIt<AuthCubit>();
+  final notifCubit = obtenerIt<NotificacionesCubit>();
+  final configuracionRouter = RouterApp(authCubit);
+
+  authCubit.stream.listen((estado) {
+    if (estado is! Autenticado) return;
+    final usuarioId = estado.usuario.id;
+    if (usuarioId == null) return;
+    notifCubit.iniciarStream(usuarioId);
+    unawaited(NotificacionesPushServicio.inicializar(usuarioId));
+  });
+
+  unawaited(authCubit.verificarSesion());
+
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: authCubit),
+        BlocProvider.value(value: notifCubit),
+      ],
+      child: _App(routerApp: configuracionRouter),
+    ),
+  );
+}
+
+void _reintentarArranque() {
+  unawaited(_iniciarApp());
 }
 
 /// Inicializa Sentry si el DSN está configurado. En desarrollo o sin DSN, es no-op.
@@ -194,6 +245,72 @@ class _WidgetDeError extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Pantalla de fallo de arranque ─────────────────────────────────────────────
+
+/// Se muestra en vez del árbol completo de la app cuando una dependencia
+/// imprescindible (Supabase) no pudo inicializarse — típicamente por una
+/// conexión lenta o caída durante el arranque. Da al usuario una acción
+/// explícita en vez de dejarlo ante una pantalla congelada.
+class _AppFalloArranque extends StatelessWidget {
+  const _AppFalloArranque({required this.alReintentar});
+
+  final VoidCallback alReintentar;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'UniAsist',
+      debugShowCheckedModeBanner: false,
+      theme: temaApp,
+      home: Scaffold(
+        backgroundColor: ColoresApp.fondo,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.wifi_off_rounded,
+                  size: 56,
+                  color: ColoresApp.rojo,
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'No se pudo conectar',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: ColoresApp.textoPrimario,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Revisa tu conexión a internet e inténtalo de nuevo.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: ColoresApp.textoSecundario,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: () => reiniciarApp(alFallback: alReintentar),
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: const Text('Reintentar'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: ColoresApp.acento,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
