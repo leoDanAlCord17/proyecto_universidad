@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../compartido/logger.dart';
 import '../../compartido/validadores.dart';
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
+import '../../compartido/widgets/avisos/aviso_app.dart';
 import '../../compartido/widgets/utilidades/banner_sin_conexion.dart';
 import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
 import '../../compartido/widgets/qr/tarjeta_qr_usuario.dart';
@@ -40,6 +43,15 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
     if (resultado == false && context.mounted) {
       unawaited(context.read<AuthCubit>().cerrarSesion());
     }
+  }
+
+  void _probarSentry(BuildContext context) {
+    probarSentry();
+    AvisoApp.mostrar(
+      context,
+      texto: 'Excepción de prueba enviada a Sentry',
+      estilo: EstiloAviso.informativa,
+    );
   }
 
   @override
@@ -153,6 +165,27 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
                                           color: ColoresApp.rojo,
                                           fontWeight: FontWeight.w700,
                                           fontSize: 17,
+                                        ),
+                                  ),
+                                ),
+                              // Botón discreto — visible en debug para QA y en
+                              // producción solo para usuarios con permiso de
+                              // ajustes, así se puede confirmar en vivo que
+                              // Sentry recibe eventos sin exponerlo al resto
+                              // de usuarios.
+                              if (!_editando &&
+                                  (kDebugMode ||
+                                      (usuario?.tienePermiso('ajustes') ??
+                                          false)))
+                                TextButton(
+                                  onPressed: () => _probarSentry(context),
+                                  child: Text(
+                                    'Probar integración con Sentry',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: ColoresApp.textoTerciario,
                                         ),
                                   ),
                                 ),

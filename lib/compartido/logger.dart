@@ -37,3 +37,18 @@ void reportarError(Object error, {StackTrace? stack}) {
     Sentry.captureException(error, stackTrace: stack ?? StackTrace.current);
   }
 }
+
+/// Prueba manual de la integración con Sentry: lanza una excepción de
+/// verificación y la reporta directamente (sin pasar por [reportarError],
+/// que aquí filtraría de menos — esta excepción no es ni [FallaAutenticacion]
+/// ni [FallaRed]). Pensada para confirmar en producción que los eventos
+/// realmente llegan a Sentry, sin afectar a usuarios reales.
+void probarSentry() {
+  try {
+    throw Exception(
+      '🧪 [Prueba Sentry] Excepción de verificación manual de Sentry',
+    );
+  } catch (e, stackTrace) {
+    Sentry.captureException(e, stackTrace: stackTrace);
+  }
+}
