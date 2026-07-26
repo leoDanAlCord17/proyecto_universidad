@@ -40,6 +40,12 @@
       pointer-events: none;
     }
 
+    #splash .splash-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+    }
+
     #splash .splash-anillo {
       width: 44px;
       height: 44px;
@@ -89,6 +95,7 @@
   <!-- Splash nativo — visible de inmediato, sin depender de Flutter/JS pesado.
        Se remueve con el listener de 'flutter-first-frame' más abajo. -->
   <div id="splash">
+    <img src="icons/Icon-192.png" alt="UniAsist" class="splash-logo">
     <div class="splash-anillo"></div>
     <div class="splash-texto">Cargando UniAsist...</div>
   </div>

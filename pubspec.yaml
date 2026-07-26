@@ -69,6 +69,7 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   bloc_test: ^9.1.7
   mocktail: ^1.0.4
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -89,3 +90,18 @@ flutter:
           weight: 700
         - asset: assets/fonts/Outfit-ExtraBold.ttf
           weight: 800
+
+# ─── ÍCONO DE LA APP (Android / iOS / Web) ──────────────────────────────────
+# Genera con: dart run flutter_launcher_icons
+# background_color / theme_color usan los colores de marca ya establecidos en
+# web/manifest.json (acento #5B3FD4, fondo #EEEDF5) en vez de blanco, para no
+# romper la identidad visual ya configurada del splash/PWA instalada.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/imagenes/logo_app.png"
+  web:
+    generate: true
+    image_path: "assets/imagenes/logo_app.png"
+    background_color: "#EEEDF5"
+    theme_color: "#5B3FD4"
