@@ -134,8 +134,7 @@ class PanelControlCubit extends Cubit<PanelControlEstado> {
         await NotificacionesPushServicio.enviar(
           usuarioIds: esperadosIds,
           titulo: 'Ausencia registrada',
-          cuerpo:
-              'Fuiste marcado como ausente en "${cargado.evento.titulo}".',
+          cuerpo: 'Fuiste marcado como ausente en "${cargado.evento.titulo}".',
           tipo: TiposNotificacion.asistencia,
           entidadId: _eventoId,
           entidadTipo: 'evento',

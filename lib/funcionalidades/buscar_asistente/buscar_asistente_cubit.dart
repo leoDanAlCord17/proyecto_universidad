@@ -184,7 +184,11 @@ class BuscarAsistenteCubit extends Cubit<BuscarAsistenteEstado> {
       try {
         final nuevos = await _repositorio.resolverNombresUsuarios(idsNuevos);
         _mapaRegistradores = {..._mapaRegistradores, ...nuevos};
-      } catch (_) {}
+      } catch (e) {
+        // Best-effort: si falla, los resultados simplemente no muestran el
+        // nombre de quien registró la entrada.
+        log.w('No se pudieron resolver nombres de registradores', error: e);
+      }
     }
 
     final cargado = _extraerCargado(state);

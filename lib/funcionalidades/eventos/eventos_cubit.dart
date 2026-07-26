@@ -25,7 +25,8 @@ class EventosCubit extends Cubit<EventosEstado> {
     _timer?.cancel();
     emit(const EventosCargando());
     try {
-      final eventos = await _repositorio.obtenerEventosConGrupos();
+      final eventos =
+          await _repositorio.obtenerEventosConGrupos(usuarioId: usuarioId);
       final tagsUsuario = await _repositorio.obtenerTagsUsuario(usuarioId);
       if (isClosed) return;
       final visibles =
@@ -45,7 +46,9 @@ class EventosCubit extends Cubit<EventosEstado> {
       int cantidadBorradores = 0;
       try {
         cantidadBorradores = await _repositorio.contarBorradores(usuarioId);
-      } catch (_) {}
+      } catch (e) {
+        log.w('No se pudo obtener cantidad de borradores', error: e);
+      }
 
       if (isClosed) return;
       emit(
@@ -60,17 +63,18 @@ class EventosCubit extends Cubit<EventosEstado> {
     } on FallaServidor catch (e) {
       if (isClosed) return;
       reportarError(e);
-      _emitirDesdeCache(e.mensaje);
+      _emitirDesdeCache(usuarioId, e.mensaje);
     } on FallaInesperada catch (e) {
       if (isClosed) return;
       reportarError(e);
-      _emitirDesdeCache(e.mensaje);
+      _emitirDesdeCache(usuarioId, e.mensaje);
     }
   }
 
   /// Si hay datos en caché emite [EventosSinConexion]; si no, emite [EventosError].
-  void _emitirDesdeCache(String mensajeError) {
-    final desdeCache = _repositorio.obtenerEventosConGruposDesdeCache();
+  void _emitirDesdeCache(String usuarioId, String mensajeError) {
+    final desdeCache =
+        _repositorio.obtenerEventosConGruposDesdeCache(usuarioId);
     if (desdeCache == null) {
       emit(EventosError(mensajeError));
       return;
@@ -96,7 +100,8 @@ class EventosCubit extends Cubit<EventosEstado> {
         final total = conteos[e.evento.id];
         return total != null ? e.copiarConPresentes(total) : e;
       }).toList();
-    } catch (_) {
+    } catch (e) {
+      log.w('No se pudo obtener conteo de presentes', error: e);
       return enCurso; // fallo silencioso — tarjetas sin contador
     }
   }
@@ -129,7 +134,8 @@ class EventosCubit extends Cubit<EventosEstado> {
 
   Future<void> _refrescarSilencioso(String usuarioId) async {
     try {
-      final eventos = await _repositorio.obtenerEventosConGrupos();
+      final eventos =
+          await _repositorio.obtenerEventosConGrupos(usuarioId: usuarioId);
       final tagsUsuario = await _repositorio.obtenerTagsUsuario(usuarioId);
       final visibles =
           eventos.where((e) => _esVisible(e, tagsUsuario)).toList();
@@ -148,7 +154,9 @@ class EventosCubit extends Cubit<EventosEstado> {
       int cantidadBorradores = estadoActual.cantidadBorradores;
       try {
         cantidadBorradores = await _repositorio.contarBorradores(usuarioId);
-      } catch (_) {}
+      } catch (e) {
+        log.w('No se pudo refrescar cantidad de borradores', error: e);
+      }
 
       if (isClosed) return;
       emit(
@@ -160,8 +168,10 @@ class EventosCubit extends Cubit<EventosEstado> {
           cantidadBorradores: cantidadBorradores,
         ),
       );
-    } catch (_) {
-      // Fallo silencioso — no interrumpe al usuario
+    } catch (e) {
+      // Fallo silencioso — no interrumpe al usuario, es un refresco en
+      // segundo plano; la próxima recarga o el refresh periódico reintenta.
+      log.w('Falló el refresco silencioso de eventos', error: e);
     }
   }
 

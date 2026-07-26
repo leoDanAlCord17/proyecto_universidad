@@ -79,8 +79,9 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
 
     try {
       await _repositorio.marcarLeida(notificacionId);
-    } catch (_) {
+    } catch (e) {
       // Si falla, el stream del contador corregirá el badge automáticamente
+      log.w('No se pudo marcar notificación como leída', error: e);
     }
   }
 
@@ -95,7 +96,12 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
 
     try {
       await _repositorio.marcarTodasLeidas(_usuarioId!);
-    } catch (_) {}
+    } catch (e) {
+      log.w(
+        'No se pudo marcar todas las notificaciones como leídas',
+        error: e,
+      );
+    }
   }
 
   /// true si el usuario tiene al menos un token push registrado. Ante
@@ -104,7 +110,8 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
   Future<bool> tieneTokenRegistrado(String usuarioId) async {
     try {
       return await _repositorio.tieneTokenRegistrado(usuarioId);
-    } catch (_) {
+    } catch (e) {
+      log.w('No se pudo verificar el token de notificaciones', error: e);
       return true;
     }
   }

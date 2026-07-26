@@ -8,12 +8,11 @@ import 'package:go_router/go_router.dart';
 import '../../compartido/constantes.dart';
 import '../../compartido/widgets/avisos/aviso_app.dart';
 import '../../compartido/widgets/avisos/vista_error_app.dart';
+import '../../compartido/widgets/dialogo/dialogo_confirmacion_texto.dart';
 import '../../compartido/widgets/dialogo/modal_foraneo.dart';
 import 'asistente_item.dart';
 import '../../compartido/widgets/dialogo/modal_qr_evento.dart';
-import '../../compartido/widgets/botones/boton_app.dart';
 import '../../compartido/widgets/panel/panel_opciones.dart';
-import '../../compartido/widgets/formularios/campo_texto_app.dart';
 import '../../compartido/widgets/indicadores/barra_estadistica.dart';
 import '../../compartido/widgets/tarjetas/tarjeta_app.dart';
 import '../../compartido/widgets/tarjetas/tarjeta_asistente.dart';
@@ -311,9 +310,15 @@ class _BotonConfiguracion extends StatelessWidget {
           descripcion: 'Finaliza y cierra el evento en curso',
           alPresionar: () {
             Navigator.of(context, rootNavigator: true).pop();
-            _DialogoCerrarEvento.mostrar(
+            DialogoConfirmacionTexto.mostrar(
               context,
-              tituloEvento: estado.evento.titulo,
+              titulo: 'Cerrar evento',
+              descripcionPrefijo: 'Escribe el nombre ',
+              descripcionSufijo: ' para confirmar el cierre.',
+              valorEsperado: estado.evento.titulo,
+              distingueMayusculas: true,
+              etiquetaCampo: 'Nombre del evento',
+              textoBotonConfirmar: 'Confirmar cierre',
               alConfirmar: context.read<PanelControlCubit>().cerrarEvento,
             );
           },
@@ -1004,135 +1009,6 @@ class _EncabezadoSeccion extends StatelessWidget {
             fontSize: 12,
             letterSpacing: 0.8,
           ),
-    );
-  }
-}
-
-// ─── Diálogo confirmación cierre de evento ────────────────────────────────────
-
-class _DialogoCerrarEvento extends StatefulWidget {
-  const _DialogoCerrarEvento({
-    required this.tituloEvento,
-    required this.alConfirmar,
-  });
-
-  final String tituloEvento;
-  final VoidCallback alConfirmar;
-
-  static void mostrar(
-    BuildContext context, {
-    required String tituloEvento,
-    required VoidCallback alConfirmar,
-  }) {
-    showDialog<void>(
-      context: context,
-      builder: (_) => _DialogoCerrarEvento(
-        tituloEvento: tituloEvento,
-        alConfirmar: alConfirmar,
-      ),
-    );
-  }
-
-  @override
-  State<_DialogoCerrarEvento> createState() => _DialogoCerrarEventoState();
-}
-
-class _DialogoCerrarEventoState extends State<_DialogoCerrarEvento> {
-  final _controlador = TextEditingController();
-  bool _coincidenNombres = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controlador.addListener(_actualizarCoincidencia);
-  }
-
-  void _actualizarCoincidencia() {
-    final coincide = _controlador.text.trim() == widget.tituloEvento.trim();
-    if (coincide != _coincidenNombres)
-      setState(() => _coincidenNombres = coincide);
-  }
-
-  @override
-  void dispose() {
-    _controlador.removeListener(_actualizarCoincidencia);
-    _controlador.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 28),
-      child: Container(
-        decoration: BoxDecoration(
-          color: ColoresApp.superficiePrimaria,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: const [
-            BoxShadow(
-              color: ColoresApp.sombraGeneral,
-              blurRadius: 24,
-              offset: Offset(0, 8),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Cerrar evento',
-              style: Theme.of(context).textTheme.labelSmall,
-            ),
-            const SizedBox(height: 10),
-            RichText(
-              text: TextSpan(
-                style: Theme.of(context)
-                    .textTheme
-                    .labelSmall
-                    ?.copyWith(fontSize: 14, height: 1.5),
-                children: [
-                  const TextSpan(text: 'Escribe el nombre '),
-                  TextSpan(
-                    text: widget.tituloEvento,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: ColoresApp.textoPrimario,
-                        ),
-                  ),
-                  const TextSpan(text: ' para confirmar el cierre.'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            CampoTextoApp(
-              etiqueta: 'Nombre del evento',
-              hintText: widget.tituloEvento,
-              controller: _controlador,
-            ),
-            const SizedBox(height: 20),
-            BotonApp(
-              variante: VarianteBoton.rojo,
-              texto: 'Confirmar cierre',
-              alPresionar: _coincidenNombres
-                  ? () {
-                      Navigator.of(context).pop();
-                      widget.alConfirmar();
-                    }
-                  : null,
-            ),
-            const SizedBox(height: 10),
-            BotonApp(
-              variante: VarianteBoton.ghost,
-              texto: 'Cancelar',
-              alPresionar: () => Navigator.of(context).pop(),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

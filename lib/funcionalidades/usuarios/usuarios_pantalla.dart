@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../compartido/constantes.dart';
 import '../../compartido/widgets/avisos/aviso_app.dart';
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
+import '../../compartido/widgets/dialogo/dialogo_confirmacion_texto.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
@@ -525,13 +526,18 @@ class _TarjetaUsuario extends StatelessWidget {
       ];
 
   void _mostrarDialogoSuspender(BuildContext context) {
-    showDialog<void>(
-      context: context,
+    DialogoConfirmacionTexto.mostrar(
+      context,
       barrierDismissible: false,
-      builder: (_) => _DialogoSuspenderUsuario(
-        usuario: usuario,
-        alConfirmar: () => context.read<UsuariosCubit>().suspender(usuario.id),
-      ),
+      titulo: 'Suspender usuario',
+      icono: Icons.block_rounded,
+      descripcionPrefijo: 'Para confirmar, escribe el nombre completo de ',
+      descripcionSufijo: ':',
+      valorEsperado: usuario.nombreCompleto,
+      etiquetaCampo: 'Nombre completo',
+      pistaCampo: 'Nombre completo',
+      textoBotonConfirmar: 'Suspender',
+      alConfirmar: () => context.read<UsuariosCubit>().suspender(usuario.id),
     );
   }
 
@@ -1102,144 +1108,6 @@ class _EncabezadoPanel extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ],
-    );
-  }
-}
-
-// ─── Diálogo confirmar suspensión individual ─────────────────────────────────
-
-class _DialogoSuspenderUsuario extends StatefulWidget {
-  const _DialogoSuspenderUsuario({
-    required this.usuario,
-    required this.alConfirmar,
-  });
-
-  final UsuarioItem usuario;
-  final VoidCallback alConfirmar;
-
-  @override
-  State<_DialogoSuspenderUsuario> createState() =>
-      _DialogoSuspenderUsuarioState();
-}
-
-class _DialogoSuspenderUsuarioState extends State<_DialogoSuspenderUsuario> {
-  final _ctrl = TextEditingController();
-  bool _coincide = false;
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  void _alCambiar(String valor) {
-    final nuevo = valor.trim().toLowerCase() ==
-        widget.usuario.nombreCompleto.trim().toLowerCase();
-    if (nuevo != _coincide) setState(() => _coincide = nuevo);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: ColoresApp.superficiePrimaria,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      title: const Row(
-        children: [
-          Icon(Icons.block_rounded, color: ColoresApp.rojo, size: 22),
-          SizedBox(width: 10),
-          Text(
-            'Suspender usuario',
-            style: TextStyle(
-              color: ColoresApp.textoPrimario,
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              style: const TextStyle(
-                color: ColoresApp.textoSecundario,
-                fontSize: 14,
-                height: 1.5,
-              ),
-              children: [
-                const TextSpan(
-                  text: 'Para confirmar, escribe el nombre completo de ',
-                ),
-                TextSpan(
-                  text: widget.usuario.nombreCompleto,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: ColoresApp.textoPrimario,
-                  ),
-                ),
-                const TextSpan(text: ':'),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _ctrl,
-            onChanged: _alCambiar,
-            style: const TextStyle(
-              color: ColoresApp.textoPrimario,
-              fontSize: 14,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Nombre completo',
-              hintStyle: const TextStyle(color: ColoresApp.textoTerciario),
-              filled: true,
-              fillColor: ColoresApp.fondo,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: ColoresApp.bordeMedio),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: ColoresApp.bordeMedio),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide:
-                    const BorderSide(color: ColoresApp.acento, width: 1.5),
-              ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text(
-            'Cancelar',
-            style: TextStyle(color: ColoresApp.textoSecundario),
-          ),
-        ),
-        FilledButton(
-          onPressed: _coincide
-              ? () {
-                  Navigator.of(context).pop();
-                  widget.alConfirmar();
-                }
-              : null,
-          style: FilledButton.styleFrom(
-            backgroundColor: ColoresApp.rojo,
-            disabledBackgroundColor: ColoresApp.rojoClaro,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          child: const Text('Suspender'),
         ),
       ],
     );

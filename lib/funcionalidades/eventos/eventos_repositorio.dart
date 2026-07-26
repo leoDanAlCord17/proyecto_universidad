@@ -15,12 +15,19 @@ class EventosRepositorio {
 
   final SupabaseClient _supabase;
 
-  static const _claveCache = 'eventos_con_grupos';
+  static const _claveCacheBase = 'eventos_con_grupos';
+
+  // Namespaced por usuario: en un dispositivo compartido (tablet de control
+  // de acceso, recepción), evita que los eventos cacheados de un usuario
+  // queden visibles para otro dentro del TTL de la caché.
+  String _claveCache(String usuarioId) => '${_claveCacheBase}_$usuarioId';
 
   /// Retorna todos los eventos en curso y programados con sus grupos de audiencia,
   /// ordenados por fecha de inicio ascendente.
   /// Guarda la respuesta cruda en caché local para uso offline.
-  Future<List<EventoConGrupos>> obtenerEventosConGrupos() =>
+  Future<List<EventoConGrupos>> obtenerEventosConGrupos({
+    required String usuarioId,
+  }) =>
       conReintentos(() async {
         try {
           final datos = await _supabase
@@ -32,7 +39,9 @@ class EventosRepositorio {
               .order('fecha_inicio', ascending: true)
               .timeout(kTimeoutSolicitud);
 
-          unawaited(CacheLocal.guardar(_claveCache, jsonEncode(datos)));
+          unawaited(
+            CacheLocal.guardar(_claveCache(usuarioId), jsonEncode(datos)),
+          );
 
           return datos.map<EventoConGrupos>(EventoConGrupos.desdeJson).toList();
         } on PostgrestException catch (e) {
@@ -44,8 +53,8 @@ class EventosRepositorio {
 
   /// Lee los eventos desde caché local (IndexedDB en web, Hive en móvil).
   /// Devuelve null si no hay caché disponible o si el JSON está corrupto.
-  List<EventoConGrupos>? obtenerEventosConGruposDesdeCache() {
-    final json = CacheLocal.leer(_claveCache);
+  List<EventoConGrupos>? obtenerEventosConGruposDesdeCache(String usuarioId) {
+    final json = CacheLocal.leer(_claveCache(usuarioId));
     if (json == null) return null;
     try {
       final lista = jsonDecode(json) as List<dynamic>;

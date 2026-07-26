@@ -84,10 +84,12 @@ class AuthCubit extends Cubit<AuthEstado> {
       await _suscripcionSesion?.cancel();
       _suscripcionSesion =
           _repositorio.flujoTokenSesion(usuarioId).listen(_procesarCambioToken);
-    } on FallaServidor catch (_) {
-      // El fallo en el token no bloquea la sesión principal
-    } on FallaInesperada catch (_) {
-      // El fallo en el token no bloquea la sesión principal
+    } on FallaServidor catch (e) {
+      // El fallo en el token no bloquea la sesión principal, pero sí debe
+      // quedar visible: es la señal de fallos en el control de sesión única.
+      reportarError(e);
+    } on FallaInesperada catch (e) {
+      reportarError(e);
     }
   }
 

@@ -99,7 +99,8 @@ EventoConGrupos _eventoDirigidoSinGrupos({String id = 'ev-sin-grupos'}) =>
 // ─── Helpers de stub ──────────────────────────────────────────────────────────
 
 void _stubVacio(MockEventosRepositorio repo) {
-  when(() => repo.obtenerEventosConGrupos()).thenAnswer((_) async => []);
+  when(() => repo.obtenerEventosConGrupos(usuarioId: any(named: 'usuarioId')))
+      .thenAnswer((_) async => []);
   when(() => repo.obtenerTagsUsuario(any()))
       .thenAnswer((_) async => _tagsVacios);
   when(() => repo.contarBorradores(any())).thenAnswer((_) async => 0);
@@ -140,7 +141,8 @@ void main() {
       'emite [Cargando, Error] con mensaje cuando FallaServidor en obtenerEventosConGrupos',
       build: build,
       setUp: () {
-        when(() => repositorio.obtenerEventosConGrupos())
+        when(() => repositorio.obtenerEventosConGrupos(
+                usuarioId: any(named: 'usuarioId')))
             .thenThrow(const FallaServidor('Sin red'));
         when(() => repositorio.obtenerTagsUsuario(any()))
             .thenAnswer((_) async => _tagsVacios);
@@ -156,7 +158,8 @@ void main() {
       'emite [Cargando, Error] cuando FallaInesperada',
       build: build,
       setUp: () {
-        when(() => repositorio.obtenerEventosConGrupos())
+        when(() => repositorio.obtenerEventosConGrupos(
+                usuarioId: any(named: 'usuarioId')))
             .thenThrow(const FallaInesperada('Error raro'));
         when(() => repositorio.obtenerTagsUsuario(any()))
             .thenAnswer((_) async => _tagsVacios);
@@ -172,8 +175,8 @@ void main() {
       'fallo en contarBorradores no impide emitir Cargado',
       build: build,
       setUp: () {
-        when(() => repositorio.obtenerEventosConGrupos())
-            .thenAnswer((_) async => []);
+        when(() => repositorio.obtenerEventosConGrupos(
+            usuarioId: any(named: 'usuarioId'))).thenAnswer((_) async => []);
         when(() => repositorio.obtenerTagsUsuario(any()))
             .thenAnswer((_) async => _tagsVacios);
         when(() => repositorio.contarBorradores(any()))
@@ -193,7 +196,8 @@ void main() {
       build: build,
       setUp: () {
         final enCurso = _eventoGeneral(id: 'ev-1', estatus: 'en_curso');
-        when(() => repositorio.obtenerEventosConGrupos())
+        when(() => repositorio.obtenerEventosConGrupos(
+                usuarioId: any(named: 'usuarioId')))
             .thenAnswer((_) async => [enCurso]);
         when(() => repositorio.obtenerTagsUsuario(any()))
             .thenAnswer((_) async => _tagsVacios);
@@ -223,7 +227,8 @@ void main() {
       'evento general siempre aparece independientemente de los tags del usuario',
       build: build,
       setUp: () {
-        when(() => repositorio.obtenerEventosConGrupos())
+        when(() => repositorio.obtenerEventosConGrupos(
+                usuarioId: any(named: 'usuarioId')))
             .thenAnswer((_) async => [_eventoGeneral()]);
         when(() => repositorio.obtenerTagsUsuario(any()))
             .thenAnswer((_) async => _tagsVacios);
@@ -244,7 +249,8 @@ void main() {
       'evento dirigido sin grupos nunca aparece',
       build: build,
       setUp: () {
-        when(() => repositorio.obtenerEventosConGrupos())
+        when(() => repositorio.obtenerEventosConGrupos(
+                usuarioId: any(named: 'usuarioId')))
             .thenAnswer((_) async => [_eventoDirigidoSinGrupos()]);
         when(() => repositorio.obtenerTagsUsuario(any()))
             .thenAnswer((_) async => _tagsVacios);
@@ -266,7 +272,8 @@ void main() {
       'evento dirigido cuyos grupos coinciden con los tags del usuario aparece',
       build: build,
       setUp: () {
-        when(() => repositorio.obtenerEventosConGrupos()).thenAnswer(
+        when(() => repositorio.obtenerEventosConGrupos(
+            usuarioId: any(named: 'usuarioId'))).thenAnswer(
           (_) async => [
             _eventoDirigido(tagPrincipalId: 'tp-1', tagSecundarioId: 'ts-1'),
           ],
@@ -294,7 +301,8 @@ void main() {
       'evento dirigido cuyo tag principal no coincide no aparece',
       build: build,
       setUp: () {
-        when(() => repositorio.obtenerEventosConGrupos()).thenAnswer(
+        when(() => repositorio.obtenerEventosConGrupos(
+            usuarioId: any(named: 'usuarioId'))).thenAnswer(
           (_) async => [
             _eventoDirigido(tagPrincipalId: 'tp-1', tagSecundarioId: 'ts-1'),
           ],
@@ -321,7 +329,8 @@ void main() {
       'evento dirigido con tag principal correcto pero falta tag secundario requerido no aparece',
       build: build,
       setUp: () {
-        when(() => repositorio.obtenerEventosConGrupos()).thenAnswer(
+        when(() => repositorio.obtenerEventosConGrupos(
+            usuarioId: any(named: 'usuarioId'))).thenAnswer(
           (_) async => [
             _eventoDirigido(tagPrincipalId: 'tp-1', tagSecundarioId: 'ts-1'),
           ],
@@ -392,8 +401,8 @@ void main() {
         _eventoGeneral(id: 'ev-marzo', fechaInicio: DateTime.utc(2025, 3, 10));
 
     void stubConEventos(List<EventoConGrupos> eventos) {
-      when(() => repositorio.obtenerEventosConGrupos())
-          .thenAnswer((_) async => eventos);
+      when(() => repositorio.obtenerEventosConGrupos(
+          usuarioId: any(named: 'usuarioId'))).thenAnswer((_) async => eventos);
       when(() => repositorio.obtenerTagsUsuario(any()))
           .thenAnswer((_) async => _tagsVacios);
       when(() => repositorio.contarBorradores(any()))

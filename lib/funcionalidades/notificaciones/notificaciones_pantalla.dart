@@ -49,8 +49,9 @@ class _NotificacionesPantallaState extends State<NotificacionesPantalla> {
     final usuarioId = authState.usuario.id;
     if (usuarioId == null) return;
 
-    final tieneToken =
-        await context.read<NotificacionesCubit>().tieneTokenRegistrado(usuarioId);
+    final tieneToken = await context
+        .read<NotificacionesCubit>()
+        .tieneTokenRegistrado(usuarioId);
     if (mounted) setState(() => _tieneToken = tieneToken);
   }
 
