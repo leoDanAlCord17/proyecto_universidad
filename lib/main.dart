@@ -106,8 +106,10 @@ void main() {
         ),
       );
     },
-    (error, stack) =>
-        log.e('Error no capturado en zone', error: error, stackTrace: stack),
+    (error, stack) {
+      log.e('Error no capturado en zone', error: error, stackTrace: stack);
+      Sentry.captureException(error, stackTrace: stack);
+    },
   );
 }
 
@@ -136,20 +138,27 @@ void _configurarErrorHandlers() {
       error: details.exception,
       stackTrace: details.stack,
     );
+    Sentry.captureException(details.exception, stackTrace: details.stack);
   };
 
   // Errores asincrónicos no capturados fuera del árbol de Flutter
   PlatformDispatcher.instance.onError = (error, stack) {
     log.e('Error de plataforma no capturado', error: error, stackTrace: stack);
+    Sentry.captureException(error, stackTrace: stack);
     return true;
   };
 
   // Widget de fallback cuando un subtree lanza una excepción en release
   ErrorWidget.builder = (FlutterErrorDetails details) {
     if (details.context != null) {
-      log.e('Widget error: ${details.exceptionAsString()}',
-          error: details.exception);
+      log.e(
+        'Widget error: ${details.exceptionAsString()}',
+        error: details.exception,
+      );
     }
+    // Se reporta siempre, incluso sin context, para no perder ningún error
+    // de construcción de widgets en producción.
+    Sentry.captureException(details.exception, stackTrace: details.stack);
     return _WidgetDeError(mensaje: details.exceptionAsString());
   };
 }

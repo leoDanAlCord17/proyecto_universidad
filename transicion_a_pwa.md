@@ -28,10 +28,18 @@ en una PWA totalmente funcional. Cada tarea se marca cuando queda resuelta.
   - `theme-color`, metas de iOS Safari, descripción real
   - _Archivos_: `web/index.html`
 
-- [ ] **Verificar iconos PWA**
-  - Archivos presentes: `web/icons/Icon-{192,512}.png` y maskable
-  - **Acción manual**: confirmar visualmente que son el logo real de UniAsist
-    y no el logo azul por defecto de Flutter. Si es el default, reemplazarlos.
+- [!] **Iconos PWA — confirmado que siguen siendo el logo default de Flutter**
+  - Archivos presentes y `web/manifest.json` apunta correctamente a los 4:
+    `web/icons/Icon-192.png`, `Icon-512.png`, `Icon-maskable-192.png`,
+    `Icon-maskable-512.png` (rutas verificadas, sin 404).
+  - **Verificado visualmente (2026-07-26)**: los 4 son el logo azul genérico
+    de Flutter, no un ícono de marca UniAsist. Alto impacto de marca — es lo
+    primero que ve un usuario al instalar la PWA en su pantalla de inicio.
+  - **Acción manual pendiente**: generar los 4 PNG (192/512 estándar +
+    192/512 maskable, con zona de seguridad ~40% para el recorte maskable)
+    a partir del logo real de UniAsist y reemplazar estos archivos
+    manteniendo exactamente los mismos nombres — no requiere tocar
+    `manifest.json` ni `index.html`, solo sustituir los binarios.
 
 - [x] **Configurar comando de build para producción**
   - Comando correcto activado en CI/CD:

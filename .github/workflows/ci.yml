@@ -86,6 +86,8 @@ jobs:
             --release \
             --pwa-strategy=offline-first \
             --dart-define-from-file=.env \
+            --dart-define=ENTORNO=prod \
+            --dart-define=SENTRY_DSN=${{ secrets.SENTRY_DSN }} \
             --base-href=/
 
       - name: Subir artefacto web

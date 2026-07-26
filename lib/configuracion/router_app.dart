@@ -27,10 +27,17 @@ class RouterApp {
     redirect: (context, state) {
       final estadoAuth = authCubit.state;
       final ubicacion = state.matchedLocation;
+      final from = state.uri.queryParameters['from'];
 
-      // Verificando sesión al arrancar: mostrar splash hasta que AuthCubit resuelva
+      // Verificando sesión al arrancar: mostrar splash hasta que AuthCubit
+      // resuelva. Se preserva la ruta + query originales (deep link o F5
+      // sobre una URL compartida) en `from` para poder restaurarla una vez
+      // se conozca el estado real de autenticación — antes se perdía porque
+      // el redirect sobrescribía `ubicacion` con Rutas.splash sin guardar
+      // a dónde iba el usuario.
       if (estadoAuth is AuthInicial) {
-        return ubicacion == Rutas.splash ? null : Rutas.splash;
+        if (ubicacion == Rutas.splash) return null;
+        return _conFrom(Rutas.splash, _ubicacionCompleta(state));
       }
 
       // Perfil incompleto: tiene cuenta en Auth pero no terminó el registro.
@@ -66,10 +73,15 @@ class RouterApp {
         final esRutaPublica = ubicacion == Rutas.login ||
             ubicacion == Rutas.registro ||
             ubicacion == Rutas.recuperarContrasena;
-        return esRutaPublica ? null : Rutas.login;
+        if (esRutaPublica) return null;
+        // Preserva el destino original (o el que ya venía en `from` desde
+        // splash) para volver a él después de iniciar sesión.
+        return _conFrom(Rutas.login, from ?? _ubicacionCompleta(state));
       }
 
-      // Autenticado: redirigir fuera de rutas de flujo de auth
+      // Autenticado: redirigir fuera de rutas de flujo de auth, restaurando
+      // el destino original (`from`) si vino de un deep link, un F5 o un
+      // enlace compartido. Sin `from` válido, cae al home de siempre.
       if (ubicacion == Rutas.splash ||
           ubicacion == Rutas.login ||
           ubicacion == Rutas.registro ||
@@ -78,6 +90,9 @@ class RouterApp {
           ubicacion == Rutas.usuarioRechazado ||
           ubicacion == Rutas.recuperarContrasena ||
           ubicacion == Rutas.nuevaContrasena) {
+        if (from != null && from.isNotEmpty && _esRutaInternaValida(from)) {
+          return from;
+        }
         return Rutas.home;
       }
 
@@ -148,6 +163,40 @@ class RouterApp {
       ),
     ),
   );
+}
+
+/// Construye `base?from=<ubicacion>` para preservar el destino original
+/// a través de una redirección intermedia (splash, login).
+String _conFrom(String base, String ubicacion) {
+  if (ubicacion.isEmpty || ubicacion == base) return base;
+  return Uri(path: base, queryParameters: {'from': ubicacion}).toString();
+}
+
+/// Reconstruye la ruta completa (path + query) que el usuario solicitó
+/// originalmente, para poder restaurarla después de splash/login.
+String _ubicacionCompleta(GoRouterState state) {
+  final uri = state.uri;
+  if (uri.query.isEmpty) return uri.path;
+  return '${uri.path}?${uri.query}';
+}
+
+/// Valida que `from` sea una ruta interna segura antes de redirigir a ella:
+/// rechaza URLs protocol-relative (`//host`, posible open-redirect) y
+/// cualquier ruta de flujo de auth (evitaría un loop de redirección).
+bool _esRutaInternaValida(String ruta) {
+  if (!ruta.startsWith('/') || ruta.startsWith('//')) return false;
+  const rutasAuthFlow = {
+    Rutas.splash,
+    Rutas.login,
+    Rutas.registro,
+    Rutas.completarPerfil,
+    Rutas.pendienteAprobacion,
+    Rutas.usuarioRechazado,
+    Rutas.recuperarContrasena,
+    Rutas.nuevaContrasena,
+  };
+  final path = Uri.parse(ruta).path;
+  return !rutasAuthFlow.contains(path);
 }
 
 /// Clase auxiliar para que GoRouter pueda escuchar el Stream del Cubit.

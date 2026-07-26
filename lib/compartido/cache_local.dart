@@ -2,9 +2,16 @@ import 'dart:convert';
 
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'logger.dart';
+
 /// Caché local con IndexedDB en web, Hive nativo en móvil.
 /// Cada entrada almacena el valor junto con un timestamp y un TTL.
 /// Si la entrada expiró, [leer] devuelve null y la elimina silenciosamente.
+///
+/// Si [init] falla (p. ej. IndexedDB bloqueado en modo incógnito estricto de
+/// Safari/Firefox, cuota de almacenamiento agotada), el resto de los métodos
+/// se vuelven no-op silenciosos en vez de lanzar — la app sigue arrancando y
+/// funcionando sin caché local en lugar de quedar en blanco en `runApp()`.
 ///
 /// Uso:
 ///   await CacheLocal.init();
@@ -15,17 +22,31 @@ class CacheLocal {
   // Nombre versionado: migración limpia desde el formato anterior sin TTL.
   static const _caja = 'uniasist_cache_v2';
 
+  static bool _disponible = false;
+
   static Future<void> init() async {
-    await Hive.initFlutter();
-    await Hive.openBox<String>(_caja);
+    try {
+      await Hive.initFlutter();
+      await Hive.openBox<String>(_caja);
+      _disponible = true;
+    } catch (e, st) {
+      _disponible = false;
+      log.w(
+        'CacheLocal no disponible — la app continuará sin caché local',
+        error: e,
+        stackTrace: st,
+      );
+    }
   }
 
   /// Guarda [valor] bajo [clave]. El [ttl] por defecto es 24 horas.
+  /// No-op silencioso si la caché no está disponible.
   static Future<void> guardar(
     String clave,
     String valor, {
     Duration ttl = const Duration(hours: 24),
   }) async {
+    if (!_disponible) return;
     final entrada = jsonEncode({
       'd': valor,
       't': DateTime.now().millisecondsSinceEpoch,
@@ -34,9 +55,10 @@ class CacheLocal {
     await Hive.box<String>(_caja).put(clave, entrada);
   }
 
-  /// Lee el valor bajo [clave]. Devuelve null si no existe, está expirado
-  /// o el formato no es válido.
+  /// Lee el valor bajo [clave]. Devuelve null si no existe, está expirado,
+  /// el formato no es válido o la caché no está disponible.
   static String? leer(String clave) {
+    if (!_disponible) return null;
     final raw = Hive.box<String>(_caja).get(clave);
     if (raw == null) return null;
     try {
@@ -53,11 +75,15 @@ class CacheLocal {
     }
   }
 
+  /// No-op silencioso si la caché no está disponible.
   static Future<void> eliminar(String clave) async {
+    if (!_disponible) return;
     await Hive.box<String>(_caja).delete(clave);
   }
 
+  /// No-op silencioso si la caché no está disponible.
   static Future<void> limpiar() async {
+    if (!_disponible) return;
     await Hive.box<String>(_caja).clear();
   }
 }

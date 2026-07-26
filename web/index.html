@@ -43,7 +43,14 @@
   <script>
     if ('serviceWorker' in navigator) {
       // ── Firebase SW — push notifications en segundo plano ──────────────────
-      navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      // Scope propio y distinto de "/" para no competir por el control de la
+      // página con flutter_service_worker.js (que registra en el scope raíz
+      // para el caching offline-first de la PWA). Dos Service Workers en el
+      // mismo scope solo dejan a uno activo como controller, lo que puede
+      // degradar intermitentemente el caching o la recepción de push.
+      navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+        scope: '/firebase-cloud-messaging-push-scope',
+      });
 
       // ── Actualización automática del Service Worker ────────────────────────
       // Flutter genera flutter_service_worker.js con un hash único por build.
