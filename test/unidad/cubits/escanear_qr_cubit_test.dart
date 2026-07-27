@@ -30,6 +30,11 @@ void main() {
   // UUID válido para tests
   const uuidValido = '550e8400-e29b-41d4-a716-446655440000';
 
+  // UUID que el repositorio "resuelve" al buscar al usuario — distinto del
+  // valor escaneado para verificar que el cubit usa el id resuelto (no el
+  // QR crudo) al registrar la asistencia.
+  const usuarioIdResuelto = '9c858901-8a57-4791-81fe-4c455b099bc9';
+
   setUp(() {
     repositorio = MockEscanearQrRepositorio();
   });
@@ -103,6 +108,7 @@ void main() {
         stubIniciar();
         when(() => repositorio.buscarUsuario(any())).thenAnswer(
           (_) async => {
+            'id': usuarioIdResuelto,
             'primer_nombre': 'Leo',
             'primer_apellido': 'Alvarez',
             'numero_identificacion': '12345',
@@ -129,6 +135,17 @@ void main() {
             .having((e) => e.nombre, 'nombre', 'Leo Alvarez')
             .having((e) => e.presentes, 'presentes', 1),
       ],
+      verify: (_) {
+        // Debe registrar con el id resuelto por el repositorio, no con el
+        // valor crudo que trajo el QR escaneado.
+        verify(
+          () => repositorio.registrarEntrada(
+            eventoId: 'evento-1',
+            usuarioId: usuarioIdResuelto,
+            registradoPorId: null,
+          ),
+        ).called(1);
+      },
     );
 
     blocTest<EscanearQrCubit, EscanearQrEstado>(
@@ -138,6 +155,7 @@ void main() {
         stubIniciar(presentes: 2);
         when(() => repositorio.buscarUsuario(any())).thenAnswer(
           (_) async => {
+            'id': usuarioIdResuelto,
             'primer_nombre': 'Ana',
             'primer_apellido': 'Gomez',
             'numero_identificacion': null,

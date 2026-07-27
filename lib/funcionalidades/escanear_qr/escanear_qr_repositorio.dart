@@ -5,6 +5,7 @@ import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
 import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
+import '../../compartido/utilidades/normalizador_qr.dart';
 import '../eventos/evento.dart';
 
 class EscanearQrRepositorio extends AsistenciaRegistroBase {
@@ -47,18 +48,35 @@ class EscanearQrRepositorio extends AsistenciaRegistroBase {
         }
       });
 
-  /// Busca un usuario activo por su UUID. Retorna null si no existe o no es válido.
-  Future<Map<String, dynamic>?> buscarUsuario(String usuarioId) =>
+  /// Busca un usuario activo a partir del valor crudo leído del QR — admite
+  /// tanto el QR nativo de la app (UUID de `usuarios.id`) como el QR del
+  /// carnet físico universitario (número de identificación/cédula, con o
+  /// sin prefijos propios del carnet). Ver [NormalizadorQR].
+  ///
+  /// Retorna null si no existe, no está activo, o el QR no trae ningún
+  /// identificador reconocible.
+  Future<Map<String, dynamic>?> buscarUsuario(String rawQr) =>
       conReintentos(() async {
-        if (!esUuidValido(usuarioId)) return null;
+        final valor = NormalizadorQR.extraerIdentificador(rawQr);
+        if (valor.isEmpty) return null;
         try {
-          final fila = await supabase
-              .from(TablasSupabase.usuarios)
-              .select(
-                'primer_nombre, primer_apellido, numero_identificacion, '
-                'usuarios_roles!usuarios_roles_usuario_id_fkey(roles(nombre))',
-              )
-              .eq('id', usuarioId)
+          const columnas = 'id, primer_nombre, primer_apellido, '
+              'numero_identificacion, '
+              'usuarios_roles!usuarios_roles_usuario_id_fkey(roles(nombre))';
+
+          // `id` es una columna `uuid` en Postgres: comparar esa columna con
+          // `.eq()` contra un valor que no tiene forma de UUID (ej. una
+          // cédula) hace que Postgres lance un error de tipo en vez de
+          // simplemente no encontrar coincidencias. Por eso el OR contra
+          // `id` solo se arma cuando el valor normalizado ya es un UUID
+          // válido; si no, se busca únicamente por `numero_identificacion`
+          // (columna de texto, sin ese riesgo).
+          final query = supabase.from(TablasSupabase.usuarios).select(columnas);
+          final filtrada = esUuidValido(valor)
+              ? query.or('id.eq.$valor,numero_identificacion.eq.$valor')
+              : query.eq('numero_identificacion', valor);
+
+          final fila = await filtrada
               .eq('estatus', true)
               .maybeSingle()
               .timeout(kTimeoutSolicitud);

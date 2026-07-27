@@ -62,9 +62,15 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
       }
 
       final datos = _extraerDatosUsuario(usuario);
+      // El QR escaneado puede traer la cédula del carnet físico en vez del
+      // UUID nativo (ver NormalizadorQR) — usar siempre el `id` que
+      // resolvió el repositorio, nunca el valor crudo del QR, para que
+      // asistencia.usuario_id y la notificación push queden con el UUID
+      // real del usuario.
+      final usuarioId = usuario['id'] as String;
       final registrado = await _repositorio.registrarEntrada(
         eventoId: _eventoId!,
-        usuarioId: rawValue,
+        usuarioId: usuarioId,
         registradoPorId: _adminId,
       );
       _emitirResultado(listo, registrado,
@@ -73,7 +79,7 @@ class EscanearQrCubit extends Cubit<EscanearQrEstado> {
       // N12 — notifica al usuario que su entrada fue registrada
       if (registrado) {
         await NotificacionesPushServicio.enviar(
-          usuarioIds: [rawValue],
+          usuarioIds: [usuarioId],
           titulo: 'Asistencia registrada',
           cuerpo: 'Tu entrada a "${listo.evento.titulo}" fue registrada.',
           tipo: TiposNotificacion.asistencia,
