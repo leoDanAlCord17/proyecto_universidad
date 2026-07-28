@@ -339,8 +339,49 @@ class _App extends StatelessWidget {
           texto: 'Tu sesión fue iniciada en otro dispositivo.',
           estilo: EstiloAviso.informativa,
         ),
-        child: child!,
+        child: _EscuchaPushEnPrimerPlano(child: child!),
       ),
     );
   }
+}
+
+/// Muestra un aviso visual (mismo componente que el resto de la app) cuando
+/// llega un push con la app en primer plano — en ese caso el navegador no
+/// muestra el banner del sistema por su cuenta, así que sin esto el usuario
+/// no tenía ninguna señal de que algo llegó mientras estaba usando la app.
+class _EscuchaPushEnPrimerPlano extends StatefulWidget {
+  const _EscuchaPushEnPrimerPlano({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_EscuchaPushEnPrimerPlano> createState() =>
+      _EscuchaPushEnPrimerPlanoState();
+}
+
+class _EscuchaPushEnPrimerPlanoState
+    extends State<_EscuchaPushEnPrimerPlano> {
+  StreamSubscription<MensajePushRecibido>? _sub;
+
+  @override
+  void initState() {
+    super.initState();
+    _sub = NotificacionesPushServicio.alRecibirPush.listen((mensaje) {
+      if (!mounted) return;
+      AvisoApp.mostrar(
+        context,
+        texto: mensaje.cuerpo.isNotEmpty ? mensaje.cuerpo : mensaje.titulo,
+        estilo: EstiloAviso.informativa,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

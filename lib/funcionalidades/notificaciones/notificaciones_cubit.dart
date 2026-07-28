@@ -15,7 +15,7 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
   final NotificacionesRepositorio _repositorio;
 
   StreamSubscription<int>? _subContador;
-  StreamSubscription<void>? _subPush;
+  StreamSubscription<MensajePushRecibido>? _subPush;
   String? _usuarioId;
 
   /// Inicia el stream del contador de no leídas (para el badge) y la

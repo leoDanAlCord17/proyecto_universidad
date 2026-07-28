@@ -18,7 +18,7 @@ class EventosEnCursoCubit extends Cubit<EventosEnCursoEstado> {
 
   String? _usuarioId;
   Timer? _timer;
-  StreamSubscription<void>? _subPush;
+  StreamSubscription<MensajePushRecibido>? _subPush;
 
   // Esta pantalla (Inicio) vive en el IndexedStack de NavegacionPrincipal y
   // solo se construye una vez por sesión — sin refresco, un evento que pasa

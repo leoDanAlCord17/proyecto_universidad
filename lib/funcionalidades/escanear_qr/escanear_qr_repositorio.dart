@@ -5,7 +5,7 @@ import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
 import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
-import '../../compartido/utilidades/normalizador_qr.dart';
+import '../../compartido/normalizador_qr.dart';
 import '../eventos/evento.dart';
 
 class EscanearQrRepositorio extends AsistenciaRegistroBase {

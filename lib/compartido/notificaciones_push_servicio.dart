@@ -5,6 +5,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'logger.dart';
 
+/// Título y cuerpo de un push recibido con la app en primer plano — datos
+/// mínimos para mostrarlo como aviso visual dentro de la app.
+class MensajePushRecibido {
+  const MensajePushRecibido({required this.titulo, required this.cuerpo});
+
+  final String titulo;
+  final String cuerpo;
+}
+
 class NotificacionesPushServicio {
   static final _messaging = FirebaseMessaging.instance;
   static final _supabase = Supabase.instance.client;
@@ -12,15 +21,19 @@ class NotificacionesPushServicio {
   static const _vapidKey =
       'BDUU8PnSRN6VbCAQutygJHIFjF6I5y0gasq_UTlLdRRJEW0xSFEhFsIWmT7lX83rC8FPPAbvcdFXFdaFj17aLlE';
 
-  static final _controladorRefresco = StreamController<void>.broadcast();
+  static final _controladorRefresco =
+      StreamController<MensajePushRecibido>.broadcast();
   static bool _listenerRegistrado = false;
 
   /// Señal de "llegó un push en primer plano" — otros cubits (p. ej.
   /// [EventosEnCursoCubit], [NotificacionesCubit]) la escuchan para
-  /// refrescarse al instante en vez de depender de un timer corto. Es la
-  /// base del refresco eficiente: en lugar de preguntar al servidor cada
-  /// pocos segundos "¿cambió algo?", el servidor avisa cuando algo cambió.
-  static Stream<void> get alRecibirPush => _controladorRefresco.stream;
+  /// refrescarse al instante en vez de depender de un timer corto, y la UI
+  /// raíz la usa para mostrar un aviso visual (ver [AvisoApp] en main.dart).
+  /// Es la base del refresco eficiente: en lugar de preguntar al servidor
+  /// cada pocos segundos "¿cambió algo?", el servidor avisa cuando algo
+  /// cambió.
+  static Stream<MensajePushRecibido> get alRecibirPush =>
+      _controladorRefresco.stream;
 
   static Future<void> inicializar(String usuarioId) async {
     try {
@@ -66,10 +79,14 @@ class NotificacionesPushServicio {
         _listenerRegistrado = true;
         FirebaseMessaging.onMessage.listen((mensaje) {
           final notif = mensaje.notification;
-          if (notif != null) {
-            log.i('Notificación recibida en primer plano: ${notif.title}');
-          }
-          _controladorRefresco.add(null);
+          if (notif == null) return;
+          log.i('Notificación recibida en primer plano: ${notif.title}');
+          _controladorRefresco.add(
+            MensajePushRecibido(
+              titulo: notif.title ?? '',
+              cuerpo: notif.body ?? '',
+            ),
+          );
         });
       }
     } catch (e, st) {
