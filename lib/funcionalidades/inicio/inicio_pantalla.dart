@@ -29,8 +29,15 @@ class InicioPantalla extends StatefulWidget {
   State<InicioPantalla> createState() => _InicioPantallaState();
 }
 
-class _InicioPantallaState extends State<InicioPantalla> {
+class _InicioPantallaState extends State<InicioPantalla>
+    with WidgetsBindingObserver {
   bool _tagsCargados = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
 
   @override
   void didChangeDependencies() {
@@ -44,6 +51,22 @@ class _InicioPantallaState extends State<InicioPantalla> {
       context.read<InicioCubit>().cargarTags(id);
       context.read<EventosEnCursoCubit>().cargar(id);
     }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // El refresco periódico del cubit (cada 30s) ya cubre la mayoría de los
+    // casos, pero si la app estuvo minimizada un rato, esto evita esperar
+    // hasta el próximo tick del timer al volver a primer plano.
+    if (state == AppLifecycleState.resumed) {
+      context.read<EventosEnCursoCubit>().refrescarAlReanudar();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override

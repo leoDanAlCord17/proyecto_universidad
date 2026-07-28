@@ -233,11 +233,12 @@ class _CuerpoFormulario extends StatelessWidget {
                     descripcionCtrl: descripcionCtrl,
                     lugarCtrl: lugarCtrl,
                   ),
-                if (estado.pasoActual == 1)
+                if (estado.pasoActual == 1) ...[
                   _TarjetaFechaDuracion(estado: estado),
-                if (estado.pasoActual == 2) ...[
-                  _TarjetaAudiencia(estado: estado),
                   const SizedBox(height: 16),
+                  _TarjetaAudiencia(estado: estado),
+                ],
+                if (estado.pasoActual == 2) ...[
                   _TarjetaModosRegistro(estado: estado),
                   const SizedBox(height: 16),
                   _TarjetaControlSalida(estado: estado),

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
+import '../../compartido/notificaciones_push_servicio.dart';
 import 'notificacion.dart';
 import 'notificaciones_estado.dart';
 import 'notificaciones_repositorio.dart';
@@ -14,10 +15,12 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
   final NotificacionesRepositorio _repositorio;
 
   StreamSubscription<int>? _subContador;
+  StreamSubscription<void>? _subPush;
   String? _usuarioId;
 
-  /// Inicia el stream del contador de no leídas (para el badge).
-  /// Se llama una vez al autenticarse.
+  /// Inicia el stream del contador de no leídas (para el badge) y la
+  /// escucha de push en primer plano para refrescar la lista si la pantalla
+  /// de notificaciones ya está abierta. Se llama una vez al autenticarse.
   void iniciarStream(String usuarioId) {
     if (_usuarioId == usuarioId) return;
     _usuarioId = usuarioId;
@@ -38,6 +41,36 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
       onError: (_) =>
           emit(const NotificacionesCargadas(cantidad: 0, notificaciones: [])),
     );
+
+    _subPush?.cancel();
+    _subPush = NotificacionesPushServicio.alRecibirPush.listen(
+      (_) => _refrescarSilencioso(),
+    );
+  }
+
+  /// Refresca la lista completa cuando llega un push en primer plano — sin
+  /// esto, si el usuario ya tenía la pantalla de notificaciones abierta, la
+  /// notificación recién insertada en el servidor (y ya visible como push
+  /// del sistema) no aparecía en la lista hasta salir y volver a entrar. El
+  /// contador (badge) ya se actualizaba solo porque viene de un stream en
+  /// tiempo real; esto extiende lo mismo a la lista completa.
+  ///
+  /// Si la lista nunca se cargó en esta sesión (pantalla no abierta), no
+  /// hace nada — cargarLista() la traerá completa cuando se abra.
+  Future<void> _refrescarSilencioso() async {
+    final usuarioId = _usuarioId;
+    if (usuarioId == null) return;
+    if (state is! NotificacionesCargadas) return;
+    try {
+      final lista = await _repositorio.obtenerTodas(usuarioId);
+      if (isClosed) return;
+      final cantidadActual = (state as NotificacionesCargadas).cantidad;
+      emit(
+        NotificacionesCargadas(cantidad: cantidadActual, notificaciones: lista),
+      );
+    } catch (e) {
+      log.w('No se pudo refrescar la lista de notificaciones', error: e);
+    }
   }
 
   /// Carga la lista completa de notificaciones (al abrir la pantalla).
@@ -119,6 +152,7 @@ class NotificacionesCubit extends Cubit<NotificacionesEstado> {
   @override
   Future<void> close() {
     _subContador?.cancel();
+    _subPush?.cancel();
     return super.close();
   }
 }

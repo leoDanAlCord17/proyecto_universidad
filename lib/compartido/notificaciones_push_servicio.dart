@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -9,6 +11,16 @@ class NotificacionesPushServicio {
 
   static const _vapidKey =
       'BDUU8PnSRN6VbCAQutygJHIFjF6I5y0gasq_UTlLdRRJEW0xSFEhFsIWmT7lX83rC8FPPAbvcdFXFdaFj17aLlE';
+
+  static final _controladorRefresco = StreamController<void>.broadcast();
+  static bool _listenerRegistrado = false;
+
+  /// Señal de "llegó un push en primer plano" — otros cubits (p. ej.
+  /// [EventosEnCursoCubit], [NotificacionesCubit]) la escuchan para
+  /// refrescarse al instante en vez de depender de un timer corto. Es la
+  /// base del refresco eficiente: en lugar de preguntar al servidor cada
+  /// pocos segundos "¿cambió algo?", el servidor avisa cuando algo cambió.
+  static Stream<void> get alRecibirPush => _controladorRefresco.stream;
 
   static Future<void> inicializar(String usuarioId) async {
     try {
@@ -46,12 +58,20 @@ class NotificacionesPushServicio {
 
       log.i('PUSH: token guardado correctamente ✓');
 
-      // Escucha notificaciones mientras la app está en primer plano
-      FirebaseMessaging.onMessage.listen((mensaje) {
-        final notif = mensaje.notification;
-        if (notif == null) return;
-        log.i('Notificación recibida en primer plano: ${notif.title}');
-      });
+      // Escucha notificaciones mientras la app está en primer plano y
+      // reemite la señal en [alRecibirPush]. Guardia contra registrar el
+      // listener más de una vez si inicializar() se llama de nuevo en la
+      // misma sesión (p. ej. tras un re-login).
+      if (!_listenerRegistrado) {
+        _listenerRegistrado = true;
+        FirebaseMessaging.onMessage.listen((mensaje) {
+          final notif = mensaje.notification;
+          if (notif != null) {
+            log.i('Notificación recibida en primer plano: ${notif.title}');
+          }
+          _controladorRefresco.add(null);
+        });
+      }
     } catch (e, st) {
       log.e(
         'Error al inicializar notificaciones push',
