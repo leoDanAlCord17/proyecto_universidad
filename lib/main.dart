@@ -359,8 +359,7 @@ class _EscuchaPushEnPrimerPlano extends StatefulWidget {
       _EscuchaPushEnPrimerPlanoState();
 }
 
-class _EscuchaPushEnPrimerPlanoState
-    extends State<_EscuchaPushEnPrimerPlano> {
+class _EscuchaPushEnPrimerPlanoState extends State<_EscuchaPushEnPrimerPlano> {
   StreamSubscription<MensajePushRecibido>? _sub;
 
   @override
