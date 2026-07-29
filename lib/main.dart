@@ -334,12 +334,19 @@ class _App extends StatelessWidget {
       routerConfig: routerApp.router,
       builder: (context, child) => BlocListener<AuthCubit, AuthEstado>(
         listenWhen: (_, curr) => curr is SesionDesplazada,
-        listener: (ctx, _) => AvisoApp.mostrar(
-          ctx,
-          texto: 'Tu sesión fue iniciada en otro dispositivo.',
-          estilo: EstiloAviso.informativa,
+        listener: (_, __) {
+          final overlay = routerApp.navigatorKey.currentState?.overlay;
+          if (overlay == null) return;
+          AvisoApp.mostrarConOverlay(
+            overlay,
+            texto: 'Tu sesión fue iniciada en otro dispositivo.',
+            estilo: EstiloAviso.informativa,
+          );
+        },
+        child: _EscuchaPushEnPrimerPlano(
+          navigatorKey: routerApp.navigatorKey,
+          child: child!,
         ),
-        child: _EscuchaPushEnPrimerPlano(child: child!),
       ),
     );
   }
@@ -350,8 +357,12 @@ class _App extends StatelessWidget {
 /// muestra el banner del sistema por su cuenta, así que sin esto el usuario
 /// no tenía ninguna señal de que algo llegó mientras estaba usando la app.
 class _EscuchaPushEnPrimerPlano extends StatefulWidget {
-  const _EscuchaPushEnPrimerPlano({required this.child});
+  const _EscuchaPushEnPrimerPlano({
+    required this.navigatorKey,
+    required this.child,
+  });
 
+  final GlobalKey<NavigatorState> navigatorKey;
   final Widget child;
 
   @override
@@ -366,9 +377,10 @@ class _EscuchaPushEnPrimerPlanoState extends State<_EscuchaPushEnPrimerPlano> {
   void initState() {
     super.initState();
     _sub = NotificacionesPushServicio.alRecibirPush.listen((mensaje) {
-      if (!mounted) return;
-      AvisoApp.mostrar(
-        context,
+      final overlay = widget.navigatorKey.currentState?.overlay;
+      if (overlay == null) return;
+      AvisoApp.mostrarConOverlay(
+        overlay,
         texto: mensaje.cuerpo.isNotEmpty ? mensaje.cuerpo : mensaje.titulo,
         estilo: EstiloAviso.informativa,
       );

@@ -18,7 +18,15 @@ class RouterApp {
   RouterApp(this.authCubit);
   final AuthCubit authCubit;
 
+  // Expuesto para poder llegar al Overlay del Navigator (NavigatorState.overlay)
+  // desde fuera del árbol de rutas — p. ej. AvisoApp.mostrarConOverlay en
+  // main.dart, para listeners globales declarados por encima del Router,
+  // donde Overlay.of(context) no puede encontrarlo (queda por debajo, no
+  // como ancestro).
+  final navigatorKey = GlobalKey<NavigatorState>();
+
   late final router = GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: Rutas.splash,
 
     // Escucha al AuthCubit para reaccionar a cambios de sesión

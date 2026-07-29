@@ -6,11 +6,42 @@ enum EstiloAviso { informativa, exito, error }
 class AvisoApp {
   static OverlayEntry? _entradaActual;
 
+  /// Para usar desde cualquier widget dentro del árbol de rutas — resuelve
+  /// el Overlay buscando hacia arriba desde [context] (Overlay.of).
   static void mostrar(
     BuildContext context, {
     required String texto,
     required EstiloAviso estilo,
     Duration duracion = const Duration(milliseconds: 2500),
+  }) {
+    _mostrarEn(
+      Overlay.of(context),
+      texto: texto,
+      estilo: estilo,
+      duracion: duracion,
+    );
+  }
+
+  /// Para usar desde fuera del árbol de rutas (listeners globales por
+  /// encima del Router, sin un BuildContext que tenga el Overlay como
+  /// ancestro — ahí Overlay.of(context) nunca lo encuentra, porque el
+  /// Overlay real vive más abajo, dentro del Navigator). Recibe el
+  /// OverlayState ya resuelto, típicamente vía
+  /// `navigatorKey.currentState?.overlay`.
+  static void mostrarConOverlay(
+    OverlayState overlayEstado, {
+    required String texto,
+    required EstiloAviso estilo,
+    Duration duracion = const Duration(milliseconds: 2500),
+  }) {
+    _mostrarEn(overlayEstado, texto: texto, estilo: estilo, duracion: duracion);
+  }
+
+  static void _mostrarEn(
+    OverlayState overlayEstado, {
+    required String texto,
+    required EstiloAviso estilo,
+    required Duration duracion,
   }) {
     _entradaActual?.remove();
 
@@ -19,7 +50,7 @@ class AvisoApp {
           _VistaAviso(texto: texto, estilo: estilo, duracion: duracion),
     );
     _entradaActual = entrada;
-    Overlay.of(context).insert(entrada);
+    overlayEstado.insert(entrada);
 
     Future.delayed(duracion + const Duration(milliseconds: 400), () {
       if (_entradaActual == entrada) {
