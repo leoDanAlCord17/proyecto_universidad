@@ -88,14 +88,19 @@ class _InicioPantallaState extends State<InicioPantalla>
                   bottom: false,
                   child: BarraSuperiorApp(
                     izquierda: Row(
-                      mainAxisSize: MainAxisSize.min,
                       children: [
                         if (usuario != null) ...[
                           AvatarUsuario(
                               iniciales: usuario.iniciales, tamanio: 42),
                           const SizedBox(width: 12),
                         ],
-                        _CabeceraTexto(nombre: usuario?.nombreCompleto ?? ''),
+                        // Flexible (no un tamaño fijo) para que el saludo se
+                        // achique en pantallas angostas en vez de invadir el
+                        // espacio de los botones de notificaciones/ajustes.
+                        Flexible(
+                          child: _CabeceraTexto(
+                              nombre: usuario?.nombreCompleto ?? ''),
+                        ),
                       ],
                     ),
                     derecha: Row(
@@ -170,8 +175,8 @@ class _CabeceraTexto extends StatelessWidget {
             final texto = cantidad == 1
                 ? '1 evento activo ahora'
                 : '$cantidad eventos activos ahora';
-            return Text(
-              texto,
+            return _TextoAjustable(
+              texto: texto,
               style: estilos.titleSmall?.copyWith(
                 color: ColoresApp.verde,
                 fontWeight: FontWeight.w600,
@@ -179,8 +184,8 @@ class _CabeceraTexto extends StatelessWidget {
             );
           },
         ),
-        Text(
-          'Hola, $nombre 👋',
+        _TextoAjustable(
+          texto: 'Hola, $nombre 👋',
           style: estilos.titleSmall?.copyWith(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -188,6 +193,26 @@ class _CabeceraTexto extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Texto de una sola línea que se achica (no se corta ni se envuelve) para
+/// caber en el espacio disponible — usado por el saludo "Hola, {nombre} 👋",
+/// cuyo largo depende del nombre real del usuario y podía invadir los
+/// botones de la barra superior en pantallas angostas.
+class _TextoAjustable extends StatelessWidget {
+  const _TextoAjustable({required this.texto, required this.style});
+
+  final String texto;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: Text(texto, style: style, maxLines: 1, softWrap: false),
     );
   }
 }

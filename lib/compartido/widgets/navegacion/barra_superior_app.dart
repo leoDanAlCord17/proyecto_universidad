@@ -21,13 +21,20 @@ class BarraSuperiorApp extends StatelessWidget {
         height: 90,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Stack(
-            alignment: Alignment.center,
+          // Row (no Stack+Align) para que `izquierda` reciba un ancho
+          // máximo real y acotado por lo que ocupa `derecha` — con Stack
+          // cada lado se posicionaba de forma independiente sin negociar
+          // espacio, así que en pantallas angostas un `izquierda` largo
+          // (ej. el saludo con nombre de usuario en Inicio) se montaba
+          // encima de los botones de `derecha` en vez de encogerse.
+          child: Row(
             children: [
               if (izquierda != null)
-                Align(alignment: Alignment.centerLeft, child: izquierda!),
-              if (centro != null)
-                Align(alignment: Alignment.center, child: centro!),
+                Expanded(
+                  child:
+                      Align(alignment: Alignment.centerLeft, child: izquierda!),
+                ),
+              if (centro != null) centro!,
               if (derecha != null)
                 Align(alignment: Alignment.centerRight, child: derecha!),
             ],

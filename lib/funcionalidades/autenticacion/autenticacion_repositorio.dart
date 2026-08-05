@@ -12,20 +12,30 @@ class AutenticacionRepositorio {
 
   /// Inicia sesión con correo y contraseña.
   /// Lanza [FallaAutenticacion] si las credenciales son incorrectas.
-  Future<AuthResponse> iniciarSesion(String correo, String clave) async {
-    try {
-      return await _supabase.auth
-          .signInWithPassword(
-            email: correo,
-            password: clave,
-          )
-          .timeout(kTimeoutSolicitud);
-    } on AuthException catch (e) {
-      throw FallaAutenticacion(TraductorErrores.deAuth(e));
-    } catch (e) {
-      TraductorErrores.lanzarInesperado(e);
-    }
-  }
+  ///
+  /// Un 429 (demasiados intentos) o 500 de Supabase Auth es transitorio —
+  /// se relanza como [FallaRed] para que [conReintentos] lo reintente una
+  /// vez con backoff, en vez de fallarle al usuario en un pico momentáneo
+  /// del servicio. Credenciales inválidas (400/422) no se reintentan: con
+  /// el mismo correo/clave el resultado sería idéntico.
+  Future<AuthResponse> iniciarSesion(String correo, String clave) =>
+      conReintentos(() async {
+        try {
+          return await _supabase.auth
+              .signInWithPassword(
+                email: correo,
+                password: clave,
+              )
+              .timeout(kTimeoutSolicitud);
+        } on AuthException catch (e) {
+          if (e.statusCode == '429' || e.statusCode == '500') {
+            throw FallaRed(TraductorErrores.deAuth(e));
+          }
+          throw FallaAutenticacion(TraductorErrores.deAuth(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
 
   /// Registra un nuevo usuario en Supabase Auth.
   /// Lanza [FallaAutenticacion] si el correo ya está en uso o la clave es inválida.
