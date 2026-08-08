@@ -142,7 +142,7 @@ class _CuerpoCrearUsuario extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             CampoTextoApp(
-              etiqueta: 'Número de Identificación',
+              etiqueta: 'Cédula* (la usarás para iniciar sesión)',
               hintText: 'DNI / Cédula / Pasaporte',
               controller: numeroIdentificacionController,
             ),

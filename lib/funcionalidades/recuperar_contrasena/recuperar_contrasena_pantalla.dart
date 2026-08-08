@@ -20,11 +20,11 @@ class RecuperarContrasenaPantalla extends StatefulWidget {
 
 class _RecuperarContrasenaPantallaState
     extends State<RecuperarContrasenaPantalla> {
-  final _correoCtrl = TextEditingController();
+  final _cedulaCtrl = TextEditingController();
 
   @override
   void dispose() {
-    _correoCtrl.dispose();
+    _cedulaCtrl.dispose();
     super.dispose();
   }
 
@@ -40,13 +40,12 @@ class _RecuperarContrasenaPantallaState
           }
         },
         builder: (context, estado) => switch (estado) {
-          RecuperarContrasenaEnviado() =>
-            _VistaConfirmacion(correo: estado.correo),
+          RecuperarContrasenaEnviado() => const _VistaConfirmacion(),
           RecuperarContrasenaInicial() ||
           RecuperarContrasenaEnviando() ||
           RecuperarContrasenaError() =>
             _VistaFormulario(
-              correoCtrl: _correoCtrl,
+              cedulaCtrl: _cedulaCtrl,
               estaCargando: estado is RecuperarContrasenaEnviando,
             ),
         },
@@ -59,9 +58,9 @@ class _RecuperarContrasenaPantallaState
 
 class _VistaFormulario extends StatelessWidget {
   const _VistaFormulario(
-      {required this.correoCtrl, required this.estaCargando});
+      {required this.cedulaCtrl, required this.estaCargando});
 
-  final TextEditingController correoCtrl;
+  final TextEditingController cedulaCtrl;
   final bool estaCargando;
 
   @override
@@ -77,13 +76,13 @@ class _VistaFormulario extends StatelessWidget {
             const _Cabecera(),
             const SizedBox(height: 40),
             CampoTextoApp(
-              etiqueta: 'Correo',
-              hintText: 'leo.alvarez@gmail.com',
-              controller: correoCtrl,
+              etiqueta: 'Cédula',
+              hintText: 'Ej. 32727960',
+              controller: cedulaCtrl,
             ),
             const SizedBox(height: 12),
             Text(
-              'Te enviaremos un enlace para restablecer tu contraseña.',
+              'Enviaremos un enlace para restablecer tu contraseña al correo asociado a tu cuenta.',
               style: estiloTexto.bodySmall
                   ?.copyWith(color: ColoresApp.textoSecundario),
             ),
@@ -95,7 +94,7 @@ class _VistaFormulario extends StatelessWidget {
                   ? null
                   : () => context
                       .read<RecuperarContrasenaCubit>()
-                      .enviar(correoCtrl.text),
+                      .enviar(cedulaCtrl.text),
             ),
             const SizedBox(height: 20),
             Center(
@@ -135,7 +134,7 @@ class _Cabecera extends StatelessWidget {
         ),
         const SizedBox(height: 30),
         Text('Recuperar contraseña', style: estiloTexto.displaySmall),
-        Text('Ingresa tu correo y te enviaremos el enlace',
+        Text('Ingresa tu cédula y te enviaremos el enlace a tu correo',
             style: estiloTexto.bodyMedium),
       ],
     );
@@ -145,9 +144,7 @@ class _Cabecera extends StatelessWidget {
 // ─── Vista confirmación ───────────────────────────────────────────────────────
 
 class _VistaConfirmacion extends StatelessWidget {
-  const _VistaConfirmacion({required this.correo});
-
-  final String correo;
+  const _VistaConfirmacion();
 
   @override
   Widget build(BuildContext context) {
@@ -171,18 +168,10 @@ class _VistaConfirmacion extends StatelessWidget {
             Text('Revisa tu correo', style: estiloTexto.displaySmall),
             const SizedBox(height: 12),
             Text(
-              'Enviamos las instrucciones a',
+              'Si la cédula ingresada está registrada, enviamos un enlace '
+              'de recuperación al correo asociado a esa cuenta.',
               style: estiloTexto.bodyMedium
                   ?.copyWith(color: ColoresApp.textoSecundario),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              correo,
-              style: estiloTexto.bodyMedium?.copyWith(
-                color: ColoresApp.textoPrimario,
-                fontWeight: FontWeight.w700,
-              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),

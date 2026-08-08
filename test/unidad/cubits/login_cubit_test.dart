@@ -24,7 +24,7 @@ void main() {
     });
 
     blocTest<LoginCubit, LoginEstado>(
-      'emite LoginError cuando correo está vacío',
+      'emite LoginError cuando la cédula está vacía',
       build: () => LoginCubit(repositorio),
       act: (c) => c.ingresar('', 'clave123'),
       expect: () => [
@@ -37,7 +37,7 @@ void main() {
     );
 
     blocTest<LoginCubit, LoginEstado>(
-      'emite LoginError cuando correo es solo espacios',
+      'emite LoginError cuando la cédula es solo espacios',
       build: () => LoginCubit(repositorio),
       act: (c) => c.ingresar('   ', 'clave123'),
       expect: () => [isA<LoginError>()],
@@ -46,7 +46,7 @@ void main() {
     blocTest<LoginCubit, LoginEstado>(
       'emite LoginError cuando clave está vacía',
       build: () => LoginCubit(repositorio),
-      act: (c) => c.ingresar('leo@uni.edu', ''),
+      act: (c) => c.ingresar('32727960', ''),
       expect: () => [isA<LoginError>()],
     );
 
@@ -66,20 +66,20 @@ void main() {
             .thenAnswer((_) async => MockAuthResponse());
         return LoginCubit(repositorio);
       },
-      act: (c) => c.ingresar('leo@uni.edu', 'clave123'),
+      act: (c) => c.ingresar('32727960', 'clave123'),
       expect: () => [isA<LoginCargando>(), isA<LoginExito>()],
     );
 
     blocTest<LoginCubit, LoginEstado>(
-      'llama el repositorio con correo sin espacios',
+      'llama el repositorio con la cédula sin espacios',
       build: () {
         when(() => repositorio.iniciarSesion(any(), any()))
             .thenAnswer((_) async => MockAuthResponse());
         return LoginCubit(repositorio);
       },
-      act: (c) => c.ingresar('  leo@uni.edu  ', 'clave123'),
+      act: (c) => c.ingresar('  32727960  ', 'clave123'),
       verify: (_) {
-        verify(() => repositorio.iniciarSesion('leo@uni.edu', 'clave123'))
+        verify(() => repositorio.iniciarSesion('32727960', 'clave123'))
             .called(1);
       },
     );
@@ -88,16 +88,16 @@ void main() {
       'emite [LoginCargando, LoginError] propagando el mensaje de FallaAutenticacion',
       build: () {
         when(() => repositorio.iniciarSesion(any(), any())).thenThrow(
-            const FallaAutenticacion('Correo o contraseña incorrectos.'));
+            const FallaAutenticacion('Cédula o contraseña incorrectos.'));
         return LoginCubit(repositorio);
       },
-      act: (c) => c.ingresar('leo@uni.edu', 'clave123'),
+      act: (c) => c.ingresar('32727960', 'clave123'),
       expect: () => [
         isA<LoginCargando>(),
         isA<LoginError>().having(
           (e) => e.mensaje,
           'mensaje',
-          'Correo o contraseña incorrectos.',
+          'Cédula o contraseña incorrectos.',
         ),
       ],
     );
@@ -109,7 +109,7 @@ void main() {
             .thenThrow(const FallaInesperada('Sin conexión.'));
         return LoginCubit(repositorio);
       },
-      act: (c) => c.ingresar('leo@uni.edu', 'clave123'),
+      act: (c) => c.ingresar('32727960', 'clave123'),
       expect: () => [
         isA<LoginCargando>(),
         isA<LoginError>().having(

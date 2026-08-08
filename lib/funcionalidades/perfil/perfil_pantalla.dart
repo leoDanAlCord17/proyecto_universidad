@@ -424,8 +424,9 @@ class _FormularioEditarState extends State<_FormularioEditar> {
             const SizedBox(height: 12),
             _Campo(
               controlador: _cedula,
-              etiqueta: 'Número de identificación',
+              etiqueta: 'Cédula (la usas para iniciar sesión)',
               teclado: TextInputType.number,
+              obligatorio: true,
             ),
             const SizedBox(height: 12),
             _Campo(

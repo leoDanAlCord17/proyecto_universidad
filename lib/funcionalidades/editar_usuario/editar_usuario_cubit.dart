@@ -71,6 +71,14 @@ class EditarUsuarioCubit extends Cubit<EditarUsuarioEstado> {
           errorValidacion: 'El correo no tiene un formato válido.'));
       return;
     }
+    // La cédula es la credencial de inicio de sesión (ver LoginCubit) — no
+    // se puede dejar vacía, se dejaría al usuario sin forma de entrar.
+    if (numeroIdentificacion == null || numeroIdentificacion.trim().isEmpty) {
+      emit(estadoActual.copiarCon(
+          errorValidacion:
+              'La cédula es requerida — el usuario la necesita para iniciar sesión.'));
+      return;
+    }
 
     emit(estadoActual.copiarCon(estaGuardando: true, errorValidacion: ''));
     try {
@@ -80,7 +88,7 @@ class EditarUsuarioCubit extends Cubit<EditarUsuarioEstado> {
         segundoNombre: segundoNombre?.trim(),
         primerApellido: primerApellido.trim(),
         segundoApellido: segundoApellido?.trim(),
-        numeroIdentificacion: numeroIdentificacion?.trim(),
+        numeroIdentificacion: numeroIdentificacion.trim(),
         correo: correo.trim(),
         telefono: telefono?.trim(),
         huboCambioFoto: huboCambioFoto,

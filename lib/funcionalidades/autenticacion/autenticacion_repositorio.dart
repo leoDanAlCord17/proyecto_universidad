@@ -10,17 +10,31 @@ class AutenticacionRepositorio {
   AutenticacionRepositorio(this._supabase);
   final SupabaseClient _supabase;
 
-  /// Inicia sesión con correo y contraseña.
-  /// Lanza [FallaAutenticacion] si las credenciales son incorrectas.
+  /// Inicia sesión con cédula (número de identificación) y contraseña.
+  /// Supabase Auth solo autentica por correo, así que primero resuelve la
+  /// cédula al correo real registrado vía la función de base de datos
+  /// `obtener_correo_por_cedula` (SECURITY DEFINER — no expone el resto del
+  /// perfil, solo el correo, y es la única forma de hacer esa búsqueda sin
+  /// sesión activa dado que la tabla `usuarios` no permite SELECT anónimo).
+  ///
+  /// Lanza [FallaAutenticacion] con el mismo mensaje genérico tanto si la
+  /// cédula no existe como si la contraseña es incorrecta, para no revelar
+  /// si una cédula está registrada en el sistema.
   ///
   /// Un 429 (demasiados intentos) o 500 de Supabase Auth es transitorio —
   /// se relanza como [FallaRed] para que [conReintentos] lo reintente una
   /// vez con backoff, en vez de fallarle al usuario en un pico momentáneo
   /// del servicio. Credenciales inválidas (400/422) no se reintentan: con
-  /// el mismo correo/clave el resultado sería idéntico.
-  Future<AuthResponse> iniciarSesion(String correo, String clave) =>
+  /// la misma cédula/clave el resultado sería idéntico.
+  Future<AuthResponse> iniciarSesion(String cedula, String clave) =>
       conReintentos(() async {
         try {
+          final correo = await _resolverCorreoPorCedula(cedula);
+
+          if (correo == null) {
+            throw const FallaAutenticacion('Cédula o contraseña incorrectos.');
+          }
+
           return await _supabase.auth
               .signInWithPassword(
                 email: correo,
@@ -32,10 +46,26 @@ class AutenticacionRepositorio {
             throw FallaRed(TraductorErrores.deAuth(e));
           }
           throw FallaAutenticacion(TraductorErrores.deAuth(e));
+        } on FallaAutenticacion {
+          rethrow;
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
         } catch (e) {
           TraductorErrores.lanzarInesperado(e);
         }
       });
+
+  /// Resuelve una cédula (número de identificación) al correo real
+  /// registrado en Supabase Auth, vía la función `obtener_correo_por_cedula`
+  /// (SECURITY DEFINER — solo devuelve el correo, nada más del perfil, y es
+  /// la única forma de hacer esta búsqueda sin sesión activa dado que la
+  /// tabla `usuarios` no permite SELECT anónimo). Retorna `null` si la
+  /// cédula no está registrada.
+  Future<String?> _resolverCorreoPorCedula(String cedula) async {
+    final resultado = await _supabase.rpc('obtener_correo_por_cedula',
+        params: {'p_cedula': cedula}).timeout(kTimeoutSolicitud);
+    return resultado as String?;
+  }
 
   /// Registra un nuevo usuario en Supabase Auth.
   /// Lanza [FallaAutenticacion] si el correo ya está en uso o la clave es inválida.
@@ -90,10 +120,17 @@ class AutenticacionRepositorio {
         }
       });
 
-  /// Envía un correo con enlace para restablecer la contraseña.
-  /// Siempre retorna éxito aunque el correo no exista (por seguridad Supabase no lo revela).
-  Future<void> enviarCorreoRecuperacion(String correo) async {
+  /// Envía un correo con enlace para restablecer la contraseña, a partir de
+  /// la cédula del usuario (resuelta internamente al correo real — ver
+  /// [_resolverCorreoPorCedula]). Siempre retorna éxito aunque la cédula no
+  /// exista, por el mismo motivo de seguridad por el que Supabase tampoco
+  /// revela si un correo existe: no da pistas de qué cédulas están
+  /// registradas.
+  Future<void> enviarCorreoRecuperacion(String cedula) async {
     try {
+      final correo = await _resolverCorreoPorCedula(cedula);
+      if (correo == null) return;
+
       await _supabase.auth
           .resetPasswordForEmail(
             correo,
@@ -102,6 +139,8 @@ class AutenticacionRepositorio {
           .timeout(kTimeoutSolicitud);
     } on AuthException catch (e) {
       throw FallaAutenticacion(TraductorErrores.deAuth(e));
+    } on PostgrestException catch (e) {
+      throw FallaServidor(TraductorErrores.dePostgres(e));
     } catch (e) {
       TraductorErrores.lanzarInesperado(e);
     }

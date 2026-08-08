@@ -70,7 +70,11 @@ void main() {
         when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
         return CrearUsuarioCubit(repositorio);
       },
-      act: (c) => c.guardarPerfil(primerNombre: '', primerApellido: 'Alvarez'),
+      act: (c) => c.guardarPerfil(
+        primerNombre: '',
+        primerApellido: 'Alvarez',
+        numeroIdentificacion: '12727960',
+      ),
       expect: () => [isA<CrearUsuarioError>()],
     );
 
@@ -80,8 +84,11 @@ void main() {
         when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
         return CrearUsuarioCubit(repositorio);
       },
-      act: (c) =>
-          c.guardarPerfil(primerNombre: '   ', primerApellido: 'Alvarez'),
+      act: (c) => c.guardarPerfil(
+        primerNombre: '   ',
+        primerApellido: 'Alvarez',
+        numeroIdentificacion: '12727960',
+      ),
       expect: () => [isA<CrearUsuarioError>()],
     );
 
@@ -91,7 +98,45 @@ void main() {
         when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
         return CrearUsuarioCubit(repositorio);
       },
-      act: (c) => c.guardarPerfil(primerNombre: 'Leo', primerApellido: ''),
+      act: (c) => c.guardarPerfil(
+        primerNombre: 'Leo',
+        primerApellido: '',
+        numeroIdentificacion: '12727960',
+      ),
+      expect: () => [isA<CrearUsuarioError>()],
+    );
+
+    blocTest<CrearUsuarioCubit, CrearUsuarioEstado>(
+      'emite CrearUsuarioError cuando la cédula está vacía',
+      build: () {
+        when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
+        return CrearUsuarioCubit(repositorio);
+      },
+      act: (c) => c.guardarPerfil(
+        primerNombre: 'Leo',
+        primerApellido: 'Alvarez',
+        numeroIdentificacion: '',
+      ),
+      expect: () => [
+        isA<CrearUsuarioError>().having(
+          (e) => e.mensaje,
+          'mensaje',
+          'La cédula es obligatoria — la usarás para iniciar sesión.',
+        ),
+      ],
+    );
+
+    blocTest<CrearUsuarioCubit, CrearUsuarioEstado>(
+      'emite CrearUsuarioError cuando la cédula es solo espacios',
+      build: () {
+        when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
+        return CrearUsuarioCubit(repositorio);
+      },
+      act: (c) => c.guardarPerfil(
+        primerNombre: 'Leo',
+        primerApellido: 'Alvarez',
+        numeroIdentificacion: '   ',
+      ),
       expect: () => [isA<CrearUsuarioError>()],
     );
 
@@ -101,8 +146,11 @@ void main() {
         when(() => repositorio.obtenerSesionActual()).thenReturn(null);
         return CrearUsuarioCubit(repositorio);
       },
-      act: (c) =>
-          c.guardarPerfil(primerNombre: 'Leo', primerApellido: 'Alvarez'),
+      act: (c) => c.guardarPerfil(
+        primerNombre: 'Leo',
+        primerApellido: 'Alvarez',
+        numeroIdentificacion: '12727960',
+      ),
       expect: () => [
         isA<CrearUsuarioError>().having(
           (e) => e.mensaje,
@@ -122,13 +170,16 @@ void main() {
             .thenAnswer((_) async {});
         return CrearUsuarioCubit(repositorio);
       },
-      act: (c) =>
-          c.guardarPerfil(primerNombre: 'Leo', primerApellido: 'Alvarez'),
+      act: (c) => c.guardarPerfil(
+        primerNombre: 'Leo',
+        primerApellido: 'Alvarez',
+        numeroIdentificacion: '12727960',
+      ),
       expect: () => [isA<CrearUsuarioCargando>(), isA<CrearUsuarioExito>()],
     );
 
     blocTest<CrearUsuarioCubit, CrearUsuarioEstado>(
-      'guarda el perfil con nombre y apellido con trim aplicado',
+      'guarda el perfil con nombre, apellido y cédula con trim aplicado',
       build: () {
         when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
         when(() => repositorio.verificarRevisionCreacionHabilitada())
@@ -140,6 +191,7 @@ void main() {
       act: (c) => c.guardarPerfil(
         primerNombre: '  Leo  ',
         primerApellido: '  Alvarez  ',
+        numeroIdentificacion: '  12727960  ',
       ),
       verify: (_) {
         final capturado = verify(
@@ -148,6 +200,7 @@ void main() {
         final usuario = capturado.first as Usuario;
         expect(usuario.primerNombre, 'Leo');
         expect(usuario.primerApellido, 'Alvarez');
+        expect(usuario.numeroIdentificacion, '12727960');
       },
     );
 
@@ -164,6 +217,7 @@ void main() {
       act: (c) => c.guardarPerfil(
         primerNombre: 'Leo',
         primerApellido: 'Alvarez',
+        numeroIdentificacion: '12727960',
         urlAvatar: 'https://ejemplo.com/avatars/auth-id-1.jpg',
       ),
       verify: (_) {
@@ -188,8 +242,11 @@ void main() {
             .thenAnswer((_) async {});
         return CrearUsuarioCubit(repositorio);
       },
-      act: (c) =>
-          c.guardarPerfil(primerNombre: 'Leo', primerApellido: 'Alvarez'),
+      act: (c) => c.guardarPerfil(
+        primerNombre: 'Leo',
+        primerApellido: 'Alvarez',
+        numeroIdentificacion: '12727960',
+      ),
       verify: (_) {
         final capturado = verify(
           () => repositorio.crearPerfilUsuario(captureAny()),
@@ -209,8 +266,11 @@ void main() {
             .thenAnswer((_) async {});
         return CrearUsuarioCubit(repositorio);
       },
-      act: (c) =>
-          c.guardarPerfil(primerNombre: 'Leo', primerApellido: 'Alvarez'),
+      act: (c) => c.guardarPerfil(
+        primerNombre: 'Leo',
+        primerApellido: 'Alvarez',
+        numeroIdentificacion: '12727960',
+      ),
       verify: (_) {
         final capturado = verify(
           () => repositorio.crearPerfilUsuario(captureAny()),
@@ -230,8 +290,11 @@ void main() {
             const FallaServidor('Ya existe un registro con esos datos.'));
         return CrearUsuarioCubit(repositorio);
       },
-      act: (c) =>
-          c.guardarPerfil(primerNombre: 'Leo', primerApellido: 'Alvarez'),
+      act: (c) => c.guardarPerfil(
+        primerNombre: 'Leo',
+        primerApellido: 'Alvarez',
+        numeroIdentificacion: '12727960',
+      ),
       expect: () => [
         isA<CrearUsuarioCargando>(),
         isA<CrearUsuarioError>().having(
@@ -252,8 +315,11 @@ void main() {
             .thenThrow(const FallaInesperada('Sin conexión.'));
         return CrearUsuarioCubit(repositorio);
       },
-      act: (c) =>
-          c.guardarPerfil(primerNombre: 'Leo', primerApellido: 'Alvarez'),
+      act: (c) => c.guardarPerfil(
+        primerNombre: 'Leo',
+        primerApellido: 'Alvarez',
+        numeroIdentificacion: '12727960',
+      ),
       expect: () => [
         isA<CrearUsuarioCargando>(),
         isA<CrearUsuarioError>().having(

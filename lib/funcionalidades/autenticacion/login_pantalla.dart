@@ -20,12 +20,12 @@ class LoginPantalla extends StatefulWidget {
 }
 
 class _LoginPantallaState extends State<LoginPantalla> {
-  final _correoController = TextEditingController();
+  final _cedulaController = TextEditingController();
   final _contrasenaController = TextEditingController();
 
   @override
   void dispose() {
-    _correoController.dispose();
+    _cedulaController.dispose();
     _contrasenaController.dispose();
     super.dispose();
   }
@@ -40,7 +40,7 @@ class _LoginPantallaState extends State<LoginPantalla> {
           if (estado is LoginExito) context.read<AuthCubit>().verificarSesion();
         },
         builder: (context, estado) => _CuerpoLogin(
-          correoController: _correoController,
+          cedulaController: _cedulaController,
           contrasenaController: _contrasenaController,
           estaCargando: estado is LoginCargando,
         ),
@@ -51,12 +51,12 @@ class _LoginPantallaState extends State<LoginPantalla> {
 
 class _CuerpoLogin extends StatelessWidget {
   const _CuerpoLogin({
-    required this.correoController,
+    required this.cedulaController,
     required this.contrasenaController,
     required this.estaCargando,
   });
 
-  final TextEditingController correoController;
+  final TextEditingController cedulaController;
   final TextEditingController contrasenaController;
   final bool estaCargando;
 
@@ -73,9 +73,9 @@ class _CuerpoLogin extends StatelessWidget {
             const _CabeceraLogin(),
             const SizedBox(height: 45),
             CampoTextoApp(
-              etiqueta: 'Correo electrónico',
-              hintText: 'leoalvarez26s@gmail.com',
-              controller: correoController,
+              etiqueta: 'Cédula',
+              hintText: 'Ej. 32727960',
+              controller: cedulaController,
             ),
             const SizedBox(height: 20),
             CampoTextoApp(
@@ -97,7 +97,7 @@ class _CuerpoLogin extends StatelessWidget {
               texto: 'Iniciar sesión',
               estaCargando: estaCargando,
               alPresionar: () => context.read<LoginCubit>().ingresar(
-                    correoController.text,
+                    cedulaController.text,
                     contrasenaController.text,
                   ),
             ),

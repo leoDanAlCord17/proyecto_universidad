@@ -16,11 +16,13 @@ final class RecuperarContrasenaEnviando extends RecuperarContrasenaEstado {
   List<Object?> get props => [];
 }
 
+// No lleva el correo/cédula como dato — por seguridad no revelamos si la
+// cédula ingresada estaba registrada o no, así que la confirmación es
+// siempre el mismo mensaje genérico, sin importar el resultado real.
 final class RecuperarContrasenaEnviado extends RecuperarContrasenaEstado {
-  const RecuperarContrasenaEnviado({required this.correo});
-  final String correo;
+  const RecuperarContrasenaEnviado();
   @override
-  List<Object?> get props => [correo];
+  List<Object?> get props => [];
 }
 
 final class RecuperarContrasenaError extends RecuperarContrasenaEstado {

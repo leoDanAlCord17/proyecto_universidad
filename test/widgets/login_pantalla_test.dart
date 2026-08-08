@@ -35,7 +35,7 @@ void main() {
 
       await tester.pumpWidget(_marco(loginCubit, authCubit));
 
-      expect(find.text('Correo electrónico'), findsOneWidget);
+      expect(find.text('Cédula'), findsOneWidget);
       expect(find.text('Contraseña'), findsOneWidget);
       expect(find.text('Iniciar sesión'), findsOneWidget);
     });
@@ -54,7 +54,7 @@ void main() {
         (tester) async {
       whenListen(
         loginCubit,
-        Stream.fromIterable([LoginError('Correo o contraseña incorrectos.')]),
+        Stream.fromIterable([LoginError('Cédula o contraseña incorrectos.')]),
         initialState: LoginInicial(),
       );
 
@@ -62,7 +62,7 @@ void main() {
       await tester.pump(); // BlocConsumer listener fires → Overlay.insert
       await tester.pump(); // Overlay rebuilds con la nueva entrada
 
-      expect(find.text('Correo o contraseña incorrectos.'), findsOneWidget);
+      expect(find.text('Cédula o contraseña incorrectos.'), findsOneWidget);
 
       await tester.pump(const Duration(seconds: 3)); // drena timers de AvisoApp
     });
@@ -75,11 +75,11 @@ void main() {
       await tester.pumpWidget(_marco(loginCubit, authCubit));
 
       final campos = find.byType(TextFormField);
-      await tester.enterText(campos.at(0), 'leo@uni.edu');
+      await tester.enterText(campos.at(0), '32727960');
       await tester.enterText(campos.at(1), 'clave123');
       await tester.tap(find.text('Iniciar sesión'));
 
-      verify(() => loginCubit.ingresar('leo@uni.edu', 'clave123')).called(1);
+      verify(() => loginCubit.ingresar('32727960', 'clave123')).called(1);
     });
 
     testWidgets('llama verificarSesion en AuthCubit cuando LoginExito',

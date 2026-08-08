@@ -91,6 +91,7 @@ void main() {
       act: (c) => c.guardar(
         primerNombre: 'Leo',
         primerApellido: 'Alvarez',
+        numeroIdentificacion: '32727960',
         correo: 'leo@uni.edu',
       ),
       expect: () => [isA<EditarUsuarioCargado>(), isA<EditarUsuarioGuardado>()],
@@ -101,7 +102,7 @@ void main() {
               segundoNombre: null,
               primerApellido: 'Alvarez',
               segundoApellido: null,
-              numeroIdentificacion: null,
+              numeroIdentificacion: '32727960',
               correo: 'leo@uni.edu',
               telefono: null,
               huboCambioFoto: false,
@@ -135,6 +136,7 @@ void main() {
       act: (c) => c.guardar(
         primerNombre: 'Leo',
         primerApellido: 'Alvarez',
+        numeroIdentificacion: '32727960',
         correo: 'leo@uni.edu',
         huboCambioFoto: true,
         urlAvatar: 'https://ejemplo.com/avatars/auth-1.jpg',
@@ -147,7 +149,7 @@ void main() {
               segundoNombre: null,
               primerApellido: 'Alvarez',
               segundoApellido: null,
-              numeroIdentificacion: null,
+              numeroIdentificacion: '32727960',
               correo: 'leo@uni.edu',
               telefono: null,
               huboCambioFoto: true,
@@ -169,6 +171,7 @@ void main() {
       act: (c) => c.guardar(
         primerNombre: '',
         primerApellido: 'Alvarez',
+        numeroIdentificacion: '32727960',
         correo: 'leo@uni.edu',
       ),
       expect: () => [
@@ -176,6 +179,44 @@ void main() {
           (e) => e.errorValidacion,
           'errorValidacion',
           'El primer nombre es requerido.',
+        ),
+      ],
+      verify: (_) {
+        verifyNever(() => repositorio.actualizarUsuario(
+              usuarioId: any(named: 'usuarioId'),
+              primerNombre: any(named: 'primerNombre'),
+              segundoNombre: any(named: 'segundoNombre'),
+              primerApellido: any(named: 'primerApellido'),
+              segundoApellido: any(named: 'segundoApellido'),
+              numeroIdentificacion: any(named: 'numeroIdentificacion'),
+              correo: any(named: 'correo'),
+              telefono: any(named: 'telefono'),
+              huboCambioFoto: any(named: 'huboCambioFoto'),
+              urlAvatar: any(named: 'urlAvatar'),
+            ));
+      },
+    );
+
+    blocTest<EditarUsuarioCubit, EditarUsuarioEstado>(
+      'emite error de validación cuando la cédula está vacía',
+      build: build,
+      seed: () => const EditarUsuarioCargado(
+        usuarioId: 'user-1',
+        authId: 'auth-1',
+        primerNombreInicial: 'Leo',
+        primerApellidoInicial: 'Alvarez',
+        correoInicial: 'leo@uni.edu',
+      ),
+      act: (c) => c.guardar(
+        primerNombre: 'Leo',
+        primerApellido: 'Alvarez',
+        correo: 'leo@uni.edu',
+      ),
+      expect: () => [
+        isA<EditarUsuarioCargado>().having(
+          (e) => e.errorValidacion,
+          'errorValidacion',
+          'La cédula es requerida — el usuario la necesita para iniciar sesión.',
         ),
       ],
       verify: (_) {

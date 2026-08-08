@@ -21,17 +21,26 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
   String get authIdSesion => _repositorio.obtenerSesionActual()?.user.id ?? '';
 
   /// Guarda el perfil del usuario recién registrado en la tabla 'usuarios'.
+  ///
+  /// [numeroIdentificacion] es obligatorio — es el identificador con el que
+  /// el usuario inicia sesión de aquí en adelante (ver LoginCubit.ingresar),
+  /// así que sin él la cuenta quedaría sin forma de entrar.
   Future<void> guardarPerfil({
     required String primerNombre,
     required String primerApellido,
+    required String numeroIdentificacion,
     String? segundoNombre,
     String? segundoApellido,
-    String? numeroIdentificacion,
     String? telefono,
     String? urlAvatar,
   }) async {
     if (primerNombre.trim().isEmpty || primerApellido.trim().isEmpty) {
       emit(const CrearUsuarioError('El nombre y apellido son obligatorios.'));
+      return;
+    }
+    if (numeroIdentificacion.trim().isEmpty) {
+      emit(const CrearUsuarioError(
+          'La cédula es obligatoria — la usarás para iniciar sesión.'));
       return;
     }
     final sesion = _repositorio.obtenerSesionActual();
@@ -76,7 +85,7 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
     String primerApellido,
     String? segundoNombre,
     String? segundoApellido,
-    String? numeroIdentificacion,
+    String numeroIdentificacion,
     String? telefono,
     String? urlAvatar,
   ) =>
@@ -87,7 +96,7 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
         segundoNombre: segundoNombre?.trim(),
         primerApellido: primerApellido.trim(),
         segundoApellido: segundoApellido?.trim(),
-        numeroIdentificacion: numeroIdentificacion?.trim(),
+        numeroIdentificacion: numeroIdentificacion.trim(),
         telefono: telefono?.trim(),
         urlAvatar: urlAvatar,
         estatusAprobacion: requiereRevision
