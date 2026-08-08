@@ -118,9 +118,18 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
   // caso este widget ya no es la ruta actual, y dejamos que GoRouter la
   // cierre solo como corresponde, sin interferir.
   void _alConsumirCentinela() {
-    if (!mounted) return;
-    if (ModalRoute.of(context)?.isCurrent != true) return;
-    unawaited(_alPresionarAtras(context));
+    // Se difiere al siguiente frame a propósito: este callback corre en
+    // reacción directa al evento `popstate` del navegador, en el mismo
+    // instante en que el Router de Flutter también puede estar reaccionando
+    // a ese mismo evento (aunque la ruta no cambie). Abrir el diálogo de
+    // inmediato, en ese momento, arriesga que el Overlay/Navigator todavía
+    // esté inestable y el diálogo no llegue a mostrarse sin ningún error
+    // visible. Postergarlo un frame evita la carrera.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (ModalRoute.of(context)?.isCurrent != true) return;
+      unawaited(_alPresionarAtras(context));
+    });
   }
 
   // Atrás en el shell principal: primero vuelve a la pestaña Inicio, y solo
