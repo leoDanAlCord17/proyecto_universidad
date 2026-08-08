@@ -123,6 +123,8 @@ class RouterApp {
               !u.tienePermiso(Permisos.ajustesEstadisticas)) ||
           (ubicacion == Rutas.revisionUsuarios &&
               !u.tienePermiso(Permisos.ajustesRevision)) ||
+          (ubicacion == Rutas.configuracionGeneral &&
+              !u.tienePermiso(Permisos.ajustesConfig)) ||
           (ubicacion == Rutas.auditoriaEvento &&
               !u.tienePermiso(Permisos.ajustesEstadisticas)) ||
           ((ubicacion == Rutas.borradores ||

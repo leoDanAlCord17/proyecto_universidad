@@ -75,6 +75,8 @@ class Rutas {
   static const String editarTipoEvento = '/crear_tipo_evento/:tipoEventoId';
   static String editarTipoEventoUrl(String id) => '/crear_tipo_evento/$id';
 
+  static const String configuracionGeneral = '/configuracion_general';
+
   static const String panelControl = '/eventos/:eventoId/panel';
   static String panelControlUrl(String id) => '/eventos/$id/panel';
 
@@ -170,6 +172,7 @@ class Permisos {
 /// Nunca escribir el nombre de un rol del sistema como string directo.
 class RolesSistema {
   static const String colaborador = 'Colaborador';
+  static const String configuracionGeneral = 'Configuración General';
 }
 
 /// Timeout máximo para una sola llamada HTTP a Supabase.

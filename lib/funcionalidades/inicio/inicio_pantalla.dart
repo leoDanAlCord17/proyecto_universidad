@@ -474,12 +474,16 @@ class _BotonAjustes extends StatelessWidget {
               },
             ),
           if (usuario.tienePermiso('ajustes.configuraciones'))
-            const OpcionPanel(
+            OpcionPanel(
               icono: Icons.tune_rounded,
               colorFondo: ColoresApp.superficieTerciar,
               colorIcono: ColoresApp.textoSecundario,
               titulo: 'Configuraciones generales',
               descripcion: 'Preferencias y ajustes',
+              alPresionar: () {
+                Navigator.of(context, rootNavigator: true).pop();
+                context.push(Rutas.configuracionGeneral);
+              },
             ),
         ],
       ),

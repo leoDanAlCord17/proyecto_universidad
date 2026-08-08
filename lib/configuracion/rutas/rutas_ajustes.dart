@@ -29,8 +29,17 @@ import '../../funcionalidades/usuarios/usuarios_cubit.dart';
 import '../../funcionalidades/usuarios/usuarios_pantalla.dart';
 import '../../funcionalidades/ver_perfil_usuario/ver_perfil_usuario_cubit.dart';
 import '../../funcionalidades/ver_perfil_usuario/ver_perfil_usuario_pantalla.dart';
+import '../../funcionalidades/configuracion_general/configuracion_general_cubit.dart';
+import '../../funcionalidades/configuracion_general/configuracion_general_pantalla.dart';
 
 List<GoRoute> get rutasAjustes => [
+      GoRoute(
+        path: Rutas.configuracionGeneral,
+        builder: (context, state) => BlocProvider(
+          create: (_) => obtenerIt<ConfiguracionGeneralCubit>(),
+          child: const ConfiguracionGeneralPantalla(),
+        ),
+      ),
       GoRoute(
         path: Rutas.permisosSistema,
         builder: (context, state) => BlocProvider(

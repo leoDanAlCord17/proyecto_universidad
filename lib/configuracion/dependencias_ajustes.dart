@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../funcionalidades/configuracion_general/configuracion_general_cubit.dart';
+import '../funcionalidades/configuracion_general/configuracion_general_repositorio.dart';
 import '../funcionalidades/crear_rol/crear_rol_cubit.dart';
 import '../funcionalidades/crear_rol/crear_rol_repositorio.dart';
 import '../funcionalidades/crear_tag/crear_tag_cubit.dart';
@@ -113,5 +115,12 @@ void configurarDependenciasAjustes(GetIt it) {
   );
   it.registerFactory<RevisionUsuariosCubit>(
     () => RevisionUsuariosCubit(it<RevisionUsuariosRepositorio>()),
+  );
+
+  it.registerLazySingleton<ConfiguracionGeneralRepositorio>(
+    () => ConfiguracionGeneralRepositorio(it<SupabaseClient>()),
+  );
+  it.registerFactory<ConfiguracionGeneralCubit>(
+    () => ConfiguracionGeneralCubit(it<ConfiguracionGeneralRepositorio>()),
   );
 }

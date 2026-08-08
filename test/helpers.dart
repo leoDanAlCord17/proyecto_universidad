@@ -30,6 +30,7 @@ import 'package:activiti/funcionalidades/perfil/perfil_repositorio.dart';
 import 'package:activiti/funcionalidades/roles/rol.dart';
 import 'package:activiti/funcionalidades/roles/roles_repositorio.dart';
 import 'package:activiti/funcionalidades/borradores/borradores_repositorio.dart';
+import 'package:activiti/funcionalidades/configuracion_general/configuracion_general_repositorio.dart';
 import 'package:activiti/funcionalidades/revision_usuarios/revision_usuarios_repositorio.dart';
 import 'package:activiti/funcionalidades/tags/tags_repositorio.dart';
 import 'package:activiti/funcionalidades/usuarios/usuarios_repositorio.dart';
@@ -51,6 +52,9 @@ class MockEscanearQrRepositorio extends Mock implements EscanearQrRepositorio {}
 
 class MockPanelControlRepositorio extends Mock
     implements PanelControlRepositorio {}
+
+class MockConfiguracionGeneralRepositorio extends Mock
+    implements ConfiguracionGeneralRepositorio {}
 
 class MockSession extends Mock implements Session {}
 
