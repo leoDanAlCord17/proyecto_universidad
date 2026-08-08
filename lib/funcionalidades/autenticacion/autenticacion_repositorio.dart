@@ -131,10 +131,16 @@ class AutenticacionRepositorio {
       final correo = await _resolverCorreoPorCedula(cedula);
       if (correo == null) return;
 
+      // Uri.base.origin resuelve al origen real desde el que corre la PWA
+      // (localhost en desarrollo, el dominio de Vercel en producción) — así
+      // el enlace del correo siempre apunta a donde el usuario realmente
+      // está, sin hardcodear un dominio. El esquema móvil anterior
+      // ('com.activiti.activiti://...') no aplica: esta app corre como PWA
+      // web, no hay un app nativo registrado que lo intercepte.
       await _supabase.auth
           .resetPasswordForEmail(
             correo,
-            redirectTo: 'com.activiti.activiti://reset-password',
+            redirectTo: Uri.base.origin,
           )
           .timeout(kTimeoutSolicitud);
     } on AuthException catch (e) {
