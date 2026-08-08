@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../compartido/constantes.dart';
 import '../compartido/historial_navegador.dart';
+import '../compartido/logger.dart';
 import '../compartido/navegacion.dart';
 import '../compartido/widgets/dialogo/dialogo_confirmacion.dart';
 import '../compartido/widgets/navegacion/barra_navegacion_app.dart';
@@ -126,8 +128,30 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
     // esté inestable y el diálogo no llegue a mostrarse sin ningún error
     // visible. Postergarlo un frame evita la carrera.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (ModalRoute.of(context)?.isCurrent != true) return;
+      if (!mounted) {
+        unawaited(
+          Sentry.captureMessage(
+            '🔍 [debug back] centinela consumido pero widget ya no está montado',
+            level: SentryLevel.info,
+          ),
+        );
+        return;
+      }
+      if (ModalRoute.of(context)?.isCurrent != true) {
+        unawaited(
+          Sentry.captureMessage(
+            '🔍 [debug back] centinela consumido pero la ruta no es la actual',
+            level: SentryLevel.info,
+          ),
+        );
+        return;
+      }
+      unawaited(
+        Sentry.captureMessage(
+          '🔍 [debug back] centinela consumido, pestanaActiva=${pestanaActiva.value}',
+          level: SentryLevel.info,
+        ),
+      );
       unawaited(_alPresionarAtras(context));
     });
   }
@@ -141,12 +165,30 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
       pestanaActiva.value = 0;
       return;
     }
-    final confirmo = await DialogoConfirmacion.mostrar(
-      context,
-      titulo: '¿Salir de la aplicación?',
-      descripcion: '¿Estás seguro de que deseas salir?',
-      textoConfirmar: 'Cancelar',
-      textoCancelar: 'Salir',
+    unawaited(
+      Sentry.captureMessage(
+        '🔍 [debug back] a punto de mostrar diálogo de salida',
+        level: SentryLevel.info,
+      ),
+    );
+    bool? confirmo;
+    try {
+      confirmo = await DialogoConfirmacion.mostrar(
+        context,
+        titulo: '¿Salir de la aplicación?',
+        descripcion: '¿Estás seguro de que deseas salir?',
+        textoConfirmar: 'Cancelar',
+        textoCancelar: 'Salir',
+      );
+    } catch (e, st) {
+      reportarError(e, stack: st);
+      return;
+    }
+    unawaited(
+      Sentry.captureMessage(
+        '🔍 [debug back] diálogo resuelto con confirmo=$confirmo',
+        level: SentryLevel.info,
+      ),
     );
     if (confirmo == false) {
       await SystemNavigator.pop();
