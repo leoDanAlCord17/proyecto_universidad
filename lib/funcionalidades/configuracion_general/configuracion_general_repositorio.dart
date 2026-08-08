@@ -41,16 +41,4 @@ class ConfiguracionGeneralRepositorio {
       TraductorErrores.lanzarInesperado(e);
     }
   }
-
-  Future<void> actualizarEstatus(String id, bool nuevoEstatus) async {
-    try {
-      await _supabase
-          .from(TablasSupabase.configuracion)
-          .update({'estatus': nuevoEstatus}).eq('id', id);
-    } on PostgrestException catch (e) {
-      throw FallaServidor(TraductorErrores.dePostgres(e));
-    } catch (e) {
-      TraductorErrores.lanzarInesperado(e);
-    }
-  }
 }

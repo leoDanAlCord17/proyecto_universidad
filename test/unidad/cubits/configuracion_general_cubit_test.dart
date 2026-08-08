@@ -129,38 +129,4 @@ void main() {
       },
     );
   });
-
-  group('ConfiguracionGeneralCubit.actualizarEstatus', () {
-    blocTest<ConfiguracionGeneralCubit, ConfiguracionGeneralEstado>(
-      'desactiva la configuración de forma optimista y confirma al guardar',
-      build: build,
-      seed: () => const ConfiguracionGeneralCargado(items: [_booleano]),
-      setUp: () => when(() => repositorio.actualizarEstatus('c1', false))
-          .thenAnswer((_) async {}),
-      act: (c) => c.actualizarEstatus('c1', false),
-      expect: () => [
-        isA<ConfiguracionGeneralCargado>()
-            .having((s) => s.items.first.estatus, 'estatus optimista', false),
-        isA<ConfiguracionGeneralCargado>()
-            .having((s) => s.items.first.estatus, 'estatus final', false)
-            .having((s) => s.guardando, 'guardando', isEmpty),
-      ],
-    );
-
-    blocTest<ConfiguracionGeneralCubit, ConfiguracionGeneralEstado>(
-      'revierte el estatus si falla el guardado',
-      build: build,
-      seed: () => const ConfiguracionGeneralCargado(items: [_booleano]),
-      setUp: () => when(() => repositorio.actualizarEstatus('c1', false))
-          .thenThrow(const FallaInesperada('Ocurrió un error inesperado.')),
-      act: (c) => c.actualizarEstatus('c1', false),
-      expect: () => [
-        isA<ConfiguracionGeneralCargado>()
-            .having((s) => s.items.first.estatus, 'estatus optimista', false),
-        isA<ConfiguracionGeneralCargado>()
-            .having((s) => s.items.first.estatus, 'estatus revertido', true)
-            .having((s) => s.errorPuntual, 'errorPuntual', isNotNull),
-      ],
-    );
-  });
 }

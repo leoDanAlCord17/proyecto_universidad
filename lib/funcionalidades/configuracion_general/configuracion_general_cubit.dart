@@ -2,9 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
-import 'configuracion_item.dart';
 import 'configuracion_general_estado.dart';
 import 'configuracion_general_repositorio.dart';
+import 'configuracion_item.dart';
 
 class ConfiguracionGeneralCubit extends Cubit<ConfiguracionGeneralEstado> {
   ConfiguracionGeneralCubit(this._repositorio)
@@ -27,28 +27,11 @@ class ConfiguracionGeneralCubit extends Cubit<ConfiguracionGeneralEstado> {
     }
   }
 
-  /// Cambia el valor (true/false para booleanos, o el número para enteros).
-  Future<void> actualizarValor(String id, int nuevoValor) => _actualizar(
-        id: id,
-        aplicarCambio: (item) => item.copiarCon(valor: nuevoValor),
-        guardar: () => _repositorio.actualizarValor(id, nuevoValor),
-      );
-
-  /// Activa o desactiva la configuración por completo, sin importar su valor.
-  Future<void> actualizarEstatus(String id, bool nuevoEstatus) => _actualizar(
-        id: id,
-        aplicarCambio: (item) => item.copiarCon(estatus: nuevoEstatus),
-        guardar: () => _repositorio.actualizarEstatus(id, nuevoEstatus),
-      );
-
-  /// Aplica el cambio de forma optimista (feedback inmediato en el switch/
-  /// número), y si el guardado falla, revierte solo esa fila y expone el
+  /// Cambia el valor (1/0 para booleanos, o el número para enteros). Lo
+  /// aplica de forma optimista para que el switch/stepper responda al
+  /// instante, y si el guardado falla, revierte solo esa fila y expone el
   /// error puntual para que la pantalla lo muestre una vez.
-  Future<void> _actualizar({
-    required String id,
-    required ConfiguracionItem Function(ConfiguracionItem actual) aplicarCambio,
-    required Future<void> Function() guardar,
-  }) async {
+  Future<void> actualizarValor(String id, int nuevoValor) async {
     final estado = state;
     if (estado is! ConfiguracionGeneralCargado) return;
 
@@ -57,7 +40,7 @@ class ConfiguracionGeneralCubit extends Cubit<ConfiguracionGeneralEstado> {
     if (indice == -1) return;
 
     final optimistas = [...anteriores];
-    optimistas[indice] = aplicarCambio(anteriores[indice]);
+    optimistas[indice] = anteriores[indice].copiarCon(valor: nuevoValor);
 
     emit(
       estado.copiarCon(
@@ -68,14 +51,10 @@ class ConfiguracionGeneralCubit extends Cubit<ConfiguracionGeneralEstado> {
     );
 
     try {
-      await guardar();
+      await _repositorio.actualizarValor(id, nuevoValor);
       final actual = state;
       if (actual is ConfiguracionGeneralCargado) {
-        emit(
-          actual.copiarCon(
-            guardando: actual.guardando.difference({id}),
-          ),
-        );
+        emit(actual.copiarCon(guardando: actual.guardando.difference({id})));
       }
     } on FallaServidor catch (e) {
       reportarError(e);

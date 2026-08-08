@@ -114,7 +114,11 @@ class _InicioPantallaState extends State<InicioPantalla>
                           builder: (_, cantidad) =>
                               _BotonNotificaciones(cantidad: cantidad),
                         ),
-                        const SizedBox(width: 8),
+                        // Mismo ancho que el espacio entre el avatar y el
+                        // saludo (izquierda), para que ambos lados de la
+                        // barra guarden la misma separación y se vean
+                        // simétricos.
+                        const SizedBox(width: 12),
                         const _BotonAjustes(),
                       ],
                     ),

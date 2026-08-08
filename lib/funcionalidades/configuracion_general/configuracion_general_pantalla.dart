@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/widgets/avisos/aviso_app.dart';
 import '../../compartido/widgets/avisos/vista_error_app.dart';
+import '../../compartido/widgets/listas/fila_togle.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
 import '../../configuracion/colores_app.dart';
@@ -165,10 +166,8 @@ class _Lista extends StatelessWidget {
                 ),
               ),
               for (final item in items) ...[
-                _TarjetaConfiguracion(
-                  item: item,
-                  guardando: estado.guardando.contains(item.id),
-                ),
+                _Fila(
+                    item: item, guardando: estado.guardando.contains(item.id)),
                 const SizedBox(height: 10),
               ],
             ],
@@ -179,10 +178,14 @@ class _Lista extends StatelessWidget {
   }
 }
 
-// ─── Tarjeta de una configuración ─────────────────────────────────────────────
+// ─── Una fila: un solo control por configuración ───────────────────────────────
+//
+// Booleana → sí/no (FilaTogle, el mismo interruptor que usa el resto de la
+// app). Numérica → cuántos (stepper). Nunca ambos a la vez — mostrar un
+// interruptor de "valor" y otro de "activar" por separado resultaba confuso.
 
-class _TarjetaConfiguracion extends StatelessWidget {
-  const _TarjetaConfiguracion({required this.item, required this.guardando});
+class _Fila extends StatelessWidget {
+  const _Fila({required this.item, required this.guardando});
 
   final ConfiguracionItem item;
   final bool guardando;
@@ -190,8 +193,43 @@ class _TarjetaConfiguracion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<ConfiguracionGeneralCubit>();
-    final estilos = Theme.of(context).textTheme;
 
+    if (item.esBooleano) {
+      return FilaTogle(
+        titulo: item.tituloLegible,
+        descripcion: item.descripcion,
+        valor: item.valorBooleano,
+        alCambiar:
+            guardando ? null : (v) => cubit.actualizarValor(item.id, v ? 1 : 0),
+      );
+    }
+
+    return _FilaNumero(
+      titulo: item.tituloLegible,
+      descripcion: item.descripcion,
+      valor: item.valor,
+      alCambiar: guardando ? null : (v) => cubit.actualizarValor(item.id, v),
+    );
+  }
+}
+
+// ─── Fila numérica — mismo estilo visual que FilaTogle, con un stepper ────────
+
+class _FilaNumero extends StatelessWidget {
+  const _FilaNumero({
+    required this.titulo,
+    required this.descripcion,
+    required this.valor,
+    required this.alCambiar,
+  });
+
+  final String titulo;
+  final String descripcion;
+  final int valor;
+  final ValueChanged<int>? alCambiar;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
@@ -205,122 +243,46 @@ class _TarjetaConfiguracion extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(item.tituloLegible, style: estilos.titleSmall),
-                    const SizedBox(height: 3),
-                    Text(
-                      item.descripcion,
-                      style: estilos.bodySmall?.copyWith(
-                        color: ColoresApp.textoSecundario,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              if (guardando)
-                const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: ColoresApp.acento,
-                  ),
-                )
-              else if (item.esBooleano)
-                Switch(
-                  value: item.valorBooleano,
-                  onChanged: (v) => cubit.actualizarValor(item.id, v ? 1 : 0),
-                )
-              else
-                _StepperNumero(
-                  valor: item.valor,
-                  alCambiar: (v) => cubit.actualizarValor(item.id, v),
-                ),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(titulo, style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: 3),
+                Text(descripcion, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
-          const Divider(height: 1, color: ColoresApp.bordesuave),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Icon(
-                item.estatus
-                    ? Icons.check_circle_outline_rounded
-                    : Icons.pause_circle_outline_rounded,
-                size: 16,
-                color:
-                    item.estatus ? ColoresApp.verde : ColoresApp.textoTerciario,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                item.estatus
-                    ? 'Configuración activa'
-                    : 'Configuración desactivada',
-                style: estilos.bodySmall?.copyWith(
-                  color: ColoresApp.textoTerciario,
-                ),
-              ),
-              const Spacer(),
-              Switch(
-                value: item.estatus,
-                onChanged: guardando
-                    ? null
-                    : (v) => cubit.actualizarEstatus(item.id, v),
-              ),
-            ],
+          const SizedBox(width: 12),
+          IconButton(
+            icon: const Icon(Icons.remove_circle_outline_rounded),
+            color: ColoresApp.acento,
+            visualDensity: VisualDensity.compact,
+            onPressed: (alCambiar != null && valor > 0)
+                ? () => alCambiar!(valor - 1)
+                : null,
+          ),
+          SizedBox(
+            width: 28,
+            child: Text(
+              '$valor',
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline_rounded),
+            color: ColoresApp.acento,
+            visualDensity: VisualDensity.compact,
+            onPressed: alCambiar != null ? () => alCambiar!(valor + 1) : null,
           ),
         ],
       ),
-    );
-  }
-}
-
-// ─── Stepper numérico ──────────────────────────────────────────────────────────
-
-class _StepperNumero extends StatelessWidget {
-  const _StepperNumero({required this.valor, required this.alCambiar});
-
-  final int valor;
-  final ValueChanged<int> alCambiar;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.remove_circle_outline_rounded),
-          color: ColoresApp.acento,
-          visualDensity: VisualDensity.compact,
-          onPressed: valor > 0 ? () => alCambiar(valor - 1) : null,
-        ),
-        SizedBox(
-          width: 28,
-          child: Text(
-            '$valor',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.add_circle_outline_rounded),
-          color: ColoresApp.acento,
-          visualDensity: VisualDensity.compact,
-          onPressed: () => alCambiar(valor + 1),
-        ),
-      ],
     );
   }
 }
