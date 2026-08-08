@@ -111,4 +111,59 @@ class PerfilCubit extends Cubit<PerfilEstado> {
 
   /// Regresa al estado cargado después de que [PerfilGuardado] fue procesado.
   void volverACargado(PerfilCargado estado) => emit(estado);
+
+  /// Actualiza solo la foto de perfil. A diferencia de [guardarPerfil], no
+  /// requiere estar en modo edición — cambiar la foto es una acción
+  /// independiente (tocar el avatar), igual que en la mayoría de las apps.
+  /// [nuevaUrl] puede ser `null` para quitar la foto y volver a mostrar
+  /// las iniciales.
+  Future<void> actualizarFoto({
+    required Usuario usuarioActual,
+    required String? nuevaUrl,
+  }) async {
+    final estadoActual = state;
+    if (estadoActual is! PerfilCargado) return;
+    final usuarioId = usuarioActual.id;
+    if (usuarioId == null) return;
+
+    try {
+      await _repositorio.actualizarPerfil(
+        usuarioId: usuarioId,
+        datos: {
+          'url_avatar': nuevaUrl,
+          'actualizado_por': usuarioId,
+          'actualizado_en': DateTime.now().toUtc().toIso8601String(),
+        },
+      );
+
+      emit(
+        PerfilGuardado(
+          usuarioActualizado: Usuario(
+            id: usuarioActual.id,
+            authId: usuarioActual.authId,
+            primerNombre: usuarioActual.primerNombre,
+            segundoNombre: usuarioActual.segundoNombre,
+            primerApellido: usuarioActual.primerApellido,
+            segundoApellido: usuarioActual.segundoApellido,
+            numeroIdentificacion: usuarioActual.numeroIdentificacion,
+            correo: usuarioActual.correo,
+            telefono: usuarioActual.telefono,
+            urlAvatar: nuevaUrl,
+            estatus: usuarioActual.estatus,
+            estatusAprobacion: usuarioActual.estatusAprobacion,
+            creadoEn: usuarioActual.creadoEn,
+            roles: usuarioActual.roles,
+            permisos: usuarioActual.permisos,
+          ),
+          estadoAnterior: estadoActual,
+        ),
+      );
+    } on FallaServidor catch (e) {
+      reportarError(e);
+      emit(estadoActual.copiarCon(errorGuardado: e.mensaje));
+    } on FallaInesperada catch (e) {
+      reportarError(e);
+      emit(estadoActual.copiarCon(errorGuardado: e.mensaje));
+    }
+  }
 }

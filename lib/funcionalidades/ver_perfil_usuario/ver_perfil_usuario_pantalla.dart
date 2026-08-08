@@ -141,6 +141,7 @@ class _CabeceraGradiente extends StatelessWidget {
               children: [
                 AvatarUsuario(
                   iniciales: perfil.iniciales,
+                  urlFoto: perfil.urlAvatar,
                   tamanio: 72,
                   colorFondo: ColoresApp.blanco.withValues(alpha: 0.2),
                   colorTexto: ColoresApp.blanco,

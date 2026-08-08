@@ -165,6 +165,101 @@ void main() {
     );
   });
 
+  // ── actualizarFoto ─────────────────────────────────────────────────────────
+
+  group('PerfilCubit.actualizarFoto', () {
+    blocTest<PerfilCubit, PerfilEstado>(
+      'no hace nada si el estado no es Cargado',
+      build: build,
+      act: (c) => c.actualizarFoto(
+        usuarioActual: usuarioEjemplo,
+        nuevaUrl: 'https://ejemplo.com/avatars/auth-id-1.jpg',
+      ),
+      expect: () => [],
+    );
+
+    blocTest<PerfilCubit, PerfilEstado>(
+      'emite PerfilGuardado con la nueva url al guardar con éxito',
+      build: build,
+      setUp: () {
+        when(
+          () => repositorio.actualizarPerfil(
+            usuarioId: any(named: 'usuarioId'),
+            datos: any(named: 'datos'),
+          ),
+        ).thenAnswer((_) async {});
+      },
+      seed: _cargado,
+      act: (c) => c.actualizarFoto(
+        usuarioActual: usuarioEjemplo,
+        nuevaUrl: 'https://ejemplo.com/avatars/auth-id-1.jpg',
+      ),
+      expect: () => [
+        isA<PerfilGuardado>().having(
+          (e) => e.usuarioActualizado.urlAvatar,
+          'urlAvatar',
+          'https://ejemplo.com/avatars/auth-id-1.jpg',
+        ),
+      ],
+      verify: (_) {
+        final capturado = verify(
+          () => repositorio.actualizarPerfil(
+            usuarioId: any(named: 'usuarioId'),
+            datos: captureAny(named: 'datos'),
+          ),
+        ).captured;
+        final datos = capturado.first as Map<String, dynamic>;
+        expect(
+            datos['url_avatar'], 'https://ejemplo.com/avatars/auth-id-1.jpg');
+      },
+    );
+
+    blocTest<PerfilCubit, PerfilEstado>(
+      'permite quitar la foto pasando null',
+      build: build,
+      setUp: () {
+        when(
+          () => repositorio.actualizarPerfil(
+            usuarioId: any(named: 'usuarioId'),
+            datos: any(named: 'datos'),
+          ),
+        ).thenAnswer((_) async {});
+      },
+      seed: _cargado,
+      act: (c) =>
+          c.actualizarFoto(usuarioActual: usuarioEjemplo, nuevaUrl: null),
+      expect: () => [
+        isA<PerfilGuardado>()
+            .having((e) => e.usuarioActualizado.urlAvatar, 'urlAvatar', isNull),
+      ],
+    );
+
+    blocTest<PerfilCubit, PerfilEstado>(
+      'emite error puntual cuando falla el guardado',
+      build: build,
+      setUp: () {
+        when(
+          () => repositorio.actualizarPerfil(
+            usuarioId: any(named: 'usuarioId'),
+            datos: any(named: 'datos'),
+          ),
+        ).thenThrow(const FallaServidor('No se pudo guardar la foto.'));
+      },
+      seed: _cargado,
+      act: (c) => c.actualizarFoto(
+        usuarioActual: usuarioEjemplo,
+        nuevaUrl: 'https://ejemplo.com/avatars/auth-id-1.jpg',
+      ),
+      expect: () => [
+        isA<PerfilCargado>().having(
+          (e) => e.errorGuardado,
+          'errorGuardado',
+          'No se pudo guardar la foto.',
+        ),
+      ],
+    );
+  });
+
   // ── volverACargado ─────────────────────────────────────────────────────────
 
   group('PerfilCubit.volverACargado', () {

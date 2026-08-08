@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../compartido/widgets/avatares/selector_foto_perfil.dart';
 import '../../compartido/widgets/avisos/aviso_app.dart';
 import '../../compartido/widgets/botones/boton_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
@@ -32,6 +33,8 @@ class _EditarUsuarioPantallaState extends State<EditarUsuarioPantalla> {
 
   bool _estaIniciado = false;
   bool _estaPrelleno = false;
+  String? _urlAvatarActual;
+  bool _huboCambioFoto = false;
 
   @override
   void didChangeDependencies() {
@@ -71,6 +74,7 @@ class _EditarUsuarioPantallaState extends State<EditarUsuarioPantalla> {
       _numeroIdentificacionCtrl.text = estado.numeroIdentificacionInicial ?? '';
       _correoCtrl.text = estado.correoInicial;
       _telefonoCtrl.text = estado.telefonoInicial ?? '';
+      _urlAvatarActual = estado.urlAvatarInicial;
     }
   }
 
@@ -83,6 +87,8 @@ class _EditarUsuarioPantallaState extends State<EditarUsuarioPantalla> {
           numeroIdentificacion: _numeroIdentificacionCtrl.text,
           correo: _correoCtrl.text,
           telefono: _telefonoCtrl.text,
+          huboCambioFoto: _huboCambioFoto,
+          urlAvatar: _urlAvatarActual,
         );
   }
 
@@ -135,6 +141,11 @@ class _EditarUsuarioPantallaState extends State<EditarUsuarioPantalla> {
                 numeroIdentificacionCtrl: _numeroIdentificacionCtrl,
                 correoCtrl: _correoCtrl,
                 telefonoCtrl: _telefonoCtrl,
+                urlAvatarActual: _urlAvatarActual,
+                alCambiarFoto: (url) => setState(() {
+                  _urlAvatarActual = url;
+                  _huboCambioFoto = true;
+                }),
               ),
             ),
             _BarraInferior(
@@ -160,6 +171,8 @@ class _Cuerpo extends StatelessWidget {
     required this.numeroIdentificacionCtrl,
     required this.correoCtrl,
     required this.telefonoCtrl,
+    required this.urlAvatarActual,
+    required this.alCambiarFoto,
   });
 
   final EditarUsuarioEstado estado;
@@ -170,6 +183,8 @@ class _Cuerpo extends StatelessWidget {
   final TextEditingController numeroIdentificacionCtrl;
   final TextEditingController correoCtrl;
   final TextEditingController telefonoCtrl;
+  final String? urlAvatarActual;
+  final ValueChanged<String?> alCambiarFoto;
 
   @override
   Widget build(BuildContext context) {
@@ -186,6 +201,9 @@ class _Cuerpo extends StatelessWidget {
           numeroIdentificacionCtrl: numeroIdentificacionCtrl,
           correoCtrl: correoCtrl,
           telefonoCtrl: telefonoCtrl,
+          authId: e.authId,
+          urlAvatarActual: urlAvatarActual,
+          alCambiarFoto: alCambiarFoto,
         ),
       EditarUsuarioGuardado() ||
       EditarUsuarioError() =>
@@ -205,6 +223,9 @@ class _Formulario extends StatelessWidget {
     required this.numeroIdentificacionCtrl,
     required this.correoCtrl,
     required this.telefonoCtrl,
+    required this.authId,
+    required this.urlAvatarActual,
+    required this.alCambiarFoto,
   });
 
   final TextEditingController primerNombreCtrl;
@@ -214,12 +235,33 @@ class _Formulario extends StatelessWidget {
   final TextEditingController numeroIdentificacionCtrl;
   final TextEditingController correoCtrl;
   final TextEditingController telefonoCtrl;
+  final String? authId;
+  final String? urlAvatarActual;
+  final ValueChanged<String?> alCambiarFoto;
+
+  String get _iniciales {
+    final n = primerNombreCtrl.text.trim();
+    final a = primerApellidoCtrl.text.trim();
+    return '${n.isNotEmpty ? n[0] : ''}${a.isNotEmpty ? a[0] : ''}'
+        .toUpperCase();
+  }
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
       children: [
+        if (authId != null) ...[
+          Center(
+            child: SelectorFotoPerfil(
+              authId: authId!,
+              iniciales: _iniciales,
+              urlActual: urlAvatarActual,
+              alCambiar: alCambiarFoto,
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(

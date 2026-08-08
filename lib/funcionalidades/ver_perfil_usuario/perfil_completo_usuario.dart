@@ -10,6 +10,7 @@ class PerfilCompletoUsuario extends Equatable {
     this.numeroIdentificacion,
     required this.correo,
     this.telefono,
+    this.urlAvatar,
     required this.estatus,
     this.creadoEn,
     this.tagPrincipalNombre,
@@ -24,6 +25,7 @@ class PerfilCompletoUsuario extends Equatable {
   final String? numeroIdentificacion;
   final String correo;
   final String? telefono;
+  final String? urlAvatar;
   final bool estatus;
   final DateTime? creadoEn;
   final String? tagPrincipalNombre;
@@ -46,6 +48,7 @@ class PerfilCompletoUsuario extends Equatable {
         numeroIdentificacion,
         correo,
         telefono,
+        urlAvatar,
         estatus,
         creadoEn,
         tagPrincipalNombre,

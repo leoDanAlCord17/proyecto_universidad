@@ -19,7 +19,7 @@ class VerPerfilUsuarioRepositorio {
               .from(TablasSupabase.usuarios)
               .select(
                 'id, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, '
-                'numero_identificacion, correo, telefono, estatus, creado_en',
+                'numero_identificacion, correo, telefono, url_avatar, estatus, creado_en',
               )
               .eq('id', usuarioId)
               .single()
@@ -43,6 +43,7 @@ class VerPerfilUsuarioRepositorio {
             numeroIdentificacion: fila['numero_identificacion'] as String?,
             correo: fila['correo'] as String? ?? '',
             telefono: fila['telefono'] as String?,
+            urlAvatar: fila['url_avatar'] as String?,
             estatus: (fila['estatus'] as bool?) ?? true,
             creadoEn: fila['creado_en'] != null
                 ? DateTime.parse(fila['creado_en'] as String)

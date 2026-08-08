@@ -17,8 +17,9 @@ class EditarUsuarioRepositorio {
           return await _supabase
               .from(TablasSupabase.usuarios)
               .select(
-                'id, primer_nombre, segundo_nombre, primer_apellido, '
-                'segundo_apellido, numero_identificacion, correo, telefono',
+                'id, auth_id, primer_nombre, segundo_nombre, primer_apellido, '
+                'segundo_apellido, numero_identificacion, correo, telefono, '
+                'url_avatar',
               )
               .eq('id', usuarioId)
               .single()
@@ -41,6 +42,8 @@ class EditarUsuarioRepositorio {
     String? numeroIdentificacion,
     required String correo,
     String? telefono,
+    bool huboCambioFoto = false,
+    String? urlAvatar,
   }) async {
     try {
       await _supabase.from(TablasSupabase.usuarios).update({
@@ -55,6 +58,9 @@ class EditarUsuarioRepositorio {
             : null,
         'correo': correo,
         'telefono': telefono?.isNotEmpty == true ? telefono : null,
+        // Solo se incluye la clave si la foto realmente cambió en esta
+        // edición — de lo contrario un valor null la borraría sin querer.
+        if (huboCambioFoto) 'url_avatar': urlAvatar,
       }).eq('id', usuarioId);
     } on PostgrestException catch (e) {
       throw FallaServidor(TraductorErrores.dePostgres(e));

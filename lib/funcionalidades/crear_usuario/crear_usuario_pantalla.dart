@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/extensiones.dart';
+import '../../compartido/widgets/avatares/selector_foto_perfil.dart';
 import '../../compartido/widgets/botones/boton_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
 import '../../compartido/widgets/formularios/campo_texto_app.dart';
@@ -26,6 +27,7 @@ class _CrearUsuarioPantallaState extends State<CrearUsuarioPantalla> {
   final _numeroIdentificacionController = TextEditingController();
   final _correoController = TextEditingController();
   final _telefonoController = TextEditingController();
+  String? _urlAvatar;
 
   @override
   void didChangeDependencies() {
@@ -66,6 +68,9 @@ class _CrearUsuarioPantallaState extends State<CrearUsuarioPantalla> {
           correoController: _correoController,
           telefonoController: _telefonoController,
           estaCargando: estado is CrearUsuarioCargando,
+          authId: context.read<CrearUsuarioCubit>().authIdSesion,
+          urlAvatar: _urlAvatar,
+          alCambiarFoto: (url) => setState(() => _urlAvatar = url),
         ),
       ),
     );
@@ -82,6 +87,9 @@ class _CuerpoCrearUsuario extends StatelessWidget {
     required this.correoController,
     required this.telefonoController,
     required this.estaCargando,
+    required this.authId,
+    required this.urlAvatar,
+    required this.alCambiarFoto,
   });
 
   final TextEditingController primerNombreController;
@@ -92,6 +100,15 @@ class _CuerpoCrearUsuario extends StatelessWidget {
   final TextEditingController correoController;
   final TextEditingController telefonoController;
   final bool estaCargando;
+  final String authId;
+  final String? urlAvatar;
+  final ValueChanged<String?> alCambiarFoto;
+
+  String get _iniciales {
+    final n = primerNombreController.text.trim();
+    final a = primerApellidoController.text.trim();
+    return '${n.isNotEmpty ? n[0] : ''}${a.isNotEmpty ? a[0] : ''}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +121,16 @@ class _CuerpoCrearUsuario extends StatelessWidget {
             _EncabezadoCrearUsuario(
               alRetroceder: () => context.read<AuthCubit>().cerrarSesion(),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
+            Center(
+              child: SelectorFotoPerfil(
+                authId: authId,
+                iniciales: _iniciales,
+                urlActual: urlAvatar,
+                alCambiar: alCambiarFoto,
+              ),
+            ),
+            const SizedBox(height: 24),
             _FilaNombres(
               primerNombreController: primerNombreController,
               segundoNombreController: segundoNombreController,
@@ -146,6 +172,7 @@ class _CuerpoCrearUsuario extends StatelessWidget {
                     segundoApellido: segundoApellidoController.text,
                     numeroIdentificacion: numeroIdentificacionController.text,
                     telefono: telefonoController.text,
+                    urlAvatar: urlAvatar,
                   ),
             ),
           ],

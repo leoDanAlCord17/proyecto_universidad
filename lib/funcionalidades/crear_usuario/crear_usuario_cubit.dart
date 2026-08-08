@@ -15,6 +15,11 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
   String get correoSesion =>
       _repositorio.obtenerSesionActual()?.user.email ?? '';
 
+  /// Retorna el auth_id de la sesión activa — usado como nombre de archivo
+  /// estable para la foto de perfil, ya que el id de `usuarios` todavía no
+  /// existe en este punto del flujo (se crea recién al guardar el perfil).
+  String get authIdSesion => _repositorio.obtenerSesionActual()?.user.id ?? '';
+
   /// Guarda el perfil del usuario recién registrado en la tabla 'usuarios'.
   Future<void> guardarPerfil({
     required String primerNombre,
@@ -23,6 +28,7 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
     String? segundoApellido,
     String? numeroIdentificacion,
     String? telefono,
+    String? urlAvatar,
   }) async {
     if (primerNombre.trim().isEmpty || primerApellido.trim().isEmpty) {
       emit(const CrearUsuarioError('El nombre y apellido son obligatorios.'));
@@ -49,6 +55,7 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
           segundoApellido,
           numeroIdentificacion,
           telefono,
+          urlAvatar,
         ),
       );
       emit(const CrearUsuarioExito());
@@ -71,6 +78,7 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
     String? segundoApellido,
     String? numeroIdentificacion,
     String? telefono,
+    String? urlAvatar,
   ) =>
       Usuario(
         authId: authId,
@@ -81,6 +89,7 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
         segundoApellido: segundoApellido?.trim(),
         numeroIdentificacion: numeroIdentificacion?.trim(),
         telefono: telefono?.trim(),
+        urlAvatar: urlAvatar,
         estatusAprobacion: requiereRevision
             ? EstatusAprobacion.pendiente
             : EstatusAprobacion.aprobado,

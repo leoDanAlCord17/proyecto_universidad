@@ -27,6 +27,7 @@ void main() {
     crearCubit = MockCrearUsuarioCubit();
     authCubit = MockAuthCubit();
     when(() => crearCubit.correoSesion).thenReturn('leo@uni.edu');
+    when(() => crearCubit.authIdSesion).thenReturn('auth-1');
     when(() => authCubit.verificarSesion()).thenAnswer((_) async {});
     when(() => authCubit.cerrarSesion()).thenAnswer((_) async {});
   });
@@ -94,6 +95,7 @@ void main() {
           segundoApellido: any(named: 'segundoApellido'),
           numeroIdentificacion: any(named: 'numeroIdentificacion'),
           telefono: any(named: 'telefono'),
+          urlAvatar: any(named: 'urlAvatar'),
         ),
       ).thenAnswer((_) async {});
 
@@ -117,6 +119,7 @@ void main() {
           segundoApellido: '',
           numeroIdentificacion: '',
           telefono: '',
+          urlAvatar: null,
         ),
       ).called(1);
     });

@@ -47,6 +47,11 @@ dependencies:
   shimmer: ^3.0.0
   cached_network_image: ^3.3.1
 
+  # Foto de perfil: tomar/elegir imagen y redimensionarla/comprimirla
+  # en el dispositivo antes de subirla
+  image_picker: ^1.1.2
+  image: ^4.2.0
+
   # Conectividad (detecta online/offline en web, Android e iOS)
   connectivity_plus: ^6.0.5
 

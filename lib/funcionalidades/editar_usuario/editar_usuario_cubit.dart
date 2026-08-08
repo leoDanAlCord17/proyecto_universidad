@@ -18,6 +18,7 @@ class EditarUsuarioCubit extends Cubit<EditarUsuarioEstado> {
       emit(
         EditarUsuarioCargado(
           usuarioId: usuarioId,
+          authId: data['auth_id'] as String?,
           primerNombreInicial: data['primer_nombre'] as String,
           primerApellidoInicial: data['primer_apellido'] as String,
           segundoNombreInicial: data['segundo_nombre'] as String?,
@@ -25,6 +26,7 @@ class EditarUsuarioCubit extends Cubit<EditarUsuarioEstado> {
           numeroIdentificacionInicial: data['numero_identificacion'] as String?,
           correoInicial: data['correo'] as String,
           telefonoInicial: data['telefono'] as String?,
+          urlAvatarInicial: data['url_avatar'] as String?,
         ),
       );
     } on FallaServidor catch (e) {
@@ -44,6 +46,8 @@ class EditarUsuarioCubit extends Cubit<EditarUsuarioEstado> {
     String? numeroIdentificacion,
     required String correo,
     String? telefono,
+    bool huboCambioFoto = false,
+    String? urlAvatar,
   }) async {
     final estadoActual = state;
     if (estadoActual is! EditarUsuarioCargado) return;
@@ -79,6 +83,8 @@ class EditarUsuarioCubit extends Cubit<EditarUsuarioEstado> {
         numeroIdentificacion: numeroIdentificacion?.trim(),
         correo: correo.trim(),
         telefono: telefono?.trim(),
+        huboCambioFoto: huboCambioFoto,
+        urlAvatar: urlAvatar,
       );
       emit(const EditarUsuarioGuardado());
     } on FallaServidor catch (e) {

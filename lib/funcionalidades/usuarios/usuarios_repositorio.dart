@@ -34,7 +34,7 @@ class UsuariosRepositorio {
           final respuesta = await _supabase
               .from(TablasSupabase.usuarios)
               .select(
-                  'id, primer_nombre, primer_apellido, correo, estatus, numero_identificacion')
+                  'id, primer_nombre, primer_apellido, correo, estatus, numero_identificacion, url_avatar')
               .order('primer_nombre')
               .range(offset, offset + limite - 1)
               .timeout(kTimeoutSolicitud);

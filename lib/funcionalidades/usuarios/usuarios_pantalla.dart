@@ -578,6 +578,7 @@ class _TarjetaUsuario extends StatelessWidget {
                   ] else ...[
                     AvatarUsuario(
                       iniciales: usuario.iniciales,
+                      urlFoto: usuario.urlAvatar,
                       tamanio: 40,
                       colorFondo: colorFondo,
                       colorTexto: colorTexto,
@@ -1081,6 +1082,7 @@ class _EncabezadoPanel extends StatelessWidget {
       children: [
         AvatarUsuario(
           iniciales: usuario.iniciales,
+          urlFoto: usuario.urlAvatar,
           tamanio: 44,
           colorFondo: colorFondo,
           colorTexto: colorTexto,

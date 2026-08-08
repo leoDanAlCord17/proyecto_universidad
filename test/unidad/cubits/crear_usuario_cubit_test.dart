@@ -40,6 +40,22 @@ void main() {
     });
   });
 
+  group('CrearUsuarioCubit.authIdSesion', () {
+    test('retorna el auth_id cuando hay sesión activa', () {
+      when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
+      final cubit = CrearUsuarioCubit(repositorio);
+      expect(cubit.authIdSesion, 'auth-id-1');
+      cubit.close();
+    });
+
+    test('retorna cadena vacía cuando no hay sesión', () {
+      when(() => repositorio.obtenerSesionActual()).thenReturn(null);
+      final cubit = CrearUsuarioCubit(repositorio);
+      expect(cubit.authIdSesion, '');
+      cubit.close();
+    });
+  });
+
   group('CrearUsuarioCubit.guardarPerfil', () {
     test('estado inicial es CrearUsuarioInicial', () {
       when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
@@ -132,6 +148,54 @@ void main() {
         final usuario = capturado.first as Usuario;
         expect(usuario.primerNombre, 'Leo');
         expect(usuario.primerApellido, 'Alvarez');
+      },
+    );
+
+    blocTest<CrearUsuarioCubit, CrearUsuarioEstado>(
+      'incluye la url del avatar cuando se proporciona',
+      build: () {
+        when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
+        when(() => repositorio.verificarRevisionCreacionHabilitada())
+            .thenAnswer((_) async => false);
+        when(() => repositorio.crearPerfilUsuario(any()))
+            .thenAnswer((_) async {});
+        return CrearUsuarioCubit(repositorio);
+      },
+      act: (c) => c.guardarPerfil(
+        primerNombre: 'Leo',
+        primerApellido: 'Alvarez',
+        urlAvatar: 'https://ejemplo.com/avatars/auth-id-1.jpg',
+      ),
+      verify: (_) {
+        final capturado = verify(
+          () => repositorio.crearPerfilUsuario(captureAny()),
+        ).captured;
+        final usuario = capturado.first as Usuario;
+        expect(
+          usuario.urlAvatar,
+          'https://ejemplo.com/avatars/auth-id-1.jpg',
+        );
+      },
+    );
+
+    blocTest<CrearUsuarioCubit, CrearUsuarioEstado>(
+      'sin foto, el avatar queda nulo',
+      build: () {
+        when(() => repositorio.obtenerSesionActual()).thenReturn(sesion);
+        when(() => repositorio.verificarRevisionCreacionHabilitada())
+            .thenAnswer((_) async => false);
+        when(() => repositorio.crearPerfilUsuario(any()))
+            .thenAnswer((_) async {});
+        return CrearUsuarioCubit(repositorio);
+      },
+      act: (c) =>
+          c.guardarPerfil(primerNombre: 'Leo', primerApellido: 'Alvarez'),
+      verify: (_) {
+        final capturado = verify(
+          () => repositorio.crearPerfilUsuario(captureAny()),
+        ).captured;
+        final usuario = capturado.first as Usuario;
+        expect(usuario.urlAvatar, isNull);
       },
     );
 

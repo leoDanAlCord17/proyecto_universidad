@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../compartido/avatar_repositorio.dart';
 import 'dependencias_ajustes.dart';
 import 'dependencias_auth.dart';
 import 'dependencias_eventos.dart';
@@ -15,6 +16,9 @@ void configurarDependencias() {
   // ─── INFRAESTRUCTURA ─────────────────────────────────────────────────────
   obtenerIt.registerLazySingleton<SupabaseClient>(
     () => Supabase.instance.client,
+  );
+  obtenerIt.registerLazySingleton<AvatarRepositorio>(
+    () => AvatarRepositorio(obtenerIt<SupabaseClient>()),
   );
 
   // ─── DOMINIOS ────────────────────────────────────────────────────────────

@@ -20,6 +20,7 @@ import 'package:activiti/funcionalidades/crear_usuario/crear_usuario_cubit.dart'
 import 'package:activiti/funcionalidades/crear_usuario/crear_usuario_estado.dart';
 import 'package:activiti/funcionalidades/escanear_qr/escanear_qr_repositorio.dart';
 import 'package:activiti/funcionalidades/eventos/evento.dart';
+import 'package:activiti/funcionalidades/editar_usuario/editar_usuario_repositorio.dart';
 import 'package:activiti/funcionalidades/eventos/eventos_repositorio.dart';
 import 'package:activiti/funcionalidades/historial/historial_item.dart';
 import 'package:activiti/funcionalidades/historial/historial_repositorio.dart';
@@ -55,6 +56,9 @@ class MockPanelControlRepositorio extends Mock
 
 class MockConfiguracionGeneralRepositorio extends Mock
     implements ConfiguracionGeneralRepositorio {}
+
+class MockEditarUsuarioRepositorio extends Mock
+    implements EditarUsuarioRepositorio {}
 
 class MockSession extends Mock implements Session {}
 

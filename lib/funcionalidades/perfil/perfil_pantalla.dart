@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../compartido/logger.dart';
 import '../../compartido/validadores.dart';
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
+import '../../compartido/widgets/avatares/selector_foto_perfil.dart';
 import '../../compartido/widgets/avisos/aviso_app.dart';
 import '../../compartido/widgets/utilidades/banner_sin_conexion.dart';
 import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
@@ -110,7 +111,7 @@ class _PerfilPantallaState extends State<PerfilPantalla> {
                       height: MediaQuery.paddingOf(context).top,
                       color: ColoresApp.acento,
                     ),
-                    _Cabecera(usuario: usuario),
+                    _Cabecera(usuario: usuario, puedeEditar: puedeEditar),
                     if (perfilEstado is PerfilSinConexion)
                       BannerSinConexion(
                         onReintentar: () {
@@ -584,12 +585,34 @@ class _Campo extends StatelessWidget {
 // ─── Cabecera con degradado ──────────────────────────────────────────────────
 
 class _Cabecera extends StatelessWidget {
-  const _Cabecera({required this.usuario});
+  const _Cabecera({required this.usuario, required this.puedeEditar});
 
   final Usuario? usuario;
+  final bool puedeEditar;
 
   @override
   Widget build(BuildContext context) {
+    final avatar = puedeEditar && usuario?.id != null && usuario?.authId != null
+        ? SelectorFotoPerfil(
+            authId: usuario!.authId!,
+            iniciales: usuario!.iniciales,
+            urlActual: usuario!.urlAvatar,
+            tamanio: 80,
+            colorFondo: ColoresApp.blanco.withValues(alpha: 0.2),
+            colorTexto: ColoresApp.blanco,
+            alCambiar: (url) => context.read<PerfilCubit>().actualizarFoto(
+                  usuarioActual: usuario!,
+                  nuevaUrl: url,
+                ),
+          )
+        : AvatarUsuario(
+            iniciales: usuario?.iniciales ?? '',
+            urlFoto: usuario?.urlAvatar,
+            tamanio: 80,
+            colorFondo: ColoresApp.blanco.withValues(alpha: 0.2),
+            colorTexto: ColoresApp.blanco,
+          );
+
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -599,13 +622,7 @@ class _Cabecera extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
         child: Column(
           children: [
-            AvatarUsuario(
-              iniciales: usuario?.iniciales ?? '',
-              urlFoto: usuario?.urlAvatar,
-              tamanio: 80,
-              colorFondo: ColoresApp.blanco.withValues(alpha: 0.2),
-              colorTexto: ColoresApp.blanco,
-            ),
+            avatar,
             const SizedBox(height: 12),
             Text(
               usuario?.nombreCompleto ?? '',

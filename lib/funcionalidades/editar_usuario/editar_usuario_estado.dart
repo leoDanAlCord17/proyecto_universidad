@@ -19,6 +19,7 @@ final class EditarUsuarioCargando extends EditarUsuarioEstado {
 final class EditarUsuarioCargado extends EditarUsuarioEstado {
   const EditarUsuarioCargado({
     required this.usuarioId,
+    required this.authId,
     required this.primerNombreInicial,
     required this.primerApellidoInicial,
     this.segundoNombreInicial,
@@ -26,11 +27,13 @@ final class EditarUsuarioCargado extends EditarUsuarioEstado {
     this.numeroIdentificacionInicial,
     required this.correoInicial,
     this.telefonoInicial,
+    this.urlAvatarInicial,
     this.estaGuardando = false,
     this.errorValidacion = '',
   });
 
   final String usuarioId;
+  final String? authId;
   final String primerNombreInicial;
   final String primerApellidoInicial;
   final String? segundoNombreInicial;
@@ -38,6 +41,7 @@ final class EditarUsuarioCargado extends EditarUsuarioEstado {
   final String? numeroIdentificacionInicial;
   final String correoInicial;
   final String? telefonoInicial;
+  final String? urlAvatarInicial;
   final bool estaGuardando;
   final String errorValidacion;
 
@@ -47,6 +51,7 @@ final class EditarUsuarioCargado extends EditarUsuarioEstado {
   }) =>
       EditarUsuarioCargado(
         usuarioId: usuarioId,
+        authId: authId,
         primerNombreInicial: primerNombreInicial,
         primerApellidoInicial: primerApellidoInicial,
         segundoNombreInicial: segundoNombreInicial,
@@ -54,6 +59,7 @@ final class EditarUsuarioCargado extends EditarUsuarioEstado {
         numeroIdentificacionInicial: numeroIdentificacionInicial,
         correoInicial: correoInicial,
         telefonoInicial: telefonoInicial,
+        urlAvatarInicial: urlAvatarInicial,
         estaGuardando: estaGuardando ?? this.estaGuardando,
         errorValidacion: errorValidacion ?? this.errorValidacion,
       );
@@ -61,6 +67,7 @@ final class EditarUsuarioCargado extends EditarUsuarioEstado {
   @override
   List<Object?> get props => [
         usuarioId,
+        authId,
         primerNombreInicial,
         primerApellidoInicial,
         segundoNombreInicial,
@@ -68,6 +75,7 @@ final class EditarUsuarioCargado extends EditarUsuarioEstado {
         numeroIdentificacionInicial,
         correoInicial,
         telefonoInicial,
+        urlAvatarInicial,
         estaGuardando,
         errorValidacion,
       ];

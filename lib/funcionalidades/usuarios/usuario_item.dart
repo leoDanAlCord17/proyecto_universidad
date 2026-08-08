@@ -8,6 +8,7 @@ class UsuarioItem extends Equatable {
         correo: json['correo'] as String? ?? '',
         estatus: (json['estatus'] as bool?) ?? true,
         numeroIdentificacion: json['numero_identificacion'] as String?,
+        urlAvatar: json['url_avatar'] as String?,
       );
   const UsuarioItem({
     required this.id,
@@ -16,6 +17,7 @@ class UsuarioItem extends Equatable {
     required this.correo,
     required this.estatus,
     this.numeroIdentificacion,
+    this.urlAvatar,
   });
 
   final String id;
@@ -24,6 +26,7 @@ class UsuarioItem extends Equatable {
   final String correo;
   final bool estatus;
   final String? numeroIdentificacion;
+  final String? urlAvatar;
 
   String get nombreCompleto => '$primerNombre $primerApellido';
   String get iniciales {
@@ -40,5 +43,6 @@ class UsuarioItem extends Equatable {
         correo,
         estatus,
         numeroIdentificacion,
+        urlAvatar,
       ];
 }

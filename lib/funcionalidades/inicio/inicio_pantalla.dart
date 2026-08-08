@@ -91,7 +91,10 @@ class _InicioPantallaState extends State<InicioPantalla>
                       children: [
                         if (usuario != null) ...[
                           AvatarUsuario(
-                              iniciales: usuario.iniciales, tamanio: 42),
+                            iniciales: usuario.iniciales,
+                            urlFoto: usuario.urlAvatar,
+                            tamanio: 42,
+                          ),
                           const SizedBox(width: 12),
                         ],
                         // Flexible (no un tamaño fijo) para que el saludo se
