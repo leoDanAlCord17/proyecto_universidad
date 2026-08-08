@@ -1,5 +1,7 @@
 // Configura el historial del navegador para que las navegaciones internas NO
-// acumulen entradas (se mantiene siempre 1 sola entrada).
+// acumulen entradas (se mantiene siempre 1 sola entrada), y expone el truco
+// de la "entrada centinela" (activarCentinelaAtras) que usa NavegacionPrincipal
+// para poder reaccionar al back/swipe del sistema pese a eso.
 //
 // Por qué: en la PWA instalada en Android, el gesto de borde (deslizar desde
 // la izquierda) dispara el "atrás" del historial del navegador. Mientras

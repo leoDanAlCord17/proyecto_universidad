@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../compartido/constantes.dart';
+import '../compartido/historial_navegador.dart';
 import '../compartido/navegacion.dart';
 import '../compartido/widgets/dialogo/dialogo_confirmacion.dart';
 import '../compartido/widgets/navegacion/barra_navegacion_app.dart';
@@ -43,15 +45,22 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
   static const List<int> _ordenTabs = [0, 1, 3, 4];
 
   final Set<int> _visitadas = {0};
+  VoidCallback? _cancelarCentinela;
 
   @override
   void initState() {
     super.initState();
     pestanaActiva.addListener(_alCambiarPestana);
+    // Ver la nota junto a PopScope en build(): en web, el back/swipe del
+    // sistema depende del truco de la entrada centinela, no de PopScope.
+    if (kIsWeb) {
+      _cancelarCentinela = activarCentinelaAtras(_alConsumirCentinela);
+    }
   }
 
   @override
   void dispose() {
+    _cancelarCentinela?.call();
     pestanaActiva.removeListener(_alCambiarPestana);
     super.dispose();
   }
@@ -101,19 +110,23 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
     }
   }
 
+  // Se dispara cuando el sistema consume la entrada centinela del historial
+  // (ver activarCentinelaAtras en historial_navegador_web.dart). Esa entrada
+  // vive en el historial del NAVEGADOR, no en la pila de rutas de Flutter,
+  // así que también se consume — sin querer — cuando el back real le
+  // pertenece a una pantalla empujada encima (p. ej. Escanear QR): en ese
+  // caso este widget ya no es la ruta actual, y dejamos que GoRouter la
+  // cierre solo como corresponde, sin interferir.
+  void _alConsumirCentinela() {
+    if (!mounted) return;
+    if (ModalRoute.of(context)?.isCurrent != true) return;
+    unawaited(_alPresionarAtras(context));
+  }
+
   // Atrás en el shell principal: primero vuelve a la pestaña Inicio, y solo
-  // si ya estabas ahí pide confirmación para salir. `canPop: false` porque
-  // este widget es la raíz post-login — no hay a dónde hacer pop dentro del
-  // Navigator; lo que "atrás" debe hacer aquí es semántica de la app
-  // (cambiar de pestaña / confirmar salida), no navegación real.
-  //
-  // Nota: en la PWA instalada en Android, el historial del navegador se
-  // colapsa a una sola entrada (ver historial_navegador_web.dart) para evitar
-  // que el gesto de borde "asome" una pantalla anterior. Eso significa que el
-  // gesto de swipe puede no llegar a disparar este PopScope en absoluto (no
-  // hay entrada de historial a la que retroceder) — el botón atrás
-  // físico/predictivo de Android sí debería dispararlo con normalidad. Probar
-  // en un dispositivo real tras desplegar.
+  // si ya estabas ahí pide confirmación para salir. Es semántica de la app
+  // (cambiar de pestaña / confirmar salida), no navegación real — por eso
+  // no depende de hacer pop de una ruta.
   Future<void> _alPresionarAtras(BuildContext context) async {
     if (pestanaActiva.value != 0) {
       pestanaActiva.value = 0;
@@ -138,6 +151,12 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
+        // En web esto lo maneja activarCentinelaAtras (initState) — el
+        // historial colapsado a 1 entrada hace que este callback no sea
+        // confiable ahí (confirmado en dispositivo real: el back cerraba la
+        // app sin llegar a dispararlo). Se deja activo para plataformas
+        // nativas, donde sí es el mecanismo estándar de Flutter.
+        if (kIsWeb) return;
         unawaited(_alPresionarAtras(context));
       },
       child: Scaffold(
