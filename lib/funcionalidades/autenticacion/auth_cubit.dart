@@ -31,7 +31,10 @@ class AuthCubit extends Cubit<AuthEstado> {
 
   /// Revisa si hay sesión activa al arrancar. Aplica timeout de [kTimeoutSolicitud]
   /// para evitar que el splash quede congelado si Supabase no responde.
-  Future<void> verificarSesion() async {
+  ///
+  /// [esPostRecuperacion] se pasa en true solo desde la pantalla de nueva
+  /// contraseña, justo después de guardarla con éxito — ver más abajo por qué.
+  Future<void> verificarSesion({bool esPostRecuperacion = false}) async {
     final sesion = _repositorio.obtenerSesionActual();
 
     if (sesion == null) {
@@ -43,6 +46,16 @@ class AuthCubit extends Cubit<AuthEstado> {
       final usuario = await _repositorio
           .obtenerPerfil(sesion.user.id)
           .timeout(kTimeoutSolicitud);
+
+      // Una sesión de recuperación de contraseña (enlace del correo) es, para
+      // Supabase Auth, una sesión válida como cualquier otra — sin este
+      // guard, esta llamada (disparada sin condición al arrancar la app en
+      // main.dart) le ganaba la carrera al evento de recuperación y mandaba
+      // al usuario derecho a la app en vez de dejarlo poner su nueva
+      // contraseña. La única vez que si queremos avanzar con una sesión de
+      // recuperación es la llamada deliberada de NuevaContrasenaPantalla
+      // después de guardar la clave nueva (esPostRecuperacion: true).
+      if (!esPostRecuperacion && state is RecuperandoContrasena) return;
 
       if (usuario == null) {
         emit(PerfilIncompleto());

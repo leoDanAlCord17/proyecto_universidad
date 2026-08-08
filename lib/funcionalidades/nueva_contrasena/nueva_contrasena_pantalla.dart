@@ -39,7 +39,7 @@ class _NuevaContrasenaPantallaState extends State<NuevaContrasenaPantalla> {
                 texto: estado.mensaje, estilo: EstiloAviso.error);
           }
           if (estado is NuevaContrasenaGuardada) {
-            context.read<AuthCubit>().verificarSesion();
+            context.read<AuthCubit>().verificarSesion(esPostRecuperacion: true);
           }
         },
         builder: (context, estado) => switch (estado) {
