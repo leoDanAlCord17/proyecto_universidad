@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../compartido/constantes.dart';
 import '../compartido/navegacion.dart';
+import '../compartido/widgets/dialogo/dialogo_confirmacion.dart';
 import '../compartido/widgets/navegacion/barra_navegacion_app.dart';
 import '../configuracion/dependencias.dart';
 import 'eventos/eventos_cubit.dart';
@@ -97,23 +101,45 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
     }
   }
 
+  // Atrás en el shell principal: primero vuelve a la pestaña Inicio, y solo
+  // si ya estabas ahí pide confirmación para salir. `canPop: false` porque
+  // este widget es la raíz post-login — no hay a dónde hacer pop dentro del
+  // Navigator; lo que "atrás" debe hacer aquí es semántica de la app
+  // (cambiar de pestaña / confirmar salida), no navegación real.
+  //
+  // Nota: en la PWA instalada en Android, el historial del navegador se
+  // colapsa a una sola entrada (ver historial_navegador_web.dart) para evitar
+  // que el gesto de borde "asome" una pantalla anterior. Eso significa que el
+  // gesto de swipe puede no llegar a disparar este PopScope en absoluto (no
+  // hay entrada de historial a la que retroceder) — el botón atrás
+  // físico/predictivo de Android sí debería dispararlo con normalidad. Probar
+  // en un dispositivo real tras desplegar.
+  Future<void> _alPresionarAtras(BuildContext context) async {
+    if (pestanaActiva.value != 0) {
+      pestanaActiva.value = 0;
+      return;
+    }
+    final confirmo = await DialogoConfirmacion.mostrar(
+      context,
+      titulo: '¿Salir de la aplicación?',
+      descripcion: '¿Estás seguro de que deseas salir?',
+      textoConfirmar: 'Cancelar',
+      textoCancelar: 'Salir',
+    );
+    if (confirmo == false) {
+      await SystemNavigator.pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final actual = pestanaActiva.value;
-    // Anula el gesto "atrás" del sistema/navegador en la PWA instalada en
-    // Android. Al deslizar desde el borde izquierdo, Chrome dispara el back del
-    // historial; como cada context.push deja una entrada, el gesto asomaba y
-    // abría la pantalla anterior. Este shell queda montado mientras navegas a
-    // las pantallas internas (push), así que su BackButtonListener conserva la
-    // prioridad y atrapa ese back: devolver true significa "ya lo manejé, no
-    // propagar". La navegación interna (botón Regresar → context.pop /
-    // context.go) NO pasa por el BackButtonDispatcher, así que sigue igual.
-    //
-    // Debe vivir AQUÍ (debajo del Router de go_router) y no en el builder de
-    // MaterialApp.router, que está por encima del Router y haría que
-    // Router.of(context) lance "context does not include a Router".
-    return BackButtonListener(
-      onBackButtonPressed: () async => true,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        unawaited(_alPresionarAtras(context));
+      },
       child: Scaffold(
         body: IndexedStack(
           index: _ordenTabs.indexOf(actual),
