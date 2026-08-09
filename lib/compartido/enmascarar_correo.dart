@@ -21,7 +21,8 @@ String enmascararCorreo(String correo) {
 /// Censura [texto] conservando su largo real, mostrando [prefijo] caracteres
 /// al inicio y [sufijo] al final sin censurar. Si [texto] es muy corto para
 /// eso, muestra solo el primer carácter.
-String _enmascararParte(String texto, {required int prefijo, required int sufijo}) {
+String _enmascararParte(String texto,
+    {required int prefijo, required int sufijo}) {
   if (texto.isEmpty) return texto;
   if (texto.length <= prefijo + sufijo) {
     return '${texto[0]}${'*' * (texto.length - 1)}';
