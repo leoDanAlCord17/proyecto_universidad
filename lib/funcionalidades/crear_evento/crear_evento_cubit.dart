@@ -209,12 +209,17 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
         alcance: estadoActual.alcance,
         grupos: estadoActual.grupos,
       );
-      // N8 — notifica a la audiencia cuando se publica un evento dirigido
+      // N8 — notifica a la audiencia cuando se publica un evento. 'dirigido'
+      // notifica solo a los grupos de tags coincidentes; 'general' notifica
+      // a todos los usuarios activos (mismo criterio que usa ciclo_eventos
+      // al marcar el inicio del evento).
       if (estatus == EstatusEvento.programado &&
-          estadoActual.alcance == AlcanceEvento.dirigido) {
+          (estadoActual.alcance == AlcanceEvento.dirigido ||
+              estadoActual.alcance == AlcanceEvento.general)) {
         try {
-          final userIds =
-              await _repositorio.obtenerUsuariosIdsDirigidos(eventoId);
+          final userIds = estadoActual.alcance == AlcanceEvento.dirigido
+              ? await _repositorio.obtenerUsuariosIdsDirigidos(eventoId)
+              : await _repositorio.obtenerUsuariosIdsActivos();
           await NotificacionesPushServicio.enviar(
             usuarioIds: userIds,
             titulo: 'Nuevo evento: ${estadoActual.titulo}',

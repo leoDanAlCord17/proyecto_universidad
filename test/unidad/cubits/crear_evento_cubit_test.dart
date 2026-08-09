@@ -226,6 +226,56 @@ void main() {
       act: (c) => c.publicarEvento(),
       expect: () => [],
     );
+
+    // N8: al publicar (no borrador), notifica a la audiencia según alcance.
+    blocTest<CrearEventoCubit, CrearEventoEstado>(
+      'alcance general: consulta todos los usuarios activos para notificar',
+      build: build,
+      setUp: () {
+        when(() => repositorio.crearEvento(datos: any(named: 'datos')))
+            .thenAnswer((_) async => 'nuevo-evento-id');
+        when(
+          () => repositorio.guardarGruposEvento(
+            eventoId: any(named: 'eventoId'),
+            grupos: any(named: 'grupos'),
+          ),
+        ).thenAnswer((_) async {});
+        when(() => repositorio.obtenerUsuariosIdsActivos())
+            .thenAnswer((_) async => ['u-1', 'u-2']);
+      },
+      // AlcanceEvento.general es el valor por defecto de _estadoConHoraFin().
+      seed: _estadoConHoraFin,
+      act: (c) => c.publicarEvento(),
+      verify: (_) {
+        verify(() => repositorio.obtenerUsuariosIdsActivos()).called(1);
+        verifyNever(() => repositorio.obtenerUsuariosIdsDirigidos(any()));
+      },
+    );
+
+    blocTest<CrearEventoCubit, CrearEventoEstado>(
+      'alcance dirigido: consulta los usuarios de los grupos de tags para notificar',
+      build: build,
+      setUp: () {
+        when(() => repositorio.crearEvento(datos: any(named: 'datos')))
+            .thenAnswer((_) async => 'nuevo-evento-id');
+        when(
+          () => repositorio.guardarGruposEvento(
+            eventoId: any(named: 'eventoId'),
+            grupos: any(named: 'grupos'),
+          ),
+        ).thenAnswer((_) async {});
+        when(() => repositorio.obtenerUsuariosIdsDirigidos(any()))
+            .thenAnswer((_) async => ['u-3']);
+      },
+      seed: () =>
+          _estadoConHoraFin().copiarCon(alcance: AlcanceEvento.dirigido),
+      act: (c) => c.publicarEvento(),
+      verify: (_) {
+        verify(() => repositorio.obtenerUsuariosIdsDirigidos('nuevo-evento-id'))
+            .called(1);
+        verifyNever(() => repositorio.obtenerUsuariosIdsActivos());
+      },
+    );
   });
 
   // ── guardarBorrador ────────────────────────────────────────────────────────

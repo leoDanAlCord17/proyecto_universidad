@@ -67,6 +67,36 @@ class AutenticacionRepositorio {
     return resultado as String?;
   }
 
+  /// Resuelve una cédula al correo registrado y lo retorna parcialmente
+  /// censurado (ej. "l***z@g***.com"), para mostrarlo como vista previa en
+  /// la pantalla de recuperar contraseña antes de enviar. Retorna `null` si
+  /// la cédula no existe.
+  ///
+  /// Nota de seguridad: a diferencia de [iniciarSesion] y
+  /// [enviarCorreoRecuperacion], que deliberadamente no revelan si una
+  /// cédula existe, este método SÍ lo hace — es una decisión de producto
+  /// explícita (mismo trade-off que usan Google/GitHub al mostrar un hint
+  /// del correo antes de confirmar el envío).
+  Future<String?> obtenerCorreoEnmascarado(String cedula) async {
+    final correo = await _resolverCorreoPorCedula(cedula);
+    if (correo == null) return null;
+    return _enmascararCorreo(correo);
+  }
+
+  String _enmascararCorreo(String correo) {
+    final arroba = correo.indexOf('@');
+    if (arroba <= 0) return correo;
+    final local = correo.substring(0, arroba);
+    final dominio = correo.substring(arroba + 1);
+    final punto = dominio.lastIndexOf('.');
+    final nombreDominio = punto > 0 ? dominio.substring(0, punto) : dominio;
+    final extension = punto > 0 ? dominio.substring(punto) : '';
+    final localOculto = '${local[0]}***';
+    final dominioOculto =
+        nombreDominio.isEmpty ? '***' : '${nombreDominio[0]}***';
+    return '$localOculto@$dominioOculto$extension';
+  }
+
   /// Registra un nuevo usuario en Supabase Auth.
   /// Lanza [FallaAutenticacion] si el correo ya está en uso o la clave es inválida.
   Future<AuthResponse> registrarse(String correo, String clave) async {

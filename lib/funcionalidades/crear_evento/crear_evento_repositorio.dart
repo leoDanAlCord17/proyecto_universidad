@@ -254,6 +254,26 @@ class CrearEventoRepositorio {
         }
       });
 
+  /// Retorna los IDs de todos los usuarios activos del sistema.
+  /// Usado para notificar al publicar un evento de alcance general (N8).
+  Future<List<String>> obtenerUsuariosIdsActivos() => conReintentos(() async {
+        try {
+          final filas = await _cliente
+              .from(TablasSupabase.usuarios)
+              .select('id')
+              .eq('estatus', true)
+              .timeout(kTimeoutSolicitud);
+          return (filas as List)
+              .cast<Map<String, dynamic>>()
+              .map((f) => f['id'] as String)
+              .toList();
+        } on PostgrestException catch (e) {
+          throw FallaServidor(TraductorErrores.dePostgres(e));
+        } catch (e) {
+          TraductorErrores.lanzarInesperado(e);
+        }
+      });
+
   List<Map<String, dynamic>> _construirFilasGrupos(
     String eventoId,
     List<GrupoAudiencia> grupos,

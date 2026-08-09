@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -20,12 +22,32 @@ class RecuperarContrasenaPantalla extends StatefulWidget {
 
 class _RecuperarContrasenaPantallaState
     extends State<RecuperarContrasenaPantalla> {
+  static const _debounce = Duration(milliseconds: 500);
+
   final _cedulaCtrl = TextEditingController();
+  Timer? _debounceTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _cedulaCtrl.addListener(_alCambiarCedula);
+  }
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
+    _cedulaCtrl.removeListener(_alCambiarCedula);
     _cedulaCtrl.dispose();
     super.dispose();
+  }
+
+  void _alCambiarCedula() {
+    _debounceTimer?.cancel();
+    final texto = _cedulaCtrl.text;
+    _debounceTimer = Timer(_debounce, () {
+      if (!mounted) return;
+      context.read<RecuperarContrasenaCubit>().verificarCedula(texto);
+    });
   }
 
   @override
@@ -81,6 +103,35 @@ class _VistaFormulario extends StatelessWidget {
               controller: cedulaCtrl,
             ),
             const SizedBox(height: 12),
+            ValueListenableBuilder<String?>(
+              valueListenable:
+                  context.read<RecuperarContrasenaCubit>().correoPrevio,
+              builder: (context, correo, _) {
+                if (correo == null) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.mail_outline_rounded,
+                        size: 16,
+                        color: ColoresApp.acento,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'Se enviará un enlace a $correo',
+                          style: estiloTexto.bodySmall?.copyWith(
+                            color: ColoresApp.acento,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
             Text(
               'Enviaremos un enlace para restablecer tu contraseña al correo asociado a tu cuenta.',
               style: estiloTexto.bodySmall
