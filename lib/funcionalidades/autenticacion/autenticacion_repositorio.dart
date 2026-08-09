@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../compartido/constantes.dart';
+import '../../compartido/enmascarar_correo.dart';
 import '../../compartido/errores.dart';
 import '../../compartido/reintento.dart';
 import '../../compartido/traductor_errores.dart';
@@ -68,9 +69,9 @@ class AutenticacionRepositorio {
   }
 
   /// Resuelve una cédula al correo registrado y lo retorna parcialmente
-  /// censurado (ej. "l***z@g***.com"), para mostrarlo como vista previa en
-  /// la pantalla de recuperar contraseña antes de enviar. Retorna `null` si
-  /// la cédula no existe.
+  /// censurado (ej. "le*********************o@gm***.com"), para mostrarlo
+  /// como vista previa en la pantalla de recuperar contraseña antes de
+  /// enviar. Retorna `null` si la cédula no existe.
   ///
   /// Nota de seguridad: a diferencia de [iniciarSesion] y
   /// [enviarCorreoRecuperacion], que deliberadamente no revelan si una
@@ -80,21 +81,7 @@ class AutenticacionRepositorio {
   Future<String?> obtenerCorreoEnmascarado(String cedula) async {
     final correo = await _resolverCorreoPorCedula(cedula);
     if (correo == null) return null;
-    return _enmascararCorreo(correo);
-  }
-
-  String _enmascararCorreo(String correo) {
-    final arroba = correo.indexOf('@');
-    if (arroba <= 0) return correo;
-    final local = correo.substring(0, arroba);
-    final dominio = correo.substring(arroba + 1);
-    final punto = dominio.lastIndexOf('.');
-    final nombreDominio = punto > 0 ? dominio.substring(0, punto) : dominio;
-    final extension = punto > 0 ? dominio.substring(punto) : '';
-    final localOculto = '${local[0]}***';
-    final dominioOculto =
-        nombreDominio.isEmpty ? '***' : '${nombreDominio[0]}***';
-    return '$localOculto@$dominioOculto$extension';
+    return enmascararCorreo(correo);
   }
 
   /// Registra un nuevo usuario en Supabase Auth.

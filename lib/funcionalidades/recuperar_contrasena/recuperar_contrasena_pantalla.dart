@@ -62,7 +62,8 @@ class _RecuperarContrasenaPantallaState
           }
         },
         builder: (context, estado) => switch (estado) {
-          RecuperarContrasenaEnviado() => const _VistaConfirmacion(),
+          RecuperarContrasenaEnviado(:final correo) =>
+            _VistaConfirmacion(correo: correo),
           RecuperarContrasenaInicial() ||
           RecuperarContrasenaEnviando() ||
           RecuperarContrasenaError() =>
@@ -195,7 +196,9 @@ class _Cabecera extends StatelessWidget {
 // ─── Vista confirmación ───────────────────────────────────────────────────────
 
 class _VistaConfirmacion extends StatelessWidget {
-  const _VistaConfirmacion();
+  const _VistaConfirmacion({this.correo});
+
+  final String? correo;
 
   @override
   Widget build(BuildContext context) {
@@ -219,8 +222,10 @@ class _VistaConfirmacion extends StatelessWidget {
             Text('Revisa tu correo', style: estiloTexto.displaySmall),
             const SizedBox(height: 12),
             Text(
-              'Si la cédula ingresada está registrada, enviamos un enlace '
-              'de recuperación al correo asociado a esa cuenta.',
+              correo != null
+                  ? 'Enviamos un enlace de recuperación a $correo.'
+                  : 'Si la cédula ingresada está registrada, enviamos un '
+                      'enlace de recuperación al correo asociado a esa cuenta.',
               style: estiloTexto.bodyMedium
                   ?.copyWith(color: ColoresApp.textoSecundario),
               textAlign: TextAlign.center,

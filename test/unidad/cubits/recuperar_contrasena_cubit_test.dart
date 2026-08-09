@@ -47,6 +47,39 @@ void main() {
     );
 
     blocTest<RecuperarContrasenaCubit, RecuperarContrasenaEstado>(
+      'RecuperarContrasenaEnviado lleva el correo ya mostrado en la vista previa',
+      build: build,
+      setUp: () {
+        when(() => repositorio.obtenerCorreoEnmascarado('32727960'))
+            .thenAnswer((_) async => 'le***o@gm***.com');
+        when(() => repositorio.enviarCorreoRecuperacion(any()))
+            .thenAnswer((_) async {});
+      },
+      act: (c) async {
+        await c.verificarCedula('32727960');
+        await c.enviar('32727960');
+      },
+      expect: () => [
+        isA<RecuperarContrasenaEnviando>(),
+        isA<RecuperarContrasenaEnviado>()
+            .having((e) => e.correo, 'correo', 'le***o@gm***.com'),
+      ],
+    );
+
+    blocTest<RecuperarContrasenaCubit, RecuperarContrasenaEstado>(
+      'RecuperarContrasenaEnviado.correo es null si nunca se resolvió una vista previa',
+      build: build,
+      setUp: () => when(() => repositorio.enviarCorreoRecuperacion(any()))
+          .thenAnswer((_) async {}),
+      act: (c) => c.enviar('32727960'),
+      expect: () => [
+        isA<RecuperarContrasenaEnviando>(),
+        isA<RecuperarContrasenaEnviado>()
+            .having((e) => e.correo, 'correo', isNull),
+      ],
+    );
+
+    blocTest<RecuperarContrasenaCubit, RecuperarContrasenaEstado>(
       'emite [Enviando, Error] cuando el repositorio lanza FallaServidor',
       build: build,
       setUp: () => when(() => repositorio.enviarCorreoRecuperacion(any()))

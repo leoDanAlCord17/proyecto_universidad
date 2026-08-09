@@ -16,13 +16,16 @@ final class RecuperarContrasenaEnviando extends RecuperarContrasenaEstado {
   List<Object?> get props => [];
 }
 
-// No lleva el correo/cédula como dato — por seguridad no revelamos si la
-// cédula ingresada estaba registrada o no, así que la confirmación es
-// siempre el mismo mensaje genérico, sin importar el resultado real.
+// [correo] es el mismo hint censurado que ya se mostró mientras el usuario
+// escribía la cédula (ver RecuperarContrasenaCubit.correoPrevio) — repetirlo
+// aquí no revela nada que la pantalla anterior no haya revelado ya. Queda
+// en null si la cédula no existía (no había hint que mostrar), y en ese
+// caso la pantalla de confirmación cae a un mensaje genérico.
 final class RecuperarContrasenaEnviado extends RecuperarContrasenaEstado {
-  const RecuperarContrasenaEnviado();
+  const RecuperarContrasenaEnviado({this.correo});
+  final String? correo;
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [correo];
 }
 
 final class RecuperarContrasenaError extends RecuperarContrasenaEstado {

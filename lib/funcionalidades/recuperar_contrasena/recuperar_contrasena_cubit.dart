@@ -56,7 +56,7 @@ class RecuperarContrasenaCubit extends Cubit<RecuperarContrasenaEstado> {
     emit(const RecuperarContrasenaEnviando());
     try {
       await _repositorio.enviarCorreoRecuperacion(cedulaLimpia);
-      emit(const RecuperarContrasenaEnviado());
+      emit(RecuperarContrasenaEnviado(correo: correoPrevio.value));
     } on FallaAutenticacion catch (e) {
       emit(RecuperarContrasenaError(mensaje: e.mensaje));
     } on FallaServidor catch (e) {
