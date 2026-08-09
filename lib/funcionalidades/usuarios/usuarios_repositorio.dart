@@ -23,6 +23,18 @@ class UsuariosRepositorio {
     }
   }
 
+  Future<void> activarUsuario(String usuarioId) async {
+    try {
+      await _supabase
+          .from(TablasSupabase.usuarios)
+          .update({'estatus': true}).eq('id', usuarioId);
+    } on PostgrestException catch (e) {
+      throw FallaServidor(TraductorErrores.dePostgres(e));
+    } catch (e) {
+      TraductorErrores.lanzarInesperado(e);
+    }
+  }
+
   static const _limite = 20;
 
   Future<({List<UsuarioItem> usuarios, bool hayMas})> obtenerUsuarios({
@@ -52,7 +64,9 @@ class UsuariosRepositorio {
 
   // ── Métodos para acciones en lote ──────────────────────────────────────────
 
-  /// Retorna roles activos del sistema para el selector de asignación en lote.
+  /// Retorna roles activos del sistema para el selector de asignación en
+  /// lote. Excluye "Colaborador": es un rol de alcance por evento, se asigna
+  /// solo desde la pantalla de colaboradores de un evento.
   Future<List<({String id, String nombre})>> obtenerRolesActivos() =>
       conReintentos(() async {
         try {
@@ -60,6 +74,7 @@ class UsuariosRepositorio {
               .from(TablasSupabase.roles)
               .select('id, nombre')
               .eq('estatus', true)
+              .neq('nombre', RolesSistema.colaborador)
               .order('nombre')
               .timeout(kTimeoutSolicitud);
           return datos

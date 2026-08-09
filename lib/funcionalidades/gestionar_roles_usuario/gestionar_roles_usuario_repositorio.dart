@@ -61,13 +61,17 @@ class GestionarRolesUsuarioRepositorio {
         }
       });
 
-  /// Retorna todos los roles activos del sistema.
+  /// Retorna todos los roles activos del sistema, asignables a un usuario en
+  /// general. Excluye "Colaborador": es un rol de alcance por evento (se
+  /// asigna solo desde la pantalla de colaboradores de un evento, ver
+  /// ColaboradoresEventoRepositorio), no tiene sentido ofrecerlo aquí.
   Future<List<RolItem>> obtenerRolesActivos() => conReintentos(() async {
         try {
           final datos = await _supabase
               .from(TablasSupabase.roles)
               .select('id, nombre, descripcion')
               .eq('estatus', true)
+              .neq('nombre', RolesSistema.colaborador)
               .order('nombre')
               .timeout(kTimeoutSolicitud);
           return datos.map(RolItem.desdeJson).toList();

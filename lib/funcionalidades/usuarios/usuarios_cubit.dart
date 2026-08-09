@@ -111,6 +111,31 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
     }
   }
 
+  // ── Activar usuario suspendido ─────────────────────────────────────────────
+
+  Future<void> activar(String usuarioId) async {
+    final cargados = _extraerCargados(state);
+    if (cargados == null) return;
+    try {
+      await _repositorio.activarUsuario(usuarioId);
+      await cargar();
+      unawaited(
+        NotificacionesPushServicio.enviar(
+          usuarioIds: [usuarioId],
+          titulo: 'Cuenta reactivada',
+          cuerpo: 'Tu cuenta fue reactivada. Ya puedes acceder a Activiti.',
+          tipo: TiposNotificacion.aprobacion,
+        ),
+      );
+    } on FallaServidor catch (e) {
+      reportarError(e);
+      emit(UsuariosOperacionFallida(anterior: cargados, mensaje: e.mensaje));
+    } on FallaInesperada catch (e) {
+      reportarError(e);
+      emit(UsuariosOperacionFallida(anterior: cargados, mensaje: e.mensaje));
+    }
+  }
+
   // ── Filtrado ───────────────────────────────────────────────────────────────
 
   void filtrar(String texto) {

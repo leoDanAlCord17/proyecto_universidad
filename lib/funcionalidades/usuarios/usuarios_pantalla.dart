@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../compartido/constantes.dart';
 import '../../compartido/widgets/avisos/aviso_app.dart';
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
+import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
 import '../../compartido/widgets/dialogo/dialogo_confirmacion_texto.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
@@ -511,18 +514,31 @@ class _TarjetaUsuario extends StatelessWidget {
             context.push(Rutas.editarUsuarioUrl(usuario.id));
           },
         ),
-        OpcionPanel(
-          icono: Icons.block_rounded,
-          colorFondo: ColoresApp.rojoClaro,
-          colorIcono: ColoresApp.rojo,
-          colorTitulo: ColoresApp.rojo,
-          titulo: 'Suspender usuario',
-          descripcion: 'Bloquear acceso temporalmente',
-          alPresionar: () {
-            Navigator.of(context, rootNavigator: true).pop();
-            _mostrarDialogoSuspender(context);
-          },
-        ),
+        usuario.estatus
+            ? OpcionPanel(
+                icono: Icons.block_rounded,
+                colorFondo: ColoresApp.rojoClaro,
+                colorIcono: ColoresApp.rojo,
+                colorTitulo: ColoresApp.rojo,
+                titulo: 'Suspender usuario',
+                descripcion: 'Bloquear acceso temporalmente',
+                alPresionar: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  _mostrarDialogoSuspender(context);
+                },
+              )
+            : OpcionPanel(
+                icono: Icons.check_circle_outline_rounded,
+                colorFondo: ColoresApp.verdeClaro,
+                colorIcono: ColoresApp.verde,
+                colorTitulo: ColoresApp.verde,
+                titulo: 'Activar usuario',
+                descripcion: 'Restaurar el acceso a la cuenta',
+                alPresionar: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  _mostrarDialogoActivar(context);
+                },
+              ),
       ];
 
   void _mostrarDialogoSuspender(BuildContext context) {
@@ -539,6 +555,20 @@ class _TarjetaUsuario extends StatelessWidget {
       textoBotonConfirmar: 'Suspender',
       alConfirmar: () => context.read<UsuariosCubit>().suspender(usuario.id),
     );
+  }
+
+  Future<void> _mostrarDialogoActivar(BuildContext context) async {
+    final confirmo = await DialogoConfirmacion.mostrar(
+      context,
+      titulo: 'Activar usuario',
+      descripcion:
+          '¿Deseas restaurar el acceso de ${usuario.nombreCompleto} a Activiti?',
+      textoConfirmar: 'Activar',
+      textoCancelar: 'Cancelar',
+    );
+    if (confirmo == true && context.mounted) {
+      unawaited(context.read<UsuariosCubit>().activar(usuario.id));
+    }
   }
 
   @override

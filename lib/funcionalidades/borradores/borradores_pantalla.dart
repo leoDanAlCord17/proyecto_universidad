@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/widgets/avisos/aviso_app.dart';
+import '../../compartido/widgets/dialogo/dialogo_confirmacion.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../compartido/widgets/botones/boton_regresar.dart';
@@ -196,9 +199,29 @@ class _Lista extends StatelessWidget {
           alVerDetalles: () => context.push(Rutas.editarEventoUrl(borrador.id)),
           alPublicar: () =>
               context.read<BorradoresCubit>().publicarEvento(borrador.id),
+          alOlvidar: () => _confirmarOlvidar(context, borrador),
         );
       },
     );
+  }
+
+  Future<void> _confirmarOlvidar(
+    BuildContext context,
+    BorradorEvento borrador,
+  ) async {
+    final confirmo = await DialogoConfirmacion.mostrar(
+      context,
+      titulo: 'Olvidar borrador',
+      descripcion:
+          '¿Deseas olvidar "${borrador.titulo}"? Ya no aparecerá en tus borradores.',
+      textoConfirmar: 'Cancelar',
+      textoCancelar: 'Olvidar',
+    );
+    if (confirmo == false && context.mounted) {
+      unawaited(
+        context.read<BorradoresCubit>().olvidarEvento(borrador.id),
+      );
+    }
   }
 
   String _formatearHorario(BorradorEvento borrador) {

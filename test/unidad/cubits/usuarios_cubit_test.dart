@@ -464,6 +464,87 @@ void main() {
     );
   });
 
+  group('UsuariosCubit.suspender', () {
+    blocTest<UsuariosCubit, UsuariosEstado>(
+      'no hace nada si el estado no es Cargados',
+      build: build,
+      act: (c) => c.suspender('u-1'),
+      expect: () => [],
+    );
+
+    blocTest<UsuariosCubit, UsuariosEstado>(
+      'llama al repo y recarga la lista',
+      build: build,
+      seed: _cargados,
+      setUp: () {
+        when(() => repositorio.suspenderUsuario(any()))
+            .thenAnswer((_) async {});
+        when(() => repositorio.obtenerUsuarios())
+            .thenAnswer((_) async => (usuarios: _lista, hayMas: false));
+      },
+      act: (c) => c.suspender('u-1'),
+      verify: (_) {
+        verify(() => repositorio.suspenderUsuario('u-1')).called(1);
+        verify(() => repositorio.obtenerUsuarios()).called(1);
+      },
+    );
+
+    blocTest<UsuariosCubit, UsuariosEstado>(
+      'emite OperacionFallida cuando suspenderUsuario falla',
+      build: build,
+      seed: _cargados,
+      setUp: () {
+        when(() => repositorio.suspenderUsuario(any()))
+            .thenThrow(const FallaServidor('Error al suspender'));
+      },
+      act: (c) => c.suspender('u-1'),
+      expect: () => [
+        isA<UsuariosOperacionFallida>()
+            .having((e) => e.mensaje, 'mensaje', 'Error al suspender'),
+      ],
+    );
+  });
+
+  group('UsuariosCubit.activar', () {
+    blocTest<UsuariosCubit, UsuariosEstado>(
+      'no hace nada si el estado no es Cargados',
+      build: build,
+      act: (c) => c.activar('u-3'),
+      expect: () => [],
+    );
+
+    blocTest<UsuariosCubit, UsuariosEstado>(
+      'llama al repo y recarga la lista',
+      build: build,
+      seed: _cargados,
+      setUp: () {
+        when(() => repositorio.activarUsuario(any())).thenAnswer((_) async {});
+        when(() => repositorio.obtenerUsuarios())
+            .thenAnswer((_) async => (usuarios: _lista, hayMas: false));
+      },
+      act: (c) => c.activar('u-3'),
+      verify: (_) {
+        verify(() => repositorio.activarUsuario('u-3')).called(1);
+        verify(() => repositorio.obtenerUsuarios()).called(1);
+      },
+    );
+
+    blocTest<UsuariosCubit, UsuariosEstado>(
+      'emite OperacionFallida cuando activarUsuario falla',
+      build: build,
+      seed: _cargados,
+      setUp: () {
+        when(() => repositorio.activarUsuario(any()))
+            .thenThrow(const FallaServidor('Error al activar'));
+      },
+      act: (c) => c.activar('u-3'),
+      expect: () => [
+        isA<UsuariosOperacionFallida>()
+            .having((e) => e.mensaje, 'mensaje', 'Error al activar'),
+      ],
+    );
+  });
+
   group('UsuariosCubit.asignarRolLote', () {
     blocTest<UsuariosCubit, UsuariosEstado>(
       'no hace nada si seleccionados está vacío',

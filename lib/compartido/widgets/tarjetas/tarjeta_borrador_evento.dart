@@ -11,6 +11,7 @@ class TarjetaBorradorEvento extends StatelessWidget {
     required this.estaPublicando,
     required this.alVerDetalles,
     required this.alPublicar,
+    required this.alOlvidar,
   });
 
   final String titulo;
@@ -19,6 +20,7 @@ class TarjetaBorradorEvento extends StatelessWidget {
   final bool estaPublicando;
   final VoidCallback alVerDetalles;
   final VoidCallback alPublicar;
+  final VoidCallback alOlvidar;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +78,8 @@ class TarjetaBorradorEvento extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
+              _BotonOlvidar(alPresionar: alOlvidar),
+              const SizedBox(width: 10),
               Expanded(child: _BotonDetalles(alPresionar: alVerDetalles)),
               const SizedBox(width: 10),
               Expanded(
@@ -87,6 +91,48 @@ class TarjetaBorradorEvento extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Botón Olvidar ────────────────────────────────────────────────────────────
+
+class _BotonOlvidar extends StatelessWidget {
+  const _BotonOlvidar({required this.alPresionar});
+
+  final VoidCallback alPresionar;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: 'Olvidar borrador',
+      child: SizedBox(
+        width: 42,
+        height: 42,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap: alPresionar,
+            borderRadius: BorderRadius.circular(12),
+            highlightColor: ColoresApp.rojoClaro,
+            splashColor: ColoresApp.bordeError,
+            child: Ink(
+              decoration: BoxDecoration(
+                border: Border.all(color: ColoresApp.bordeError),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.delete_outline_rounded,
+                  size: 20,
+                  color: ColoresApp.rojo,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

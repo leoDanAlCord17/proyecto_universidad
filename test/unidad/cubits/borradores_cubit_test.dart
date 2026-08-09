@@ -15,7 +15,17 @@ final _b1 = BorradorEvento(
   id: 'b-1',
   titulo: 'Congreso Flutter',
   descripcion: 'Desc 1',
-  fechaInicio: DateTime(2026, 3, 10),
+  // Lejos en el futuro a propósito: publicarEvento ahora bloquea la
+  // publicación si la fecha/hora ya pasó (ver tests dedicados más abajo), y
+  // este fixture se usa en tests que verifican otro comportamiento.
+  fechaInicio: DateTime(2099, 3, 10),
+);
+final _bVencido = BorradorEvento(
+  id: 'b-vencido',
+  titulo: 'Evento vencido',
+  descripcion: 'Desc vencido',
+  fechaInicio: DateTime.now().subtract(const Duration(days: 1)),
+  horaInicio: '10:00:00',
 );
 final _b2 = BorradorEvento(
   id: 'b-2',
@@ -336,6 +346,95 @@ void main() {
             .having(
                 (e) => e.errorPublicacion, 'errorPublicacion', 'Sin permiso')
             .having((e) => e.borradores.length, 'borradores.length', 2),
+      ],
+    );
+
+    blocTest<BorradoresCubit, BorradoresEstado>(
+      'emite errorPublicacion sin llamar al repositorio cuando la fecha y hora ya pasaron',
+      build: build,
+      setUp: () {
+        when(() => repositorio.obtenerBorradores(_uid,
+                offset: any(named: 'offset')))
+            .thenAnswer((_) async => (borradores: [_bVencido], hayMas: false));
+      },
+      act: (c) async {
+        await c.cargarBorradores(_uid);
+        await c.publicarEvento('b-vencido');
+      },
+      expect: () => [
+        isA<BorradoresCargando>(),
+        isA<BorradoresCargados>()
+            .having((e) => e.borradores.length, 'tras cargar', 1),
+        isA<BorradoresCargados>().having(
+          (e) => e.errorPublicacion,
+          'errorPublicacion',
+          'Este evento ya pasó su fecha y hora de inicio. Debes editarlo antes de poder publicarlo.',
+        ),
+      ],
+      verify: (_) {
+        verifyNever(() => repositorio.publicarEvento(any()));
+      },
+    );
+  });
+
+  // ── olvidarEvento ──────────────────────────────────────────────────────────
+
+  group('BorradoresCubit.olvidarEvento', () {
+    blocTest<BorradoresCubit, BorradoresEstado>(
+      'no hace nada si el estado no es Cargados',
+      build: build,
+      act: (c) => c.olvidarEvento('b-1'),
+      expect: () => [],
+    );
+
+    blocTest<BorradoresCubit, BorradoresEstado>(
+      'quita el borrador de la lista al olvidarlo',
+      build: build,
+      setUp: () {
+        when(() => repositorio.obtenerBorradores(_uid,
+                offset: any(named: 'offset')))
+            .thenAnswer((_) async => (borradores: [_b1, _b2], hayMas: false));
+        when(() => repositorio.olvidarEvento(any())).thenAnswer((_) async {});
+      },
+      act: (c) async {
+        await c.cargarBorradores(_uid);
+        await c.olvidarEvento('b-1');
+      },
+      expect: () => [
+        isA<BorradoresCargando>(),
+        isA<BorradoresCargados>()
+            .having((e) => e.borradores.length, 'tras cargar', 2),
+        isA<BorradoresCargados>()
+            .having((e) => e.publicandoId, 'publicandoId', 'b-1'),
+        isA<BorradoresCargados>()
+            .having((e) => e.borradores.length, 'borradores.length', 1)
+            .having((e) => e.borradoresFiltrados.map((b) => b.id).toList(),
+                'ids', ['b-2']),
+      ],
+    );
+
+    blocTest<BorradoresCubit, BorradoresEstado>(
+      'emite errorPublicacion cuando olvidarEvento falla',
+      build: build,
+      setUp: () {
+        when(() => repositorio.obtenerBorradores(_uid,
+                offset: any(named: 'offset')))
+            .thenAnswer((_) async => (borradores: [_b1, _b2], hayMas: false));
+        when(() => repositorio.olvidarEvento(any()))
+            .thenThrow(const FallaServidor('Sin permiso'));
+      },
+      act: (c) async {
+        await c.cargarBorradores(_uid);
+        await c.olvidarEvento('b-1');
+      },
+      expect: () => [
+        isA<BorradoresCargando>(),
+        isA<BorradoresCargados>()
+            .having((e) => e.borradores.length, 'tras cargar', 2),
+        isA<BorradoresCargados>()
+            .having((e) => e.publicandoId, 'publicandoId', 'b-1'),
+        isA<BorradoresCargados>().having(
+            (e) => e.errorPublicacion, 'errorPublicacion', 'Sin permiso'),
       ],
     );
   });

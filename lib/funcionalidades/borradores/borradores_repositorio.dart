@@ -53,6 +53,22 @@ class BorradoresRepositorio {
     }
   }
 
+  /// "Olvida" un borrador: no lo borra, lo pasa a estatus cancelado para que
+  /// deje de aparecer en la lista de borradores.
+  Future<void> olvidarEvento(String eventoId) async {
+    try {
+      final actualizadoPor = await _resolverUsuarioId();
+      await _cliente.from(TablasSupabase.eventos).update({
+        'estatus': EstatusEvento.cancelado,
+        'actualizado_por': actualizadoPor
+      }).eq('id', eventoId);
+    } on PostgrestException catch (e) {
+      throw FallaServidor(TraductorErrores.dePostgres(e));
+    } catch (e) {
+      TraductorErrores.lanzarInesperado(e);
+    }
+  }
+
   Future<String?> _resolverUsuarioId() async {
     final authId = _cliente.auth.currentUser?.id;
     if (authId == null) return null;
