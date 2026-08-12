@@ -170,8 +170,34 @@ class CrearEventoCubit extends Cubit<CrearEventoEstado> {
   Future<void> publicarEvento() async {
     final estadoActual = state;
     if (estadoActual is! CrearEventoCargado) return;
+    if (estadoActual.fechaInicio == null || estadoActual.horaInicio == null) {
+      _emitirErrorValidacion(
+          'La fecha y hora de inicio son obligatorias para publicar.');
+      return;
+    }
     if (estadoActual.horaFin == null) {
       _emitirErrorValidacion('La hora de cierre es obligatoria para publicar.');
+      return;
+    }
+    final inicio = DateTime(
+      estadoActual.fechaInicio!.year,
+      estadoActual.fechaInicio!.month,
+      estadoActual.fechaInicio!.day,
+      estadoActual.horaInicio!.hour,
+      estadoActual.horaInicio!.minute,
+    );
+    // Sin fecha de fin explícita, se asume el mismo día que el de inicio.
+    final fechaFin = estadoActual.fechaFin ?? estadoActual.fechaInicio!;
+    final fin = DateTime(
+      fechaFin.year,
+      fechaFin.month,
+      fechaFin.day,
+      estadoActual.horaFin!.hour,
+      estadoActual.horaFin!.minute,
+    );
+    if (!fin.isAfter(inicio)) {
+      _emitirErrorValidacion(
+          'La hora de cierre debe ser posterior a la hora de inicio.');
       return;
     }
     await _guardar(estatus: EstatusEvento.programado);

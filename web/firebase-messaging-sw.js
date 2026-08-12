@@ -14,3 +14,20 @@ const messaging = firebase.messaging();
 
 // FCM muestra automáticamente las notificaciones con campo 'notification'.
 // onBackgroundMessage solo se necesita para mensajes data-only.
+
+// Sin esto, tocar la notificación del sistema (app en segundo plano o
+// cerrada) no hacía nada: el navegador solo cierra la notificación por
+// defecto, no hay ningún comportamiento de "abrir la app" incorporado.
+// Si ya hay una pestaña/ventana de la app abierta, la enfoca; si no, abre
+// una nueva en la raíz.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((lista) => {
+      for (const cliente of lista) {
+        if ('focus' in cliente) return cliente.focus();
+      }
+      if (clients.openWindow) return clients.openWindow('/');
+    })
+  );
+});

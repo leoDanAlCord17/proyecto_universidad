@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../compartido/logger.dart';
+import '../../compartido/reanudar_app.dart';
 import '../../compartido/validadores.dart';
 import '../../compartido/widgets/avatares/avatar_usuario.dart';
 import '../../compartido/widgets/avatares/selector_foto_perfil.dart';
@@ -34,9 +35,40 @@ class PerfilPantalla extends StatefulWidget {
   State<PerfilPantalla> createState() => _PerfilPantallaState();
 }
 
-class _PerfilPantallaState extends State<PerfilPantalla> {
+class _PerfilPantallaState extends State<PerfilPantalla>
+    with WidgetsBindingObserver {
   bool _tagsCargados = false;
   bool _editando = false;
+  VoidCallback? _cancelarReanudacion;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _cancelarReanudacion = escucharReanudacion(_alReanudar);
+  }
+
+  @override
+  void dispose() {
+    _cancelarReanudacion?.call();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _alReanudar();
+  }
+
+  // No refresca mientras el usuario está en el formulario de edición, para
+  // no arriesgar pisar cambios que todavía no ha guardado.
+  void _alReanudar() {
+    if (!mounted || _editando) return;
+    final estado = context.read<AuthCubit>().state;
+    if (estado is Autenticado && estado.usuario.id != null) {
+      context.read<PerfilCubit>().cargar(estado.usuario.id!);
+    }
+  }
 
   Future<void> _confirmarCerrarSesion(BuildContext context) async {
     final resultado = await DialogoConfirmacion.mostrar(

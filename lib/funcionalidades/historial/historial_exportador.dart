@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
@@ -62,15 +59,25 @@ class HistorialExportador {
     );
 
     final bytes = await doc.save();
-    final dir = await getTemporaryDirectory();
-    final archivo = File(
-        '${dir.path}/historial_activiti_${now.millisecondsSinceEpoch}.pdf');
-    await archivo.writeAsBytes(bytes);
-
-    await Share.shareXFiles(
-      [XFile(archivo.path, mimeType: 'application/pdf')],
-      subject: 'Historial de asistencia — $nombreUsuario',
+    // XFile.fromData mantiene los bytes en memoria (Blob en web) — a
+    // diferencia de dart:io/path_provider, que no funcionan en Flutter Web
+    // (esta app corre exclusivamente como PWA), esto sí es multiplataforma.
+    final archivo = XFile.fromData(
+      bytes,
+      mimeType: 'application/pdf',
+      name: 'historial_activiti_${now.millisecondsSinceEpoch}.pdf',
     );
+
+    try {
+      await Share.shareXFiles(
+        [archivo],
+        subject: 'Historial de asistencia — $nombreUsuario',
+      );
+    } catch (_) {
+      // El navegador no soporta compartir archivos (común en desktop) —
+      // recurre a la descarga directa del navegador.
+      await archivo.saveTo('');
+    }
   }
 
   // ── Secciones ────────────────────────────────────────────────────────────────

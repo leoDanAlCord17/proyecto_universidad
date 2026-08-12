@@ -22,6 +22,8 @@ CrearEventoCargado _estadoConTitulo({String titulo = 'Mi evento'}) =>
     _estadoBase().copiarCon(titulo: titulo);
 
 CrearEventoCargado _estadoConHoraFin() => _estadoConTitulo().copiarCon(
+      fechaInicio: DateTime(2026, 6, 10),
+      horaInicio: const TimeOfDay(hour: 14, minute: 0),
       horaFin: const TimeOfDay(hour: 18, minute: 0),
     );
 
@@ -185,14 +187,93 @@ void main() {
 
   group('CrearEventoCubit.publicarEvento', () {
     blocTest<CrearEventoCubit, CrearEventoEstado>(
-      'emite error de validación si horaFin es null',
+      'emite error de validación si fecha/hora de inicio son null',
       build: build,
       seed: _estadoConTitulo,
       // El primer emit (null) se suprime porque el estado ya tiene error=null.
       act: (c) => c.publicarEvento(),
       expect: () => [
+        isA<CrearEventoCargado>().having((e) => e.errorValidacion, 'error',
+            contains('fecha y hora de inicio')),
+      ],
+    );
+
+    blocTest<CrearEventoCubit, CrearEventoEstado>(
+      'emite error de validación si horaFin es null',
+      build: build,
+      seed: () => _estadoConTitulo().copiarCon(
+        fechaInicio: DateTime(2026, 6, 10),
+        horaInicio: const TimeOfDay(hour: 14, minute: 0),
+      ),
+      act: (c) => c.publicarEvento(),
+      expect: () => [
         isA<CrearEventoCargado>().having(
             (e) => e.errorValidacion, 'error', contains('hora de cierre')),
+      ],
+    );
+
+    blocTest<CrearEventoCubit, CrearEventoEstado>(
+      'emite error de validación si horaFin es antes que horaInicio (mismo día)',
+      build: build,
+      seed: () => _estadoConTitulo().copiarCon(
+        fechaInicio: DateTime(2026, 6, 10),
+        horaInicio: const TimeOfDay(hour: 14, minute: 0),
+        horaFin: const TimeOfDay(hour: 13, minute: 0),
+      ),
+      act: (c) => c.publicarEvento(),
+      expect: () => [
+        isA<CrearEventoCargado>().having(
+          (e) => e.errorValidacion,
+          'error',
+          contains('posterior a la hora de inicio'),
+        ),
+      ],
+    );
+
+    blocTest<CrearEventoCubit, CrearEventoEstado>(
+      'emite error de validación si horaFin es igual a horaInicio (mismo día)',
+      build: build,
+      seed: () => _estadoConTitulo().copiarCon(
+        fechaInicio: DateTime(2026, 6, 10),
+        horaInicio: const TimeOfDay(hour: 14, minute: 0),
+        horaFin: const TimeOfDay(hour: 14, minute: 0),
+      ),
+      act: (c) => c.publicarEvento(),
+      expect: () => [
+        isA<CrearEventoCargado>().having(
+          (e) => e.errorValidacion,
+          'error',
+          contains('posterior a la hora de inicio'),
+        ),
+      ],
+    );
+
+    blocTest<CrearEventoCubit, CrearEventoEstado>(
+      'permite un evento nocturno donde horaFin (día siguiente) es antes que '
+      'horaInicio en el reloj, porque fechaFin es un día después',
+      build: build,
+      setUp: () {
+        when(() => repositorio.crearEvento(datos: any(named: 'datos')))
+            .thenAnswer((_) async => 'nuevo-evento-id');
+        when(
+          () => repositorio.guardarGruposEvento(
+            eventoId: any(named: 'eventoId'),
+            grupos: any(named: 'grupos'),
+          ),
+        ).thenAnswer((_) async {});
+      },
+      seed: () => _estadoConTitulo().copiarCon(
+        fechaInicio: DateTime(2026, 6, 10),
+        horaInicio: const TimeOfDay(hour: 23, minute: 0),
+        fechaFin: DateTime(2026, 6, 11),
+        horaFin: const TimeOfDay(hour: 1, minute: 0),
+      ),
+      act: (c) => c.publicarEvento(),
+      expect: () => [
+        isA<CrearEventoCargado>()
+            .having((e) => e.estaGuardando, 'estaGuardando', true),
+        isA<CrearEventoGuardado>()
+            .having((e) => e.esBorrador, 'esBorrador', false),
       ],
     );
 

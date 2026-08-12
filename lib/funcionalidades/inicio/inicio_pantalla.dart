@@ -10,6 +10,7 @@ import '../../compartido/widgets/panel/panel_opciones.dart';
 import '../../compartido/widgets/qr/tarjeta_qr_perfil.dart';
 import '../../compartido/constantes.dart';
 import '../../compartido/navegacion.dart';
+import '../../compartido/reanudar_app.dart';
 import '../../configuracion/colores_app.dart';
 import '../autenticacion/auth_cubit.dart';
 import '../autenticacion/auth_estado.dart';
@@ -32,11 +33,13 @@ class InicioPantalla extends StatefulWidget {
 class _InicioPantallaState extends State<InicioPantalla>
     with WidgetsBindingObserver {
   bool _tagsCargados = false;
+  VoidCallback? _cancelarReanudacion;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _cancelarReanudacion = escucharReanudacion(_alReanudar);
   }
 
   @override
@@ -55,16 +58,25 @@ class _InicioPantallaState extends State<InicioPantalla>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // El refresco periódico del cubit (cada 30s) ya cubre la mayoría de los
-    // casos, pero si la app estuvo minimizada un rato, esto evita esperar
-    // hasta el próximo tick del timer al volver a primer plano.
-    if (state == AppLifecycleState.resumed) {
-      context.read<EventosEnCursoCubit>().refrescarAlReanudar();
-    }
+    // El refresco periódico del cubit (cada 5 min, red de seguridad) ya
+    // cubre la mayoría de los casos, pero si la app estuvo minimizada un
+    // rato, esto evita esperar hasta el próximo tick del timer al volver a
+    // primer plano.
+    if (state == AppLifecycleState.resumed) _alReanudar();
+  }
+
+  // AppLifecycleState.resumed no siempre se dispara de forma confiable en
+  // Flutter Web (depende del navegador) — escucharReanudacion complementa
+  // con el evento nativo visibilitychange. En plataformas no-web es un
+  // no-op (retorna null), así que esto solo agrega, nunca duplica sin razón.
+  void _alReanudar() {
+    if (!mounted) return;
+    context.read<EventosEnCursoCubit>().refrescarAlReanudar();
   }
 
   @override
   void dispose() {
+    _cancelarReanudacion?.call();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }

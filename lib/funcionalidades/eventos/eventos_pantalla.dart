@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../compartido/constantes.dart';
+import '../../compartido/reanudar_app.dart';
 import '../../compartido/widgets/botones/boton_contorno_icono.dart';
 import '../../compartido/widgets/utilidades/banner_sin_conexion.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
@@ -31,11 +32,13 @@ class _EventosPantallaState extends State<EventosPantalla>
     with WidgetsBindingObserver {
   final _busquedaCtrl = TextEditingController();
   bool _cargado = false;
+  VoidCallback? _cancelarReanudacion;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _cancelarReanudacion = escucharReanudacion(_cargar);
   }
 
   @override
@@ -52,6 +55,7 @@ class _EventosPantallaState extends State<EventosPantalla>
   }
 
   void _cargar() {
+    if (!mounted) return;
     final authEstado = context.read<AuthCubit>().state;
     if (authEstado is Autenticado && authEstado.usuario.id != null) {
       context.read<EventosCubit>().cargar(authEstado.usuario.id!);
@@ -60,6 +64,7 @@ class _EventosPantallaState extends State<EventosPantalla>
 
   @override
   void dispose() {
+    _cancelarReanudacion?.call();
     WidgetsBinding.instance.removeObserver(this);
     _busquedaCtrl.dispose();
     super.dispose();

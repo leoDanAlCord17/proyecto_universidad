@@ -132,11 +132,27 @@ class EventosEnCursoCubit extends Cubit<EventosEnCursoEstado> {
   List<EventoEnCurso> _extraerEventos(EventosEnCursoEstado estado) =>
       estado is EventosEnCursoCargado ? estado.eventos : const [];
 
+  // Sentry muestra RealtimeSubscribeException (WebSocket cerrado/caído) con
+  // cierta frecuencia en esta pantalla — el cliente de Supabase reintenta la
+  // conexión del socket por su cuenta, pero sin `onError` acá, si el
+  // listener de este stream específico quedaba en mal estado tras el error,
+  // el contador de asistentes en vivo dejaba de actualizarse en silencio
+  // hasta recargar la app entera. Reintentar la suscripción desde cero tras
+  // un respiro es la red de seguridad.
   void _suscribir(String eventoId) {
     _subs[eventoId]?.cancel();
-    _subs[eventoId] = _repositorio
-        .streamAsistencia(eventoId)
-        .listen((rows) => _actualizarContador(eventoId, rows));
+    _subs[eventoId] = _repositorio.streamAsistencia(eventoId).listen(
+      (rows) => _actualizarContador(eventoId, rows),
+      onError: (Object error, StackTrace stackTrace) {
+        reportarError(error, stack: stackTrace);
+        Future.delayed(const Duration(seconds: 5), () {
+          if (isClosed) return;
+          final sigueEnCurso =
+              _extraerEventos(state).any((e) => e.id == eventoId);
+          if (sigueEnCurso) _suscribir(eventoId);
+        });
+      },
+    );
   }
 
   void _actualizarContador(

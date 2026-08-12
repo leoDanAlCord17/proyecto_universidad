@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../compartido/constantes.dart';
+import '../../compartido/reanudar_app.dart';
 import '../../compartido/widgets/avisos/vista_error_app.dart';
 import '../../compartido/widgets/formularios/barra_busqueda_app.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
@@ -21,21 +22,26 @@ class HistorialPantalla extends StatefulWidget {
 }
 
 class _HistorialPantallaState extends State<HistorialPantalla>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final TabController _tabController;
   final TextEditingController _busquedaCtrl = TextEditingController();
   DateTimeRange? _rango;
   bool _estaIniciado = false;
   bool _exportando = false;
+  VoidCallback? _cancelarReanudacion;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    WidgetsBinding.instance.addObserver(this);
+    _cancelarReanudacion = escucharReanudacion(_cargar);
   }
 
   @override
   void dispose() {
+    _cancelarReanudacion?.call();
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     _busquedaCtrl.dispose();
     super.dispose();
@@ -46,6 +52,16 @@ class _HistorialPantallaState extends State<HistorialPantalla>
     super.didChangeDependencies();
     if (_estaIniciado) return;
     _estaIniciado = true;
+    _cargar();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _cargar();
+  }
+
+  void _cargar() {
+    if (!mounted) return;
     final authEstado = context.read<AuthCubit>().state;
     if (authEstado is Autenticado) {
       context.read<HistorialCubit>().cargar(authEstado.usuario.id!);

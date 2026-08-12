@@ -22,6 +22,7 @@ import 'package:activiti/funcionalidades/escanear_qr/escanear_qr_repositorio.dar
 import 'package:activiti/funcionalidades/eventos/evento.dart';
 import 'package:activiti/funcionalidades/editar_usuario/editar_usuario_repositorio.dart';
 import 'package:activiti/funcionalidades/eventos/eventos_repositorio.dart';
+import 'package:activiti/funcionalidades/inicio/eventos_en_curso_repositorio.dart';
 import 'package:activiti/funcionalidades/historial/historial_item.dart';
 import 'package:activiti/funcionalidades/historial/historial_repositorio.dart';
 import 'package:activiti/funcionalidades/notificaciones/notificaciones_repositorio.dart';
@@ -126,6 +127,9 @@ const asistenteEjemplo = AsistenteItem(
 // ─── Mocks de repositorio — cubits de gestión ────────────────────────────────
 
 class MockEventosRepositorio extends Mock implements EventosRepositorio {}
+
+class MockEventosEnCursoRepositorio extends Mock
+    implements EventosEnCursoRepositorio {}
 
 class MockUsuariosRepositorio extends Mock implements UsuariosRepositorio {}
 
