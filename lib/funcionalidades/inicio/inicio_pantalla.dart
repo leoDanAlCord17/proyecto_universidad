@@ -85,18 +85,23 @@ class _InicioPantallaState extends State<InicioPantalla>
 
   // Vista previa del avatar en grande mientras se mantiene presionado —
   // aparece al iniciar el gesto y desaparece al soltar, como un "peek".
+  // Sin IgnorePointer a propósito: el Container de fondo debe absorber los
+  // toques mientras se muestra, para que no se pueda pulsar ningún botón de
+  // detrás (el gesto de presión larga original sigue funcionando igual —
+  // ya lo tiene "ganado" el reconocedor del avatar, así que onLongPressEnd
+  // se sigue disparando bien aunque este overlay bloquee todo lo demás).
   void _mostrarAvatarGrande(Usuario usuario) {
+    final anchoPantalla = MediaQuery.sizeOf(context).width;
+    final tamanio = (anchoPantalla * 0.55).clamp(160.0, 320.0);
     _avatarGrandeOverlay = OverlayEntry(
       builder: (_) => Positioned.fill(
-        child: IgnorePointer(
-          child: Container(
-            color: ColoresApp.sombraBarrera,
-            child: Center(
-              child: AvatarUsuario(
-                iniciales: usuario.iniciales,
-                urlFoto: usuario.urlAvatar,
-                tamanio: 220,
-              ),
+        child: Container(
+          color: ColoresApp.scannerOverlay,
+          child: Center(
+            child: AvatarUsuario(
+              iniciales: usuario.iniciales,
+              urlFoto: usuario.urlAvatar,
+              tamanio: tamanio,
             ),
           ),
         ),
