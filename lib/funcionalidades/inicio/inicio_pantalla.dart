@@ -34,6 +34,7 @@ class _InicioPantallaState extends State<InicioPantalla>
     with WidgetsBindingObserver {
   bool _tagsCargados = false;
   VoidCallback? _cancelarReanudacion;
+  OverlayEntry? _avatarGrandeOverlay;
 
   @override
   void initState() {
@@ -76,9 +77,37 @@ class _InicioPantallaState extends State<InicioPantalla>
 
   @override
   void dispose() {
+    _ocultarAvatarGrande();
     _cancelarReanudacion?.call();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  // Vista previa del avatar en grande mientras se mantiene presionado —
+  // aparece al iniciar el gesto y desaparece al soltar, como un "peek".
+  void _mostrarAvatarGrande(Usuario usuario) {
+    _avatarGrandeOverlay = OverlayEntry(
+      builder: (_) => Positioned.fill(
+        child: IgnorePointer(
+          child: Container(
+            color: ColoresApp.sombraBarrera,
+            child: Center(
+              child: AvatarUsuario(
+                iniciales: usuario.iniciales,
+                urlFoto: usuario.urlAvatar,
+                tamanio: 220,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    Overlay.of(context).insert(_avatarGrandeOverlay!);
+  }
+
+  void _ocultarAvatarGrande() {
+    _avatarGrandeOverlay?.remove();
+    _avatarGrandeOverlay = null;
   }
 
   @override
@@ -102,10 +131,16 @@ class _InicioPantallaState extends State<InicioPantalla>
                     izquierda: Row(
                       children: [
                         if (usuario != null) ...[
-                          AvatarUsuario(
-                            iniciales: usuario.iniciales,
-                            urlFoto: usuario.urlAvatar,
-                            tamanio: 42,
+                          GestureDetector(
+                            onTap: () => pestanaActiva.value = 4,
+                            onLongPressStart: (_) =>
+                                _mostrarAvatarGrande(usuario),
+                            onLongPressEnd: (_) => _ocultarAvatarGrande(),
+                            child: AvatarUsuario(
+                              iniciales: usuario.iniciales,
+                              urlFoto: usuario.urlAvatar,
+                              tamanio: 42,
+                            ),
                           ),
                           const SizedBox(width: 12),
                         ],
