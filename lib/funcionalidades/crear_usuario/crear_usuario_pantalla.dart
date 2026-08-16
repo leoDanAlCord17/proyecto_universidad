@@ -198,7 +198,7 @@ class _EncabezadoCrearUsuario extends StatelessWidget {
         Text('Registro de Datos', style: estiloTexto.displaySmall),
         const SizedBox(height: 6),
         Text(
-          'Paso 2 de 2 · Completa tu perfil para acceder a Activiti',
+          'Paso 2 de 2 · Completa tu perfil para acceder a Activity',
           style: estiloTexto.bodyMedium,
         ),
       ],

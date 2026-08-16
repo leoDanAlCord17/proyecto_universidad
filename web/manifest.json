@@ -1,6 +1,6 @@
 {
-    "name": "Activiti",
-    "short_name": "Activiti",
+    "name": "Activity",
+    "short_name": "Activity",
     "description": "Sistema de gestión de asistencia universitaria: eventos, escaneo QR y estadísticas.",
     "lang": "es",
     "start_url": "/",

@@ -123,7 +123,7 @@ class UsuariosCubit extends Cubit<UsuariosEstado> {
         NotificacionesPushServicio.enviar(
           usuarioIds: [usuarioId],
           titulo: 'Cuenta reactivada',
-          cuerpo: 'Tu cuenta fue reactivada. Ya puedes acceder a Activiti.',
+          cuerpo: 'Tu cuenta fue reactivada. Ya puedes acceder a Activity.',
           tipo: TiposNotificacion.aprobacion,
         ),
       );

@@ -562,7 +562,7 @@ class _TarjetaUsuario extends StatelessWidget {
       context,
       titulo: 'Activar usuario',
       descripcion:
-          '¿Deseas restaurar el acceso de ${usuario.nombreCompleto} a Activiti?',
+          '¿Deseas restaurar el acceso de ${usuario.nombreCompleto} a Activity?',
       textoConfirmar: 'Activar',
       textoCancelar: 'Cancelar',
     );

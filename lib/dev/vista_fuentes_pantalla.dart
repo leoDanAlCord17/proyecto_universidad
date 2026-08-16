@@ -187,7 +187,7 @@ class _FilaPeso extends StatelessWidget {
           // Muestra del estilo
           Expanded(
             child: Text(
-              'Activiti 0123',
+              'Activity 0123',
               style: estilo,
               overflow: TextOverflow.ellipsis,
             ),

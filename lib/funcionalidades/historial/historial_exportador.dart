@@ -65,7 +65,7 @@ class HistorialExportador {
     final archivo = XFile.fromData(
       bytes,
       mimeType: 'application/pdf',
-      name: 'historial_activiti_${now.millisecondsSinceEpoch}.pdf',
+      name: 'historial_activity_${now.millisecondsSinceEpoch}.pdf',
     );
 
     try {
@@ -92,7 +92,7 @@ class HistorialExportador {
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
             pw.Text(
-              'Activiti',
+              'Activity',
               style: pw.TextStyle(
                 fontSize: 22,
                 fontWeight: pw.FontWeight.bold,
@@ -245,11 +245,11 @@ class HistorialExportador {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
             pw.Text(
-              'Generado por Activiti  •  $fecha',
+              'Generado por Activity  •  $fecha',
               style: pw.TextStyle(fontSize: 8, color: _grisMed),
             ),
             pw.Text(
-              'activiti.app',
+              'activity.app',
               style: pw.TextStyle(fontSize: 8, color: _grisMed),
             ),
           ],

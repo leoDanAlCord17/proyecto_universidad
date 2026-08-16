@@ -266,7 +266,7 @@ class _AppFalloArranque extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Activiti',
+      title: 'Activity',
       debugShowCheckedModeBanner: false,
       theme: temaApp,
       home: Scaffold(
@@ -328,7 +328,7 @@ class _App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Activiti',
+      title: 'Activity',
       debugShowCheckedModeBanner: false,
       theme: temaApp,
       routerConfig: routerApp.router,

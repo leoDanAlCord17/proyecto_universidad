@@ -92,7 +92,7 @@ class RevisionUsuariosCubit extends Cubit<RevisionUsuariosEstado> {
         NotificacionesPushServicio.enviar(
           usuarioIds: [usuarioId],
           titulo: 'Cuenta aprobada',
-          cuerpo: 'Tu cuenta fue aprobada. Ya puedes acceder a Activiti.',
+          cuerpo: 'Tu cuenta fue aprobada. Ya puedes acceder a Activity.',
           tipo: TiposNotificacion.aprobacion,
         ),
       );
