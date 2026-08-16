@@ -22,6 +22,8 @@ void main() {
     when(() => mockUser.id).thenReturn('auth-id-1');
     when(() => mockUser.email).thenReturn('leo@uni.edu');
     when(() => sesion.user).thenReturn(mockUser);
+    when(() => repositorio.obtenerIdsConPermiso(any()))
+        .thenAnswer((_) async => <String>[]);
   });
 
   group('CrearUsuarioCubit.correoSesion', () {

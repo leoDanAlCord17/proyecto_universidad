@@ -240,4 +240,18 @@ class AutenticacionRepositorio {
           return false;
         }
       });
+
+  /// Retorna los ids de los usuarios activos que tienen [permiso] (vía sus
+  /// roles) — usado para notificar a todos los que pueden aprobar/rechazar
+  /// cuando alguien nuevo queda pendiente de revisión. Devuelve lista vacía
+  /// ante cualquier error: nunca debe interrumpir el flujo de registro.
+  Future<List<String>> obtenerIdsConPermiso(String permiso) async {
+    try {
+      final datos = await _supabase.rpc('obtener_ids_con_permiso',
+          params: {'p_permiso': permiso}).timeout(kTimeoutSolicitud);
+      return (datos as List).cast<String>();
+    } catch (_) {
+      return [];
+    }
+  }
 }

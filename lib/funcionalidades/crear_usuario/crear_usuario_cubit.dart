@@ -1,8 +1,11 @@
+import 'dart:async' show unawaited;
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../compartido/constantes.dart';
 import '../../compartido/errores.dart';
 import '../../compartido/logger.dart';
+import '../../compartido/notificaciones_push_servicio.dart';
 import '../autenticacion/autenticacion_repositorio.dart';
 import '../autenticacion/usuario.dart';
 import 'crear_usuario_estado.dart';
@@ -67,6 +70,9 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
           urlAvatar,
         ),
       );
+      if (requiereRevision) {
+        unawaited(_notificarRevisores());
+      }
       emit(const CrearUsuarioExito());
     } on FallaServidor catch (e) {
       reportarError(e);
@@ -75,6 +81,21 @@ class CrearUsuarioCubit extends Cubit<CrearUsuarioEstado> {
       reportarError(e);
       emit(const CrearUsuarioError(MensajesError.inesperado));
     }
+  }
+
+  /// Avisa a todos los usuarios con permiso de revisión que hay una cuenta
+  /// nueva esperando aprobación. Ni la búsqueda de destinatarios ni el envío
+  /// lanzan excepción — un fallo aquí no debe afectar el registro, que ya
+  /// se completó con éxito en este punto.
+  Future<void> _notificarRevisores() async {
+    final ids =
+        await _repositorio.obtenerIdsConPermiso(Permisos.ajustesRevision);
+    await NotificacionesPushServicio.enviar(
+      usuarioIds: ids,
+      titulo: 'Nuevo usuario pendiente',
+      cuerpo: 'Hay una cuenta nueva esperando aprobación.',
+      tipo: TiposNotificacion.aprobacion,
+    );
   }
 
   Usuario _construirUsuario(
