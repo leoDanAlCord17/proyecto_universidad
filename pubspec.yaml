@@ -71,6 +71,12 @@ dependencies:
   firebase_core: ^3.0.0
   firebase_messaging: ^15.0.0
 
+  # Abrir enlaces externos (ej. grupo de Telegram)
+  url_launcher: ^6.3.1
+
+  # Íconos de marcas (Telegram, etc.) — no están en Material Icons
+  font_awesome_flutter: ^11.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

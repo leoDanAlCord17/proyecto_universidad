@@ -8,6 +8,7 @@ import '../../compartido/widgets/botones/boton_contorno_icono.dart';
 import '../../compartido/widgets/navegacion/barra_superior_app.dart';
 import '../../compartido/widgets/panel/panel_opciones.dart';
 import '../../compartido/widgets/qr/tarjeta_qr_perfil.dart';
+import '../../compartido/widgets/tarjetas/tarjeta_telegram.dart';
 import '../../compartido/constantes.dart';
 import '../../compartido/navegacion.dart';
 import '../../compartido/reanudar_app.dart';
@@ -184,6 +185,8 @@ class _InicioPantallaState extends State<InicioPantalla>
                     padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
                     child: Column(
                       children: [
+                        const TarjetaTelegram(),
+                        const SizedBox(height: 12),
                         if (usuario?.id != null)
                           BlocBuilder<InicioCubit, InicioEstado>(
                             builder: (context, estado) => TarjetaQrPerfil(

@@ -51,6 +51,10 @@ abstract class ColoresApp {
   static const teal = Color(0xFF0F7EA0);
   static const tealClaro = Color(0xFFE2F3FA);
 
+  // Telegram — color de marca, usado solo en la tarjeta de unirse al grupo
+  static const telegramAzul = Color(0xFF29A9EB);
+  static const telegramAzulClaro = Color(0xFFE3F3FC);
+
   // ─── SOMBRA ───────────────────────────────────────────
   static const sombraTarjeta = Color(0x0F5B3FD4);
   static const sombraAcento = Color(0x1A5B3FD4); // acento 10%
