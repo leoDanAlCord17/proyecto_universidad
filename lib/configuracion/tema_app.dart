@@ -44,7 +44,7 @@ final temaApp = ThemeData(
       fontWeight: FontWeight.w600,
       color: ColoresApp.textoTerciario,
     ),
-    // Etiquetas de Inputs: "Correo institucional"
+    // Etiquetas de Inputs: "Correo"
     titleSmall: TextStyle(
       fontSize: 14,
       fontWeight: FontWeight.w600,

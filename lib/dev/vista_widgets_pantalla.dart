@@ -289,8 +289,8 @@ class _SeccionFormularios extends StatelessWidget {
           nombre: 'CampoTextoApp — normal',
           descripcion: 'Campo de texto estándar con etiqueta.',
           child: CampoTextoApp(
-            etiqueta: 'Correo institucional',
-            hintText: 'maria.gonzalez@uni.edu',
+            etiqueta: 'Correo',
+            hintText: 'maria.gonzalez@gmail.com',
             controller: controladorTexto,
           ),
         ),
