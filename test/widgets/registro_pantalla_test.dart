@@ -35,7 +35,7 @@ void main() {
 
       await tester.pumpWidget(_marco(registroCubit, authCubit));
 
-      expect(find.text('Correo'), findsOneWidget);
+      expect(find.text('Correo electrónico'), findsOneWidget);
       expect(find.text('Contraseña'), findsOneWidget);
       expect(find.text('Confirmar contraseña'), findsOneWidget);
       expect(find.text('Continuar'), findsOneWidget);

@@ -73,8 +73,8 @@ class _CuerpoLogin extends StatelessWidget {
             const _CabeceraLogin(),
             const SizedBox(height: 45),
             CampoTextoApp(
-              etiqueta: 'Cédula',
-              hintText: 'Ej. 32727960',
+              etiqueta: 'Cédula de identidad',
+              hintText: '32727960',
               controller: cedulaController,
             ),
             const SizedBox(height: 20),
@@ -151,7 +151,7 @@ class _PieLogin extends StatelessWidget {
             Text('¿No tienes cuenta? ', style: estiloTexto.bodyMedium),
             TextButton(
               onPressed: () => context.push(Rutas.registro),
-              child: Text('Regístrate', style: estiloTexto.labelLarge),
+              child: Text('Registrarse', style: estiloTexto.labelLarge),
             ),
           ],
         ),
