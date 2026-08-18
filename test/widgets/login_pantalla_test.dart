@@ -35,7 +35,7 @@ void main() {
 
       await tester.pumpWidget(_marco(loginCubit, authCubit));
 
-      expect(find.text('Cédula'), findsOneWidget);
+      expect(find.text('Cédula de identidad'), findsOneWidget);
       expect(find.text('Contraseña'), findsOneWidget);
       expect(find.text('Iniciar sesión'), findsOneWidget);
     });
