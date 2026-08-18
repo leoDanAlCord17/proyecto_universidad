@@ -78,8 +78,8 @@ class _CuerpoRegistro extends StatelessWidget {
             const _CabeceraRegistro(),
             const SizedBox(height: 45),
             CampoTextoApp(
-              etiqueta: 'Correo',
-              hintText: 'maria.gonzalez@gmail.com',
+              etiqueta: 'Correo electrónico',
+              hintText: 'mariagonzalez@gmail.com',
               controller: correoController,
             ),
             const SizedBox(height: 20),
