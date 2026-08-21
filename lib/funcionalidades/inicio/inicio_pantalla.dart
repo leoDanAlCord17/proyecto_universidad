@@ -155,7 +155,7 @@ class _InicioPantallaState extends State<InicioPantalla>
                         // espacio de los botones de notificaciones/ajustes.
                         Flexible(
                           child: _CabeceraTexto(
-                              nombre: usuario?.nombreCompleto ?? ''),
+                              nombre: usuario?.primerNombre ?? ''),
                         ),
                       ],
                     ),
