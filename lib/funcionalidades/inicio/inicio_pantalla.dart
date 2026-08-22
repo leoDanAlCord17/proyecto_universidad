@@ -247,7 +247,7 @@ class _CabeceraTexto extends StatelessWidget {
           },
         ),
         _TextoAjustable(
-          texto: 'Hola, $nombre 👋',
+          texto: 'Hola, $nombre',
           style: estilos.titleSmall?.copyWith(
             fontSize: 20,
             fontWeight: FontWeight.w700,
